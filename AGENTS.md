@@ -12,7 +12,8 @@ Wallapop Meet formaliza encuentros presenciales de compraventa dentro de Wallapo
 - `docs/objectives.md`: objetivos de producto y reglas de negocio de Wallapop Meet.
 - `styles.json`: tokens de diseño y configuración base de componentes.
 - `plans/design-system/`: documentación del sistema de diseño (plan, tokens, componentes, patrones y QA).
-- Actualmente no existen `src/`, `tests/` ni `assets/`.
+- `src/`: aplicación React + TypeScript (Vite), componentes `shadcn/ui` y stories.
+- `.storybook/`: configuración de Storybook con builder Vite.
 
 Si se añade implementación:
 - Lógica de dominio en `src/meetup/`.
@@ -20,11 +21,13 @@ Si se añade implementación:
 
 ## Comandos de build, test y desarrollo
 
-No hay scripts configurados todavía. Cuando se incorporen herramientas, documentarlas aquí.
-
-Ejemplos de referencia:
-- `npm run dev`: ejecutar app/simulador local.
-- `npm test`: ejecutar pruebas unitarias e integración de flujos de meetup.
+Scripts disponibles:
+- `npm run dev`: ejecutar app local en modo desarrollo.
+- `npm run build`: compilar TypeScript y generar build de producción con Vite.
+- `npm run preview`: previsualizar build de producción.
+- `npm test`: ejecutar pruebas con Vitest.
+- `npm run storybook`: ejecutar Storybook local.
+- `npm run build-storybook`: compilar Storybook estático.
 
 ## Estilo de código y nomenclatura
 
@@ -48,7 +51,7 @@ Al modificar tokens o componentes:
 
 ## Guía de testing
 
-No hay framework de testing configurado todavía. Si se agregan pruebas, cubrir como mínimo:
+El proyecto usa Vitest. Cobertura mínima esperada:
 - Transiciones válidas e inválidas de estado.
 - Ventana de llegada (15 minutos antes a 2 horas después).
 - Lógica de propuesta exclusiva del vendedor y contraoferta del comprador.
