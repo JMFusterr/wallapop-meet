@@ -63,6 +63,7 @@ Ubicar pruebas en `tests/` con nombres claros (ejemplo: `meetup.state.test.js`).
 Usar mensajes consistentes, por ejemplo:
 - `feat(meetup): añadir flujo de contraoferta`
 - `fix(notifications): corregir acción en pantalla bloqueada`
+- Tras crear un nuevo commit, subirlo inmediatamente a GitHub usando `git push` (rama actual en `origin`).
 
 Las PR deben incluir:
 - Descripción clara del cambio.
