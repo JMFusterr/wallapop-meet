@@ -1,0 +1,66 @@
+{
+    "brand": {
+        "name": "Wallapop",
+        "system": "Wally",
+        "typography": {
+            "family": {
+                "primary": "Wallie"
+            }
+        }
+    },
+    "tokens": {
+        "color": {
+            "primary": {
+                "value": "#13C1AC",
+                "type": "color"
+            },
+            "secondary": {
+                "value": "#253238",
+                "type": "color"
+            },
+            "background": {
+                "value": "#FFFFFF",
+                "type": "color"
+            },
+            "error": {
+                "value": "#FF5A5F",
+                "type": "color"
+            }
+        },
+        "border_radius": {
+            "small": {
+                "value": "2px",
+                "description": "Checkboxes, tags, labels"
+            },
+            "medium": {
+                "value": "4px",
+                "description": "Buttons, inputs"
+            },
+            "large": {
+                "value": "8px",
+                "description": "Cards, modals"
+            }
+        },
+        "spacing": {
+            "base": {
+                "value": "8px"
+            },
+            "container_padding": {
+                "value": "16px"
+            }
+        }
+    },
+    "components": {
+        "button": {
+            "primary": {
+                "background": "{tokens.color.primary}",
+                "radius": "{tokens.border_radius.medium}",
+                "text_color": "{tokens.color.background}"
+            }
+        },
+        "card": {
+            "radius": "{tokens.border_radius.large}",
+            "elevation": "0 2px 4px rgba(0,0,0,0.1)"
+        }
+    }
+}
