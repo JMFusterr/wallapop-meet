@@ -44,6 +44,42 @@ Reglas:
 - Debe soportar lista de puntos de encuentro sugeridos.
 - Altura táctil mínima de 44 px.
 
+## Matriz de estados (fase inicial)
+
+### `Button`
+| Estado | Qué cambia visualmente | Comportamiento |
+| --- | --- | --- |
+| `default` | Según `variant` (`primary`, `secondary`, `ghost`, `critical`) | Acción disponible |
+| `hover` | Ajuste de fondo según variante (`primary_hover`, `surface`, etc.) | Solo feedback visual |
+| `pressed` | Reducción de brillo/contraste respecto a `hover` | Mantiene semántica de la variante |
+| `focused` | `focus ring` visible con `tokens.color.border.focus` | Navegación por teclado accesible |
+| `disabled` | Opacidad reducida + cursor no interactivo | No dispara `onClick` |
+| `loading` | Spinner + texto de carga; ancho estable | Bloquea interacción temporalmente |
+
+### `Input`
+| Estado | Qué cambia visualmente | Comportamiento |
+| --- | --- | --- |
+| `default` | Borde `tokens.color.border.default` | Entrada editable |
+| `focused` | `focus ring` + borde `tokens.color.border.focus` | Prioriza legibilidad y foco visible |
+| `error` | Borde `tokens.color.border.error` + texto de error | `aria-invalid=true` |
+| `disabled` | Opacidad reducida + cursor no interactivo | No editable |
+
+Notas:
+- `helper` siempre bajo el campo (`hint` o `error`), nunca en placeholder.
+- Si existe `error`, prevalece sobre `hint`.
+
+### `Select`
+| Estado | Qué cambia visualmente | Comportamiento |
+| --- | --- | --- |
+| `default` | Borde `tokens.color.border.default` + icono de desplegable | Selección disponible |
+| `focused` | `focus ring` + borde `tokens.color.border.focus` | Navegable por teclado |
+| `error` | Borde `tokens.color.border.error` + mensaje de error | `aria-invalid=true` |
+| `disabled` | Opacidad reducida + cursor no interactivo | No se puede abrir |
+
+Notas:
+- Tamaños soportados: `md` (44 px) y `lg` (48 px).
+- Debe aceptar opciones de puntos de encuentro sugeridos.
+
 ## 4. Chip / Etiqueta (`Chip/Tag`)
 Propiedades visuales:
 - `variant`: `neutral | success | warning | error | info`

@@ -46,6 +46,20 @@
 }
 
 :root {
+  --wm-color-brand-primary: #13c1ac;
+  --wm-color-brand-primary-hover: #0fa896;
+  --wm-color-brand-on-primary: #ffffff;
+  --wm-color-semantic-error: #ff5a5f;
+  --wm-color-text-primary: #253238;
+  --wm-color-text-secondary: #4a5a63;
+  --wm-color-text-disabled: #a8b2b8;
+  --wm-color-background-base: #ffffff;
+  --wm-color-background-surface: #f5f7f8;
+  --wm-color-border-default: #e8ecef;
+  --wm-color-border-focus: #13c1ac;
+  --wm-color-border-error: #ff5a5f;
+  --wm-radius-200: 4px;
+
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

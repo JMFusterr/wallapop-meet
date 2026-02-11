@@ -16,10 +16,11 @@ function App() {
       </div>
       <div className="flex items-center gap-3">
         <Button>Acción principal</Button>
-        <Button variant="outline">Acción secundaria</Button>
+        <Button variant="secondary">Acción secundaria</Button>
       </div>
     </main>
   )
 }
 
 export default App
+
