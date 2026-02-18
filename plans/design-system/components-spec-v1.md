@@ -53,17 +53,31 @@ Reglas:
 ## 2. Campo de entrada (`Input`)
 Propiedades visuales:
 - `type`: `text | number | date | time`
-- `state`: `default | focused | error | disabled`
+- `state`: `default | hover | focused | filled | error | success | disabled`
 - `helper`: `none | hint | error`
+- `label`: `floating | hidden`
+- `counter`: `visible | hidden` (cuando existe `maxLength`)
 
 Tokens base:
-- Borde: `tokens.color.border.default`
-- Foco: `tokens.color.border.focus`
-- Error: `tokens.color.border.error`
-- Texto: `tokens.color.text.primary`
+- Texto input: `tokens.color.input.text`
+- Label/subtext/counter: `tokens.color.input.label`
+- Placeholder en foco: `tokens.color.input.placeholder_focus`
+- Ring default: `tokens.color.input.ring.default`
+- Ring hover/focus: `tokens.color.input.ring.hover`
+- Ring error: `tokens.color.input.ring.error`
+- Ring success: `tokens.color.input.ring.success`
+- Opacidad disabled: `tokens.opacity.input_disabled`
+- Radio: `tokens.radius.300`
+- Padding base: `components.input.padding_y_default` + `components.input.padding_x`
+- Padding compacto (`filled/focused`): `components.input.padding_y_compact` + `components.input.padding_x`
 
 Reglas:
+- Basado en captura oficial de `https://es.wallapop.com/app/catalog/upload/consumer-goods` (2026-02-18).
+- Usar `box-shadow inset` para representar borde/ring; no usar `border` físico.
+- `label` flotante: tamaño `16px/24px` en `default`, `14px/20px` en `filled/focused`.
 - Mostrar ayuda/error siempre debajo del campo, nunca en placeholder.
+- Si existe `error`, prevalece sobre `hint`.
+- `counter` se muestra con formato `actual/max` cuando existe `maxLength`.
 
 ## 3. Selector (`Select`)
 Propiedades visuales:
@@ -89,10 +103,13 @@ Reglas:
 ### `Input`
 | Estado | Qué cambia visualmente | Comportamiento |
 | --- | --- | --- |
-| `default` | Borde `tokens.color.border.default` | Entrada editable |
-| `focused` | `focus ring` + borde `tokens.color.border.focus` | Prioriza legibilidad y foco visible |
-| `error` | Borde `tokens.color.border.error` + texto de error | `aria-invalid=true` |
-| `disabled` | Opacidad reducida + cursor no interactivo | No editable |
+| `default` | Ring `1px inset` en `tokens.color.input.ring.default`, label `16px/24px` | Entrada editable |
+| `hover` | Ring `2px inset` en `tokens.color.input.ring.hover` | Solo feedback visual |
+| `focused` | Ring `2px inset` en `tokens.color.input.ring.hover`, padding compacto, label flotante compacta | Foco visible y edición activa |
+| `filled` | Mantiene label compacta (`14px/20px`) y padding compacto | Conserva jerarquía label/valor |
+| `error` | Ring `2px inset` en `tokens.color.input.ring.error`, label y helper en error | `aria-invalid=true` |
+| `success` | Ring `2px inset` en `tokens.color.input.ring.success`, helper en success | Confirmación visual de validez |
+| `disabled` | Opacidad `tokens.opacity.input_disabled`, sin hover interactivo | No editable |
 
 Notas:
 - `helper` siempre bajo el campo (`hint` o `error`), nunca en placeholder.

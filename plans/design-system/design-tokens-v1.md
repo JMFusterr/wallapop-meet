@@ -102,6 +102,28 @@ components
 ### Shadow (`tokens.shadow.button`)
 - `icon`: `0 4px 4px 0 rgba(37, 50, 56, 0.15)`
 
+## Mapeo base de input extraido de web (2026-02-18)
+
+### Color (`tokens.color.input`)
+- `text`: `#29363D`
+- `label`: `#5C7A89`
+- `placeholder_focus`: `#A3B8C1`
+- `ring.default`: `#5C7A89`
+- `ring.hover`: `#29363D`
+- `ring.error`: `#CE3528`
+- `ring.success`: `#228618`
+
+### Radius (`tokens.radius.input`)
+- `container`: `8px`
+
+### Spacing (`components.input`)
+- `padding_y_default`: `20px`
+- `padding_y_compact`: `10px`
+- `padding_x`: `16px`
+
+### Opacity (`tokens.opacity.input_disabled`)
+- `disabled`: `0.4`
+
 ## Mapeo mínimo para Wallapop Meet
 - Línea de estados del meetup:
   - Estado activo: `color.brand.primary`
@@ -113,6 +135,10 @@ components
 - Acción "I'm here":
   - Botón principal: `components.button.primary`
   - Estado deshabilitado fuera de ventana: `components.button.primary.disabled`
+- Campos de formulario de meetup:
+  - Input base: `components.input`
+  - Estado error: `components.input.ring_color_error`
+  - Estado success: `components.input.ring_color_success`
 
 ## Checklist de aceptación v1
 - Estructura documentada y aplicada en `styles.json`.

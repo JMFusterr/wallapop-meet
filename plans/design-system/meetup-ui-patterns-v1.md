@@ -9,6 +9,7 @@ Contenido:
 - Punto de encuentro sugerido.
 - Precio final acordado.
 - CTA: `Enviar propuesta` usando `Button.variant=primary`.
+- Inputs del formulario con patrón `Input` de label flotante + helper/counter.
 
 Estados:
 - `PROPOSED` al enviar.

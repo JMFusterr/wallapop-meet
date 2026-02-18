@@ -6,10 +6,12 @@
 - Tamaño táctil mínimo de 44x44 px para acciones críticas.
 - Jerarquía semántica correcta en títulos y etiquetas.
 - Campos con etiqueta persistente, ayuda y error descriptivo.
+- Inputs con label flotante deben mantener etiqueta legible en `default` y `filled/focused`.
 - Iconos críticos acompañados por texto.
 - Estados nunca comunicados solo por color.
 - Botones `icon-only` (`icon`, `menu_close`) con `aria-label` obligatorio.
 - En botones `tab`, validar `role="tab"` y `aria-selected` consistente con el estado visual.
+- En `Input`, validar `aria-invalid`, `aria-describedby` (helper/counter) y anuncios de contador con `aria-live`.
 
 ## QA visual
 - Consistencia de espaciado según escala de tokens.
@@ -19,6 +21,7 @@
 - Comportamiento correcto en móvil y pantallas pequeñas.
 - Banner y toast sin solaparse con la navegación.
 - Variantes de botón alineadas a inventario real (`primary`, `nav_expandable`, `tab`, `inline_action`, `icon`, `menu_close`).
+- Estados de input alineados a inventario real (`default`, `hover`, `focused`, `filled`, `error`, `success`, `disabled`).
 
 ## QA de flujo Meetup
 - El vendedor puede proponer; el comprador no inicia propuesta.

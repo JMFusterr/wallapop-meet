@@ -136,6 +136,18 @@
   --wm-color-border-focus: #13c1ac;
   --wm-color-border-error: #ff5a5f;
   --wm-radius-200: 4px;
+  --wm-radius-300: 8px;
+  --wm-color-input-text: #29363d;
+  --wm-color-input-label: #5c7a89;
+  --wm-color-input-placeholder-focus: #a3b8c1;
+  --wm-color-input-ring-default: #5c7a89;
+  --wm-color-input-ring-hover: #29363d;
+  --wm-color-input-ring-error: #ce3528;
+  --wm-color-input-ring-success: #228618;
+  --wm-input-padding-x: 16px;
+  --wm-input-padding-y-default: 20px;
+  --wm-input-padding-y-compact: 10px;
+  --wm-opacity-input-disabled: 0.4;
 
   --radius: 0.625rem;
   --background: oklch(1 0 0);

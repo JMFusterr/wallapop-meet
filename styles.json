@@ -123,6 +123,38 @@
                     "type": "color"
                 }
             },
+            "input": {
+                "text": {
+                    "value": "#29363D",
+                    "type": "color"
+                },
+                "label": {
+                    "value": "#5C7A89",
+                    "type": "color"
+                },
+                "placeholder_focus": {
+                    "value": "#A3B8C1",
+                    "type": "color"
+                },
+                "ring": {
+                    "default": {
+                        "value": "#5C7A89",
+                        "type": "color"
+                    },
+                    "hover": {
+                        "value": "#29363D",
+                        "type": "color"
+                    },
+                    "error": {
+                        "value": "#CE3528",
+                        "type": "color"
+                    },
+                    "success": {
+                        "value": "#228618",
+                        "type": "color"
+                    }
+                }
+            },
             "overlay": {
                 "scrim": {
                     "value": "rgba(37, 50, 56, 0.56)",
@@ -277,6 +309,10 @@
                 "value": 0.5,
                 "type": "opacity"
             },
+            "input_disabled": {
+                "value": 0.4,
+                "type": "opacity"
+            },
             "overlay": {
                 "value": 0.56,
                 "type": "opacity"
@@ -367,13 +403,17 @@
         },
         "input": {
             "background": "{tokens.color.background.base}",
-            "text_color": "{tokens.color.text.primary}",
-            "placeholder_color": "{tokens.color.text.secondary}",
-            "border_color": "{tokens.color.border.default}",
-            "border_color_focus": "{tokens.color.border.focus}",
-            "border_color_error": "{tokens.color.border.error}",
-            "radius": "{tokens.radius.200}",
-            "padding_y": "{tokens.spacing.300}",
+            "text_color": "{tokens.color.input.text}",
+            "label_color": "{tokens.color.input.label}",
+            "placeholder_color_focus": "{tokens.color.input.placeholder_focus}",
+            "ring_color_default": "{tokens.color.input.ring.default}",
+            "ring_color_hover": "{tokens.color.input.ring.hover}",
+            "ring_color_focus": "{tokens.color.input.ring.hover}",
+            "ring_color_error": "{tokens.color.input.ring.error}",
+            "ring_color_success": "{tokens.color.input.ring.success}",
+            "radius": "{tokens.radius.300}",
+            "padding_y_default": "20px",
+            "padding_y_compact": "10px",
             "padding_x": "{tokens.spacing.400}"
         },
         "badge": {

@@ -27,6 +27,7 @@ Entregables:
 - Análisis de brecha entre estilos oficiales y `styles.json` actual.
 - Lista de decisiones bloqueantes (tipografía oficial, escala de espaciado, naming final).
 - Línea base de botones capturados en producción web (`primary`, `nav_expandable`, `tab`, `inline_action`, `icon`, `menu_close`).
+- Línea base de input capturado en producción web (`default`, `hover`, `focused`, `filled`, `error`, `success`, `disabled`).
 
 Criterios de aceptación:
 - Existe una fuente de verdad acordada para estilos oficiales.
@@ -42,6 +43,7 @@ Entregables:
 - Convención de naming consistente (ejemplo: `color.background.surface.primary`).
 - Mapeo token -> uso práctico (qué componente consume cada token).
 - Tokenización explícita de los botones capturados (color, radius, border, typography y shadow).
+- Tokenización explícita del input capturado (ring por estado, label, placeholder en foco, opacidad disabled y padding por estado).
 
 Criterios de aceptación:
 - No hay valores hardcodeados en especificaciones de componentes.
@@ -53,6 +55,7 @@ Entregables:
   - Button, Input, Select, Chip/Tag, Card, Banner, Toast, Modal, List Item y Badge.
 - Estados de cada componente: default, hover/pressed, focused, disabled, error, loading.
 - En `Button`, variantes basadas en evidencia real: `primary`, `nav_expandable`, `tab`, `inline_action`, `icon`, `menu_close`.
+- En `Input`, patrón de label flotante + contador y estados basados en evidencia real (`filled`, `success`, `error`).
 
 Criterios de aceptación:
 - Cada componente tiene API visual clara (props, variantes y estados).
