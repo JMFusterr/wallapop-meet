@@ -13,7 +13,7 @@ const buttonVariants = cva(
           "rounded-[100px] border-[#3DD2BA] bg-[#3DD2BA] font-wallie-chunky text-[16px] leading-6 text-[#29363D] hover:brightness-[0.98] active:brightness-95",
         nav_expandable:
           "rounded-none border-transparent bg-transparent font-wallie-fit text-[16px] leading-6 text-[#29363D] hover:bg-[rgba(41,54,61,0.06)] active:bg-[rgba(41,54,61,0.1)]",
-        tab: "rounded-none border-transparent bg-transparent font-wallie text-[16px] leading-6 text-black hover:bg-[rgba(0,0,0,0.04)] active:bg-[rgba(0,0,0,0.08)] data-[selected=true]:font-semibold",
+        tab: "rounded-[999px] border-transparent bg-transparent px-4 font-wallie-chunky text-[16px] leading-6 text-[#102A43] transition-[color,background-color] duration-150 ease-out hover:bg-[rgba(16,42,67,0.06)] active:bg-[rgba(16,42,67,0.12)] data-[selected=true]:bg-[#253238] data-[selected=true]:text-white aria-selected:bg-[#253238] aria-selected:text-white disabled:bg-transparent disabled:text-[#102A43] disabled:opacity-100",
         inline_action:
           "rounded-[25px] border-transparent bg-[#3DAABF] font-wallie text-[14px] leading-[21px] text-white hover:brightness-[0.98] active:brightness-95",
         icon: "rounded-full border-transparent bg-[#ECEFF1] text-black shadow-[0_4px_4px_0_rgba(37,50,56,0.15)] hover:brightness-[0.98] active:brightness-95",
@@ -32,7 +32,7 @@ const buttonVariants = cva(
         sm: "h-9 px-3 text-[14px]",
         md: "h-10 px-6",
         lg: "h-[47px] px-2",
-        tab: "h-[35px] px-1.5",
+        tab: "h-10",
         icon: "size-6 p-0",
       },
     },

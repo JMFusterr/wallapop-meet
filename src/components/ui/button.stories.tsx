@@ -84,6 +84,9 @@ export const Tabs: Story = {
       <Button variant="tab" role="tab" aria-selected="false">
         Notificaciones
       </Button>
+      <Button variant="tab" disabled>
+        Deshabilitado
+      </Button>
     </div>
   ),
 }

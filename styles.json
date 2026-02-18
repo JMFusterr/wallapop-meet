@@ -321,6 +321,18 @@
                 "font_size": "{tokens.typography.size.300}",
                 "font_weight": "{tokens.typography.weight.semibold}"
             },
+            "tab": {
+                "background": "transparent",
+                "background_selected": "{tokens.color.neutral.900}",
+                "text_color": "#102A43",
+                "text_color_selected": "{tokens.color.neutral.0}",
+                "text_color_disabled": "#102A43",
+                "radius": "{tokens.radius.pill}",
+                "height": "40px",
+                "padding_x": "{tokens.spacing.400}",
+                "font_size": "{tokens.typography.size.300}",
+                "font_weight": "{tokens.typography.weight.bold}"
+            },
             "disabled": {
                 "background": "{tokens.color.neutral.200}",
                 "text_color": "{tokens.color.text.disabled}",

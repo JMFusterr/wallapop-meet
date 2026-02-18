@@ -24,6 +24,10 @@ Tokens base:
 - `tab`:
   - Fondo: `tokens.color.button.tab.background`
   - Texto: `tokens.color.button.tab.text`
+  - Fondo (`selected`): `tokens.color.button.tab.background_selected`
+  - Texto (`selected`): `tokens.color.button.tab.text_selected`
+  - Texto (`disabled`): `tokens.color.button.tab.text_disabled`
+  - Radio: `tokens.radius.button.pill`
   - Tipografia: `tokens.typography.button.tab`
 - `inline_action`:
   - Fondo: `tokens.color.button.inline_action.background`

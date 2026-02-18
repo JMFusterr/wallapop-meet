@@ -51,26 +51,26 @@
 - Cursor: `pointer`
 
 ### 3) `button.tab` (tabs del buzon)
-- Ejemplos: `Mensajes` (selected), `Notificaciones`
+- Ejemplos: `Mensajes` (`enabled/selected`), `Notificaciones` (`disabled`)
 - Elemento/clase: `button[role="tab"].TabsBar__element`
 - Dimensiones:
-  - `Mensajes`: `97x35px`
-  - `Notificaciones`: `133x35px`
-- Padding: `1px 6px`
+  - Alto fijo: `40px`
+  - Ancho variable por etiqueta
+- Padding: `0 16px`
 - Tipografia:
-  - Font family: `Wallie, Helvetica`
+  - Font family: `WallieChunky`
   - Font size: `16px`
   - Font weight: `400`
   - Line-height: `24px`
 - Color:
-  - Texto: `rgb(0, 0, 0)` (`#000000`)
-  - Fondo: `transparent`
+  - `enabled/selected`: texto `#FFFFFF`, fondo `#253238`
+  - `disabled`: texto `#102A43`, fondo `transparent`
 - Borde: `none`
-- Radio: `0`
+- Radio: `999px` (pill)
 - Sombra: `none`
 - Iconos: `0`
 - Cursor: `pointer`
-- Estado: se detecta `aria-selected=true/false`; el indicador visual de seleccion puede estar en un contenedor externo.
+- Estado: el estado seleccionado se representa con pill oscuro; `disabled` mantiene aspecto de etiqueta de texto sin fondo.
 
 ### 4) `button.inline.action` (accion contextual en timeline de chat)
 - Ejemplo: `Ver`
@@ -139,9 +139,11 @@
   - `#3DD2BA` (primary surface)
   - `#3DAABF` (inline action)
   - `#29363D` (primary text dark)
+  - `#253238` (tab/tag selected background)
+  - `#102A43` (tab/tag disabled text)
   - `#ECEFF1` (icon button bg neutral)
   - `#FFFFFF` (text on colored buttons)
-  - `#000000` (tab/icon text)
+  - `#000000` (icon text)
 - Radios:
   - `100px` (pill CTA principal)
   - `25px` (pill acciones inline)
@@ -172,7 +174,7 @@ Esta seccion traduce el inventario real de la web a componentes reutilizables de
   - `sm` (`24x24`) para `icon`
   - `md` (`40px` de alto) para `primary`, `inline_action`, `menu_close`
   - `lg` (`47px` de alto) para `nav_expandable`
-  - `tab` mantiene `35px` de alto (tamano propio por patron)
+  - `tab` mantiene `40px` de alto (tamano propio por patron)
 - `state`: `default | hover | pressed | focused | disabled | loading`
 
 ### Reglas de mapeo
