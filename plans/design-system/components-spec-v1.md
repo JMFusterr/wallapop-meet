@@ -5,20 +5,46 @@ Definir la API visual mínima de componentes para implementar los flujos de Wall
 
 ## 1. Botón (`Button`)
 Propiedades visuales:
-- `variant`: `primary | secondary | ghost | critical`
-- `size`: `sm | md | lg`
+- `variant`: `primary | nav_expandable | tab | inline_action | icon | menu_close`
+- `size`: `sm | md | lg | tab`
 - `state`: `default | hover | pressed | focused | disabled | loading`
-- `icon`: `none | leading | trailing`
+- `icon`: `none | leading | trailing | only`
 
 Tokens base:
-- Fondo: `tokens.color.brand.primary` (`primary`)
-- Texto: `tokens.color.brand.on_primary`
-- Radio: `tokens.radius.200`
-- Espaciado interno: `tokens.spacing.300` / `tokens.spacing.400`
+- `primary`:
+  - Fondo: `tokens.color.button.primary.background`
+  - Texto: `tokens.color.button.primary.text`
+  - Radio: `tokens.radius.button.pill`
+  - Tipografia: `tokens.typography.button.primary`
+- `nav_expandable`:
+  - Fondo: `tokens.color.button.nav.background`
+  - Texto: `tokens.color.button.nav.text`
+  - Radio: `tokens.radius.none`
+  - Tipografia: `tokens.typography.button.nav`
+- `tab`:
+  - Fondo: `tokens.color.button.tab.background`
+  - Texto: `tokens.color.button.tab.text`
+  - Tipografia: `tokens.typography.button.tab`
+- `inline_action`:
+  - Fondo: `tokens.color.button.inline_action.background`
+  - Texto: `tokens.color.button.inline_action.text`
+  - Radio: `tokens.radius.button.inline_pill`
+  - Tipografia: `tokens.typography.button.inline_action`
+- `icon`:
+  - Fondo: `tokens.color.button.icon.background`
+  - Icono: `tokens.color.button.icon.foreground`
+  - Radio: `tokens.radius.button.circular`
+  - Sombra: `tokens.shadow.button.icon`
+- `menu_close`:
+  - Fondo: `tokens.color.button.menu_close.background`
+  - Icono: `tokens.color.button.menu_close.foreground`
+  - Radio: `tokens.radius.button.menu_close`
 
 Reglas:
-- `critical` se reserva para cancelaciones.
+- Variantes definidas desde captura oficial de `https://es.wallapop.com/app/chat` (2026-02-18).
 - `loading` mantiene ancho para evitar cambios de layout.
+- `icon` y `menu_close` requieren `aria-label` obligatorio.
+- En móvil, cualquier acción crítica mantiene área táctil mínima de `44x44` aunque el icono visual sea menor.
 
 ## 2. Campo de entrada (`Input`)
 Propiedades visuales:
@@ -49,9 +75,9 @@ Reglas:
 ### `Button`
 | Estado | Qué cambia visualmente | Comportamiento |
 | --- | --- | --- |
-| `default` | Según `variant` (`primary`, `secondary`, `ghost`, `critical`) | Acción disponible |
-| `hover` | Ajuste de fondo según variante (`primary_hover`, `surface`, etc.) | Solo feedback visual |
-| `pressed` | Reducción de brillo/contraste respecto a `hover` | Mantiene semántica de la variante |
+| `default` | Según `variant` real (`primary`, `nav_expandable`, `tab`, `inline_action`, `icon`, `menu_close`) | Acción disponible |
+| `hover` | Ajuste de color/fondo sin alterar dimensiones | Solo feedback visual |
+| `pressed` | Ajuste de contraste o elevación según variante | Mantiene semántica de la variante |
 | `focused` | `focus ring` visible con `tokens.color.border.focus` | Navegación por teclado accesible |
 | `disabled` | Opacidad reducida + cursor no interactivo | No dispara `onClick` |
 | `loading` | Spinner + texto de carga; ancho estable | Bloquea interacción temporalmente |

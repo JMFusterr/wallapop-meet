@@ -26,6 +26,7 @@ Entregables:
 - Inventario de estilos oficiales disponibles (guías, librerías, capturas, referencias internas).
 - Análisis de brecha entre estilos oficiales y `styles.json` actual.
 - Lista de decisiones bloqueantes (tipografía oficial, escala de espaciado, naming final).
+- Línea base de botones capturados en producción web (`primary`, `nav_expandable`, `tab`, `inline_action`, `icon`, `menu_close`).
 
 Criterios de aceptación:
 - Existe una fuente de verdad acordada para estilos oficiales.
@@ -40,6 +41,7 @@ Entregables:
   - `radius`, `shadow`, `border`, `opacity`, `motion`
 - Convención de naming consistente (ejemplo: `color.background.surface.primary`).
 - Mapeo token -> uso práctico (qué componente consume cada token).
+- Tokenización explícita de los botones capturados (color, radius, border, typography y shadow).
 
 Criterios de aceptación:
 - No hay valores hardcodeados en especificaciones de componentes.
@@ -50,7 +52,7 @@ Entregables:
 - Especificación de componentes principales:
   - Button, Input, Select, Chip/Tag, Card, Banner, Toast, Modal, List Item y Badge.
 - Estados de cada componente: default, hover/pressed, focused, disabled, error, loading.
-- Variantes: primary/secondary/ghost/critical cuando aplique.
+- En `Button`, variantes basadas en evidencia real: `primary`, `nav_expandable`, `tab`, `inline_action`, `icon`, `menu_close`.
 
 Criterios de aceptación:
 - Cada componente tiene API visual clara (props, variantes y estados).
@@ -88,7 +90,7 @@ Prioridad alta:
 1. Validar tipografía y paleta oficial de Wallapop.
 2. Normalizar tokens y naming.
 3. Diseñar estados visuales del flujo de meetup.
-4. Definir componentes críticos (Button, Card, Banner, Toast, Modal).
+4. Definir componentes críticos (Button, Card, Banner, Toast, Modal) partiendo del inventario web capturado el 2026-02-18.
 
 Prioridad media:
 1. Motion tokens y microinteracciones clave.

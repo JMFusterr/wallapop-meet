@@ -8,7 +8,7 @@ Contenido:
 - Fecha y hora propuestas.
 - Punto de encuentro sugerido.
 - Precio final acordado.
-- CTA: `Enviar propuesta`.
+- CTA: `Enviar propuesta` usando `Button.variant=primary`.
 
 Estados:
 - `PROPOSED` al enviar.
@@ -17,7 +17,9 @@ Estados:
 ## 2. Revisión de propuesta (comprador)
 Contenido:
 - Resumen en tarjeta.
-- CTAs: `Aceptar` y `Contraofertar`.
+- CTAs:
+  - `Aceptar` usando `Button.variant=primary`.
+  - `Contraofertar` usando `Button.variant=inline_action`.
 
 Estados:
 - `CONFIRMED` al aceptar.
@@ -52,7 +54,7 @@ Regla de negocio:
 - Habilitado entre 15 minutos antes y 2 horas después de la hora pactada.
 
 Comportamiento:
-- CTA principal visible en banner/tarjeta.
+- CTA principal visible en banner/tarjeta usando `Button.variant=primary`.
 - Fuera de ventana: botón deshabilitado + mensaje explicativo.
 - Al confirmar: transición a `ARRIVED`.
 
@@ -80,6 +82,13 @@ Patrones mínimos:
 - Empty: no hay meetup activo.
 - Loading: skeleton en tarjeta de timeline y botones.
 - Error: acción de reintento y mensaje claro.
+
+## 9. Mapeo de botones por patrón
+- Navegación superior de categorías o secciones: `Button.variant=nav_expandable`.
+- Cambio entre secciones tipo pestaña: `Button.variant=tab`.
+- Acciones secundarias contextuales dentro de timeline: `Button.variant=inline_action`.
+- Control lateral colapsable: `Button.variant=icon`.
+- Cierre de panel contextual: `Button.variant=menu_close`.
 
 ## Criterio de completitud
 - Todos los estados de negocio tienen UI y CTA asociada.

@@ -57,6 +57,51 @@ components
 - `spacing` y `radius` se consumen por escala (`100`, `200`, ...).
 - `motion` define duración + easing reutilizable para transiciones y feedback.
 
+## Mapeo base de botones extraidos de web (2026-02-18)
+
+### Color (`tokens.color.button`)
+- `primary.background`: `#3DD2BA`
+- `primary.text`: `#29363D`
+- `nav.background`: `transparent`
+- `nav.text`: `#29363D`
+- `tab.background`: `transparent`
+- `tab.text`: `#000000`
+- `inline_action.background`: `#3DAABF`
+- `inline_action.text`: `#FFFFFF`
+- `icon.background`: `#ECEFF1`
+- `icon.foreground`: `#000000`
+- `menu_close.background`: `#FFFFFF`
+- `menu_close.foreground`: `#000000`
+
+### Radius (`tokens.radius.button`)
+- `pill`: `100px` (`primary`)
+- `inline_pill`: `25px` (`inline_action`)
+- `menu_close`: `12px`
+- `circular`: `50%` (`icon`)
+
+### Border (`tokens.border.button`)
+- `primary.width`: `1.6px`
+- `primary.color`: `#3DD2BA`
+- `inline_action.width`: `0.8px`
+- `inline_action.color`: `transparent`
+
+### Typography (`tokens.typography.button`)
+- `primary.family`: `WallieChunky`
+- `primary.size`: `16px`
+- `primary.line_height`: `24px`
+- `nav.family`: `WallieFit`
+- `nav.size`: `16px`
+- `nav.line_height`: `24px`
+- `tab.family`: `Wallie, Helvetica`
+- `tab.size`: `16px`
+- `tab.line_height`: `24px`
+- `inline_action.family`: `Wallie, Helvetica`
+- `inline_action.size`: `14px`
+- `inline_action.line_height`: `21px`
+
+### Shadow (`tokens.shadow.button`)
+- `icon`: `0 4px 4px 0 rgba(37, 50, 56, 0.15)`
+
 ## Mapeo mínimo para Wallapop Meet
 - Línea de estados del meetup:
   - Estado activo: `color.brand.primary`
@@ -67,7 +112,7 @@ components
   - Texto: `color.text.primary`
 - Acción "I'm here":
   - Botón principal: `components.button.primary`
-  - Estado deshabilitado fuera de ventana: `components.button.disabled`
+  - Estado deshabilitado fuera de ventana: `components.button.primary.disabled`
 
 ## Checklist de aceptación v1
 - Estructura documentada y aplicada en `styles.json`.

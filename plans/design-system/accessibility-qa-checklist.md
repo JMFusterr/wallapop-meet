@@ -8,6 +8,8 @@
 - Campos con etiqueta persistente, ayuda y error descriptivo.
 - Iconos críticos acompañados por texto.
 - Estados nunca comunicados solo por color.
+- Botones `icon-only` (`icon`, `menu_close`) con `aria-label` obligatorio.
+- En botones `tab`, validar `role="tab"` y `aria-selected` consistente con el estado visual.
 
 ## QA visual
 - Consistencia de espaciado según escala de tokens.
@@ -16,6 +18,7 @@
 - Sin desbordes en textos largos ni en localización.
 - Comportamiento correcto en móvil y pantallas pequeñas.
 - Banner y toast sin solaparse con la navegación.
+- Variantes de botón alineadas a inventario real (`primary`, `nav_expandable`, `tab`, `inline_action`, `icon`, `menu_close`).
 
 ## QA de flujo Meetup
 - El vendedor puede proponer; el comprador no inicia propuesta.
