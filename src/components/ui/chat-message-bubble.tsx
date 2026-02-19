@@ -25,7 +25,7 @@ function ChatMessageBubble({
       data-slot="chat-message-bubble"
       data-variant={variant}
       className={cn(
-        "inline-block max-w-[80%] rounded-[20px] font-wallie text-[16px] leading-5 text-[var(--wm-color-text-primary)]",
+        "inline-block max-w-[88%] rounded-[20px] font-wallie text-[16px] leading-5 text-[var(--wm-color-text-primary)] sm:max-w-[80%]",
         bubbleVariantClass[variant],
         className
       )}

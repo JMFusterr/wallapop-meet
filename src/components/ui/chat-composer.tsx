@@ -50,7 +50,7 @@ function ChatComposer({
   return (
     <div
       data-slot="chat-composer-wrapper"
-      className="w-full bg-white px-5 py-3"
+      className="w-full bg-white px-4 py-3 sm:px-5"
       role="group"
       aria-label="Composer de chat"
     >
@@ -83,7 +83,7 @@ function ChatComposer({
           size="md"
           onClick={handleSubmit}
           disabled={disabled || isEmpty}
-          className="h-[36px] px-4 text-[12px] leading-[18px]"
+          className="h-11 px-4 text-[12px] leading-[18px] sm:h-[36px]"
         >
           {submitLabel}
         </Button>

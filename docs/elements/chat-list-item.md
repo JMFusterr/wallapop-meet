@@ -7,6 +7,13 @@
 - Viewport de referencia: `1536x678` (`devicePixelRatio: 1.25`)
 - Contexto: sesion iniciada, bandeja de conversaciones visible
 
+## Validacion movil (responsive)
+- Fecha de validacion: 2026-02-19
+- Viewport: `390x844` (`devicePixelRatio: 1`)
+- `InboxConversation`: `384x100px`
+- Padding: `20px 12px 20px 20px`
+- Se mantiene altura de fila `100px` con contenido truncado en una linea para `itemTitle` y `messagePreview`.
+
 ## Especificacion visual del componente
 
 ### 1) `list_item.conversation` (`InboxConversation`)

@@ -2,9 +2,9 @@
 
 ## Fuente de analisis
 - URL: `https://es.wallapop.com/app/chat`
-- Fecha de captura: 2026-02-18
+- Fecha de captura: 2026-02-19
 - Metodo: inspeccion con MCP Chrome DevTools + `getComputedStyle` (incluyendo Shadow DOM)
-- Viewport de referencia: `1440x900`
+- Viewport de referencia: `1440x900` y validacion responsive en `390x844`
 - Contexto: sesion iniciada (bandeja + conversacion abierta)
 
 ## Especificacion visual por tipo de boton
@@ -157,6 +157,11 @@
 ## Limitaciones de captura
 - No se han extraido estados `hover`, `focus-visible` y `active` porque requieren simulacion de estados pseudo-clase por variante.
 - Algunos componentes usan Shadow DOM; la medicion ya contempla ese arbol.
+
+## Iconografia runtime (2026-02-19)
+- Tecnologia: web component `walla-icon`.
+- Nombres detectados relevantes para acciones: `arrow_left`, `cross`, `chevron_right`, `ellipsis_horizontal`, `burguer_menu`.
+- Tamano base observado: `24px`; iconos secundarios de lista: `16px`.
 
 ## Normalizacion para el sistema de diseno de Wallapop Meet
 

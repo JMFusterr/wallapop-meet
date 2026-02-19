@@ -7,6 +7,13 @@
 - Viewport de referencia: `1536x678` (`devicePixelRatio: 1.25`)
 - Contexto: conversacion abierta (banner de seguridad visible)
 
+## Validacion movil (responsive)
+- Fecha de validacion: 2026-02-19
+- Viewport: `390x844` (`devicePixelRatio: 1`)
+- `ChatSecurityNotification`: `390.4x78px`
+- Padding: `16px 16px 8px`
+- El texto y enlace mantienen la misma jerarquia tipografica.
+
 ## Especificacion visual del componente
 
 ### 1) `banner.security`
@@ -31,6 +38,14 @@
   - `12px/16px`, `400`, `WallieFit`
 - Color: `#038673`
 - Decoracion: `underline`
+
+### 4) Icono de seguridad
+- Nodo: `walla-icon.ChatSecurityNotification__shieldIconWrapper`
+- Tamano contenedor: `24x24px`
+- Background contenedor: `#F0F3F5`
+- Radio: `8px`
+- Iconografia: web component `walla-icon` (icono de escudo)
+- Color del glyph observado: `#13C1AC`
 
 ## Tokens candidatos
 - `tokens.color.banner.security.background = #FFFFFF`

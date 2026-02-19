@@ -187,6 +187,18 @@ Propiedades visuales:
 Uso:
 - Estado compacto en chat o línea temporal.
 
+## 11. Iconografia (`WallapopIcon`)
+Propiedades visuales:
+- `name`: naming Wallapop (`arrow_left`, `cross`, `chevron_right`, `shield`, etc.)
+- `size`: `small | medium | large`
+- `state`: `default | disabled`
+
+Reglas:
+- Fuente de verdad de nombres: `docs/elements/icons.md`.
+- El wrapper de implementacion en app es `src/components/ui/wallapop-icon.tsx`.
+- Mientras no exista libreria publica oficial, mapear a iconos equivalentes en `lucide-react` manteniendo naming Wallapop en la API.
+- En movil, mantener escala `16px` (`small`) y `24px` (`medium`) con area tactil minima de `44x44` en controles accionables.
+
 ## Criterio de completitud
 - Cada componente define propiedades, estados, tokens y regla de uso.
 - No hay ambigüedad entre uso de `badge`, `chip`, `banner` y `toast`.
@@ -200,6 +212,7 @@ Uso:
 - `docs/elements/chat-product-card.md`
 - `docs/elements/chat-composer.md`
 - `docs/elements/badge.md`
+- `docs/elements/icons.md`
 
 Notas:
 - Fuente runtime de chat: `https://es.wallapop.com/app/chat`.

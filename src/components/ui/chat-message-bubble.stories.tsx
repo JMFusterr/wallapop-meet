@@ -28,7 +28,7 @@ export const Playground: Story = {}
 
 export const ThreadExample: Story = {
   render: () => (
-    <div className="flex w-[420px] flex-col gap-2">
+    <div className="flex w-full max-w-[420px] flex-col gap-2">
       <div className="flex justify-start">
         <ChatMessageBubble variant="received">
           Te va bien manana a las 18:30?

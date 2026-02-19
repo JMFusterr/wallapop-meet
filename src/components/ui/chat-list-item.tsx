@@ -32,13 +32,13 @@ function ChatListItem({
       data-slot="chat-list-item"
       data-selected={selected}
       className={cn(
-        "flex h-[100px] w-full cursor-pointer items-start gap-3 border-none bg-transparent px-5 pt-5 pr-3 pb-5 text-left",
+        "flex h-[100px] w-full cursor-pointer items-start gap-3 border-none bg-transparent px-4 pt-5 pr-3 pb-5 text-left sm:px-5",
         "transition-colors hover:bg-[var(--wm-color-background-surface)] data-[selected=true]:bg-[var(--wm-color-background-surface)]",
         className
       )}
       {...props}
     >
-      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-[var(--wm-color-border-default)]">
+      <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-[var(--wm-color-border-default)] sm:h-12 sm:w-12">
         {avatarSrc ? (
           <img src={avatarSrc} alt={avatarAlt ?? userName} className="h-full w-full object-cover" />
         ) : null}

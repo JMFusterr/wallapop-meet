@@ -7,6 +7,13 @@
 - Viewport de referencia: `1536x678` (`devicePixelRatio: 1.25`)
 - Contexto: conversacion abierta, foco alternado en caja de mensaje
 
+## Validacion movil (responsive)
+- Fecha de validacion: 2026-02-19
+- Viewport: `390x844` (`devicePixelRatio: 1`)
+- `CurrentConversation__sendMessageWrapper`: `390.4x74.4px`, `padding: 12px 20px`
+- `textarea-component`: `350.4x49.6px`, `padding: 4px 4px 4px 20px`, `border-radius: 24px`
+- `textarea.textarea-element`: `284.8x28px`, `16px/24px`, `color: #000000`
+
 ## Estructura observada
 - Wrapper principal: `.CurrentConversation__sendMessageWrapper`
 - Control de entrada: `.textarea-component`

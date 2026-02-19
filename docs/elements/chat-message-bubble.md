@@ -7,6 +7,15 @@
 - Viewport de referencia: `1536x678` (`devicePixelRatio: 1.25`)
 - Contexto: conversacion abierta en bandeja
 
+## Validacion movil (responsive)
+- Fecha de validacion: 2026-02-19
+- Viewport: `390x844` (`devicePixelRatio: 1`)
+- `message_bubble.sent`: `131.4x37.6px`
+- `message_bubble.received`: `119.1x37.6px`
+- Se conservan paddings por variante:
+  - `sent`: `8px 32px 8px 12px`
+  - `received`: `8px 12px`
+
 ## Especificacion visual del componente
 
 ### 1) `message_bubble.received`

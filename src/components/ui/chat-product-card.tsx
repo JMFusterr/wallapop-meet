@@ -1,7 +1,7 @@
 import * as React from "react"
-import { Pencil } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { cn } from "@/lib/utils"
 
 type ChatProductCardProps = React.ComponentProps<"article"> & {
@@ -34,7 +34,7 @@ function ChatProductCard({
   return (
     <article
       data-slot="chat-product-card"
-      className={cn("relative w-[302px] overflow-hidden rounded-[10px] bg-white", className)}
+      className={cn("relative w-full max-w-[302px] overflow-hidden rounded-[10px] bg-white", className)}
       {...props}
     >
       <img
@@ -46,10 +46,10 @@ function ChatProductCard({
         <button
           type="button"
           onClick={onEdit}
-          className="absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-[8px] border-2 border-[rgba(207,216,220,0.5)] bg-white"
+          className="absolute top-3 right-3 flex h-11 w-11 items-center justify-center rounded-[8px] border-2 border-[rgba(207,216,220,0.5)] bg-white sm:h-10 sm:w-10"
           aria-label="Editar anuncio"
         >
-          <Pencil className="size-4" aria-hidden="true" />
+          <WallapopIcon name="edit" size="small" className="text-[#253238]" />
         </button>
       ) : null}
       <div className="px-3 py-3">
@@ -63,14 +63,14 @@ function ChatProductCard({
           <p className="font-wallie text-[12px] leading-[26px] text-[#607D8B]">{stats}</p>
         ) : null}
       </div>
-      <div className="px-5 pt-3 pb-4">
+      <div className="px-4 pt-3 pb-4 sm:px-5">
         <div className="flex items-center gap-2">
           <Button
             type="button"
             variant="inline_action"
             size="md"
             onClick={onReserve}
-            className="h-[27.6px] flex-1 rounded-[25px] bg-[#4368CC] px-5 font-wallie text-[12px] leading-[18px] text-white"
+            className="h-11 flex-1 rounded-[25px] bg-[#4368CC] px-5 font-wallie text-[12px] leading-[18px] text-white sm:h-[27.6px]"
           >
             {reserveLabel}
           </Button>
@@ -79,7 +79,7 @@ function ChatProductCard({
             variant="inline_action"
             size="md"
             onClick={onSold}
-            className="h-[27.6px] flex-1 rounded-[25px] bg-[#F75883] px-5 font-wallie text-[12px] leading-[18px] text-white"
+            className="h-11 flex-1 rounded-[25px] bg-[#F75883] px-5 font-wallie text-[12px] leading-[18px] text-white sm:h-[27.6px]"
           >
             {soldLabel}
           </Button>
