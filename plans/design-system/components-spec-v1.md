@@ -190,3 +190,18 @@ Uso:
 ## Criterio de completitud
 - Cada componente define propiedades, estados, tokens y regla de uso.
 - No hay ambigüedad entre uso de `badge`, `chip`, `banner` y `toast`.
+
+## Inventarios de referencia (captura oficial)
+- `docs/elements/buttons.md`
+- `docs/elements/Input.md`
+- `docs/elements/chat-list-item.md`
+- `docs/elements/chat-message-bubble.md`
+- `docs/elements/chat-security-banner.md`
+- `docs/elements/chat-product-card.md`
+- `docs/elements/chat-composer.md`
+- `docs/elements/badge.md`
+
+Notas:
+- Fuente runtime de chat: `https://es.wallapop.com/app/chat`.
+- Fecha de captura de los nuevos inventarios: `2026-02-19`.
+- Cuando se actualice cualquier inventario de `docs/elements/`, revisar impacto en tokens (`styles.json`) antes de implementar componentes.
