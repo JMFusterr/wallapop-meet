@@ -78,6 +78,7 @@ Reglas:
 - Mostrar ayuda/error siempre debajo del campo, nunca en placeholder.
 - Si existe `error`, prevalece sobre `hint`.
 - `counter` se muestra con formato `actual/max` cuando existe `maxLength`.
+- En estado `error`, mostrar indicador visual a la derecha (`error-indicator`) con exclamacion sobre fondo rojo.
 
 ## 3. Selector (`Select`)
 Propiedades visuales:
@@ -189,7 +190,7 @@ Uso:
 
 ## 11. Iconografia (`WallapopIcon`)
 Propiedades visuales:
-- `name`: naming Wallapop (`arrow_left`, `cross`, `chevron_right`, `shield`, etc.)
+- `name`: naming Wallapop (`arrow_left`, `cross`, `chevron_right`, `shield`, `paper_plane`, etc.)
 - `size`: `small | medium | large`
 - `state`: `default | disabled`
 

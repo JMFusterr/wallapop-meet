@@ -57,3 +57,4 @@
 ## Notas de normalizacion DS
 - En Wallapop chat este banner funciona como aviso persistente contextual (no toast).
 - Para Meetup conviene mapearlo a `Banner` no descartable mientras la condicion de seguridad siga activa.
+- Alineacion vertical recomendada: icono y bloque de texto centrados sobre el eje Y (`align-items: center`).

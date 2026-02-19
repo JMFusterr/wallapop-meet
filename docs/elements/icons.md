@@ -37,6 +37,12 @@
 - `briefcase`
 - `wrench`
 
+## Nombres de icono usados en implementacion Wallapop Meet
+- `paper_plane` (boton de envio del `ChatComposer`)
+
+Nota:
+- `paper_plane` se mantiene en la API del wrapper local aunque no se haya capturado explicitamente en el inventario runtime anterior.
+
 ## Tamano observado
 - `small`: `16x16px` (iconos de categoria)
 - `medium`: `24x24px` (navegacion y acciones principales)

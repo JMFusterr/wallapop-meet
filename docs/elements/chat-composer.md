@@ -54,6 +54,13 @@ Estados observados:
   - Color: `#90A4AE`
   - `16px/24px`
 
+### 4) Boton de envio
+- Implementacion observada en referencia: control icon-only (avion de papel) en extremo derecho.
+- Comportamiento esperado:
+  - `disabled`: fondo gris claro, borde neutro, no interactivo.
+  - `enabled` (cuando hay texto): fondo y borde en color marca (`#3DD2BA`).
+- Accesibilidad: incluir `aria-label` descriptivo del envio.
+
 ## Tokens candidatos
 - `tokens.color.composer.background = #FFFFFF`
 - `tokens.color.composer.border.default = #ECEFF1`
@@ -61,7 +68,10 @@ Estados observados:
 - `tokens.color.composer.text = #000000`
 - `tokens.color.composer.placeholder = #90A4AE`
 - `tokens.radius.composer = 24px`
+- `tokens.color.composer.submit.enabled = #3DD2BA`
+- `tokens.color.composer.submit.disabled = #C9D3D8`
 
 ## Notas de normalizacion DS
 - El estado visual relevante esta en el contenedor (`textarea-component`), no en el `textarea`.
 - Mantener `resize: none` para preservar layout fijo del footer de chat.
+- El boton de envio debe depender del contenido no vacio (`trim().length > 0`).

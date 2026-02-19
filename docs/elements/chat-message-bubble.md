@@ -48,7 +48,13 @@
 - `tokens.radius.chat.bubble = 20px`
 - `tokens.spacing.chat.bubble.received.padding = 8 12`
 - `tokens.spacing.chat.bubble.sent.padding = 8 32 8 12`
+- `tokens.color.chat.bubble.meta.time = #8BA4B2`
+- `tokens.color.chat.bubble.meta.delivery.sent = #C2CDD3`
+- `tokens.color.chat.bubble.meta.delivery.read = #13C1AC`
 
 ## Notas de normalizacion DS
 - Mantener variantes separadas `sent` y `received` por diferencia de relleno y fondo.
-- No acoplar timestamps al bubble; se renderizan como metadato externo en la lista vertical.
+- En Wallapop Meet se permite metadato inline dentro del bubble para `time` y estado de entrega.
+- En variante `sent`, mostrar `✓✓` en la esquina inferior derecha:
+  - `deliveryState = sent`: checks en gris.
+  - `deliveryState = read`: checks en verde.

@@ -1,11 +1,12 @@
 import * as React from "react"
 
-import { Button } from "@/components/ui/button"
+import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { cn } from "@/lib/utils"
 
 type ChatComposerProps = Omit<React.ComponentProps<"textarea">, "onSubmit"> & {
   onSubmit?: (value: string) => void
   submitLabel?: string
+  submitAriaLabel?: string
 }
 
 function ChatComposer({
@@ -16,6 +17,7 @@ function ChatComposer({
   onSubmit,
   disabled,
   submitLabel = "Enviar",
+  submitAriaLabel = "Enviar mensaje",
   placeholder = "Escribe un mensaje...",
   ...props
 }: ChatComposerProps) {
@@ -77,16 +79,21 @@ function ChatComposer({
           )}
           {...props}
         />
-        <Button
+        <button
           type="button"
-          variant="inline_action"
-          size="md"
+          aria-label={submitAriaLabel}
+          title={submitLabel}
           onClick={handleSubmit}
           disabled={disabled || isEmpty}
-          className="h-11 px-4 text-[12px] leading-[18px] sm:h-[36px]"
+          className={cn(
+            "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-[0.8px] transition-colors sm:h-10 sm:w-10",
+            disabled || isEmpty
+              ? "border-[#D9E1E5] bg-[#C9D3D8] text-white"
+              : "border-[#3DD2BA] bg-[#3DD2BA] text-white"
+          )}
         >
-          {submitLabel}
-        </Button>
+          <WallapopIcon name="paper_plane" size="small" className="-translate-x-[1px] rotate-[12deg]" />
+        </button>
       </div>
     </div>
   )

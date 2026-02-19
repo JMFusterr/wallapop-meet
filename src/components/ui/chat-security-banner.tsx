@@ -24,9 +24,9 @@ function ChatSecurityBanner({
       className={cn("w-full bg-white px-4 pt-4 pb-2", className)}
       {...props}
     >
-      <div className="flex items-start gap-2">
+      <div className="flex items-center gap-2">
         {showIcon ? (
-          <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-[8px] bg-[#F0F3F5]">
+          <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-[8px] bg-[#F0F3F5]">
             <WallapopIcon name="shield" size="small" className="text-[#13C1AC]" />
           </span>
         ) : null}

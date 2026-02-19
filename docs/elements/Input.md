@@ -75,6 +75,7 @@
   - `box-shadow: rgb(206, 53, 40) 0 0 0 2px inset` (`#CE3528`)
   - Label en color `rgb(206, 53, 40)`
   - En hover mantiene el mismo borde rojo (sin cambio)
+  - Referencia visual de producto: icono de exclamacion rojo en la derecha del campo
 
 ### `success`
 - Clase wrapper: `.inputWrapper--success.sc-walla-text-input`
@@ -100,6 +101,10 @@
   - `12px/16px`, color `#5C7A89`, alineado a la derecha, `padding-inline: 16px`
 - `right-section` (icono limpiar)
   - Se muestra en estado con contenido/foco; posicion absoluta (`right: 16px; top: 2px; bottom: 2px`)
+- `error-indicator` (implementacion Wallapop Meet)
+  - Indicador circular con `!` en blanco sobre fondo rojo
+  - Posicion: derecha del campo, centrado verticalmente
+  - Objetivo: reforzar visibilidad de error en estado `error`
 
 ## Tokens candidatos (extraidos de Input)
 - Colores:

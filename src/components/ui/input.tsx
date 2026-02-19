@@ -77,6 +77,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         const hasValue = currentValue.length > 0
         const isCompact = isFocused || hasValue
         const showCounter = showCharCounter && typeof maxLength === "number"
+        const showErrorIcon = resolvedState === "error"
         const describedByParts = [
             props["aria-describedby"],
             helperMessage ? helperId : undefined,
@@ -151,7 +152,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                             onBlur={handleBlur}
                             onChange={handleChange}
                             className={cn(
-                                "w-full border-none bg-transparent p-0 font-wallie-fit text-[16px] leading-6 text-[var(--wm-color-input-text)] outline-none",
+                                "w-full border-none bg-transparent p-0 pr-8 font-wallie-fit text-[16px] leading-6 text-[var(--wm-color-input-text)] outline-none",
                                 "placeholder:text-transparent focus:placeholder:text-[var(--wm-color-input-placeholder-focus)]",
                                 "transition-colors duration-100 ease-out",
                                 disabled ? "cursor-initial" : "cursor-pointer",
@@ -159,6 +160,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                             )}
                             {...props}
                         />
+                        {showErrorIcon ? (
+                            <span
+                                aria-hidden="true"
+                                className="pointer-events-none absolute top-1/2 right-0 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--wm-color-input-ring-error)] text-[18px] leading-none text-white"
+                            >
+                                !
+                            </span>
+                        ) : null}
                     </div>
                 </div>
                 {helperMessage || showCounter ? (

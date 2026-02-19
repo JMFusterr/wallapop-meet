@@ -12,11 +12,16 @@ const meta = {
   args: {
     children: "Perfecto, nos vemos en la estacion.",
     variant: "received",
+    time: "14:52",
   },
   argTypes: {
     variant: {
       control: "inline-radio",
       options: ["sent", "received"],
+    },
+    deliveryState: {
+      control: "inline-radio",
+      options: ["sent", "read"],
     },
   },
 } satisfies Meta<typeof ChatMessageBubble>
@@ -30,13 +35,18 @@ export const ThreadExample: Story = {
   render: () => (
     <div className="flex w-full max-w-[420px] flex-col gap-2">
       <div className="flex justify-start">
-        <ChatMessageBubble variant="received">
+        <ChatMessageBubble variant="received" time="14:52">
           Te va bien manana a las 18:30?
         </ChatMessageBubble>
       </div>
       <div className="flex justify-end">
-        <ChatMessageBubble variant="sent">
+        <ChatMessageBubble variant="sent" time="15:16" deliveryState="sent">
           Si, confirmo en Glories.
+        </ChatMessageBubble>
+      </div>
+      <div className="flex justify-end">
+        <ChatMessageBubble variant="sent" time="15:18" deliveryState="read">
+          Perfecto
         </ChatMessageBubble>
       </div>
     </div>

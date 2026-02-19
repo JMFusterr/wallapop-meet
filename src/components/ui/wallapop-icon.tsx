@@ -4,6 +4,7 @@ import {
   EllipsisVertical,
   Menu,
   Pencil,
+  Send,
   Shield,
   X,
   type LucideIcon,
@@ -16,6 +17,7 @@ type WallapopIconName =
   | "chevron_right"
   | "cross"
   | "ellipsis_horizontal"
+  | "paper_plane"
   | "shield"
   | "edit"
 
@@ -32,6 +34,7 @@ const wallapopIconMap: Record<WallapopIconName, LucideIcon> = {
   chevron_right: ChevronRight,
   cross: X,
   ellipsis_horizontal: EllipsisVertical,
+  paper_plane: Send,
   shield: Shield,
   edit: Pencil,
 }
