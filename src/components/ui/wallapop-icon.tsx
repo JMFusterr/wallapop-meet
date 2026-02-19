@@ -1,11 +1,19 @@
 import {
   ArrowLeft,
+  BadgeCheck,
+  Bookmark,
   ChevronRight,
+  CirclePlus,
   EllipsisVertical,
+  Handshake,
+  Heart,
+  House,
+  Mail,
   Menu,
   Pencil,
   Send,
   Shield,
+  UserRound,
   X,
   type LucideIcon,
   type LucideProps,
@@ -20,6 +28,14 @@ type WallapopIconName =
   | "paper_plane"
   | "shield"
   | "edit"
+  | "home"
+  | "heart"
+  | "plus"
+  | "mail"
+  | "user"
+  | "bookmark"
+  | "deal"
+  | "double_check"
 
 type WallapopIconSize = "small" | "medium" | "large" | number
 
@@ -37,6 +53,14 @@ const wallapopIconMap: Record<WallapopIconName, LucideIcon> = {
   paper_plane: Send,
   shield: Shield,
   edit: Pencil,
+  home: House,
+  heart: Heart,
+  plus: CirclePlus,
+  mail: Mail,
+  user: UserRound,
+  bookmark: Bookmark,
+  deal: Handshake,
+  double_check: BadgeCheck,
 }
 
 const iconSizeMap: Record<Exclude<WallapopIconSize, number>, number> = {

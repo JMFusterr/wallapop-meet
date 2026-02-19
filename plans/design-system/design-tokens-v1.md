@@ -41,6 +41,7 @@ components
   modal
   input
   badge
+  bottom_nav
 ```
 
 ## Convenciones de naming
@@ -139,6 +140,26 @@ components
   - Input base: `components.input`
   - Estado error: `components.input.ring_color_error`
   - Estado success: `components.input.ring_color_success`
+
+## Mapeo de inbox movil (2026-02-19)
+
+### Color (`tokens.color.bottom_nav`)
+- `background`: `#FFFFFF`
+- `border`: `#D3DEE2`
+- `icon_default`: `#6E8792`
+- `icon_active`: `#253238`
+- `label_default`: `#6E8792`
+- `label_active`: `#253238`
+
+### Size & typography (`tokens.bottom_nav`)
+- `icon_size`: `20px`
+- `label.size`: `11px`
+- `label.line_height`: `14px`
+
+### Color (`tokens.color.list_item`)
+- `leading_indicator`: `#AC2B8B`
+- `delivery.sent`: `#C2CDD3`
+- `delivery.read`: `#13C1AC`
 
 ## Checklist de aceptación v1
 - Estructura documentada y aplicada en `styles.json`.

@@ -1,0 +1,96 @@
+import * as React from "react"
+
+import { Badge } from "@/components/ui/badge"
+import { WallapopIcon, type WallapopIconName } from "@/components/ui/wallapop-icon"
+import { cn } from "@/lib/utils"
+
+type InboxBottomNavIconName = Extract<
+  WallapopIconName,
+  "home" | "heart" | "plus" | "mail" | "user"
+>
+
+type InboxBottomNavItem = {
+  id: string
+  label: string
+  icon: InboxBottomNavIconName
+  badgeCount?: number
+}
+
+type InboxBottomNavProps = React.ComponentProps<"nav"> & {
+  items?: InboxBottomNavItem[]
+  activeItemId?: string
+  onItemSelect?: (itemId: string) => void
+}
+
+const inboxBottomNavDefaultItems: InboxBottomNavItem[] = [
+  { id: "home", label: "Inicio", icon: "home" },
+  { id: "favorites", label: "Favoritos", icon: "heart" },
+  { id: "sell", label: "Vender", icon: "plus" },
+  { id: "inbox", label: "Buzon", icon: "mail" },
+  { id: "profile", label: "Tu", icon: "user" },
+]
+
+function InboxBottomNav({
+  className,
+  items = inboxBottomNavDefaultItems,
+  activeItemId = "inbox",
+  onItemSelect,
+  ...props
+}: InboxBottomNavProps) {
+  return (
+    <nav
+      data-slot="inbox-bottom-nav"
+      aria-label="Navegacion principal"
+      className={cn(
+        "w-full border-t border-[#D3DEE2] bg-white px-2 pt-1.5 pb-[max(6px,env(safe-area-inset-bottom))]",
+        className
+      )}
+      {...props}
+    >
+      <ul className="flex items-stretch justify-between gap-0">
+        {items.map((item) => {
+          const isActive = item.id === activeItemId
+
+          return (
+            <li key={item.id} className="min-w-0 flex-1">
+              <button
+                type="button"
+                aria-current={isActive ? "page" : undefined}
+                className={cn(
+                  "relative flex h-[60px] w-full flex-col items-center justify-center gap-0.5 px-0.5 text-center",
+                  "focus-visible:ring-2 focus-visible:ring-[var(--wm-color-border-focus)] focus-visible:outline-none"
+                )}
+                onClick={() => onItemSelect?.(item.id)}
+              >
+                <span className="inline-flex h-5 w-5 items-center justify-center">
+                  <WallapopIcon
+                    name={item.icon}
+                    size={20}
+                    className={cn(isActive ? "text-[#253238]" : "text-[#6E8792]")}
+                    strokeWidth={1.9}
+                  />
+                </span>
+                <span
+                  className={cn(
+                    "max-w-full whitespace-nowrap text-center font-wallie text-[11px] leading-[14px]",
+                    isActive ? "font-wallie-chunky text-[#253238]" : "text-[#6E8792]"
+                  )}
+                >
+                  {item.label}
+                </span>
+                {item.badgeCount ? (
+                  <Badge
+                    value={item.badgeCount}
+                    className="absolute top-0 right-[22%] min-h-[18px] min-w-[18px] text-[11px] leading-[16px]"
+                  />
+                ) : null}
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+    </nav>
+  )
+}
+
+export { InboxBottomNav, inboxBottomNavDefaultItems, type InboxBottomNavItem }

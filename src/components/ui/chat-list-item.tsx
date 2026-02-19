@@ -1,7 +1,11 @@
 import * as React from "react"
 
 import { Badge } from "@/components/ui/badge"
+import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { cn } from "@/lib/utils"
+
+type ChatListItemLeadingIndicator = "bookmark" | "deal"
+type ChatListItemDeliveryState = "sent" | "read"
 
 type ChatListItemProps = React.ComponentProps<"button"> & {
   userName: string
@@ -12,6 +16,9 @@ type ChatListItemProps = React.ComponentProps<"button"> & {
   avatarSrc?: string
   avatarAlt?: string
   selected?: boolean
+  showDivider?: boolean
+  leadingIndicator?: ChatListItemLeadingIndicator
+  lastMessageDeliveryState?: ChatListItemDeliveryState
 }
 
 function ChatListItem({
@@ -24,23 +31,41 @@ function ChatListItem({
   avatarSrc,
   avatarAlt,
   selected = false,
+  showDivider = true,
+  leadingIndicator,
+  lastMessageDeliveryState,
   ...props
 }: ChatListItemProps) {
+  const indicatorIconName = leadingIndicator === "deal" ? "deal" : "bookmark"
+
   return (
     <button
       type="button"
       data-slot="chat-list-item"
       data-selected={selected}
       className={cn(
-        "flex h-[100px] w-full cursor-pointer items-start gap-3 border-none bg-transparent px-4 pt-5 pr-3 pb-5 text-left sm:px-5",
+        "flex h-[100px] w-full cursor-pointer items-start gap-3 border-none bg-transparent pl-5 pt-5 pr-3 pb-5 text-left",
+        showDivider && "border-b border-[var(--wm-color-border-default)]",
         "transition-colors hover:bg-[var(--wm-color-background-surface)] data-[selected=true]:bg-[var(--wm-color-background-surface)]",
         className
       )}
       {...props}
     >
-      <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-[var(--wm-color-border-default)] sm:h-12 sm:w-12">
+      <div className="relative h-16 w-16 shrink-0 overflow-visible rounded-[16px] bg-[var(--wm-color-border-default)]">
         {avatarSrc ? (
-          <img src={avatarSrc} alt={avatarAlt ?? userName} className="h-full w-full object-cover" />
+          <img
+            src={avatarSrc}
+            alt={avatarAlt ?? userName}
+            className="h-full w-full rounded-[16px] object-cover"
+          />
+        ) : null}
+        {leadingIndicator ? (
+          <span
+            className="absolute -top-2 -left-2 z-10 inline-flex size-8 items-center justify-center rounded-full border border-[#ECEFF1] bg-white text-[#AC2B8B]"
+            aria-hidden="true"
+          >
+            <WallapopIcon name={indicatorIconName} size={15} strokeWidth={2} />
+          </span>
         ) : null}
       </div>
       <div className="min-w-0 flex-1">
@@ -56,7 +81,18 @@ function ChatListItem({
           {itemTitle}
         </p>
         <div className="mt-1 flex items-center justify-between gap-2">
-          <p className="truncate font-wallie text-[14px] leading-[14px] text-[#90A4AE]">
+          <p className="flex min-w-0 items-center gap-1 truncate font-wallie text-[14px] leading-[14px] text-[#90A4AE]">
+            {lastMessageDeliveryState ? (
+              <span
+                aria-label={lastMessageDeliveryState === "read" ? "Leido" : "Enviado"}
+                className={cn(
+                  "shrink-0 text-[16px] leading-none",
+                  lastMessageDeliveryState === "read" ? "text-[#13C1AC]" : "text-[#C2CDD3]"
+                )}
+              >
+                ✓✓
+              </span>
+            ) : null}
             {messagePreview}
           </p>
           <Badge value={unreadCount} variant="unread" />

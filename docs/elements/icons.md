@@ -39,6 +39,9 @@
 
 ## Nombres de icono usados en implementacion Wallapop Meet
 - `paper_plane` (boton de envio del `ChatComposer`)
+- `home`, `heart`, `plus`, `mail`, `user` (navegacion inferior de inbox)
+- `bookmark`, `deal` (indicadores en miniatura de `ChatListItem`)
+- `double_check` (estado de entrega en listado y mensajes)
 
 Nota:
 - `paper_plane` se mantiene en la API del wrapper local aunque no se haya capturado explicitamente en el inventario runtime anterior.
@@ -46,6 +49,9 @@ Nota:
 ## Tamano observado
 - `small`: `16x16px` (iconos de categoria)
 - `medium`: `24x24px` (navegacion y acciones principales)
+
+Nota de implementacion:
+- En `InboxBottomNav` de Wallapop Meet se ajusta a `20px` para evitar solapes de etiqueta en viewport movil reducido.
 
 ## Decision de implementacion en Wallapop Meet
 - Implementar wrapper local `WallapopIcon` en `src/components/ui/wallapop-icon.tsx`.

@@ -17,11 +17,12 @@ const meta = {
     ),
   ],
   args: {
-    userName: "Marta",
-    messageDate: "18:42",
-    itemTitle: "iPhone 13 128GB",
-    messagePreview: "Perfecto, me va bien en el metro.",
-    unreadCount: 2,
+    userName: "Lorena",
+    messageDate: "18:35",
+    itemTitle: "Chaqueta de borrego",
+    messagePreview: "Un saludo",
+    unreadCount: 0,
+    lastMessageDeliveryState: "read",
   },
 } satisfies Meta<typeof ChatListItem>
 
@@ -36,8 +37,33 @@ export const Selected: Story = {
   },
 }
 
-export const NoUnread: Story = {
+export const WithBookmark: Story = {
   args: {
-    unreadCount: 0,
+    userName: "Samuel",
+    messageDate: "15:07",
+    itemTitle: "Silent Hill f PS5 Juego",
+    messagePreview: "El paquete ha llegado al punto ...",
+    leadingIndicator: "bookmark",
+  },
+}
+
+export const WithDeal: Story = {
+  args: {
+    userName: "Daniel",
+    messageDate: "17:24",
+    itemTitle: "Figura Pickett Animales Fan...",
+    messagePreview: "Ya voy",
+    leadingIndicator: "deal",
+    lastMessageDeliveryState: "read",
+  },
+}
+
+export const WithUnreadBadge: Story = {
+  args: {
+    userName: "Marta",
+    messageDate: "Ayer",
+    itemTitle: "iPhone 13 128GB",
+    messagePreview: "Perfecto, me va bien en el metro.",
+    unreadCount: 2,
   },
 }

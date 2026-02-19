@@ -45,11 +45,25 @@
 - Radio: `50%`
 - Estado observado en la captura: oculto (`display: none`, contador `0`)
 
+## Elementos adicionales observados en movil
+- Indicador sobre miniatura (esquina superior izquierda):
+  - Variante `deal` (icono de trato/handshake)
+  - Variante `bookmark` (icono de guardado)
+  - Contenedor circular blanco con borde suave y acento magenta
+- Estado de entrega en preview:
+  - Doble check al inicio del texto (`messagePreview`) cuando el ultimo mensaje es del usuario
+  - Color:
+    - `read`: verde/turquesa (`#13C1AC`)
+    - `sent`: gris claro (`#C2CDD3`)
+
 ## Tokens candidatos
 - `tokens.color.list_item.title = #253238`
 - `tokens.color.list_item.meta = #90A4AE`
 - `tokens.color.badge.unread.background = #D32069`
 - `tokens.color.badge.unread.text = #FFFFFF`
+- `tokens.color.list_item.leading_indicator = #AC2B8B`
+- `tokens.color.list_item.delivery.sent = #C2CDD3`
+- `tokens.color.list_item.delivery.read = #13C1AC`
 - `tokens.size.list_item.conversation.height = 100px`
 - `tokens.space.list_item.conversation.padding = 20 12 20 20`
 

@@ -200,6 +200,21 @@ Reglas:
 - Mientras no exista libreria publica oficial, mapear a iconos equivalentes en `lucide-react` manteniendo naming Wallapop en la API.
 - En movil, mantener escala `16px` (`small`) y `24px` (`medium`) con area tactil minima de `44x44` en controles accionables.
 
+## 12. Navegacion inferior de inbox (`InboxBottomNav`)
+Propiedades visuales:
+- `items`: lista de 5 acciones de primer nivel (`Inicio`, `Favoritos`, `Vender`, `Buzon`, `Tu`)
+- `activeItemId`: item activo (`aria-current="page"`)
+- `badgeCount`: opcional por item para notificaciones no leidas
+- `state`: `default | active | focused`
+
+Reglas:
+- Altura visual objetivo similar a runtime movil de Wallapop Chat (footer fijo con borde superior).
+- Cada accion mantiene layout vertical (icono arriba, etiqueta abajo).
+- En `active`, usar mayor contraste de color y peso tipografico en etiqueta.
+- Todos los items usan el mismo ancho, altura y separacion horizontal para evitar solapamientos.
+- En etiquetas de item, garantizar legibilidad sin corte de texto en viewport movil de referencia.
+- Todos los items deben ser navegables por teclado y exponer nombre accesible.
+
 ## Criterio de completitud
 - Cada componente define propiedades, estados, tokens y regla de uso.
 - No hay ambigüedad entre uso de `badge`, `chip`, `banner` y `toast`.
@@ -214,6 +229,7 @@ Reglas:
 - `docs/elements/chat-composer.md`
 - `docs/elements/badge.md`
 - `docs/elements/icons.md`
+- `docs/elements/inbox-bottom-nav.md`
 
 Notas:
 - Fuente runtime de chat: `https://es.wallapop.com/app/chat`.

@@ -155,10 +155,68 @@
                     }
                 }
             },
+            "bottom_nav": {
+                "background": {
+                    "value": "#FFFFFF",
+                    "type": "color"
+                },
+                "border": {
+                    "value": "#D3DEE2",
+                    "type": "color"
+                },
+                "icon_default": {
+                    "value": "#6E8792",
+                    "type": "color"
+                },
+                "icon_active": {
+                    "value": "#253238",
+                    "type": "color"
+                },
+                "label_default": {
+                    "value": "#6E8792",
+                    "type": "color"
+                },
+                "label_active": {
+                    "value": "#253238",
+                    "type": "color"
+                }
+            },
+            "list_item": {
+                "leading_indicator": {
+                    "value": "#AC2B8B",
+                    "type": "color"
+                },
+                "delivery": {
+                    "sent": {
+                        "value": "#C2CDD3",
+                        "type": "color"
+                    },
+                    "read": {
+                        "value": "#13C1AC",
+                        "type": "color"
+                    }
+                }
+            },
             "overlay": {
                 "scrim": {
                     "value": "rgba(37, 50, 56, 0.56)",
                     "type": "color"
+                }
+            }
+        },
+        "bottom_nav": {
+            "icon_size": {
+                "value": "20px",
+                "type": "sizing"
+            },
+            "label": {
+                "size": {
+                    "value": "11px",
+                    "type": "fontSizes"
+                },
+                "line_height": {
+                    "value": "14px",
+                    "type": "lineHeights"
                 }
             }
         },
@@ -427,6 +485,17 @@
                 "text_color": "{tokens.color.text.inverse}",
                 "radius": "{tokens.radius.pill}"
             }
+        },
+        "bottom_nav": {
+            "background": "{tokens.color.bottom_nav.background}",
+            "border_color": "{tokens.color.bottom_nav.border}",
+            "icon_default": "{tokens.color.bottom_nav.icon_default}",
+            "icon_active": "{tokens.color.bottom_nav.icon_active}",
+            "label_default": "{tokens.color.bottom_nav.label_default}",
+            "label_active": "{tokens.color.bottom_nav.label_active}",
+            "icon_size": "{tokens.bottom_nav.icon_size}",
+            "label_size": "{tokens.bottom_nav.label.size}",
+            "label_line_height": "{tokens.bottom_nav.label.line_height}"
         }
     }
 }
