@@ -48,6 +48,7 @@ Scripts disponibles:
 Al modificar tokens o componentes:
 - Actualizar `styles.json` y la documentación correspondiente en `plans/design-system/`.
 - Verificar que estados críticos (`disabled`, `loading`, `error`) estén cubiertos.
+- Registrar siempre las stories de componentes bajo `Design System/*` en Storybook (no crear apartados paralelos como `Elements/*`).
 
 ## Guía de testing
 
@@ -64,6 +65,7 @@ Usar mensajes consistentes, por ejemplo:
 - `feat(meetup): añadir flujo de contraoferta`
 - `fix(notifications): corregir acción en pantalla bloqueada`
 - Tras crear un nuevo commit, subirlo inmediatamente a GitHub usando `git push` (rama actual en `origin`).
+- El título del commit (subject) debe estar siempre en inglés antes de subirlo.
 
 Las PR deben incluir:
 - Descripción clara del cambio.
