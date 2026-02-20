@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { ChatMeetupEntry } from "@/components/meetup/chat-meetup-entry"
+import { resolveChatMeetupEntryActionState } from "@/components/meetup/chat-meetup-entry-rules"
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { ChatComposer } from "@/components/ui/chat-composer"
 import { ChatListItem } from "@/components/ui/chat-list-item"
@@ -9,6 +9,7 @@ import { ChatSecurityBanner } from "@/components/ui/chat-security-banner"
 import { InboxBottomNav } from "@/components/ui/inbox-bottom-nav"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { createMeetupMachine } from "@/meetup"
+import { transitionMeetup } from "@/meetup/state-machine"
 import type { ActorRole, MeetupChatContext, MeetupMachine } from "@/meetup/types"
 import productImage from "@/stories/assets/avif-test-image.avif"
 
@@ -30,6 +31,12 @@ type Conversation = {
     unreadCount?: number
     lastMessageDeliveryState?: "sent" | "read"
     meetupContext?: MeetupChatContext
+}
+
+type SafeMeetingPoint = {
+    id: string
+    name: string
+    hint: string
 }
 
 const conversations: Conversation[] = [
@@ -109,6 +116,24 @@ const initialMessagesByConversation: Record<string, Message[]> = {
     ],
 }
 
+const safeMeetingPoints: SafeMeetingPoint[] = [
+    {
+        id: "station",
+        name: "Estacion de Sants",
+        hint: "Zona principal con transito y camaras.",
+    },
+    {
+        id: "mall",
+        name: "Centro comercial Arenas",
+        hint: "Entrada principal, punto de informacion.",
+    },
+    {
+        id: "police",
+        name: "Comisaria Mossos - Les Corts",
+        hint: "Punto seguro recomendado por proximidad.",
+    },
+]
+
 function formatTime(date: Date): string {
     return date.toLocaleTimeString([], {
         hour: "2-digit",
@@ -131,6 +156,148 @@ function buildInitialMeetupState(): Record<string, MeetupMachine> {
     }
 
     return state
+}
+
+function toLocalDateTimeValue(date: Date): string {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, "0")
+    const day = String(date.getDate()).padStart(2, "0")
+    const hours = String(date.getHours()).padStart(2, "0")
+    const minutes = String(date.getMinutes()).padStart(2, "0")
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`
+}
+
+function parseLocalDateTimeValue(value: string): Date | null {
+    if (value.trim().length === 0) {
+        return null
+    }
+
+    const parsedDate = new Date(value)
+    if (Number.isNaN(parsedDate.getTime())) {
+        return null
+    }
+
+    return parsedDate
+}
+
+type MeetupProposalOverlayProps = {
+    conversation: Conversation
+    dateTimeValue: string
+    selectedPointId: string
+    finalPriceValue: string
+    onDateTimeChange: (nextValue: string) => void
+    onSelectPoint: (pointId: string) => void
+    onFinalPriceChange: (nextValue: string) => void
+    onClose: () => void
+    onConfirm: () => void
+}
+
+function MeetupProposalOverlay({
+    conversation,
+    dateTimeValue,
+    selectedPointId,
+    finalPriceValue,
+    onDateTimeChange,
+    onSelectPoint,
+    onFinalPriceChange,
+    onClose,
+    onConfirm,
+}: MeetupProposalOverlayProps) {
+    return (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#253238]/50 p-0 md:items-center md:p-6 motion-safe:animate-in motion-safe:fade-in-0">
+            <section className="w-full rounded-t-[22px] bg-white p-5 shadow-[0_16px_48px_rgba(37,50,56,0.22)] motion-safe:animate-in motion-safe:slide-in-from-bottom-10 md:max-w-[560px] md:rounded-[20px] md:motion-safe:zoom-in-95">
+                <div className="flex items-start justify-between gap-4">
+                    <div>
+                        <p className="font-wallie-fit text-[12px] text-[#6E8792]">Proponer meetup</p>
+                        <h2 className="font-wallie-chunky text-[20px] text-[#253238]">
+                            {conversation.userName}
+                        </h2>
+                    </div>
+                    <button
+                        type="button"
+                        aria-label="Cerrar configuracion de meetup"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
+                        onClick={onClose}
+                    >
+                        <WallapopIcon name="cross" size="small" />
+                    </button>
+                </div>
+
+                <p className="mt-3 font-wallie-fit text-[13px] text-[#4A5A63]">
+                    Define fecha y hora para enviar la propuesta desde este chat.
+                </p>
+
+                <label className="mt-5 block">
+                    <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
+                        Fecha y hora
+                    </span>
+                    <input
+                        type="datetime-local"
+                        value={dateTimeValue}
+                        min={toLocalDateTimeValue(new Date())}
+                        onChange={(event) => onDateTimeChange(event.target.value)}
+                        className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
+                    />
+                </label>
+
+                <fieldset className="mt-4">
+                    <legend className="mb-2 font-wallie-fit text-[13px] text-[#253238]">
+                        Punto de encuentro seguro
+                    </legend>
+                    <div className="space-y-2">
+                        {safeMeetingPoints.map((point) => (
+                            <button
+                                key={point.id}
+                                type="button"
+                                onClick={() => onSelectPoint(point.id)}
+                                className={`w-full rounded-[12px] border px-3 py-2 text-left transition-colors ${
+                                    point.id === selectedPointId
+                                        ? "border-[#3DD2BA] bg-[#E6FAF6]"
+                                        : "border-[#D3DEE2] bg-white"
+                                }`}
+                            >
+                                <p className="font-wallie-fit text-[14px] text-[#253238]">{point.name}</p>
+                                <p className="mt-1 font-wallie-fit text-[12px] text-[#6E8792]">{point.hint}</p>
+                            </button>
+                        ))}
+                    </div>
+                </fieldset>
+
+                <label className="mt-4 block">
+                    <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
+                        Precio final acordado (EUR)
+                    </span>
+                    <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={finalPriceValue}
+                        onChange={(event) => onFinalPriceChange(event.target.value)}
+                        placeholder="Ej: 220"
+                        className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
+                    />
+                </label>
+
+                <div className="mt-6 flex justify-end gap-2">
+                    <button
+                        type="button"
+                        className="rounded-full border border-[#D3DEE2] px-4 py-2 font-wallie-fit text-[14px] text-[#253238]"
+                        onClick={onClose}
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="button"
+                        className="rounded-full bg-[#3DD2BA] px-4 py-2 font-wallie-chunky text-[14px] text-white"
+                        onClick={onConfirm}
+                    >
+                        Enviar propuesta
+                    </button>
+                </div>
+            </section>
+        </div>
+    )
 }
 
 type InboxPaneProps = {
@@ -211,6 +378,7 @@ type ConversationPaneProps = {
     onBackToInbox?: () => void
     onSubmitMessage: (value: string) => void
     onMeetupChange: (next: MeetupMachine) => void
+    onOpenMeetupProposal: () => void
     onError: (message: string) => void
     errorMessage: string
 }
@@ -223,10 +391,14 @@ function ConversationPane({
     onBackToInbox,
     onSubmitMessage,
     onMeetupChange,
+    onOpenMeetupProposal,
     onError,
     errorMessage,
 }: ConversationPaneProps) {
     const currentTime = new Date()
+    const proposalActionState = meetup
+        ? resolveChatMeetupEntryActionState(meetup, actorRole)
+        : null
 
     return (
         <section className="flex h-full min-h-0 flex-col bg-[#F7FAFB]">
@@ -257,12 +429,7 @@ function ConversationPane({
             </header>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5">
-                <ChatSecurityBanner
-                    message="Mantente en Wallapop para una compraventa segura."
-                    linkText="Mas informacion"
-                />
-
-                <div className="mt-5 space-y-3">
+                <div className="space-y-3">
                     {messages.map((message) => (
                         <div
                             key={message.id}
@@ -279,16 +446,8 @@ function ConversationPane({
                     ))}
                 </div>
 
-                {meetup ? (
+                {meetup && meetup.status !== null ? (
                     <div className="mt-5 space-y-4">
-                        <ChatMeetupEntry
-                            meetup={meetup}
-                            actorRole={actorRole}
-                            currentTime={currentTime}
-                            onMeetupChange={onMeetupChange}
-                            onError={onError}
-                        />
-
                         <MeetupCard
                             meetup={meetup}
                             actorRole={actorRole}
@@ -306,8 +465,35 @@ function ConversationPane({
                 ) : null}
             </div>
 
-            {/* TODO: cuando se implemente "Proponer quedar", anadir CTA dedicado en composer y abrir overlay de configuracion. */}
-            <ChatComposer onSubmit={onSubmitMessage} />
+            <div className="shrink-0 border-t border-[#E8ECEF] bg-white">
+                <div className="px-3 pt-1 sm:px-4">
+                    <ChatSecurityBanner
+                        message="Quedate en Wallapop. Mas facil, mas seguro."
+                        linkText="Mas informacion"
+                        className="px-0 pt-1 pb-1"
+                    />
+                </div>
+                <ChatComposer
+                    onSubmit={onSubmitMessage}
+                    secondaryActionLabel={proposalActionState?.visible ? "Proponer quedar" : undefined}
+                    secondaryActionAriaLabel="Proponer quedar"
+                    secondaryActionIconName="deal"
+                    secondaryActionDisabled={!proposalActionState?.enabled}
+                    onSecondaryAction={() => {
+                        if (!proposalActionState) {
+                            return
+                        }
+
+                        if (!proposalActionState.enabled) {
+                            onError(proposalActionState.message)
+                            return
+                        }
+
+                        onError("")
+                        onOpenMeetupProposal()
+                    }}
+                />
+            </div>
         </section>
     )
 }
@@ -325,18 +511,45 @@ function WallapopChatWorkspace() {
         Record<string, MeetupMachine>
     >(buildInitialMeetupState)
     const [lastError, setLastError] = React.useState("")
+    const [isProposalOverlayOpen, setIsProposalOverlayOpen] = React.useState(false)
+    const [proposalScheduledAt, setProposalScheduledAt] = React.useState("")
+    const [proposalPointId, setProposalPointId] = React.useState(safeMeetingPoints[0].id)
+    const [proposalFinalPrice, setProposalFinalPrice] = React.useState("")
 
     const selectedConversation = React.useMemo(
         () => conversations.find((conversation) => conversation.id === selectedConversationId),
         [selectedConversationId]
     )
 
+    const selectedMessages = selectedConversation
+        ? (messagesByConversation[selectedConversation.id] ?? [])
+        : []
+    const selectedMeetup = selectedConversation
+        ? meetupByConversation[selectedConversation.id]
+        : undefined
+
+    React.useEffect(() => {
+        if (!selectedMeetup) {
+            setProposalScheduledAt("")
+            setProposalPointId(safeMeetingPoints[0].id)
+            setProposalFinalPrice("")
+            setIsProposalOverlayOpen(false)
+            return
+        }
+
+        setProposalScheduledAt(toLocalDateTimeValue(selectedMeetup.scheduledAt))
+        const initialPoint =
+            safeMeetingPoints.find((point) => point.name === selectedMeetup.proposedLocation)?.id ??
+            safeMeetingPoints[0].id
+        setProposalPointId(initialPoint)
+        setProposalFinalPrice(
+            selectedMeetup.finalPrice !== undefined ? String(selectedMeetup.finalPrice) : ""
+        )
+    }, [selectedConversationId, selectedMeetup])
+
     if (!selectedConversation) {
         return null
     }
-
-    const selectedMessages = messagesByConversation[selectedConversation.id] ?? []
-    const selectedMeetup = meetupByConversation[selectedConversation.id]
 
     const openConversation = (conversationId: string) => {
         setSelectedConversationId(conversationId)
@@ -366,6 +579,80 @@ function WallapopChatWorkspace() {
         }))
     }
 
+    const openMeetupProposal = () => {
+        if (!selectedMeetup) {
+            return
+        }
+
+        setProposalScheduledAt(toLocalDateTimeValue(selectedMeetup.scheduledAt))
+        const initialPoint =
+            safeMeetingPoints.find((point) => point.name === selectedMeetup.proposedLocation)?.id ??
+            safeMeetingPoints[0].id
+        setProposalPointId(initialPoint)
+        setProposalFinalPrice(
+            selectedMeetup.finalPrice !== undefined ? String(selectedMeetup.finalPrice) : ""
+        )
+        setIsProposalOverlayOpen(true)
+    }
+
+    const closeMeetupProposal = () => {
+        setIsProposalOverlayOpen(false)
+    }
+
+    const confirmMeetupProposal = () => {
+        if (!selectedMeetup) {
+            setLastError("No existe contexto de meetup en esta conversacion.")
+            return
+        }
+
+        const scheduledAt = parseLocalDateTimeValue(proposalScheduledAt)
+        if (!scheduledAt) {
+            setLastError("Selecciona una fecha y hora validas para la propuesta.")
+            return
+        }
+
+        const selectedPoint = safeMeetingPoints.find((point) => point.id === proposalPointId)
+        if (!selectedPoint) {
+            setLastError("Selecciona un punto de encuentro seguro.")
+            return
+        }
+
+        const parsedFinalPrice = Number.parseFloat(proposalFinalPrice)
+        if (!Number.isFinite(parsedFinalPrice) || parsedFinalPrice <= 0) {
+            setLastError("Introduce un precio final valido mayor que cero.")
+            return
+        }
+
+        const eligibility = resolveChatMeetupEntryActionState(selectedMeetup, actorRole)
+        if (!eligibility.enabled) {
+            setLastError(eligibility.message)
+            return
+        }
+
+        const result = transitionMeetup(
+            {
+                ...selectedMeetup,
+                scheduledAt,
+                proposedLocation: selectedPoint.name,
+                finalPrice: Number(parsedFinalPrice.toFixed(2)),
+            },
+            {
+                type: "PROPOSE",
+                actorRole,
+                occurredAt: new Date(),
+            }
+        )
+
+        if (!result.ok) {
+            setLastError(result.reason)
+            return
+        }
+
+        updateSelectedMeetup(result.meetup)
+        setLastError("")
+        setIsProposalOverlayOpen(false)
+    }
+
     return (
         <main className="mx-auto h-[100dvh] w-full max-w-[1200px] bg-white">
             <section className="hidden h-full overflow-hidden border-x border-[#D3DEE2] md:grid md:grid-cols-[360px_1fr]">
@@ -384,6 +671,7 @@ function WallapopChatWorkspace() {
                         meetup={selectedMeetup}
                         onSubmitMessage={appendOutgoingMessage}
                         onMeetupChange={updateSelectedMeetup}
+                        onOpenMeetupProposal={openMeetupProposal}
                         onError={setLastError}
                         errorMessage={lastError}
                     />
@@ -406,11 +694,26 @@ function WallapopChatWorkspace() {
                         onBackToInbox={() => setMobileView("inbox")}
                         onSubmitMessage={appendOutgoingMessage}
                         onMeetupChange={updateSelectedMeetup}
+                        onOpenMeetupProposal={openMeetupProposal}
                         onError={setLastError}
                         errorMessage={lastError}
                     />
                 )}
             </section>
+
+            {isProposalOverlayOpen && selectedMeetup ? (
+                <MeetupProposalOverlay
+                    conversation={selectedConversation}
+                    dateTimeValue={proposalScheduledAt}
+                    selectedPointId={proposalPointId}
+                    finalPriceValue={proposalFinalPrice}
+                    onDateTimeChange={setProposalScheduledAt}
+                    onSelectPoint={setProposalPointId}
+                    onFinalPriceChange={setProposalFinalPrice}
+                    onClose={closeMeetupProposal}
+                    onConfirm={confirmMeetupProposal}
+                />
+            ) : null}
         </main>
     )
 }

@@ -58,3 +58,12 @@
 - En Wallapop chat este banner funciona como aviso persistente contextual (no toast).
 - Para Meetup conviene mapearlo a `Banner` no descartable mientras la condicion de seguridad siga activa.
 - Alineacion vertical recomendada: icono y bloque de texto centrados sobre el eje Y (`align-items: center`).
+
+## Implementacion actual en el repositorio (2026-02-20)
+- Componente: `src/components/ui/chat-security-banner.tsx`.
+- Storybook: `Design System/Chat Security Banner`.
+- Integracion en chat workspace:
+  - Se renderiza fijo justo encima del composer en `src/components/meetup/wallapop-chat-workspace.tsx`.
+  - Variante compacta para no ocupar demasiado alto en footer:
+    - Wrapper externo: `px-3 pt-1` (movil) / `sm:px-4`.
+    - Banner: `className="px-0 pt-1 pb-1"`.

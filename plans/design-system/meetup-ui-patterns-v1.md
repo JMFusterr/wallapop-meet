@@ -13,8 +13,11 @@ Contenido:
 - Fecha y hora propuestas.
 - Punto de encuentro sugerido.
 - Precio final acordado.
-- CTA: `Enviar propuesta` usando `Button.variant=primary`.
-- Inputs del formulario con patrón `Input` de label flotante + helper/counter.
+- Entrada desde composer de chat con CTA secundario circular (`Proponer quedar`) y icono.
+- Overlay de configuracion:
+  - Desktop/tablet horizontal: centrado.
+  - Movil: aparece desde abajo.
+- CTA de confirmacion: `Enviar propuesta`.
 
 Estados:
 - `PROPOSED` al enviar.
@@ -105,7 +108,8 @@ Patrones mínimos:
 - Se cubren happy path y rutas de error/expiración.
 
 ## Referencias implementadas (2026-02-20)
-- Entrada desde chat con CTA de propuesta: `src/components/meetup/chat-meetup-entry.tsx`.
+- Workspace de chat con entrada de propuesta desde composer + overlay: `src/components/meetup/wallapop-chat-workspace.tsx`.
+- Reglas de elegibilidad de entrada desde chat: `src/components/meetup/chat-meetup-entry-rules.ts`.
 - Simulador interactivo de flujo: `src/components/meetup/meetup-simulator.tsx`.
 - Timeline reusable de estados: `src/components/meetup/meetup-timeline.tsx`.
 - Tarjeta contextual de acciones: `src/components/meetup/meetup-card.tsx`.

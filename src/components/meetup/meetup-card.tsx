@@ -189,6 +189,16 @@ function MeetupCard({
             <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
                 Actor activo: {actorRole}
             </p>
+            {meetup.proposedLocation ? (
+                <p className="mt-1 font-wallie-fit text-[13px] text-[#4A5A63]">
+                    Lugar: {meetup.proposedLocation}
+                </p>
+            ) : null}
+            {meetup.finalPrice !== undefined ? (
+                <p className="mt-1 font-wallie-fit text-[13px] text-[#4A5A63]">
+                    Precio final: {meetup.finalPrice.toFixed(2)} EUR
+                </p>
+            ) : null}
 
             {meetup.status === "CONFIRMED" ? (
                 <p className="mt-3 font-wallie-fit text-[12px] text-[#4A5A63]">

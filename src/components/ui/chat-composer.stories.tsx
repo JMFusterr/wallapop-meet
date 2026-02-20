@@ -37,3 +37,12 @@ export const Disabled: Story = {
     disabled: true,
   },
 }
+
+export const WithSecondaryAction: Story = {
+  args: {
+    defaultValue: "",
+    secondaryActionLabel: "Proponer quedar",
+    secondaryActionAriaLabel: "Proponer quedar",
+    secondaryActionIconName: "deal",
+  },
+}

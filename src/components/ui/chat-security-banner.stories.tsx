@@ -26,3 +26,10 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Playground: Story = {}
+
+export const CompactFooter: Story = {
+  args: {
+    className: "px-0 pt-1 pb-1",
+    linkText: "Mas informacion",
+  },
+}

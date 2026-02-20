@@ -263,6 +263,33 @@ Reglas:
 - En `arrival_window`, mostrar CTA `I'm here`.
 - En `expired`, priorizar feedback de estado final y ocultar CTA incompatibles.
 
+## 17. Composer de chat (`ChatComposer`)
+Propiedades visuales:
+- `onSubmit`: envio de mensaje.
+- `submitLabel` / `submitAriaLabel`: accesibilidad del boton de envio.
+- `secondaryActionLabel`: etiqueta accesible para accion secundaria.
+- `secondaryActionAriaLabel`: alternativa accesible.
+- `secondaryActionIconName`: icono de accion secundaria (`WallapopIconName`).
+- `onSecondaryAction`: apertura de flujo contextual (meetup).
+- `secondaryActionDisabled`: bloqueo de accion secundaria.
+
+Reglas:
+- El footer usa padding simetrico para mantener equilibrio visual entre botones izquierdo/derecho.
+- El boton de envio y el secundario son circulares y mantienen area tactil minima de `40x40` (`sm`) y `44x44` (movil).
+- La accion secundaria se usa para iniciar `Proponer quedar` sin ocupar ancho con texto.
+
+## 18. Banner de seguridad de chat (`ChatSecurityBanner`)
+Propiedades visuales:
+- `message`: mensaje principal.
+- `linkText`: accion secundaria contextual.
+- `onLinkClick`: callback opcional.
+- `showIcon`: muestra/oculta escudo.
+
+Reglas:
+- Debe mostrarse fijo sobre el composer en el chat workspace.
+- En footer fijo se usa variante compacta (menos alto) para no desplazar demasiado los mensajes.
+- No reemplaza errores bloqueantes ni toast; es aviso contextual persistente.
+
 ## Criterio de completitud
 - Cada componente define propiedades, estados, tokens y regla de uso.
 - No hay ambigüedad entre uso de `badge`, `chip`, `banner` y `toast`.

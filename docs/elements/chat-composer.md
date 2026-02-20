@@ -75,3 +75,19 @@ Estados observados:
 - El estado visual relevante esta en el contenedor (`textarea-component`), no en el `textarea`.
 - Mantener `resize: none` para preservar layout fijo del footer de chat.
 - El boton de envio debe depender del contenido no vacio (`trim().length > 0`).
+
+## Implementacion actual en el repositorio (2026-02-20)
+- Componente: `src/components/ui/chat-composer.tsx`.
+- Storybook: `Design System/Chat Composer`.
+- Layout actual:
+  - Wrapper: padding uniforme (`p-2` en movil, `p-3` en desktop).
+  - Caja interna: padding simetrico en los cuatro lados (`p-1.5`).
+- Acciones disponibles:
+  - Accion primaria: boton circular de envio con icono `paper_plane`.
+  - Accion secundaria opcional: boton circular de meetup con icono `deal` (a la izquierda).
+- Props adicionales de integracion meetup:
+  - `secondaryActionLabel`
+  - `secondaryActionAriaLabel`
+  - `secondaryActionIconName`
+  - `onSecondaryAction`
+  - `secondaryActionDisabled`

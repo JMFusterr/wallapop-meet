@@ -27,6 +27,8 @@ export type CreateMeetupMachineInput = {
 export type MeetupMachine = {
     status: MeetupStatus | null
     scheduledAt: Date
+    proposedLocation?: string
+    finalPrice?: number
     chatContext: MeetupChatContext
     proposedAt?: Date
     confirmedAt?: Date
