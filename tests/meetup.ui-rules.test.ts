@@ -5,12 +5,19 @@ import {
     resolveMeetupDayBannerVariant,
 } from "@/components/meetup/meetup-ui-rules"
 import { createMeetupMachine, transitionMeetup } from "@/meetup"
+import type { MeetupChatContext } from "@/meetup/types"
 
 describe("meetup ui rules", () => {
     const scheduledAt = new Date("2026-02-20T18:00:00.000Z")
+    const chatContext: MeetupChatContext = {
+        conversationId: "conv-001",
+        listingId: "listing-001",
+        sellerUserId: "user-seller-001",
+        buyerUserId: "user-buyer-001",
+    }
 
     function buildConfirmedMeetup() {
-        const proposed = transitionMeetup(createMeetupMachine(scheduledAt), {
+        const proposed = transitionMeetup(createMeetupMachine({ scheduledAt, chatContext }), {
             type: "PROPOSE",
             actorRole: "SELLER",
             occurredAt: new Date("2026-02-20T16:00:00.000Z"),

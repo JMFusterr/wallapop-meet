@@ -3,6 +3,11 @@
 ## Objetivo
 Definir pantallas y patrones de interacción para cubrir el ciclo completo de un meetup desde propuesta hasta seguimiento.
 
+## 0. Punto de entrada en producto
+- Wallapop Meet se lanza desde el chat de Wallapop, dentro de una conversación activa entre vendedor y comprador.
+- No se contempla acceso standalone a la creación del meetup fuera del contexto del chat.
+- El contexto de chat (anuncio, participantes y acuerdo previo) alimenta la propuesta inicial.
+
 ## 1. Propuesta inicial (vendedor)
 Contenido:
 - Fecha y hora propuestas.
@@ -100,11 +105,13 @@ Patrones mínimos:
 - Se cubren happy path y rutas de error/expiración.
 
 ## Referencias implementadas (2026-02-20)
+- Entrada desde chat con CTA de propuesta: `src/components/meetup/chat-meetup-entry.tsx`.
 - Simulador interactivo de flujo: `src/components/meetup/meetup-simulator.tsx`.
 - Timeline reusable de estados: `src/components/meetup/meetup-timeline.tsx`.
 - Tarjeta contextual de acciones: `src/components/meetup/meetup-card.tsx`.
 - Banner del dia con variante de ventana: `src/components/meetup/meetup-day-banner.tsx`.
 - Stories de validacion visual:
+  - `src/components/meetup/chat-meetup-entry.stories.tsx`
   - `src/components/meetup/meetup-simulator.stories.tsx`
   - `src/components/meetup/meetup-timeline.stories.tsx`
   - `src/components/meetup/meetup-card.stories.tsx`

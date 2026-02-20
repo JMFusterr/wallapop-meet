@@ -1,12 +1,19 @@
 import { describe, expect, it } from "vitest"
 
 import { createMeetupMachine, transitionMeetup } from "@/meetup/state-machine"
+import type { MeetupChatContext } from "@/meetup/types"
 
 describe("meetup state machine", () => {
     const scheduledAt = new Date("2026-02-20T18:00:00.000Z")
+    const chatContext: MeetupChatContext = {
+        conversationId: "conv-001",
+        listingId: "listing-001",
+        sellerUserId: "user-seller-001",
+        buyerUserId: "user-buyer-001",
+    }
 
     it("permite que el vendedor inicie propuesta", () => {
-        const initial = createMeetupMachine(scheduledAt)
+        const initial = createMeetupMachine({ scheduledAt, chatContext })
         const result = transitionMeetup(initial, {
             type: "PROPOSE",
             actorRole: "SELLER",
@@ -19,7 +26,7 @@ describe("meetup state machine", () => {
     })
 
     it("bloquea que el comprador inicie propuesta", () => {
-        const initial = createMeetupMachine(scheduledAt)
+        const initial = createMeetupMachine({ scheduledAt, chatContext })
         const result = transitionMeetup(initial, {
             type: "PROPOSE",
             actorRole: "BUYER",
@@ -29,7 +36,7 @@ describe("meetup state machine", () => {
     })
 
     it("permite contraoferta del comprador desde PROPOSED", () => {
-        const proposed = transitionMeetup(createMeetupMachine(scheduledAt), {
+        const proposed = transitionMeetup(createMeetupMachine({ scheduledAt, chatContext }), {
             type: "PROPOSE",
             actorRole: "SELLER",
         })
@@ -49,7 +56,7 @@ describe("meetup state machine", () => {
     })
 
     it("bloquea MARK_ARRIVED fuera de la ventana valida", () => {
-        const proposed = transitionMeetup(createMeetupMachine(scheduledAt), {
+        const proposed = transitionMeetup(createMeetupMachine({ scheduledAt, chatContext }), {
             type: "PROPOSE",
             actorRole: "SELLER",
         })
@@ -75,7 +82,7 @@ describe("meetup state machine", () => {
     })
 
     it("permite MARK_ARRIVED dentro de la ventana valida", () => {
-        const proposed = transitionMeetup(createMeetupMachine(scheduledAt), {
+        const proposed = transitionMeetup(createMeetupMachine({ scheduledAt, chatContext }), {
             type: "PROPOSE",
             actorRole: "SELLER",
         })
@@ -113,7 +120,7 @@ describe("meetup state machine", () => {
     })
 
     it("bloquea transiciones desde estado final", () => {
-        const initial = createMeetupMachine(scheduledAt)
+        const initial = createMeetupMachine({ scheduledAt, chatContext })
         const cancelled = transitionMeetup(initial, {
             type: "PROPOSE",
             actorRole: "SELLER",

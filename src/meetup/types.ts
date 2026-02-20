@@ -12,9 +12,22 @@ export type MeetupStatus = (typeof MEETUP_STATUSES)[number]
 
 export type ActorRole = "SELLER" | "BUYER"
 
+export type MeetupChatContext = {
+    conversationId: string
+    listingId: string
+    sellerUserId: string
+    buyerUserId: string
+}
+
+export type CreateMeetupMachineInput = {
+    scheduledAt: Date
+    chatContext: MeetupChatContext
+}
+
 export type MeetupMachine = {
     status: MeetupStatus | null
     scheduledAt: Date
+    chatContext: MeetupChatContext
     proposedAt?: Date
     confirmedAt?: Date
     arrivedAt?: Date

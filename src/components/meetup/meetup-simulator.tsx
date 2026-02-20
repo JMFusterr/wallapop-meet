@@ -1,11 +1,12 @@
 import * as React from "react"
 
+import { ChatMeetupEntry } from "@/components/meetup/chat-meetup-entry"
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { MeetupDayBanner } from "@/components/meetup/meetup-day-banner"
 import { Button } from "@/components/ui/button"
 import { createMeetupMachine } from "@/meetup/state-machine"
 import { transitionMeetup } from "@/meetup/state-machine"
-import type { ActorRole, MeetupMachine } from "@/meetup/types"
+import type { ActorRole, MeetupChatContext, MeetupMachine } from "@/meetup/types"
 
 const HALF_HOUR_MS = 30 * 60 * 1000
 const TEN_MINUTES_MS = 10 * 60 * 1000
@@ -13,8 +14,17 @@ const THREE_HOURS_MS = 3 * 60 * 60 * 1000
 
 function MeetupSimulator() {
     const scheduledAt = React.useMemo(() => new Date(Date.now() + HALF_HOUR_MS), [])
+    const chatContext = React.useMemo<MeetupChatContext>(
+        () => ({
+            conversationId: "conv-simulator-001",
+            listingId: "listing-simulator-001",
+            sellerUserId: "user-seller-simulator-001",
+            buyerUserId: "user-buyer-simulator-001",
+        }),
+        []
+    )
     const [machine, setMachine] = React.useState<MeetupMachine>(() =>
-        createMeetupMachine(scheduledAt)
+        createMeetupMachine({ scheduledAt, chatContext })
     )
     const [actorRole, setActorRole] = React.useState<ActorRole>("SELLER")
     const [currentTime, setCurrentTime] = React.useState<Date>(() => new Date())
@@ -108,7 +118,7 @@ function MeetupSimulator() {
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                        setMachine(createMeetupMachine(scheduledAt))
+                        setMachine(createMeetupMachine({ scheduledAt, chatContext }))
                         setCurrentTime(new Date())
                         setLastError("")
                     }}
@@ -120,6 +130,16 @@ function MeetupSimulator() {
             <p className="mt-3 font-wallie-fit text-[13px] text-[#4A5A63]">
                 Hora simulada: {currentTime.toLocaleString()}
             </p>
+
+            <div className="mt-4">
+                <ChatMeetupEntry
+                    meetup={machine}
+                    actorRole={actorRole}
+                    currentTime={currentTime}
+                    onMeetupChange={setMachine}
+                    onError={setLastError}
+                />
+            </div>
 
             <div className="mt-4">
                 <MeetupCard

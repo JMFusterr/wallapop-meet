@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button"
-import { MeetupTimeline } from "@/components/meetup/meetup-timeline"
 import { resolveArrivalActionState } from "@/components/meetup/meetup-ui-rules"
 import { transitionMeetup } from "@/meetup/state-machine"
 import type { ActorRole, MeetupMachine, MeetupStatus } from "@/meetup/types"
@@ -190,10 +189,6 @@ function MeetupCard({
             <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
                 Actor activo: {actorRole}
             </p>
-
-            <div className="mt-3">
-                <MeetupTimeline currentStatus={meetup.status} />
-            </div>
 
             {meetup.status === "CONFIRMED" ? (
                 <p className="mt-3 font-wallie-fit text-[12px] text-[#4A5A63]">

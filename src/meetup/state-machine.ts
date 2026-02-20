@@ -1,5 +1,11 @@
 import { isWithinArrivalWindow } from "@/meetup/arrival-window"
-import type { MeetupEvent, MeetupMachine, TransitionResult } from "@/meetup/types"
+import type {
+    CreateMeetupMachineInput,
+    MeetupChatContext,
+    MeetupEvent,
+    MeetupMachine,
+    TransitionResult,
+} from "@/meetup/types"
 
 function nowFallback(date?: Date): Date {
     return date ?? new Date()
@@ -19,10 +25,49 @@ function isTerminalStatus(status: MeetupMachine["status"]): boolean {
     )
 }
 
-export function createMeetupMachine(scheduledAt: Date): MeetupMachine {
+function isValidChatContextField(value: string): boolean {
+    return value.trim().length > 0
+}
+
+function assertValidChatContext(chatContext: MeetupChatContext): void {
+    const {
+        conversationId,
+        listingId,
+        sellerUserId,
+        buyerUserId,
+    } = chatContext
+
+    if (!isValidChatContextField(conversationId)) {
+        throw new Error("conversationId es obligatorio para crear Wallapop Meet desde chat.")
+    }
+
+    if (!isValidChatContextField(listingId)) {
+        throw new Error("listingId es obligatorio para crear Wallapop Meet desde chat.")
+    }
+
+    if (!isValidChatContextField(sellerUserId)) {
+        throw new Error("sellerUserId es obligatorio para crear Wallapop Meet desde chat.")
+    }
+
+    if (!isValidChatContextField(buyerUserId)) {
+        throw new Error("buyerUserId es obligatorio para crear Wallapop Meet desde chat.")
+    }
+
+    if (sellerUserId === buyerUserId) {
+        throw new Error("sellerUserId y buyerUserId no pueden ser el mismo usuario.")
+    }
+}
+
+export function createMeetupMachine({
+    scheduledAt,
+    chatContext,
+}: CreateMeetupMachineInput): MeetupMachine {
+    assertValidChatContext(chatContext)
+
     return {
         status: null,
         scheduledAt,
+        chatContext,
     }
 }
 

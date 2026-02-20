@@ -3,18 +3,24 @@ import * as React from "react"
 
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { createMeetupMachine, transitionMeetup } from "@/meetup"
-import type { ActorRole, MeetupMachine } from "@/meetup/types"
+import type { ActorRole, MeetupChatContext, MeetupMachine } from "@/meetup/types"
 
 const scheduledAt = new Date("2026-02-20T18:00:00.000Z")
+const chatContext: MeetupChatContext = {
+    conversationId: "conv-story-001",
+    listingId: "listing-story-001",
+    sellerUserId: "user-seller-story-001",
+    buyerUserId: "user-buyer-story-001",
+}
 
 function buildConfirmedMachine(): MeetupMachine {
-    const proposed = transitionMeetup(createMeetupMachine(scheduledAt), {
+    const proposed = transitionMeetup(createMeetupMachine({ scheduledAt, chatContext }), {
         type: "PROPOSE",
         actorRole: "SELLER",
         occurredAt: new Date("2026-02-20T16:00:00.000Z"),
     })
     if (!proposed.ok) {
-        return createMeetupMachine(scheduledAt)
+        return createMeetupMachine({ scheduledAt, chatContext })
     }
 
     const confirmed = transitionMeetup(proposed.meetup, {
@@ -22,7 +28,9 @@ function buildConfirmedMachine(): MeetupMachine {
         actorRole: "BUYER",
         occurredAt: new Date("2026-02-20T17:00:00.000Z"),
     })
-    return confirmed.ok ? confirmed.meetup : createMeetupMachine(scheduledAt)
+    return confirmed.ok
+        ? confirmed.meetup
+        : createMeetupMachine({ scheduledAt, chatContext })
 }
 
 const meta = {
@@ -77,7 +85,7 @@ function CardHarness({
 export const ProposalSellerView: Story = {
     render: () => (
         <CardHarness
-            initialMeetup={createMeetupMachine(scheduledAt)}
+            initialMeetup={createMeetupMachine({ scheduledAt, chatContext })}
             actorRole="SELLER"
             currentTime={new Date("2026-02-20T16:00:00.000Z")}
         />

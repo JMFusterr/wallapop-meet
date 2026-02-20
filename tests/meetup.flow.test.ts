@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { createMeetupMachine, transitionMeetup } from "@/meetup/state-machine"
-import type { MeetupMachine } from "@/meetup/types"
+import type { MeetupChatContext, MeetupMachine } from "@/meetup/types"
 
 function expectSuccess(meetupOrResult: MeetupMachine | ReturnType<typeof transitionMeetup>) {
     if ("ok" in meetupOrResult) {
@@ -16,9 +16,15 @@ function expectSuccess(meetupOrResult: MeetupMachine | ReturnType<typeof transit
 
 describe("meetup flow integration", () => {
     const scheduledAt = new Date("2026-02-20T18:00:00.000Z")
+    const chatContext: MeetupChatContext = {
+        conversationId: "conv-001",
+        listingId: "listing-001",
+        sellerUserId: "user-seller-001",
+        buyerUserId: "user-buyer-001",
+    }
 
     it("completa flujo con contraoferta y cierre exitoso", () => {
-        let machine = createMeetupMachine(scheduledAt)
+        let machine = createMeetupMachine({ scheduledAt, chatContext })
 
         machine = expectSuccess(
             transitionMeetup(machine, {
@@ -73,7 +79,7 @@ describe("meetup flow integration", () => {
     })
 
     it("expira meetup confirmado y bloquea transiciones posteriores", () => {
-        let machine = createMeetupMachine(scheduledAt)
+        let machine = createMeetupMachine({ scheduledAt, chatContext })
 
         machine = expectSuccess(
             transitionMeetup(machine, {
@@ -108,7 +114,7 @@ describe("meetup flow integration", () => {
 
     it("bloquea aceptacion por rol incorrecto en propuesta inicial", () => {
         const proposed = expectSuccess(
-            transitionMeetup(createMeetupMachine(scheduledAt), {
+            transitionMeetup(createMeetupMachine({ scheduledAt, chatContext }), {
                 type: "PROPOSE",
                 actorRole: "SELLER",
             })
