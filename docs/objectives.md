@@ -33,13 +33,13 @@ Objetivos:
 ### Estado de implementacion actual (2026-02-20)
 
 - Entrada desde chat integrada en `wallapop-chat-workspace`.
-- CTA secundario circular en `ChatComposer` para iniciar propuesta (`Proponer quedar`).
+- CTA secundario circular en `ChatComposer` para iniciar propuesta (`Proponer quedar`) con icono calendario, ubicado a la derecha (junto al boton enviar).
 - Overlay de propuesta responsive:
   - Centrado en desktop/tablet horizontal.
   - Entrada desde abajo en movil.
-- Formulario de propuesta con:
-  - Fecha y hora.
-  - Punto de encuentro seguro sugerido.
-  - Precio final acordado.
+- Overlay en 3 pasos:
+  - Paso 1: mapa real interactivo (OpenStreetMap) con puntos seguros, buscador y seleccion manual en mapa.
+  - Paso 2: fecha y hora.
+  - Paso 3: precio final y preferencia de cobro (`CASH`, `BIZUM`, `WALLET`).
 - `ChatSecurityBanner` fijado sobre el composer en formato compacto.
-- `MeetupCard` mostrando datos de propuesta (lugar y precio final) una vez creado el meetup.
+- `MeetupCard` mostrando datos de propuesta (lugar, precio final y metodo de cobro) una vez creado el meetup.

@@ -43,6 +43,6 @@ export const WithSecondaryAction: Story = {
     defaultValue: "",
     secondaryActionLabel: "Proponer quedar",
     secondaryActionAriaLabel: "Proponer quedar",
-    secondaryActionIconName: "deal",
+    secondaryActionIconName: "calendar",
   },
 }

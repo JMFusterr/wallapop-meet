@@ -39,6 +39,7 @@
 
 ## Nombres de icono usados en implementacion Wallapop Meet
 - `paper_plane` (boton de envio del `ChatComposer`)
+- `calendar` (boton de propuesta de quedada en `ChatComposer`)
 - `home`, `heart`, `plus`, `mail`, `user` (navegacion inferior de inbox)
 - `bookmark`, `deal` (indicadores en miniatura de `ChatListItem`)
 - `double_check` (estado de entrega en listado y mensajes)

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { resolveArrivalActionState } from "@/components/meetup/meetup-ui-rules"
 import { transitionMeetup } from "@/meetup/state-machine"
-import type { ActorRole, MeetupMachine, MeetupStatus } from "@/meetup/types"
+import type { ActorRole, MeetupMachine, MeetupPaymentMethod, MeetupStatus } from "@/meetup/types"
 
 type MeetupCardProps = {
     meetup: MeetupMachine
@@ -21,6 +21,19 @@ type CardAction = {
 
 function nextStatusLabel(status: MeetupStatus | null): string {
     return status ?? "NO_PROPOSAL"
+}
+
+function paymentMethodLabel(method: MeetupPaymentMethod): string {
+    switch (method) {
+        case "CASH":
+            return "Efectivo"
+        case "BIZUM":
+            return "Bizum"
+        case "WALLET":
+            return "Wallapop Wallet"
+        default:
+            return method
+    }
 }
 
 function MeetupCard({
@@ -197,6 +210,11 @@ function MeetupCard({
             {meetup.finalPrice !== undefined ? (
                 <p className="mt-1 font-wallie-fit text-[13px] text-[#4A5A63]">
                     Precio final: {meetup.finalPrice.toFixed(2)} EUR
+                </p>
+            ) : null}
+            {meetup.proposedPaymentMethod ? (
+                <p className="mt-1 font-wallie-fit text-[13px] text-[#4A5A63]">
+                    Cobro: {paymentMethodLabel(meetup.proposedPaymentMethod)}
                 </p>
             ) : null}
 

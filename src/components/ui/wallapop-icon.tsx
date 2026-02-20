@@ -2,6 +2,7 @@ import {
   ArrowLeft,
   BadgeCheck,
   Bookmark,
+  CalendarDays,
   ChevronRight,
   CirclePlus,
   EllipsisVertical,
@@ -35,6 +36,7 @@ type WallapopIconName =
   | "user"
   | "bookmark"
   | "deal"
+  | "calendar"
   | "double_check"
 
 type WallapopIconSize = "small" | "medium" | "large" | number
@@ -60,6 +62,7 @@ const wallapopIconMap: Record<WallapopIconName, LucideIcon> = {
   user: UserRound,
   bookmark: Bookmark,
   deal: Handshake,
+  calendar: CalendarDays,
   double_check: BadgeCheck,
 }
 

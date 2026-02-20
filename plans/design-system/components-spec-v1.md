@@ -277,6 +277,8 @@ Reglas:
 - El footer usa padding simetrico para mantener equilibrio visual entre botones izquierdo/derecho.
 - El boton de envio y el secundario son circulares y mantienen area tactil minima de `40x40` (`sm`) y `44x44` (movil).
 - La accion secundaria se usa para iniciar `Proponer quedar` sin ocupar ancho con texto.
+- En workspace de meetup, la accion secundaria se ubica a la derecha, justo antes de `paper_plane`.
+- El icono por defecto para esta accion en meetup es `calendar`.
 
 ## 18. Banner de seguridad de chat (`ChatSecurityBanner`)
 Propiedades visuales:
@@ -289,6 +291,21 @@ Reglas:
 - Debe mostrarse fijo sobre el composer en el chat workspace.
 - En footer fijo se usa variante compacta (menos alto) para no desplazar demasiado los mensajes.
 - No reemplaza errores bloqueantes ni toast; es aviso contextual persistente.
+
+## 19. Mapa de ubicacion de meetup (`MeetupLocationMap`)
+Propiedades visuales:
+- `center`: centro actual del mapa (`lat`, `lng`).
+- `safePoints`: puntos seguros sugeridos.
+- `selectedPointId`: punto seleccionado.
+- `selectedCustomPoint`: marcador de seleccion manual.
+- `onMapClick`: callback al pulsar en mapa.
+- `onSafePointClick`: callback al pulsar en marcador seguro.
+
+Reglas:
+- Implementado con `react-leaflet` + teselas OpenStreetMap.
+- Debe permitir seleccionar ubicacion custom con click en mapa.
+- Debe mostrar marcadores de puntos seguros en azul Wallapop.
+- Debe poder convivir dentro de un overlay con alto maximo y scroll interno sin desbordar viewport.
 
 ## Criterio de completitud
 - Cada componente define propiedades, estados, tokens y regla de uso.

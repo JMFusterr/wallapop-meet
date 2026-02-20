@@ -84,7 +84,7 @@ Estados observados:
   - Caja interna: padding simetrico en los cuatro lados (`p-1.5`).
 - Acciones disponibles:
   - Accion primaria: boton circular de envio con icono `paper_plane`.
-  - Accion secundaria opcional: boton circular de meetup con icono `deal` (a la izquierda).
+  - Accion secundaria opcional: boton circular de meetup con icono `calendar` (a la derecha, justo antes de envio).
 - Props adicionales de integracion meetup:
   - `secondaryActionLabel`
   - `secondaryActionAriaLabel`

@@ -77,6 +77,19 @@ function ChatComposer({
           className
         )}
       >
+        <textarea
+          value={resolvedValue}
+          disabled={disabled}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          rows={1}
+          placeholder={placeholder}
+          className={cn(
+            "max-h-32 min-h-7 flex-1 resize-none border-none bg-transparent px-1 py-1.5 font-wallie text-[16px] leading-6 text-black outline-none",
+            "placeholder:text-[#90A4AE]"
+          )}
+          {...props}
+        />
         {secondaryActionLabel || onSecondaryAction ? (
           <button
             type="button"
@@ -94,19 +107,6 @@ function ChatComposer({
             <WallapopIcon name={secondaryActionIconName} size="small" />
           </button>
         ) : null}
-        <textarea
-          value={resolvedValue}
-          disabled={disabled}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          rows={1}
-          placeholder={placeholder}
-          className={cn(
-            "max-h-32 min-h-7 flex-1 resize-none border-none bg-transparent px-1 py-1.5 font-wallie text-[16px] leading-6 text-black outline-none",
-            "placeholder:text-[#90A4AE]"
-          )}
-          {...props}
-        />
         <button
           type="button"
           aria-label={submitAriaLabel}

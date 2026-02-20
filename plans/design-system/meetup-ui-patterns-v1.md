@@ -13,11 +13,15 @@ Contenido:
 - Fecha y hora propuestas.
 - Punto de encuentro sugerido.
 - Precio final acordado.
-- Entrada desde composer de chat con CTA secundario circular (`Proponer quedar`) y icono.
+- Entrada desde composer de chat con CTA secundario circular (`Proponer quedar`) y icono `calendar`, ubicado a la derecha junto al boton de envio.
 - Overlay de configuracion:
   - Desktop/tablet horizontal: centrado.
   - Movil: aparece desde abajo.
-- CTA de confirmacion: `Enviar propuesta`.
+- Wizard en 3 pasos:
+  - Paso 1: ubicacion en mapa real interactivo (OpenStreetMap) con puntos seguros + buscador.
+  - Paso 2: fecha y hora.
+  - Paso 3: importe final y preferencia de cobro.
+- CTA final de confirmacion: `Proponer quedada`.
 
 Estados:
 - `PROPOSED` al enviar.
@@ -109,6 +113,7 @@ Patrones mínimos:
 
 ## Referencias implementadas (2026-02-20)
 - Workspace de chat con entrada de propuesta desde composer + overlay: `src/components/meetup/wallapop-chat-workspace.tsx`.
+- Mapa interactivo de seleccion de ubicacion: `src/components/meetup/meetup-location-map.tsx`.
 - Reglas de elegibilidad de entrada desde chat: `src/components/meetup/chat-meetup-entry-rules.ts`.
 - Simulador interactivo de flujo: `src/components/meetup/meetup-simulator.tsx`.
 - Timeline reusable de estados: `src/components/meetup/meetup-timeline.tsx`.

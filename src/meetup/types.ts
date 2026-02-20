@@ -11,6 +11,7 @@ export const MEETUP_STATUSES = [
 export type MeetupStatus = (typeof MEETUP_STATUSES)[number]
 
 export type ActorRole = "SELLER" | "BUYER"
+export type MeetupPaymentMethod = "CASH" | "BIZUM" | "WALLET"
 
 export type MeetupChatContext = {
     conversationId: string
@@ -29,6 +30,7 @@ export type MeetupMachine = {
     scheduledAt: Date
     proposedLocation?: string
     finalPrice?: number
+    proposedPaymentMethod?: MeetupPaymentMethod
     chatContext: MeetupChatContext
     proposedAt?: Date
     confirmedAt?: Date
