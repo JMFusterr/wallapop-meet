@@ -33,19 +33,23 @@ Objetivos:
 ### Estado de implementacion actual (2026-02-20)
 
 - Entrada desde chat integrada en `wallapop-chat-workspace`.
-- CTA secundario circular en `ChatComposer` para iniciar propuesta (`Proponer quedar`) con icono calendario, ubicado a la derecha (junto al boton enviar).
+- CTA secundario circular en `ChatComposer` para iniciar propuesta (`Proponer quedar`) con icono calendario, ubicado a la derecha (junto al boton enviar), visible solo para el vendedor cuando no hay meetup activo.
 - Overlay de propuesta responsive:
   - Centrado en desktop/tablet horizontal.
   - Entrada desde abajo en movil.
 - Overlay en 3 pasos:
   - Paso 1: mapa real interactivo (OpenStreetMap) con puntos seguros, buscador y seleccion manual en mapa.
   - Paso 2: fecha y hora.
-  - Paso 3: precio final y preferencia de cobro (`CASH`, `BIZUM`, `WALLET`).
+  - Paso 3: precio final y preferencia de pago (`CASH`, `BIZUM`, `WALLET`).
+  - Los pasos posteriores no son navegables si el paso actual no esta completo.
+  - Las validaciones del wizard se muestran dentro del overlay (no como error en el hilo de chat).
 - `ChatSecurityBanner` fijado sobre el composer en formato compacto.
-- `MeetupCard` mostrando datos de propuesta (lugar, precio final y metodo de cobro) una vez creado el meetup.
+- `MeetupCard` mostrando datos de propuesta (lugar, precio final y metodo de pago) una vez creado el meetup.
 - Header de buzon simplificado sin accion de menu tipo hamburguesa.
 - Accion de "mas opciones" (`ellipsis_horizontal`) ubicada en la cabecera de cada conversacion, alineada a la derecha.
 - Cabecera de conversacion con avatar circular de perfil del comprador junto al menu de tres puntos para mayor fidelidad al patron de Wallapop.
+- En cabecera de conversacion, la primera linea del bloque contextual muestra el precio del articulo en lugar del nombre del usuario.
+- En el paso 1 del overlay, el estado de seleccion de ubicacion se muestra encima del mapa con fondo verde Wallapop para mayor visibilidad.
 - Estado de entrega con icono `double_check` unificado en listado y burbujas (`sent` gris, `read` verde), con bubble enviada usando padding horizontal simetrico.
 - Buzon de conversaciones con escenario realista: multiples interesados por articulo, textos de chat plausibles e imagen de producto por conversacion.
 - Estados comerciales representados en el listado de conversaciones con los indicadores visuales del sistema de diseno:

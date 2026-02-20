@@ -1,6 +1,14 @@
 import * as React from "react"
 import L from "leaflet"
-import { CircleMarker, MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet"
+import {
+    CircleMarker,
+    MapContainer,
+    Marker,
+    TileLayer,
+    Tooltip,
+    useMap,
+    useMapEvents,
+} from "react-leaflet"
 
 type LatLng = {
     lat: number
@@ -90,7 +98,13 @@ function MeetupLocationMap({
                                 onSafePointClick(point.id)
                             },
                         }}
-                    />
+                    >
+                        {selectedPointId === point.id ? (
+                            <Tooltip direction="top" offset={[0, -10]} permanent>
+                                {point.name} - Punto seguro
+                            </Tooltip>
+                        ) : null}
+                    </CircleMarker>
                 ))}
 
                 {selectedCustomPoint ? (

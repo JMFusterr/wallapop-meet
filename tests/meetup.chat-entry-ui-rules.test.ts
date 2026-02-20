@@ -21,11 +21,11 @@ describe("chat meetup entry ui rules", () => {
         expect(state.enabled).toBe(true)
     })
 
-    it("deshabilita entrada para comprador cuando no hay meetup activo", () => {
+    it("oculta entrada para comprador cuando no hay meetup activo", () => {
         const meetup = createMeetupMachine({ scheduledAt, chatContext })
         const state = resolveChatMeetupEntryActionState(meetup, "BUYER")
 
-        expect(state.visible).toBe(true)
+        expect(state.visible).toBe(false)
         expect(state.enabled).toBe(false)
     })
 

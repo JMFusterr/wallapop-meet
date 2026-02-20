@@ -9,6 +9,7 @@ Definir pantallas y patrones de interacción para cubrir el ciclo completo de un
 - El contexto de chat (anuncio, participantes y acuerdo previo) alimenta la propuesta inicial.
 - En implementacion actual, la vista de buzon evita accion global de hamburguesa y delega acciones contextuales al header de cada conversacion (icono de tres puntos verticales).
 - El header de cada conversacion incluye avatar circular del usuario comprador junto al icono de tres puntos para reforzar el contexto del interlocutor.
+- En la cabecera abierta de conversacion, la linea principal muestra el precio del articulo; el titulo del anuncio queda en la linea secundaria.
 
 ## 1. Propuesta inicial (vendedor)
 Contenido:
@@ -16,13 +17,19 @@ Contenido:
 - Punto de encuentro sugerido.
 - Precio final acordado.
 - Entrada desde composer de chat con CTA secundario circular (`Proponer quedar`) y icono `calendar`, ubicado a la derecha junto al boton de envio.
+  - Esta CTA solo se muestra cuando el actor del chat es `SELLER` y no existe meetup activo.
+  - Si el actor es `BUYER`, el composer muestra solo la accion de enviar mensaje.
 - Overlay de configuracion:
   - Desktop/tablet horizontal: centrado.
   - Movil: aparece desde abajo.
 - Wizard en 3 pasos:
   - Paso 1: ubicacion en mapa real interactivo (OpenStreetMap) con puntos seguros + buscador.
   - Paso 2: fecha y hora.
-  - Paso 3: importe final y preferencia de cobro.
+  - Paso 3: importe final y preferencia de pago.
+- Reglas de avance del wizard:
+  - Los pasos futuros se bloquean hasta completar validaciones de pasos previos.
+  - El feedback de error se renderiza dentro del overlay.
+  - En paso 1, cuando se selecciona ubicacion, el mensaje "Has seleccionado..." se muestra encima del mapa en bloque destacado verde Wallapop.
 - CTA final de confirmacion: `Proponer quedada`.
 
 Estados:
@@ -127,6 +134,7 @@ Patrones mínimos:
   - `src/components/meetup/meetup-timeline.stories.tsx`
   - `src/components/meetup/meetup-card.stories.tsx`
   - `src/components/meetup/meetup-day-banner.stories.tsx`
+  - `src/components/meetup/meetup-location-map.stories.tsx`
 
 Notas de UI del workspace (2026-02-20):
 - Header de `InboxPane`: sin boton `burguer_menu`.

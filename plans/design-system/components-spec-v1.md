@@ -281,6 +281,7 @@ Reglas:
 - La accion secundaria se usa para iniciar `Proponer quedar` sin ocupar ancho con texto.
 - En workspace de meetup, la accion secundaria se ubica a la derecha, justo antes de `paper_plane`.
 - El icono por defecto para esta accion en meetup es `calendar`.
+- La accion secundaria debe ocultarse cuando el actor no es `SELLER`; para `BUYER` solo se renderiza el boton de envio.
 
 ## 18. Banner de seguridad de chat (`ChatSecurityBanner`)
 Propiedades visuales:
@@ -307,6 +308,7 @@ Reglas:
 - Implementado con `react-leaflet` + teselas OpenStreetMap.
 - Debe permitir seleccionar ubicacion custom con click en mapa.
 - Debe mostrar marcadores de puntos seguros en azul Wallapop.
+- Al seleccionar un punto seguro, mostrar tooltip persistente con formato `<nombre> - Punto seguro`.
 - Debe poder convivir dentro de un overlay con alto maximo y scroll interno sin desbordar viewport.
 
 ## Criterio de completitud
@@ -328,6 +330,8 @@ Reglas:
 - `src/components/meetup/meetup-simulator.tsx`
 - `src/components/meetup/meetup-card.tsx`
 - `src/components/meetup/meetup-day-banner.tsx`
+- `src/components/meetup/meetup-location-map.tsx`
+- `src/components/meetup/meetup-location-map.stories.tsx`
 
 Notas:
 - Fuente runtime de chat: `https://es.wallapop.com/app/chat`.

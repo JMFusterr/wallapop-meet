@@ -60,6 +60,6 @@ export const SellerCanStart: Story = {
     render: () => <EntryHarness actorRole="SELLER" />,
 }
 
-export const BuyerSeesDisabledAction: Story = {
+export const BuyerDoesNotSeeEntry: Story = {
     render: () => <EntryHarness actorRole="BUYER" />,
 }

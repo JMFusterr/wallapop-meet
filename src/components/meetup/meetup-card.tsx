@@ -214,7 +214,7 @@ function MeetupCard({
             ) : null}
             {meetup.proposedPaymentMethod ? (
                 <p className="mt-1 font-wallie-fit text-[13px] text-[#4A5A63]">
-                    Cobro: {paymentMethodLabel(meetup.proposedPaymentMethod)}
+                    Pago: {paymentMethodLabel(meetup.proposedPaymentMethod)}
                 </p>
             ) : null}
 

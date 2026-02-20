@@ -20,7 +20,7 @@ export function resolveChatMeetupEntryActionState(
 
     if (actorRole !== "SELLER") {
         return {
-            visible: true,
+            visible: false,
             enabled: false,
             message: "Solo el vendedor puede iniciar una propuesta de meetup.",
         }

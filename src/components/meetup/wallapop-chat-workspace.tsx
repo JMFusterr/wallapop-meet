@@ -29,6 +29,7 @@ type Message = {
 type Conversation = {
     id: string
     userName: string
+    itemPrice: string
     messageDate: string
     itemTitle: string
     messagePreview: string
@@ -83,6 +84,7 @@ const conversations: Conversation[] = [
     {
         id: "conv-meetup-001",
         userName: "Laura M.",
+        itemPrice: "240 EUR",
         messageDate: "Hoy",
         itemTitle: "Nintendo Switch OLED + dock",
         messagePreview: "Si te va bien, quedamos manana en Sants.",
@@ -101,6 +103,7 @@ const conversations: Conversation[] = [
     {
         id: "conv-002",
         userName: "Javi R.",
+        itemPrice: "520 EUR",
         messageDate: "Ayer",
         itemTitle: "Bicicleta fixie Fuji",
         messagePreview: "Te la reservo hasta las 20:00, ok?",
@@ -114,6 +117,7 @@ const conversations: Conversation[] = [
     {
         id: "conv-003",
         userName: "Marta P.",
+        itemPrice: "640 EUR",
         messageDate: "18 feb",
         itemTitle: "Camara Fujifilm X-T20",
         messagePreview: "Si incluyes bateria extra, me la quedo.",
@@ -125,6 +129,7 @@ const conversations: Conversation[] = [
     {
         id: "conv-004",
         userName: "Carlos G.",
+        itemPrice: "310 EUR",
         messageDate: "15 feb",
         itemTitle: "Silla gamer Secretlab",
         messagePreview: "Perfecto, gracias por todo. Venta cerrada.",
@@ -137,6 +142,7 @@ const conversations: Conversation[] = [
     {
         id: "conv-005",
         userName: "Alba T.",
+        itemPrice: "175 EUR",
         messageDate: "14 feb",
         itemTitle: "AirPods Pro 2",
         messagePreview: "Si funcionan perfectos, te pago en mano.",
@@ -149,6 +155,7 @@ const conversations: Conversation[] = [
     {
         id: "conv-006",
         userName: "Iker S.",
+        itemPrice: "210 EUR",
         messageDate: "12 feb",
         itemTitle: "Monitor LG 27 pulgadas 144Hz",
         messagePreview: "Me pasas foto del panel encendido?",
@@ -325,6 +332,9 @@ function paymentMethodLabel(method: MeetupPaymentMethod): string {
 type MeetupProposalOverlayProps = {
     conversation: Conversation
     step: ProposalStep
+    errorMessage: string
+    canAccessStepTwo: boolean
+    canAccessStepThree: boolean
     searchValue: string
     mapCenter: MapPoint
     customPoint: MapPoint | null
@@ -350,6 +360,9 @@ type MeetupProposalOverlayProps = {
 function MeetupProposalOverlay({
     conversation,
     step,
+    errorMessage,
+    canAccessStepTwo,
+    canAccessStepThree,
     searchValue,
     mapCenter,
     customPoint,
@@ -374,7 +387,7 @@ function MeetupProposalOverlay({
     const stepLabels: Array<{ id: ProposalStep; label: string }> = [
         { id: 1, label: "Lugar" },
         { id: 2, label: "Fecha y hora" },
-        { id: 3, label: "Pago" },
+        { id: 3, label: "Preferencia de pago" },
     ]
     const canContinueStepOne = selectedLocationLabel.trim().length > 0
 
@@ -382,11 +395,18 @@ function MeetupProposalOverlay({
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#253238]/50 p-0 md:items-center md:p-6 motion-safe:animate-in motion-safe:fade-in-0">
             <section className="flex h-[92vh] w-full max-h-[92vh] flex-col rounded-t-[22px] bg-white p-4 shadow-[0_16px_48px_rgba(37,50,56,0.22)] motion-safe:animate-in motion-safe:slide-in-from-bottom-10 md:h-[86vh] md:max-h-[86vh] md:max-w-[760px] md:rounded-[20px] md:p-5 md:motion-safe:zoom-in-95">
                 <div className="flex items-start justify-between gap-4">
-                    <div>
-                        <p className="font-wallie-fit text-[12px] text-[#6E8792]">Proponer quedada</p>
-                        <h2 className="font-wallie-chunky text-[20px] text-[#253238]">
-                            {conversation.userName}
-                        </h2>
+                    <div className="flex min-w-0 items-center gap-3">
+                        <img
+                            src={conversation.listingImageSrc}
+                            alt={conversation.itemTitle}
+                            className="h-12 w-12 rounded-[12px] object-cover"
+                        />
+                        <div className="min-w-0">
+                            <p className="font-wallie-fit text-[12px] text-[#6E8792]">Proponer quedada</p>
+                            <h2 className="truncate font-wallie-chunky text-[20px] text-[#253238]">
+                                {conversation.userName}
+                            </h2>
+                        </div>
                     </div>
                     <button
                         type="button"
@@ -399,22 +419,36 @@ function MeetupProposalOverlay({
                 </div>
 
                 <div className="mt-4 grid grid-cols-3 gap-2 rounded-[12px] bg-[#F3F6F8] p-2">
-                    {stepLabels.map((stepItem) => (
-                        <button
-                            key={stepItem.id}
-                            type="button"
-                            onClick={() => onStepChange(stepItem.id)}
-                            className={`rounded-[10px] px-3 py-2 text-center font-wallie-fit text-[13px] ${stepItem.id === step
-                                    ? "bg-white text-[#253238] shadow-[0_1px_2px_rgba(37,50,56,0.1)]"
-                                    : stepItem.id < step
-                                        ? "bg-[#E6FAF6] text-[#038673]"
-                                        : "text-[#6E8792]"
-                                }`}
-                        >
-                            {stepItem.id}. {stepItem.label}
-                        </button>
-                    ))}
+                    {stepLabels.map((stepItem) => {
+                        const isLocked =
+                            (stepItem.id === 2 && !canAccessStepTwo) ||
+                            (stepItem.id === 3 && !canAccessStepThree)
+
+                        return (
+                            <button
+                                key={stepItem.id}
+                                type="button"
+                                onClick={() => onStepChange(stepItem.id)}
+                                disabled={isLocked}
+                                className={`rounded-[10px] px-3 py-2 text-center font-wallie-fit text-[13px] ${stepItem.id === step
+                                        ? "bg-white text-[#253238] shadow-[0_1px_2px_rgba(37,50,56,0.1)]"
+                                        : stepItem.id < step
+                                            ? "bg-[#E6FAF6] text-[#038673]"
+                                            : isLocked
+                                                ? "cursor-not-allowed text-[#9BB0B9]"
+                                                : "text-[#6E8792]"
+                                    }`}
+                            >
+                                {stepItem.id}. {stepItem.label}
+                            </button>
+                        )
+                    })}
                 </div>
+                {errorMessage ? (
+                    <p className="mt-3 rounded-[8px] bg-[#FDEBEC] px-3 py-2 font-wallie-fit text-[13px] text-[#A81F2D]">
+                        {errorMessage}
+                    </p>
+                ) : null}
 
                 <div className="min-h-0 flex-1 overflow-y-auto pr-1">
                     {step === 1 ? (
@@ -440,14 +474,13 @@ function MeetupProposalOverlay({
                                     placeholder="Ej: estacion, centro comercial, comisaria"
                                     className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={onSearchLocation}
-                                    className="mt-2 rounded-full border border-[#D3DEE2] px-3 py-1.5 font-wallie-fit text-[13px] text-[#253238]"
-                                >
-                                    Buscar en mapa
-                                </button>
                             </label>
+
+                            {selectedLocationLabel ? (
+                                <p className="rounded-[10px] bg-[#13C1AC] px-3 py-2 font-wallie-fit text-[13px] text-white">
+                                    Has seleccionado: {selectedLocationLabel}
+                                </p>
+                            ) : null}
 
                             <MeetupLocationMap
                                 center={mapCenter}
@@ -457,12 +490,6 @@ function MeetupProposalOverlay({
                                 onMapClick={onMapSelect}
                                 onSafePointClick={onSelectPoint}
                             />
-
-                            {selectedLocationLabel ? (
-                                <p className="rounded-[10px] bg-[#F3F6F8] px-3 py-2 font-wallie-fit text-[13px] text-[#253238]">
-                                    Ubicacion seleccionada: {selectedLocationLabel}
-                                </p>
-                            ) : null}
                         </div>
                     ) : null}
 
@@ -508,7 +535,7 @@ function MeetupProposalOverlay({
                                     <WallapopIcon name="arrow_left" size="small" />
                                 </button>
                                 <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
-                                    Define el pago final y la preferencia de cobro.
+                                    Define el pago final y la preferencia de pago.
                                 </p>
                             </div>
                             <label className="block">
@@ -528,7 +555,7 @@ function MeetupProposalOverlay({
 
                             <fieldset>
                                 <legend className="mb-2 font-wallie-fit text-[13px] text-[#253238]">
-                                    Preferencia de cobro
+                                    Preferencia de pago
                                 </legend>
                                 <div className="grid gap-2 sm:grid-cols-3">
                                     {(["CASH", "BIZUM", "WALLET"] as MeetupPaymentMethod[]).map((method) => (
@@ -690,6 +717,7 @@ function ConversationPane({
     const proposalActionState = meetup
         ? resolveChatMeetupEntryActionState(meetup, actorRole)
         : null
+    const canShowProposalAction = proposalActionState?.visible === true
 
     return (
         <section className="flex h-full min-h-0 flex-col bg-[#F7FAFB]">
@@ -711,7 +739,7 @@ function ConversationPane({
                 />
                 <div className="min-w-0">
                     <p className="truncate font-wallie-chunky text-[16px] text-[#253238]">
-                        {conversation.userName}
+                        {conversation.itemPrice}
                     </p>
                     <p className="truncate font-wallie-fit text-[13px] text-[#6E8792]">
                         {conversation.itemTitle}
@@ -778,23 +806,29 @@ function ConversationPane({
                 </div>
                 <ChatComposer
                     onSubmit={onSubmitMessage}
-                    secondaryActionLabel={proposalActionState?.visible ? "Proponer quedar" : undefined}
+                    secondaryActionLabel={canShowProposalAction ? "Proponer quedar" : undefined}
                     secondaryActionAriaLabel="Proponer quedar"
                     secondaryActionIconName="calendar"
-                    secondaryActionDisabled={!proposalActionState?.enabled}
-                    onSecondaryAction={() => {
-                        if (!proposalActionState) {
-                            return
-                        }
+                    secondaryActionDisabled={
+                        canShowProposalAction ? !proposalActionState?.enabled : undefined
+                    }
+                    onSecondaryAction={
+                        canShowProposalAction
+                            ? () => {
+                                if (!proposalActionState) {
+                                    return
+                                }
 
-                        if (!proposalActionState.enabled) {
-                            onError(proposalActionState.message)
-                            return
-                        }
+                                if (!proposalActionState.enabled) {
+                                    onError(proposalActionState.message)
+                                    return
+                                }
 
-                        onError("")
-                        onOpenMeetupProposal()
-                    }}
+                                onError("")
+                                onOpenMeetupProposal()
+                            }
+                            : undefined
+                    }
                 />
             </div>
         </section>
@@ -829,6 +863,7 @@ function WallapopChatWorkspace() {
     const [proposalPaymentMethod, setProposalPaymentMethod] = React.useState<
         MeetupPaymentMethod | ""
     >("")
+    const [proposalError, setProposalError] = React.useState("")
 
     const selectedConversation = React.useMemo(
         () => conversations.find((conversation) => conversation.id === selectedConversationId),
@@ -853,6 +888,7 @@ function WallapopChatWorkspace() {
             setProposalCustomLocationLabel("")
             setProposalFinalPrice("")
             setProposalPaymentMethod("")
+            setProposalError("")
             setIsProposalOverlayOpen(false)
             return
         }
@@ -878,6 +914,7 @@ function WallapopChatWorkspace() {
             selectedMeetup.finalPrice !== undefined ? String(selectedMeetup.finalPrice) : ""
         )
         setProposalPaymentMethod(selectedMeetup.proposedPaymentMethod ?? "")
+        setProposalError("")
     }, [selectedConversationId, selectedMeetup])
 
     if (!selectedConversation) {
@@ -942,10 +979,12 @@ function WallapopChatWorkspace() {
             selectedMeetup.finalPrice !== undefined ? String(selectedMeetup.finalPrice) : ""
         )
         setProposalPaymentMethod(selectedMeetup.proposedPaymentMethod ?? "")
+        setProposalError("")
         setIsProposalOverlayOpen(true)
     }
 
     const closeMeetupProposal = () => {
+        setProposalError("")
         setIsProposalOverlayOpen(false)
     }
 
@@ -954,6 +993,7 @@ function WallapopChatWorkspace() {
         setProposalCustomPoint({ lat, lng })
         setProposalMapCenter({ lat, lng })
         setProposalCustomLocationLabel(mapClickToLocationLabel(lat, lng))
+        setProposalError("")
     }
 
     const selectSafePoint = (pointId: string) => {
@@ -965,6 +1005,7 @@ function WallapopChatWorkspace() {
         setProposalMapCenter({ lat: selected.lat, lng: selected.lng })
         setProposalCustomPoint(null)
         setProposalCustomLocationLabel("")
+        setProposalError("")
     }
 
     const searchLocationOnMap = async () => {
@@ -978,57 +1019,83 @@ function WallapopChatWorkspace() {
                 `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`
             )
             if (!response.ok) {
-                setLastError("No se pudo buscar la ubicacion ahora mismo.")
+                setProposalError("No se pudo buscar la ubicacion ahora mismo.")
                 return
             }
             const data = (await response.json()) as Array<{ lat: string; lon: string; display_name: string }>
             if (data.length === 0) {
-                setLastError("No se encontraron resultados para esa busqueda.")
+                setProposalError("No se encontraron resultados para esa busqueda.")
                 return
             }
             const lat = Number.parseFloat(data[0].lat)
             const lng = Number.parseFloat(data[0].lon)
             if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-                setLastError("Resultado de busqueda invalido.")
+                setProposalError("Resultado de busqueda invalido.")
                 return
             }
             setProposalPointId("custom")
             setProposalCustomPoint({ lat, lng })
             setProposalMapCenter({ lat, lng })
             setProposalCustomLocationLabel(data[0].display_name)
-            setLastError("")
+            setProposalError("")
         } catch {
-            setLastError("No se pudo buscar la ubicacion. Reintenta.")
+            setProposalError("No se pudo buscar la ubicacion. Reintenta.")
         }
+    }
+
+    const validateProposalStepOne = () => {
+        if (proposalPointId.trim().length === 0) {
+            setProposalError("Selecciona un punto de encuentro en el mapa.")
+            return false
+        }
+        setProposalError("")
+        return true
+    }
+
+    const validateProposalStepTwo = () => {
+        if (!validateProposalStepOne()) {
+            return false
+        }
+
+        const scheduledAt = parseLocalDateTimeValue(proposalScheduledAt)
+        if (!scheduledAt) {
+            setProposalError("Selecciona una fecha y hora validas para continuar.")
+            return false
+        }
+        setProposalError("")
+        return true
     }
 
     const goToNextProposalStep = () => {
         if (proposalStep === 1) {
-            if (proposalPointId.trim().length === 0) {
-                setLastError("Selecciona un punto de encuentro en el mapa.")
+            if (!validateProposalStepOne()) {
                 return
             }
-            setLastError("")
             setProposalStep(2)
             return
         }
 
         if (proposalStep === 2) {
-            const scheduledAt = parseLocalDateTimeValue(proposalScheduledAt)
-            if (!scheduledAt) {
-                setLastError("Selecciona una fecha y hora validas para continuar.")
+            if (!validateProposalStepTwo()) {
                 return
             }
-            setLastError("")
             setProposalStep(3)
         }
     }
 
     const goToPreviousProposalStep = () => {
+        setProposalError("")
         setProposalStep((previous) => (previous > 1 ? ((previous - 1) as ProposalStep) : previous))
     }
 
     const goToProposalStep = (nextStep: ProposalStep) => {
+        if (nextStep === 2 && !validateProposalStepOne()) {
+            return
+        }
+        if (nextStep === 3 && !validateProposalStepTwo()) {
+            return
+        }
+        setProposalError("")
         setProposalStep(nextStep)
     }
 
@@ -1043,15 +1110,19 @@ function WallapopChatWorkspace() {
         return ""
     }, [proposalCustomLocationLabel, proposalPointId])
 
+    const canAccessProposalStepTwo = proposalPointId.trim().length > 0
+    const canAccessProposalStepThree =
+        canAccessProposalStepTwo && parseLocalDateTimeValue(proposalScheduledAt) !== null
+
     const confirmMeetupProposal = () => {
         if (!selectedMeetup) {
-            setLastError("No existe contexto de meetup en esta conversacion.")
+            setProposalError("No existe contexto de meetup en esta conversacion.")
             return
         }
 
         const scheduledAt = parseLocalDateTimeValue(proposalScheduledAt)
         if (!scheduledAt) {
-            setLastError("Selecciona una fecha y hora validas para la propuesta.")
+            setProposalError("Selecciona una fecha y hora validas para la propuesta.")
             return
         }
 
@@ -1061,23 +1132,23 @@ function WallapopChatWorkspace() {
             (proposalPointId === "custom" ? proposalCustomLocationLabel : "")
 
         if (!resolvedLocation) {
-            setLastError("Selecciona un punto de encuentro seguro.")
+            setProposalError("Selecciona un punto de encuentro seguro.")
             return
         }
 
         const parsedFinalPrice = Number.parseFloat(proposalFinalPrice)
         if (!Number.isFinite(parsedFinalPrice) || parsedFinalPrice <= 0) {
-            setLastError("Introduce un precio final valido mayor que cero.")
+            setProposalError("Introduce un precio final valido mayor que cero.")
             return
         }
         if (!proposalPaymentMethod) {
-            setLastError("Selecciona una preferencia de cobro para la propuesta.")
+            setProposalError("Selecciona una preferencia de pago para la propuesta.")
             return
         }
 
         const eligibility = resolveChatMeetupEntryActionState(selectedMeetup, actorRole)
         if (!eligibility.enabled) {
-            setLastError(eligibility.message)
+            setProposalError(eligibility.message)
             return
         }
 
@@ -1097,12 +1168,12 @@ function WallapopChatWorkspace() {
         )
 
         if (!result.ok) {
-            setLastError(result.reason)
+            setProposalError(result.reason)
             return
         }
 
         updateSelectedMeetup(result.meetup)
-        setLastError("")
+        setProposalError("")
         setProposalStep(1)
         setIsProposalOverlayOpen(false)
     }
@@ -1159,6 +1230,9 @@ function WallapopChatWorkspace() {
                 <MeetupProposalOverlay
                     conversation={selectedConversation}
                     step={proposalStep}
+                    errorMessage={proposalError}
+                    canAccessStepTwo={canAccessProposalStepTwo}
+                    canAccessStepThree={canAccessProposalStepThree}
                     searchValue={proposalSearch}
                     mapCenter={proposalMapCenter}
                     customPoint={proposalCustomPoint}
@@ -1167,13 +1241,25 @@ function WallapopChatWorkspace() {
                     finalPriceValue={proposalFinalPrice}
                     paymentMethod={proposalPaymentMethod}
                     selectedLocationLabel={selectedLocationLabel}
-                    onSearchChange={setProposalSearch}
+                    onSearchChange={(nextValue) => {
+                        setProposalSearch(nextValue)
+                        setProposalError("")
+                    }}
                     onSearchLocation={searchLocationOnMap}
                     onMapSelect={selectPointFromMap}
-                    onDateTimeChange={setProposalScheduledAt}
+                    onDateTimeChange={(nextValue) => {
+                        setProposalScheduledAt(nextValue)
+                        setProposalError("")
+                    }}
                     onSelectPoint={selectSafePoint}
-                    onFinalPriceChange={setProposalFinalPrice}
-                    onPaymentMethodChange={setProposalPaymentMethod}
+                    onFinalPriceChange={(nextValue) => {
+                        setProposalFinalPrice(nextValue)
+                        setProposalError("")
+                    }}
+                    onPaymentMethodChange={(nextValue) => {
+                        setProposalPaymentMethod(nextValue)
+                        setProposalError("")
+                    }}
                     onStepChange={goToProposalStep}
                     onCancel={closeMeetupProposal}
                     onBack={goToPreviousProposalStep}
