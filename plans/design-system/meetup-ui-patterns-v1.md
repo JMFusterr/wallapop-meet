@@ -50,6 +50,7 @@ Variantes:
 - Normal (faltan más de 15 minutos).
 - Ventana activa de llegada.
 - Evento expirado.
+- Referencia de implementacion: `src/components/meetup/meetup-day-banner.tsx`.
 
 ## 5. Check-in "I'm here"
 Regla de negocio:
@@ -60,6 +61,7 @@ Comportamiento:
 - Fuera de ventana: botón deshabilitado + mensaje explicativo.
 - Al confirmar: transición a `ARRIVED`.
 - Debe poder validarse en entorno de simulación con hora controlada (`Design System/Meetup Simulator`).
+- Referencia de implementacion en tarjeta: `src/components/meetup/meetup-card.tsx`.
 
 ## 6. Notificación interactiva
 Contenido:
@@ -100,6 +102,10 @@ Patrones mínimos:
 ## Referencias implementadas (2026-02-20)
 - Simulador interactivo de flujo: `src/components/meetup/meetup-simulator.tsx`.
 - Timeline reusable de estados: `src/components/meetup/meetup-timeline.tsx`.
+- Tarjeta contextual de acciones: `src/components/meetup/meetup-card.tsx`.
+- Banner del dia con variante de ventana: `src/components/meetup/meetup-day-banner.tsx`.
 - Stories de validacion visual:
   - `src/components/meetup/meetup-simulator.stories.tsx`
   - `src/components/meetup/meetup-timeline.stories.tsx`
+  - `src/components/meetup/meetup-card.stories.tsx`
+  - `src/components/meetup/meetup-day-banner.stories.tsx`

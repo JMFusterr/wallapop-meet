@@ -237,6 +237,32 @@ Reglas:
 - Debe permitir simular hora para validar ventana de llegada (`-15m` a `+2h`).
 - Se considera herramienta de validacion interna, no UI final de produccion.
 
+## 15. Tarjeta de meetup (`MeetupCard`)
+Propiedades visuales:
+- `meetup`: estado actual de la entidad.
+- `actorRole`: `SELLER | BUYER`.
+- `currentTime`: hora de referencia para reglas temporales.
+- `onMeetupChange`: callback de transicion valida.
+- `onError`: callback de error de transicion.
+
+Reglas:
+- Debe renderizar acciones contextuales por estado de negocio.
+- `I'm here` solo habilitado en `CONFIRMED` y ventana valida (`-15m`, `+2h`).
+- Debe comunicar motivo de deshabilitado fuera de ventana.
+- Debe integrar `MeetupTimeline` como referencia de progreso.
+
+## 16. Banner del dia (`MeetupDayBanner`)
+Propiedades visuales:
+- `meetup`: estado actual del meetup.
+- `currentTime`: hora de referencia.
+- `onNavigate`: accion a vista de detalle.
+- `onMarkArrived`: accion directa de llegada.
+
+Reglas:
+- Variantes visuales: `default | arrival_window | expired`.
+- En `arrival_window`, mostrar CTA `I'm here`.
+- En `expired`, priorizar feedback de estado final y ocultar CTA incompatibles.
+
 ## Criterio de completitud
 - Cada componente define propiedades, estados, tokens y regla de uso.
 - No hay ambigüedad entre uso de `badge`, `chip`, `banner` y `toast`.
@@ -254,6 +280,8 @@ Reglas:
 - `docs/elements/inbox-bottom-nav.md`
 - `src/components/meetup/meetup-timeline.tsx`
 - `src/components/meetup/meetup-simulator.tsx`
+- `src/components/meetup/meetup-card.tsx`
+- `src/components/meetup/meetup-day-banner.tsx`
 
 Notas:
 - Fuente runtime de chat: `https://es.wallapop.com/app/chat`.

@@ -1,139 +1,15 @@
 import * as React from "react"
 
+import { MeetupCard } from "@/components/meetup/meetup-card"
+import { MeetupDayBanner } from "@/components/meetup/meetup-day-banner"
 import { Button } from "@/components/ui/button"
-import { MeetupTimeline } from "@/components/meetup/meetup-timeline"
-import {
-    createMeetupMachine,
-    getArrivalWindow,
-    isWithinArrivalWindow,
-    transitionMeetup,
-} from "@/meetup"
+import { createMeetupMachine } from "@/meetup/state-machine"
+import { transitionMeetup } from "@/meetup/state-machine"
 import type { ActorRole, MeetupMachine } from "@/meetup/types"
 
 const HALF_HOUR_MS = 30 * 60 * 1000
 const TEN_MINUTES_MS = 10 * 60 * 1000
 const THREE_HOURS_MS = 3 * 60 * 60 * 1000
-
-type SimulationAction = {
-    id: string
-    label: string
-    run: (machine: MeetupMachine, actorRole: ActorRole, now: Date) => MeetupMachine
-}
-
-function applyTransition(
-    machine: MeetupMachine,
-    actorRole: ActorRole,
-    now: Date,
-    eventType:
-        | "PROPOSE"
-        | "COUNTER_PROPOSE"
-        | "ACCEPT"
-        | "MARK_ARRIVED"
-        | "COMPLETE"
-        | "CANCEL"
-        | "EXPIRE"
-): MeetupMachine {
-    const event =
-        eventType === "EXPIRE"
-            ? { type: eventType as const, occurredAt: now }
-            : eventType === "MARK_ARRIVED"
-              ? { type: eventType as const, actorRole, occurredAt: now }
-              : { type: eventType as const, actorRole, occurredAt: now }
-
-    const result = transitionMeetup(machine, event)
-    if (!result.ok) {
-        return machine
-    }
-    return result.meetup
-}
-
-function buildActions(status: MeetupMachine["status"]): SimulationAction[] {
-    switch (status) {
-        case null:
-            return [
-                {
-                    id: "propose",
-                    label: "Enviar propuesta",
-                    run: (machine, actorRole, now) =>
-                        applyTransition(machine, actorRole, now, "PROPOSE"),
-                },
-            ]
-        case "PROPOSED":
-            return [
-                {
-                    id: "counter",
-                    label: "Contraofertar",
-                    run: (machine, actorRole, now) =>
-                        applyTransition(machine, actorRole, now, "COUNTER_PROPOSE"),
-                },
-                {
-                    id: "accept",
-                    label: "Aceptar",
-                    run: (machine, actorRole, now) =>
-                        applyTransition(machine, actorRole, now, "ACCEPT"),
-                },
-                {
-                    id: "cancel",
-                    label: "Cancelar",
-                    run: (machine, actorRole, now) =>
-                        applyTransition(machine, actorRole, now, "CANCEL"),
-                },
-            ]
-        case "COUNTER_PROPOSED":
-            return [
-                {
-                    id: "repropose",
-                    label: "Reenviar propuesta",
-                    run: (machine, actorRole, now) =>
-                        applyTransition(machine, actorRole, now, "PROPOSE"),
-                },
-                {
-                    id: "accept-counter",
-                    label: "Aceptar contraoferta",
-                    run: (machine, actorRole, now) =>
-                        applyTransition(machine, actorRole, now, "ACCEPT"),
-                },
-                {
-                    id: "cancel",
-                    label: "Cancelar",
-                    run: (machine, actorRole, now) =>
-                        applyTransition(machine, actorRole, now, "CANCEL"),
-                },
-            ]
-        case "CONFIRMED":
-            return [
-                {
-                    id: "arrived",
-                    label: "I'm here",
-                    run: (machine, actorRole, now) =>
-                        applyTransition(machine, actorRole, now, "MARK_ARRIVED"),
-                },
-                {
-                    id: "expire",
-                    label: "Expirar meetup",
-                    run: (machine, actorRole, now) =>
-                        applyTransition(machine, actorRole, now, "EXPIRE"),
-                },
-            ]
-        case "ARRIVED":
-            return [
-                {
-                    id: "complete",
-                    label: "Confirmar venta completada",
-                    run: (machine, actorRole, now) =>
-                        applyTransition(machine, actorRole, now, "COMPLETE"),
-                },
-                {
-                    id: "cancel",
-                    label: "Cancelar meetup",
-                    run: (machine, actorRole, now) =>
-                        applyTransition(machine, actorRole, now, "CANCEL"),
-                },
-            ]
-        default:
-            return []
-    }
-}
 
 function MeetupSimulator() {
     const scheduledAt = React.useMemo(() => new Date(Date.now() + HALF_HOUR_MS), [])
@@ -142,47 +18,22 @@ function MeetupSimulator() {
     )
     const [actorRole, setActorRole] = React.useState<ActorRole>("SELLER")
     const [currentTime, setCurrentTime] = React.useState<Date>(() => new Date())
-    const [lastError, setLastError] = React.useState<string | null>(null)
+    const [lastError, setLastError] = React.useState<string>("")
 
-    const { opensAt, closesAt } = getArrivalWindow(machine.scheduledAt)
-    const inArrivalWindow = isWithinArrivalWindow(machine.scheduledAt, currentTime)
-    const actions = buildActions(machine.status)
+    const markArrivedFromBanner = () => {
+        const result = transitionMeetup(machine, {
+            type: "MARK_ARRIVED",
+            actorRole,
+            occurredAt: currentTime,
+        })
 
-    const runAction = (action: SimulationAction) => {
-        const next = action.run(machine, actorRole, currentTime)
-        if (next === machine) {
-            const result = transitionMeetup(
-                machine,
-                action.id === "expire"
-                    ? { type: "EXPIRE", occurredAt: currentTime }
-                    : action.id === "arrived"
-                      ? {
-                            type: "MARK_ARRIVED",
-                            actorRole,
-                            occurredAt: currentTime,
-                        }
-                      : action.id === "propose" || action.id === "repropose"
-                        ? { type: "PROPOSE", actorRole, occurredAt: currentTime }
-                        : action.id === "counter"
-                          ? {
-                                type: "COUNTER_PROPOSE",
-                                actorRole,
-                                occurredAt: currentTime,
-                            }
-                          : action.id === "accept" || action.id === "accept-counter"
-                            ? { type: "ACCEPT", actorRole, occurredAt: currentTime }
-                            : action.id === "complete"
-                              ? { type: "COMPLETE", actorRole, occurredAt: currentTime }
-                              : { type: "CANCEL", actorRole, occurredAt: currentTime }
-            )
-            if (!result.ok) {
-                setLastError(result.reason)
-            }
+        if (!result.ok) {
+            setLastError(result.reason)
             return
         }
 
-        setLastError(null)
-        setMachine(next)
+        setLastError("")
+        setMachine(result.meetup)
     }
 
     return (
@@ -218,27 +69,22 @@ function MeetupSimulator() {
                 </div>
             </div>
 
-            <div className="mt-4 space-y-2 rounded-[12px] bg-[#F5F7F8] p-4">
-                <p className="font-wallie-fit text-[14px] text-[#253238]">
-                    Estado actual:{" "}
-                    <strong>{machine.status ?? "NO_PROPOSAL"}</strong>
-                </p>
-                <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
-                    Programado: {machine.scheduledAt.toLocaleString()}
-                </p>
-                <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
-                    Ventana llegada: {opensAt.toLocaleTimeString()} - {closesAt.toLocaleTimeString()}
-                </p>
-                <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
-                    Hora simulada: {currentTime.toLocaleString()} ({inArrivalWindow ? "dentro" : "fuera"})
-                </p>
+            <div className="mt-4">
+                <MeetupDayBanner
+                    meetup={machine}
+                    currentTime={currentTime}
+                    onNavigate={() => setLastError("")}
+                    onMarkArrived={markArrivedFromBanner}
+                />
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
                 <Button
                     variant="inline_action"
                     size="sm"
-                    onClick={() => setCurrentTime(new Date(machine.scheduledAt.getTime() - TEN_MINUTES_MS))}
+                    onClick={() =>
+                        setCurrentTime(new Date(machine.scheduledAt.getTime() - TEN_MINUTES_MS))
+                    }
                 >
                     Simular -10m
                 </Button>
@@ -252,7 +98,9 @@ function MeetupSimulator() {
                 <Button
                     variant="inline_action"
                     size="sm"
-                    onClick={() => setCurrentTime(new Date(machine.scheduledAt.getTime() + THREE_HOURS_MS))}
+                    onClick={() =>
+                        setCurrentTime(new Date(machine.scheduledAt.getTime() + THREE_HOURS_MS))
+                    }
                 >
                     Simular +3h
                 </Button>
@@ -262,28 +110,25 @@ function MeetupSimulator() {
                     onClick={() => {
                         setMachine(createMeetupMachine(scheduledAt))
                         setCurrentTime(new Date())
-                        setLastError(null)
+                        setLastError("")
                     }}
                 >
                     Reiniciar
                 </Button>
             </div>
 
-            <div className="mt-4">
-                <MeetupTimeline currentStatus={machine.status} />
-            </div>
+            <p className="mt-3 font-wallie-fit text-[13px] text-[#4A5A63]">
+                Hora simulada: {currentTime.toLocaleString()}
+            </p>
 
-            <div className="mt-4 flex flex-wrap gap-2">
-                {actions.map((action) => (
-                    <Button
-                        key={action.id}
-                        variant={action.id === "cancel" || action.id === "expire" ? "critical" : "primary"}
-                        size="sm"
-                        onClick={() => runAction(action)}
-                    >
-                        {action.label}
-                    </Button>
-                ))}
+            <div className="mt-4">
+                <MeetupCard
+                    meetup={machine}
+                    actorRole={actorRole}
+                    currentTime={currentTime}
+                    onMeetupChange={setMachine}
+                    onError={setLastError}
+                />
             </div>
 
             {lastError ? (
