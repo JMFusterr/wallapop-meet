@@ -215,6 +215,28 @@ Reglas:
 - En etiquetas de item, garantizar legibilidad sin corte de texto en viewport movil de referencia.
 - Todos los items deben ser navegables por teclado y exponer nombre accesible.
 
+## 13. Linea temporal de meetup (`MeetupTimeline`)
+Propiedades visuales:
+- `currentStatus`: `null | PROPOSED | COUNTER_PROPOSED | CONFIRMED | ARRIVED | COMPLETED | EXPIRED | CANCELLED`
+
+Reglas:
+- Debe mantener orden fijo de estados para facilitar lectura del progreso.
+- En estado `null`, todos los pasos se muestran como pendientes.
+- Estado actual resaltado visualmente.
+- Estados anteriores al actual se muestran como completados.
+- Estados finales (`COMPLETED`, `EXPIRED`, `CANCELLED`) deben comunicarse tambien con texto, no solo color.
+
+## 14. Simulador de flujo (`MeetupSimulator`)
+Propiedades visuales:
+- Composicion de `Button`, `MeetupTimeline` y bloque de contexto temporal.
+- Selector de rol activo (`SELLER` / `BUYER`) con `Button.variant=tab`.
+- Acciones contextuales segun estado y reglas de negocio.
+
+Reglas:
+- Debe exponer errores de transicion para QA funcional.
+- Debe permitir simular hora para validar ventana de llegada (`-15m` a `+2h`).
+- Se considera herramienta de validacion interna, no UI final de produccion.
+
 ## Criterio de completitud
 - Cada componente define propiedades, estados, tokens y regla de uso.
 - No hay ambigüedad entre uso de `badge`, `chip`, `banner` y `toast`.
@@ -230,6 +252,8 @@ Reglas:
 - `docs/elements/badge.md`
 - `docs/elements/icons.md`
 - `docs/elements/inbox-bottom-nav.md`
+- `src/components/meetup/meetup-timeline.tsx`
+- `src/components/meetup/meetup-simulator.tsx`
 
 Notas:
 - Fuente runtime de chat: `https://es.wallapop.com/app/chat`.

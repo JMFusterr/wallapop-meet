@@ -39,6 +39,7 @@ Estados soportados:
 Reglas visuales:
 - Estado actual resaltado.
 - Estados finales (`COMPLETED`, `EXPIRED`, `CANCELLED`) bloquean acciones incompatibles.
+- Debe existir una referencia navegable en Storybook: `Design System/Meetup Timeline`.
 
 ## 4. Banner del día del meetup
 Comportamiento:
@@ -58,6 +59,7 @@ Comportamiento:
 - CTA principal visible en banner/tarjeta usando `Button.variant=primary`.
 - Fuera de ventana: botón deshabilitado + mensaje explicativo.
 - Al confirmar: transición a `ARRIVED`.
+- Debe poder validarse en entorno de simulación con hora controlada (`Design System/Meetup Simulator`).
 
 ## 6. Notificación interactiva
 Contenido:
@@ -94,3 +96,10 @@ Patrones mínimos:
 ## Criterio de completitud
 - Todos los estados de negocio tienen UI y CTA asociada.
 - Se cubren happy path y rutas de error/expiración.
+
+## Referencias implementadas (2026-02-20)
+- Simulador interactivo de flujo: `src/components/meetup/meetup-simulator.tsx`.
+- Timeline reusable de estados: `src/components/meetup/meetup-timeline.tsx`.
+- Stories de validacion visual:
+  - `src/components/meetup/meetup-simulator.stories.tsx`
+  - `src/components/meetup/meetup-timeline.stories.tsx`
