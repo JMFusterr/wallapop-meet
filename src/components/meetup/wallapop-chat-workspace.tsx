@@ -280,7 +280,7 @@ function MeetupProposalOverlay({
             <section className="flex h-[92vh] w-full max-h-[92vh] flex-col rounded-t-[22px] bg-white p-4 shadow-[0_16px_48px_rgba(37,50,56,0.22)] motion-safe:animate-in motion-safe:slide-in-from-bottom-10 md:h-[86vh] md:max-h-[86vh] md:max-w-[760px] md:rounded-[20px] md:p-5 md:motion-safe:zoom-in-95">
                 <div className="flex items-start justify-between gap-4">
                     <div>
-                        <p className="font-wallie-fit text-[12px] text-[#6E8792]">Proponer queddada</p>
+                        <p className="font-wallie-fit text-[12px] text-[#6E8792]">Proponer quedada</p>
                         <h2 className="font-wallie-chunky text-[20px] text-[#253238]">
                             {conversation.userName}
                         </h2>
@@ -301,13 +301,12 @@ function MeetupProposalOverlay({
                             key={stepItem.id}
                             type="button"
                             onClick={() => onStepChange(stepItem.id)}
-                            className={`rounded-[10px] px-3 py-2 text-center font-wallie-fit text-[13px] ${
-                                stepItem.id === step
+                            className={`rounded-[10px] px-3 py-2 text-center font-wallie-fit text-[13px] ${stepItem.id === step
                                     ? "bg-white text-[#253238] shadow-[0_1px_2px_rgba(37,50,56,0.1)]"
                                     : stepItem.id < step
-                                      ? "bg-[#E6FAF6] text-[#038673]"
-                                      : "text-[#6E8792]"
-                            }`}
+                                        ? "bg-[#E6FAF6] text-[#038673]"
+                                        : "text-[#6E8792]"
+                                }`}
                         >
                             {stepItem.id}. {stepItem.label}
                         </button>
@@ -315,179 +314,177 @@ function MeetupProposalOverlay({
                 </div>
 
                 <div className="min-h-0 flex-1 overflow-y-auto pr-1">
-                {step === 1 ? (
-                    <div className="mt-4 space-y-4">
-                        <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
-                            Selecciona el punto de encuentro sobre el mapa o usando el buscador.
-                        </p>
-
-                        <label className="block">
-                            <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
-                                Buscar ubicacion
-                            </span>
-                            <input
-                                type="text"
-                                value={searchValue}
-                                onChange={(event) => onSearchChange(event.target.value)}
-                                onKeyDown={(event) => {
-                                    if (event.key === "Enter") {
-                                        event.preventDefault()
-                                        onSearchLocation()
-                                    }
-                                }}
-                                placeholder="Ej: estacion, centro comercial, comisaria"
-                                className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
-                            />
-                            <button
-                                type="button"
-                                onClick={onSearchLocation}
-                                className="mt-2 rounded-full border border-[#D3DEE2] px-3 py-1.5 font-wallie-fit text-[13px] text-[#253238]"
-                            >
-                                Buscar en mapa
-                            </button>
-                        </label>
-
-                        <MeetupLocationMap
-                            center={mapCenter}
-                            safePoints={safeMeetingPoints}
-                            selectedPointId={selectedPointId}
-                            selectedCustomPoint={selectedPointId === "custom" ? customPoint : null}
-                            onMapClick={onMapSelect}
-                            onSafePointClick={onSelectPoint}
-                        />
-
-                        {selectedLocationLabel ? (
-                            <p className="rounded-[10px] bg-[#F3F6F8] px-3 py-2 font-wallie-fit text-[13px] text-[#253238]">
-                                Ubicacion seleccionada: {selectedLocationLabel}
-                            </p>
-                        ) : null}
-                    </div>
-                ) : null}
-
-                {step === 2 ? (
-                    <div className="mt-4 space-y-4">
-                        <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                aria-label="Volver al paso anterior"
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
-                                onClick={onBack}
-                            >
-                                <WallapopIcon name="arrow_left" size="small" />
-                            </button>
+                    {step === 1 ? (
+                        <div className="mt-4 space-y-4">
                             <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
-                                Selecciona fecha y hora para la quedada.
+                                Selecciona el punto de encuentro sobre el mapa o usando el buscador.
                             </p>
-                        </div>
-                        <label className="block">
-                            <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
-                                Fecha y hora
-                            </span>
-                            <input
-                                type="datetime-local"
-                                value={dateTimeValue}
-                                min={toLocalDateTimeValue(new Date())}
-                                onChange={(event) => onDateTimeChange(event.target.value)}
-                                className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
-                            />
-                        </label>
-                    </div>
-                ) : null}
 
-                {step === 3 ? (
-                    <div className="mt-4 space-y-4">
-                        <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                aria-label="Volver al paso anterior"
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
-                                onClick={onBack}
-                            >
-                                <WallapopIcon name="arrow_left" size="small" />
-                            </button>
-                            <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
-                                Define el pago final y la preferencia de cobro.
-                            </p>
-                        </div>
-                        <label className="block">
-                            <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
-                                Importe final acordado (EUR)
-                            </span>
-                            <input
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                value={finalPriceValue}
-                                onChange={(event) => onFinalPriceChange(event.target.value)}
-                                placeholder="Ej: 220"
-                                className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
-                            />
-                        </label>
+                            <label className="block">
+                                <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
+                                    Buscar ubicacion
+                                </span>
+                                <input
+                                    type="text"
+                                    value={searchValue}
+                                    onChange={(event) => onSearchChange(event.target.value)}
+                                    onKeyDown={(event) => {
+                                        if (event.key === "Enter") {
+                                            event.preventDefault()
+                                            onSearchLocation()
+                                        }
+                                    }}
+                                    placeholder="Ej: estacion, centro comercial, comisaria"
+                                    className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={onSearchLocation}
+                                    className="mt-2 rounded-full border border-[#D3DEE2] px-3 py-1.5 font-wallie-fit text-[13px] text-[#253238]"
+                                >
+                                    Buscar en mapa
+                                </button>
+                            </label>
 
-                        <fieldset>
-                            <legend className="mb-2 font-wallie-fit text-[13px] text-[#253238]">
-                                Preferencia de cobro
-                            </legend>
-                            <div className="grid gap-2 sm:grid-cols-3">
-                                {(["CASH", "BIZUM", "WALLET"] as MeetupPaymentMethod[]).map((method) => (
-                                    <button
-                                        key={method}
-                                        type="button"
-                                        onClick={() => onPaymentMethodChange(method)}
-                                        className={`rounded-[12px] border px-3 py-2 font-wallie-fit text-[13px] ${
-                                            paymentMethod === method
-                                                ? "border-[#3DD2BA] bg-[#E6FAF6] text-[#253238]"
-                                                : "border-[#D3DEE2] bg-white text-[#4A5A63]"
-                                        }`}
-                                    >
-                                        {paymentMethodLabel(method)}
-                                    </button>
-                                ))}
+                            <MeetupLocationMap
+                                center={mapCenter}
+                                safePoints={safeMeetingPoints}
+                                selectedPointId={selectedPointId}
+                                selectedCustomPoint={selectedPointId === "custom" ? customPoint : null}
+                                onMapClick={onMapSelect}
+                                onSafePointClick={onSelectPoint}
+                            />
+
+                            {selectedLocationLabel ? (
+                                <p className="rounded-[10px] bg-[#F3F6F8] px-3 py-2 font-wallie-fit text-[13px] text-[#253238]">
+                                    Ubicacion seleccionada: {selectedLocationLabel}
+                                </p>
+                            ) : null}
+                        </div>
+                    ) : null}
+
+                    {step === 2 ? (
+                        <div className="mt-4 space-y-4">
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    aria-label="Volver al paso anterior"
+                                    className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
+                                    onClick={onBack}
+                                >
+                                    <WallapopIcon name="arrow_left" size="small" />
+                                </button>
+                                <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
+                                    Selecciona fecha y hora para la quedada.
+                                </p>
                             </div>
-                        </fieldset>
-                    </div>
-                ) : null}
+                            <label className="block">
+                                <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
+                                    Fecha y hora
+                                </span>
+                                <input
+                                    type="datetime-local"
+                                    value={dateTimeValue}
+                                    min={toLocalDateTimeValue(new Date())}
+                                    onChange={(event) => onDateTimeChange(event.target.value)}
+                                    className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
+                                />
+                            </label>
+                        </div>
+                    ) : null}
+
+                    {step === 3 ? (
+                        <div className="mt-4 space-y-4">
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    aria-label="Volver al paso anterior"
+                                    className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
+                                    onClick={onBack}
+                                >
+                                    <WallapopIcon name="arrow_left" size="small" />
+                                </button>
+                                <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
+                                    Define el pago final y la preferencia de cobro.
+                                </p>
+                            </div>
+                            <label className="block">
+                                <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
+                                    Importe final acordado (EUR)
+                                </span>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value={finalPriceValue}
+                                    onChange={(event) => onFinalPriceChange(event.target.value)}
+                                    placeholder="Ej: 220"
+                                    className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
+                                />
+                            </label>
+
+                            <fieldset>
+                                <legend className="mb-2 font-wallie-fit text-[13px] text-[#253238]">
+                                    Preferencia de cobro
+                                </legend>
+                                <div className="grid gap-2 sm:grid-cols-3">
+                                    {(["CASH", "BIZUM", "WALLET"] as MeetupPaymentMethod[]).map((method) => (
+                                        <button
+                                            key={method}
+                                            type="button"
+                                            onClick={() => onPaymentMethodChange(method)}
+                                            className={`rounded-[12px] border px-3 py-2 font-wallie-fit text-[13px] ${paymentMethod === method
+                                                    ? "border-[#3DD2BA] bg-[#E6FAF6] text-[#253238]"
+                                                    : "border-[#D3DEE2] bg-white text-[#4A5A63]"
+                                                }`}
+                                        >
+                                            {paymentMethodLabel(method)}
+                                        </button>
+                                    ))}
+                                </div>
+                            </fieldset>
+                        </div>
+                    ) : null}
                 </div>
 
                 <div className="mt-4 flex justify-end gap-2">
                     {step < 3 ? (
                         <>
-                        <button
-                            type="button"
-                            className="rounded-full border border-[#D3DEE2] px-4 py-2 font-wallie-fit text-[14px] text-[#253238]"
-                            onClick={onCancel}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="button"
-                            className={`rounded-full px-4 py-2 font-wallie-chunky text-[14px] text-white ${
-                                step === 1 && !canContinueStepOne
-                                    ? "cursor-not-allowed bg-[#B6C4CB]"
-                                    : "bg-[#13C1AC]"
-                            }`}
-                            onClick={onNext}
-                            disabled={step === 1 && !canContinueStepOne}
-                        >
-                            Siguiente
-                        </button>
+                            <button
+                                type="button"
+                                className="rounded-full border border-[#D3DEE2] px-4 py-2 font-wallie-fit text-[14px] text-[#253238]"
+                                onClick={onCancel}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                className={`rounded-full px-4 py-2 font-wallie-chunky text-[14px] text-white ${step === 1 && !canContinueStepOne
+                                        ? "cursor-not-allowed bg-[#B6C4CB]"
+                                        : "bg-[#13C1AC]"
+                                    }`}
+                                onClick={onNext}
+                                disabled={step === 1 && !canContinueStepOne}
+                            >
+                                Siguiente
+                            </button>
                         </>
                     ) : (
                         <>
-                        <button
-                            type="button"
-                            className="rounded-full border border-[#D3DEE2] px-4 py-2 font-wallie-fit text-[14px] text-[#253238]"
-                            onClick={onCancel}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="button"
-                            className="rounded-full bg-[#13C1AC] px-4 py-2 font-wallie-chunky text-[14px] text-white"
-                            onClick={onSubmit}
-                        >
-                            Proponer quedada
-                        </button>
+                            <button
+                                type="button"
+                                className="rounded-full border border-[#D3DEE2] px-4 py-2 font-wallie-fit text-[14px] text-[#253238]"
+                                onClick={onCancel}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                className="rounded-full bg-[#13C1AC] px-4 py-2 font-wallie-chunky text-[14px] text-white"
+                                onClick={onSubmit}
+                            >
+                                Proponer quedada
+                            </button>
                         </>
                     )}
                 </div>
@@ -510,15 +507,8 @@ function InboxPane({
     return (
         <section className="flex h-full min-h-0 flex-col bg-white">
             <div className="border-b border-[#E8ECEF] px-4 py-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center">
                     <h1 className="font-wallie-chunky text-[22px] text-[#253238]">Buzon</h1>
-                    <button
-                        type="button"
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
-                        aria-label="Menu"
-                    >
-                        <WallapopIcon name="burguer_menu" size="small" />
-                    </button>
                 </div>
                 <div
                     role="tablist"
@@ -622,6 +612,13 @@ function ConversationPane({
                         {conversation.itemTitle}
                     </p>
                 </div>
+                <button
+                    type="button"
+                    aria-label={`Mas opciones de la conversacion con ${conversation.userName}`}
+                    className="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-full text-[#6E8792] hover:bg-[#F3F6F8]"
+                >
+                    <WallapopIcon name="ellipsis_horizontal" size={16} strokeWidth={1.8} />
+                </button>
             </header>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5">

@@ -86,11 +86,11 @@ function ChatListItem({
               <span
                 aria-label={lastMessageDeliveryState === "read" ? "Leido" : "Enviado"}
                 className={cn(
-                  "shrink-0 text-[16px] leading-none",
+                  "inline-flex shrink-0 items-center leading-none",
                   lastMessageDeliveryState === "read" ? "text-[#13C1AC]" : "text-[#C2CDD3]"
                 )}
               >
-                ✓✓
+                <WallapopIcon name="double_check" size={13} strokeWidth={1.9} />
               </span>
             ) : null}
             {messagePreview}
@@ -103,3 +103,4 @@ function ChatListItem({
 }
 
 export { ChatListItem }
+

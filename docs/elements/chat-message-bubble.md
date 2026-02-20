@@ -55,6 +55,8 @@
 ## Notas de normalizacion DS
 - Mantener variantes separadas `sent` y `received` por diferencia de relleno y fondo.
 - En Wallapop Meet se permite metadato inline dentro del bubble para `time` y estado de entrega.
-- En variante `sent`, mostrar `✓✓` en la esquina inferior derecha:
+- En variante `sent`, mostrar doble check en la esquina inferior derecha con `WallapopIcon(name="double_check")`:
   - `deliveryState = sent`: checks en gris.
   - `deliveryState = read`: checks en verde.
+- Ajuste de implementacion Wallapop Meet (2026-02-20):
+  - `message_bubble.sent` usa padding horizontal simetrico (`px-3`) para evitar hueco visual excesivo a la derecha.

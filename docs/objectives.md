@@ -43,3 +43,6 @@ Objetivos:
   - Paso 3: precio final y preferencia de cobro (`CASH`, `BIZUM`, `WALLET`).
 - `ChatSecurityBanner` fijado sobre el composer en formato compacto.
 - `MeetupCard` mostrando datos de propuesta (lugar, precio final y metodo de cobro) una vez creado el meetup.
+- Header de buzon simplificado sin accion de menu tipo hamburguesa.
+- Accion de "mas opciones" (`ellipsis_horizontal`) ubicada en la cabecera de cada conversacion, alineada a la derecha.
+- Estado de entrega con icono `double_check` unificado en listado y burbujas (`sent` gris, `read` verde), con bubble enviada usando padding horizontal simetrico.

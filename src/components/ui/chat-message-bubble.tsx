@@ -1,5 +1,6 @@
 import * as React from "react"
 
+import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { cn } from "@/lib/utils"
 
 type ChatMessageBubbleVariant = "sent" | "received"
@@ -14,7 +15,7 @@ type ChatMessageBubbleProps = React.ComponentProps<"div"> & {
 const bubbleVariantClass: Record<ChatMessageBubbleVariant, string> = {
   received:
     "border-[0.8px] border-[var(--wm-color-border-default)] bg-transparent px-3 py-2",
-  sent: "border-[0.8px] border-[var(--wm-color-border-default)] bg-[var(--wm-color-border-default)] px-3 pr-8 py-2",
+  sent: "border-[0.8px] border-[var(--wm-color-border-default)] bg-[var(--wm-color-border-default)] px-3 py-2",
 }
 
 function ChatMessageBubble({
@@ -48,11 +49,11 @@ function ChatMessageBubble({
               <span
                 aria-label={deliveryState === "read" ? "Leido" : "Enviado"}
                 className={cn(
-                  "text-[16px] leading-none",
+                  "inline-flex items-center leading-none",
                   deliveryState === "read" ? "text-[#13C1AC]" : "text-[#C2CDD3]"
                 )}
               >
-                ✓✓
+                <WallapopIcon name="double_check" size={13} strokeWidth={1.9} />
               </span>
             ) : null}
           </span>
@@ -63,3 +64,4 @@ function ChatMessageBubble({
 }
 
 export { ChatMessageBubble }
+

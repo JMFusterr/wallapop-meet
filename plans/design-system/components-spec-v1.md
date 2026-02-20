@@ -199,6 +199,8 @@ Reglas:
 - El wrapper de implementacion en app es `src/components/ui/wallapop-icon.tsx`.
 - Mientras no exista libreria publica oficial, mapear a iconos equivalentes en `lucide-react` manteniendo naming Wallapop en la API.
 - En movil, mantener escala `16px` (`small`) y `24px` (`medium`) con area tactil minima de `44x44` en controles accionables.
+- Para estado de entrega de mensajes, `double_check` debe verse compacto y de bajo protagonismo visual frente al texto/hora.
+- Para acciones contextuales de conversacion, usar `ellipsis_horizontal` en cabecera de `ConversationPane` y evitar su uso en preview de lista.
 
 ## 12. Navegacion inferior de inbox (`InboxBottomNav`)
 Propiedades visuales:

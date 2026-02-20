@@ -44,6 +44,11 @@
 - `bookmark`, `deal` (indicadores en miniatura de `ChatListItem`)
 - `double_check` (estado de entrega en listado y mensajes)
 
+Notas de uso en workspace (2026-02-20):
+- `burguer_menu` no se usa en el header del buzon de la implementacion actual.
+- `ellipsis_horizontal` se usa en el header de la conversacion abierta (accion contextual placeholder).
+- `double_check` se resuelve en el wrapper local con un icono de checks compactos para estado `sent/read`.
+
 Nota:
 - `paper_plane` se mantiene en la API del wrapper local aunque no se haya capturado explicitamente en el inventario runtime anterior.
 

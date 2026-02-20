@@ -7,6 +7,7 @@ Definir pantallas y patrones de interacción para cubrir el ciclo completo de un
 - Wallapop Meet se lanza desde el chat de Wallapop, dentro de una conversación activa entre vendedor y comprador.
 - No se contempla acceso standalone a la creación del meetup fuera del contexto del chat.
 - El contexto de chat (anuncio, participantes y acuerdo previo) alimenta la propuesta inicial.
+- En implementacion actual, la vista de buzon evita accion global de hamburguesa y delega acciones contextuales al header de cada conversacion (icono de tres puntos verticales).
 
 ## 1. Propuesta inicial (vendedor)
 Contenido:
@@ -125,3 +126,8 @@ Patrones mínimos:
   - `src/components/meetup/meetup-timeline.stories.tsx`
   - `src/components/meetup/meetup-card.stories.tsx`
   - `src/components/meetup/meetup-day-banner.stories.tsx`
+
+Notas de UI del workspace (2026-02-20):
+- Header de `InboxPane`: sin boton `burguer_menu`.
+- Header de `ConversationPane`: boton `ellipsis_horizontal` alineado a la derecha (placeholder sin accion funcional por ahora).
+- Indicador de entrega en `ChatMessageBubble` y `ChatListItem` unificado con `WallapopIcon.name=double_check`.

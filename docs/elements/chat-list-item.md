@@ -52,9 +52,13 @@
   - Contenedor circular blanco con borde suave y acento magenta
 - Estado de entrega en preview:
   - Doble check al inicio del texto (`messagePreview`) cuando el ultimo mensaje es del usuario
+  - En Wallapop Meet se renderiza con `WallapopIcon(name="double_check")` para mantener consistencia con burbuja de mensaje
   - Color:
     - `read`: verde/turquesa (`#13C1AC`)
     - `sent`: gris claro (`#C2CDD3`)
+- Accion de tres puntos:
+  - En Wallapop Meet no se renderiza en cada fila de preview.
+  - Se muestra en el header de la conversacion abierta (`ConversationPane`), alineada a la derecha.
 
 ## Tokens candidatos
 - `tokens.color.list_item.title = #253238`

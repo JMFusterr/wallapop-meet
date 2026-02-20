@@ -1,8 +1,8 @@
 import {
   ArrowLeft,
-  BadgeCheck,
   Bookmark,
   CalendarDays,
+  CheckCheck,
   ChevronRight,
   CirclePlus,
   EllipsisVertical,
@@ -63,7 +63,7 @@ const wallapopIconMap: Record<WallapopIconName, LucideIcon> = {
   bookmark: Bookmark,
   deal: Handshake,
   calendar: CalendarDays,
-  double_check: BadgeCheck,
+  double_check: CheckCheck,
 }
 
 const iconSizeMap: Record<Exclude<WallapopIconSize, number>, number> = {
