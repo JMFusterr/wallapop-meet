@@ -1,0 +1,45 @@
+export const MEETUP_STATUSES = [
+    "PROPOSED",
+    "COUNTER_PROPOSED",
+    "CONFIRMED",
+    "ARRIVED",
+    "COMPLETED",
+    "EXPIRED",
+    "CANCELLED",
+] as const
+
+export type MeetupStatus = (typeof MEETUP_STATUSES)[number]
+
+export type ActorRole = "SELLER" | "BUYER"
+
+export type MeetupMachine = {
+    status: MeetupStatus | null
+    scheduledAt: Date
+    proposedAt?: Date
+    confirmedAt?: Date
+    arrivedAt?: Date
+    completedAt?: Date
+    expiredAt?: Date
+    cancelledAt?: Date
+}
+
+export type MeetupEvent =
+    | { type: "PROPOSE"; actorRole: ActorRole; occurredAt?: Date }
+    | { type: "COUNTER_PROPOSE"; actorRole: ActorRole; occurredAt?: Date }
+    | { type: "ACCEPT"; actorRole: ActorRole; occurredAt?: Date }
+    | { type: "MARK_ARRIVED"; actorRole: ActorRole; occurredAt: Date }
+    | { type: "COMPLETE"; actorRole: ActorRole; occurredAt?: Date }
+    | { type: "CANCEL"; actorRole: ActorRole; occurredAt?: Date }
+    | { type: "EXPIRE"; occurredAt?: Date }
+
+export type TransitionSuccess = {
+    ok: true
+    meetup: MeetupMachine
+}
+
+export type TransitionFailure = {
+    ok: false
+    reason: string
+}
+
+export type TransitionResult = TransitionSuccess | TransitionFailure
