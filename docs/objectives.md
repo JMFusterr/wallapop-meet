@@ -45,4 +45,9 @@ Objetivos:
 - `MeetupCard` mostrando datos de propuesta (lugar, precio final y metodo de cobro) una vez creado el meetup.
 - Header de buzon simplificado sin accion de menu tipo hamburguesa.
 - Accion de "mas opciones" (`ellipsis_horizontal`) ubicada en la cabecera de cada conversacion, alineada a la derecha.
+- Cabecera de conversacion con avatar circular de perfil del comprador junto al menu de tres puntos para mayor fidelidad al patron de Wallapop.
 - Estado de entrega con icono `double_check` unificado en listado y burbujas (`sent` gris, `read` verde), con bubble enviada usando padding horizontal simetrico.
+- Buzon de conversaciones con escenario realista: multiples interesados por articulo, textos de chat plausibles e imagen de producto por conversacion.
+- Estados comerciales representados en el listado de conversaciones con los indicadores visuales del sistema de diseno:
+  - `WithBookmark` (`leadingIndicator="bookmark"`) para anuncios reservados.
+  - `WithDeal` (`leadingIndicator="deal"`) para anuncios vendidos.

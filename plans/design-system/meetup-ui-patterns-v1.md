@@ -8,6 +8,7 @@ Definir pantallas y patrones de interacción para cubrir el ciclo completo de un
 - No se contempla acceso standalone a la creación del meetup fuera del contexto del chat.
 - El contexto de chat (anuncio, participantes y acuerdo previo) alimenta la propuesta inicial.
 - En implementacion actual, la vista de buzon evita accion global de hamburguesa y delega acciones contextuales al header de cada conversacion (icono de tres puntos verticales).
+- El header de cada conversacion incluye avatar circular del usuario comprador junto al icono de tres puntos para reforzar el contexto del interlocutor.
 
 ## 1. Propuesta inicial (vendedor)
 Contenido:
@@ -129,5 +130,9 @@ Patrones mínimos:
 
 Notas de UI del workspace (2026-02-20):
 - Header de `InboxPane`: sin boton `burguer_menu`.
-- Header de `ConversationPane`: boton `ellipsis_horizontal` alineado a la derecha (placeholder sin accion funcional por ahora).
+- Header de `ConversationPane`: avatar circular del comprador + boton `ellipsis_horizontal` alineado a la derecha (placeholder sin accion funcional por ahora).
 - Indicador de entrega en `ChatMessageBubble` y `ChatListItem` unificado con `WallapopIcon.name=double_check`.
+- Estado comercial en items del buzon reutilizando componentes documentados:
+  - `Chat List Item With Bookmark` para reservado (`leadingIndicator="bookmark"`).
+  - `Chat List Item With Deal` para vendido (`leadingIndicator="deal"`).
+- Mock del buzon extendido con conversaciones realistas e imagen de articulo por cada chat.

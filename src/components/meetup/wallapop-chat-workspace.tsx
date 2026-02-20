@@ -17,7 +17,6 @@ import type {
     MeetupMachine,
     MeetupPaymentMethod,
 } from "@/meetup/types"
-import productImage from "@/stories/assets/avif-test-image.avif"
 
 type Message = {
     id: string
@@ -33,7 +32,9 @@ type Conversation = {
     messageDate: string
     itemTitle: string
     messagePreview: string
-    avatarSrc?: string
+    listingImageSrc?: string
+    profileImageSrc?: string
+    leadingIndicator?: "bookmark" | "deal"
     unreadCount?: number
     lastMessageDeliveryState?: "sent" | "read"
     meetupContext?: MeetupChatContext
@@ -54,38 +55,108 @@ type MapPoint = {
     lng: number
 }
 
+function escapeSvgText(value: string): string {
+    return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&apos;")
+}
+
+function toSvgDataUri(svg: string): string {
+    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
+}
+
+function createProfileImage(name: string, color: string): string {
+    const parts = name.trim().split(/\s+/)
+    const initials = escapeSvgText((parts[0]?.[0] ?? "").concat(parts[1]?.[0] ?? "").toUpperCase())
+    const svg = `
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="100" fill="${color}" />
+  <text x="50%" y="56%" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="74" font-weight="700">${initials}</text>
+</svg>`
+    return toSvgDataUri(svg)
+}
+
 const conversations: Conversation[] = [
     {
         id: "conv-meetup-001",
-        userName: "Lorena",
-        messageDate: "18:35",
-        itemTitle: "Nintendo Switch OLED",
-        messagePreview: "Perfecto, podemos quedar manana?",
-        avatarSrc: productImage,
+        userName: "Laura M.",
+        messageDate: "Hoy",
+        itemTitle: "Nintendo Switch OLED + dock",
+        messagePreview: "Si te va bien, quedamos manana en Sants.",
+        listingImageSrc:
+            "https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
+        profileImageSrc:
+            createProfileImage("Laura M.", "#13C1AC"),
         lastMessageDeliveryState: "read",
         meetupContext: {
             conversationId: "conv-meetup-001",
             listingId: "listing-switch-001",
             sellerUserId: "user-seller-001",
-            buyerUserId: "user-buyer-lorena-001",
+            buyerUserId: "user-buyer-laura-001",
         },
     },
     {
         id: "conv-002",
-        userName: "Daniel",
-        messageDate: "17:24",
-        itemTitle: "Figura Pickett Animales Fan",
-        messagePreview: "Ya voy",
+        userName: "Javi R.",
+        messageDate: "Ayer",
+        itemTitle: "Bicicleta fixie Fuji",
+        messagePreview: "Te la reservo hasta las 20:00, ok?",
         unreadCount: 2,
-        avatarSrc: productImage,
+        leadingIndicator: "bookmark",
+        listingImageSrc:
+            "https://images.pexels.com/photos/100582/pexels-photo-100582.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
+        profileImageSrc:
+            createProfileImage("Javi R.", "#5A8DEE"),
     },
     {
         id: "conv-003",
-        userName: "Sira",
+        userName: "Marta P.",
+        messageDate: "18 feb",
+        itemTitle: "Camara Fujifilm X-T20",
+        messagePreview: "Si incluyes bateria extra, me la quedo.",
+        listingImageSrc:
+            "https://images.pexels.com/photos/51383/photo-camera-subject-photographer-51383.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
+        profileImageSrc:
+            createProfileImage("Marta P.", "#7A5AF8"),
+    },
+    {
+        id: "conv-004",
+        userName: "Carlos G.",
+        messageDate: "15 feb",
+        itemTitle: "Silla gamer Secretlab",
+        messagePreview: "Perfecto, gracias por todo. Venta cerrada.",
+        leadingIndicator: "deal",
+        listingImageSrc:
+            "https://images.pexels.com/photos/13871156/pexels-photo-13871156.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
+        profileImageSrc:
+            createProfileImage("Carlos G.", "#253238"),
+    },
+    {
+        id: "conv-005",
+        userName: "Alba T.",
+        messageDate: "14 feb",
+        itemTitle: "AirPods Pro 2",
+        messagePreview: "Si funcionan perfectos, te pago en mano.",
+        leadingIndicator: "bookmark",
+        listingImageSrc:
+            "https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
+        profileImageSrc:
+            createProfileImage("Alba T.", "#0EA5A4"),
+    },
+    {
+        id: "conv-006",
+        userName: "Iker S.",
         messageDate: "12 feb",
-        itemTitle: "Silent Hill f PS5 Juego",
-        messagePreview: "Sira ha rechazado tu oferta.",
-        avatarSrc: productImage,
+        itemTitle: "Monitor LG 27 pulgadas 144Hz",
+        messagePreview: "Me pasas foto del panel encendido?",
+        unreadCount: 1,
+        listingImageSrc:
+            "https://images.pexels.com/photos/1038916/pexels-photo-1038916.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
+        profileImageSrc:
+            createProfileImage("Iker S.", "#1D4ED8"),
     },
 ]
 
@@ -93,40 +164,72 @@ const initialMessagesByConversation: Record<string, Message[]> = {
     "conv-meetup-001": [
         {
             id: "m-1",
-            text: "Hola! Te interesa la Switch?",
+            text: "Hola Laura! La Switch sigue disponible y esta muy cuidada.",
             variant: "sent",
-            time: "17:42",
+            time: "18:11",
             deliveryState: "read",
         },
         {
             id: "m-2",
-            text: "Si, me interesa. Podemos quedar manana?",
+            text: "Genial, me interesa. Incluye mando y funda?",
             variant: "received",
-            time: "17:50",
+            time: "18:17",
         },
         {
             id: "m-3",
-            text: "Perfecto. Si quieres, formalizamos la quedada desde aqui.",
+            text: "Si, incluye todo. Si te va bien, quedamos manana en Sants.",
             variant: "sent",
-            time: "18:01",
+            time: "18:20",
             deliveryState: "sent",
         },
     ],
     "conv-002": [
         {
             id: "m-4",
-            text: "Te la reservo hasta esta tarde.",
+            text: "Te la reservo hasta las 20:00 y te mando ubicacion exacta.",
             variant: "sent",
-            time: "16:03",
+            time: "19:12",
             deliveryState: "read",
+        },
+        {
+            id: "m-5",
+            text: "Perfecto, salgo del trabajo y te aviso cuando llegue.",
+            variant: "received",
+            time: "19:16",
         },
     ],
     "conv-003": [
         {
-            id: "m-5",
-            text: "Gracias por responder!",
+            id: "m-6",
+            text: "Si incluyes bateria extra, me la quedo esta semana.",
             variant: "received",
-            time: "12:10",
+            time: "11:08",
+        },
+    ],
+    "conv-004": [
+        {
+            id: "m-7",
+            text: "Silla entregada, todo perfecto. Gracias!",
+            variant: "received",
+            time: "21:03",
+        },
+    ],
+    "conv-005": [
+        {
+            id: "m-8",
+            text: "Te los guardo hasta manana por la tarde.",
+            variant: "sent",
+            time: "20:41",
+            deliveryState: "read",
+        },
+    ],
+    "conv-006": [
+        {
+            id: "m-9",
+            text: "Claro, en un rato te paso video con el test de pixeles.",
+            variant: "sent",
+            time: "18:54",
+            deliveryState: "sent",
         },
     ],
 }
@@ -538,7 +641,9 @@ function InboxPane({
                         messageDate={conversation.messageDate}
                         itemTitle={conversation.itemTitle}
                         messagePreview={conversation.messagePreview}
-                        avatarSrc={conversation.avatarSrc}
+                        avatarSrc={conversation.listingImageSrc}
+                        avatarAlt={conversation.itemTitle}
+                        leadingIndicator={conversation.leadingIndicator}
                         unreadCount={conversation.unreadCount}
                         selected={conversation.id === selectedConversationId}
                         lastMessageDeliveryState={conversation.lastMessageDeliveryState}
@@ -600,8 +705,8 @@ function ConversationPane({
                     </button>
                 ) : null}
                 <img
-                    src={conversation.avatarSrc ?? productImage}
-                    alt={conversation.userName}
+                    src={conversation.listingImageSrc}
+                    alt={conversation.itemTitle}
                     className="h-11 w-11 rounded-[12px] object-cover"
                 />
                 <div className="min-w-0">
@@ -612,10 +717,15 @@ function ConversationPane({
                         {conversation.itemTitle}
                     </p>
                 </div>
+                <img
+                    src={conversation.profileImageSrc}
+                    alt={`Foto de perfil de ${conversation.userName}`}
+                    className="ml-auto h-9 w-9 rounded-full border border-[#D3DEE2] object-cover"
+                />
                 <button
                     type="button"
                     aria-label={`Mas opciones de la conversacion con ${conversation.userName}`}
-                    className="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-full text-[#6E8792] hover:bg-[#F3F6F8]"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[#6E8792] hover:bg-[#F3F6F8]"
                 >
                     <WallapopIcon name="ellipsis_horizontal" size={16} strokeWidth={1.8} />
                 </button>
