@@ -93,4 +93,4 @@ function InboxBottomNav({
   )
 }
 
-export { InboxBottomNav, inboxBottomNavDefaultItems, type InboxBottomNavItem }
+export { InboxBottomNav, type InboxBottomNavItem }

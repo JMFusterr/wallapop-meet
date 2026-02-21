@@ -57,9 +57,23 @@ function EntryHarness({ actorRole }: { actorRole: ActorRole }) {
 }
 
 export const SellerCanStart: Story = {
+    args: {
+        meetup: createMeetupMachine({ scheduledAt, chatContext }),
+        actorRole: "SELLER",
+        currentTime: new Date("2026-02-20T16:00:00.000Z"),
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
     render: () => <EntryHarness actorRole="SELLER" />,
 }
 
 export const BuyerDoesNotSeeEntry: Story = {
+    args: {
+        meetup: createMeetupMachine({ scheduledAt, chatContext }),
+        actorRole: "BUYER",
+        currentTime: new Date("2026-02-20T16:00:00.000Z"),
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
     render: () => <EntryHarness actorRole="BUYER" />,
 }

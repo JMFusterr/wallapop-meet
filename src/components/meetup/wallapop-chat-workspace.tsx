@@ -691,7 +691,7 @@ function MeetupProposalOverlay({
                             </MapContainer>
 
                             {mapSelectedPoint || isCustomPointSelected ? (
-                                <div className="absolute inset-x-3 bottom-3 z-[1200] rounded-[16px] bg-white p-4 shadow-[0_10px_28px_rgba(37,50,56,0.2)]">
+                                <div className="absolute inset-x-3 bottom-3 z-1200 rounded-[16px] bg-white p-4 shadow-[0_10px_28px_rgba(37,50,56,0.2)]">
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="min-w-0">
                                             <p className="font-wallie-chunky text-[20px] text-[#253238] md:text-[22px]">
@@ -766,221 +766,221 @@ function MeetupProposalOverlay({
                                 })}
                             </div>
                         </div>
-                {errorMessage ? (
-                    <p className="mx-4 mt-3 rounded-[8px] bg-[#FDEBEC] px-3 py-2 font-wallie-fit text-[13px] text-[#A81F2D]">
-                        {errorMessage}
-                    </p>
-                ) : null}
+                        {errorMessage ? (
+                            <p className="mx-4 mt-3 rounded-[8px] bg-[#FDEBEC] px-3 py-2 font-wallie-fit text-[13px] text-[#A81F2D]">
+                                {errorMessage}
+                            </p>
+                        ) : null}
 
-                <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
-                    {step === 1 ? (
-                        <div className="mt-4 space-y-4">
-                            <h3 className="font-wallie-chunky text-[22px] leading-[1.12] text-[#253238] md:text-[24px]">
-                                Seleccionar punto de encuentro
-                            </h3>
-                            {visibleOptions.map((option) => {
-                                const isSelected = selectedOptionId === option.id
-                                return (
-                                    <button
-                                        key={option.id}
-                                        type="button"
-                                        onClick={() => onSelectPoint(option.id)}
-                                        className={`w-full rounded-[18px] border px-4 py-4 text-left ${isSelected
-                                                ? "border-[#253238] shadow-[inset_0_0_0_1px_#253238]"
-                                                : "border-[#B8C9CF]"
-                                            }`}
-                                    >
-                                        <div className="flex items-start gap-3">
-                                            {option.kind === "safe" ? (
-                                                <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#E6FAF6] text-[#038673]">
-                                                    <SafeShieldGlyph />
-                                                </span>
-                                            ) : (
-                                                <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#E8F0FF] text-[#2F6DF6]">
-                                                    <MapPin size={16} />
-                                                </span>
-                                            )}
-                                            <div className="min-w-0 flex-1">
-                                                <p className="font-wallie-chunky text-[18px] leading-tight text-[#253238] md:text-[19px]">
-                                                    {option.label}
-                                                </p>
-                                                <p className="mt-1 font-wallie-fit text-[13px] text-[#4A5A63]">
-                                                    {option.address}
-                                                </p>
-                                                <div className="mt-1 flex items-center gap-2">
+                        <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
+                            {step === 1 ? (
+                                <div className="mt-4 space-y-4">
+                                    <h3 className="font-wallie-chunky text-[22px] leading-[1.12] text-[#253238] md:text-[24px]">
+                                        Seleccionar punto de encuentro
+                                    </h3>
+                                    {visibleOptions.map((option) => {
+                                        const isSelected = selectedOptionId === option.id
+                                        return (
+                                            <button
+                                                key={option.id}
+                                                type="button"
+                                                onClick={() => onSelectPoint(option.id)}
+                                                className={`w-full rounded-[18px] border px-4 py-4 text-left ${isSelected
+                                                    ? "border-[#253238] shadow-[inset_0_0_0_1px_#253238]"
+                                                    : "border-[#B8C9CF]"
+                                                    }`}
+                                            >
+                                                <div className="flex items-start gap-3">
                                                     {option.kind === "safe" ? (
-                                                        <>
-                                                            <span className="rounded-full bg-[#E6FAF6] px-2 py-0.5 font-wallie-fit text-[12px] text-[#038673]">
-                                                                Punto seguro
-                                                            </span>
-                                                            <span className="rounded-full bg-[#EEF3F5] px-2 py-0.5 font-wallie-fit text-[12px] text-[#4A5A63]">
-                                                                {option.completedSales ?? 0} ventas
-                                                            </span>
-                                                        </>
+                                                        <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#E6FAF6] text-[#038673]">
+                                                            <SafeShieldGlyph />
+                                                        </span>
                                                     ) : (
-                                                        <span className="rounded-full bg-[#EEF3F5] px-2 py-0.5 font-wallie-fit text-[12px] text-[#4A5A63]">
-                                                            Personalizado
+                                                        <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#E8F0FF] text-[#2F6DF6]">
+                                                            <MapPin size={16} />
                                                         </span>
                                                     )}
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="font-wallie-chunky text-[18px] leading-tight text-[#253238] md:text-[19px]">
+                                                            {option.label}
+                                                        </p>
+                                                        <p className="mt-1 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                                            {option.address}
+                                                        </p>
+                                                        <div className="mt-1 flex items-center gap-2">
+                                                            {option.kind === "safe" ? (
+                                                                <>
+                                                                    <span className="rounded-full bg-[#E6FAF6] px-2 py-0.5 font-wallie-fit text-[12px] text-[#038673]">
+                                                                        Punto seguro
+                                                                    </span>
+                                                                    <span className="rounded-full bg-[#EEF3F5] px-2 py-0.5 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                                                        {option.completedSales ?? 0} ventas
+                                                                    </span>
+                                                                </>
+                                                            ) : (
+                                                                <span className="rounded-full bg-[#EEF3F5] px-2 py-0.5 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                                                    Personalizado
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 </div>
+                                            </button>
+                                        )
+                                    })}
+
+                                    <button
+                                        type="button"
+                                        onClick={onOpenMapPicker}
+                                        className="w-full rounded-[18px] border border-[#B8C9CF] px-4 py-4 text-left"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
+                                                <WallapopIcon name="plus" size={16} />
+                                            </span>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-wallie-chunky text-[18px] text-[#253238] md:text-[19px]">
+                                                    Elige un punto
+                                                </p>
+                                                <p className="font-wallie-fit text-[13px] text-[#6E8792]">
+                                                    Puede ser un punto personalizado u otro punto seguro.
+                                                </p>
                                             </div>
                                         </div>
                                     </button>
-                                )
-                            })}
+                                </div>
+                            ) : null}
 
-                            <button
-                                type="button"
-                                onClick={onOpenMapPicker}
-                                className="w-full rounded-[18px] border border-[#B8C9CF] px-4 py-4 text-left"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
-                                        <WallapopIcon name="plus" size={16} />
-                                    </span>
-                                    <div className="min-w-0 flex-1">
-                                        <p className="font-wallie-chunky text-[18px] text-[#253238] md:text-[19px]">
-                                            Elige un punto
-                                        </p>
-                                        <p className="font-wallie-fit text-[13px] text-[#6E8792]">
-                                            Puede ser un punto personalizado u otro punto seguro.
+                            {step === 2 ? (
+                                <div className="mt-4 space-y-4">
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            aria-label="Volver al paso anterior"
+                                            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
+                                            onClick={onBack}
+                                        >
+                                            <WallapopIcon name="arrow_left" size="small" />
+                                        </button>
+                                        <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
+                                            Selecciona fecha y hora para la quedada.
                                         </p>
                                     </div>
+                                    <label className="block">
+                                        <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
+                                            Fecha y hora
+                                        </span>
+                                        <input
+                                            type="datetime-local"
+                                            value={dateTimeValue}
+                                            min={toLocalDateTimeValue(new Date())}
+                                            onChange={(event) => onDateTimeChange(event.target.value)}
+                                            className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
+                                        />
+                                    </label>
                                 </div>
-                            </button>
-                        </div>
-                    ) : null}
+                            ) : null}
 
-                    {step === 2 ? (
-                        <div className="mt-4 space-y-4">
-                            <div className="flex items-center gap-2">
-                                <button
-                                    type="button"
-                                    aria-label="Volver al paso anterior"
-                                    className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
-                                    onClick={onBack}
-                                >
-                                    <WallapopIcon name="arrow_left" size="small" />
-                                </button>
-                                <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
-                                    Selecciona fecha y hora para la quedada.
-                                </p>
-                            </div>
-                            <label className="block">
-                                <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
-                                    Fecha y hora
-                                </span>
-                                <input
-                                    type="datetime-local"
-                                    value={dateTimeValue}
-                                    min={toLocalDateTimeValue(new Date())}
-                                    onChange={(event) => onDateTimeChange(event.target.value)}
-                                    className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
-                                />
-                            </label>
-                        </div>
-                    ) : null}
-
-                    {step === 3 ? (
-                        <div className="mt-4 space-y-4">
-                            <div className="flex items-center gap-2">
-                                <button
-                                    type="button"
-                                    aria-label="Volver al paso anterior"
-                                    className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
-                                    onClick={onBack}
-                                >
-                                    <WallapopIcon name="arrow_left" size="small" />
-                                </button>
-                                <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
-                                    Define el pago final y la preferencia de pago.
-                                </p>
-                            </div>
-                            <label className="block">
-                                <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
-                                    Importe final acordado (EUR)
-                                </span>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    value={finalPriceValue}
-                                    onChange={(event) => onFinalPriceChange(event.target.value)}
-                                    placeholder="Ej: 220"
-                                    className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
-                                />
-                            </label>
-
-                            <fieldset>
-                                <legend className="mb-2 font-wallie-fit text-[13px] text-[#253238]">
-                                    Preferencia de pago
-                                </legend>
-                                <div className="grid gap-2 sm:grid-cols-3">
-                                    {(["CASH", "BIZUM", "WALLET"] as MeetupPaymentMethod[]).map((method) => (
+                            {step === 3 ? (
+                                <div className="mt-4 space-y-4">
+                                    <div className="flex items-center gap-2">
                                         <button
-                                            key={method}
                                             type="button"
-                                            onClick={() => onPaymentMethodChange(method)}
-                                            className={`rounded-[12px] border px-3 py-2 font-wallie-fit text-[13px] ${paymentMethod === method
-                                                    ? "border-[#3DD2BA] bg-[#E6FAF6] text-[#253238]"
-                                                    : "border-[#D3DEE2] bg-white text-[#4A5A63]"
-                                                }`}
+                                            aria-label="Volver al paso anterior"
+                                            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
+                                            onClick={onBack}
                                         >
-                                            {paymentMethodLabel(method)}
+                                            <WallapopIcon name="arrow_left" size="small" />
                                         </button>
-                                    ))}
-                                </div>
-                            </fieldset>
-                        </div>
-                    ) : null}
-                </div>
+                                        <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
+                                            Define el pago final y la preferencia de pago.
+                                        </p>
+                                    </div>
+                                    <label className="block">
+                                        <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
+                                            Importe final acordado (EUR)
+                                        </span>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            value={finalPriceValue}
+                                            onChange={(event) => onFinalPriceChange(event.target.value)}
+                                            placeholder="Ej: 220"
+                                            className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
+                                        />
+                                    </label>
 
-                <div className="mt-3 border-t border-[#E8ECEF] px-4 py-3">
-                    <div className="flex items-center justify-between gap-3">
-                        <div className="min-w-0 flex-1">
-                            <div className="flex min-w-0 items-center gap-2">
-                                <img
-                                    src={conversation.listingImageSrc}
-                                    alt={conversation.itemTitle}
-                                    className="h-[42px] w-[42px] shrink-0 rounded-[10px] object-cover"
-                                />
-                                <div className="min-w-0">
-                                    <p className="truncate font-wallie-fit text-[12px] leading-tight text-[#6E8792]">Proponer quedada</p>
-                                    <p className="truncate font-wallie-chunky text-[15px] leading-tight text-[#253238]">
-                                        {conversation.userName}
-                                    </p>
-                                    <p className="truncate font-wallie-fit text-[12px] leading-tight text-[#4A5A63]">
-                                        {conversation.itemTitle}
-                                    </p>
+                                    <fieldset>
+                                        <legend className="mb-2 font-wallie-fit text-[13px] text-[#253238]">
+                                            Preferencia de pago
+                                        </legend>
+                                        <div className="grid gap-2 sm:grid-cols-3">
+                                            {(["CASH", "BIZUM", "WALLET"] as MeetupPaymentMethod[]).map((method) => (
+                                                <button
+                                                    key={method}
+                                                    type="button"
+                                                    onClick={() => onPaymentMethodChange(method)}
+                                                    className={`rounded-[12px] border px-3 py-2 font-wallie-fit text-[13px] ${paymentMethod === method
+                                                        ? "border-[#3DD2BA] bg-[#E6FAF6] text-[#253238]"
+                                                        : "border-[#D3DEE2] bg-white text-[#4A5A63]"
+                                                        }`}
+                                                >
+                                                    {paymentMethodLabel(method)}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            ) : null}
+                        </div>
+
+                        <div className="mt-3 border-t border-[#E8ECEF] px-4 py-3">
+                            <div className="flex items-center justify-between gap-3">
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex min-w-0 items-center gap-2">
+                                        <img
+                                            src={conversation.listingImageSrc}
+                                            alt={conversation.itemTitle}
+                                            className="h-[42px] w-[42px] shrink-0 rounded-[10px] object-cover"
+                                        />
+                                        <div className="min-w-0">
+                                            <p className="truncate font-wallie-fit text-[12px] leading-tight text-[#6E8792]">Proponer quedada</p>
+                                            <p className="truncate font-wallie-chunky text-[15px] leading-tight text-[#253238]">
+                                                {conversation.userName}
+                                            </p>
+                                            <p className="truncate font-wallie-fit text-[12px] leading-tight text-[#4A5A63]">
+                                                {conversation.itemTitle}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="shrink-0 flex justify-end gap-2">
+                                    {step < 3 ? (
+                                        <button
+                                            type="button"
+                                            className={`rounded-full px-4 py-2 font-wallie-chunky text-[14px] text-white ${step === 1 && !canContinueStepOne
+                                                ? "cursor-not-allowed bg-[#B6C4CB]"
+                                                : "bg-[#13C1AC]"
+                                                }`}
+                                            onClick={onNext}
+                                            disabled={step === 1 && !canContinueStepOne}
+                                        >
+                                            Siguiente
+                                        </button>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            className="rounded-full bg-[#13C1AC] px-4 py-2 font-wallie-chunky text-[14px] text-white"
+                                            onClick={onSubmit}
+                                        >
+                                            Proponer quedada
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
-
-                        <div className="shrink-0 flex justify-end gap-2">
-                            {step < 3 ? (
-                                <button
-                                    type="button"
-                                    className={`rounded-full px-4 py-2 font-wallie-chunky text-[14px] text-white ${step === 1 && !canContinueStepOne
-                                            ? "cursor-not-allowed bg-[#B6C4CB]"
-                                            : "bg-[#13C1AC]"
-                                        }`}
-                                    onClick={onNext}
-                                    disabled={step === 1 && !canContinueStepOne}
-                                >
-                                    Siguiente
-                                </button>
-                            ) : (
-                                <button
-                                    type="button"
-                                    className="rounded-full bg-[#13C1AC] px-4 py-2 font-wallie-chunky text-[14px] text-white"
-                                    onClick={onSubmit}
-                                >
-                                    Proponer quedada
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </div>
                     </>
                 )}
             </section>
@@ -1321,6 +1321,40 @@ function WallapopChatWorkspace() {
         setProposalError("")
     }, [selectedConversationId, selectedMeetup])
 
+    const resolveCustomPointAddress = React.useCallback(async (lat: number, lng: number) => {
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lng))}`
+            )
+            if (!response.ok) {
+                return
+            }
+            const data = (await response.json()) as { display_name?: string }
+            if (typeof data.display_name === "string" && data.display_name.trim().length > 0) {
+                setProposalCustomLocationLabel(data.display_name)
+            }
+        } catch {
+            // Fallback silencioso: se mantienen coordenadas.
+        }
+    }, [])
+
+    const selectedLocationLabel = React.useMemo(() => {
+        const selectedOption = proposalOptions.find((option) => option.id === proposalSelectedOptionId)
+        if (!selectedOption) {
+            return ""
+        }
+        return selectedOption.kind === "safe"
+            ? `${selectedOption.label} (Punto seguro)`
+            : selectedOption.address
+    }, [proposalOptions, proposalSelectedOptionId])
+
+    const proposalCustomDistanceMeters = React.useMemo(() => {
+        if (!proposalCustomPoint) {
+            return null
+        }
+        return distanceBetweenPointsMeters(mapUserPosition, proposalCustomPoint)
+    }, [proposalCustomPoint])
+
     if (!selectedConversation) {
         return null
     }
@@ -1352,23 +1386,6 @@ function WallapopChatWorkspace() {
             [selectedConversation.id]: next,
         }))
     }
-
-    const resolveCustomPointAddress = React.useCallback(async (lat: number, lng: number) => {
-        try {
-            const response = await fetch(
-                `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lng))}`
-            )
-            if (!response.ok) {
-                return
-            }
-            const data = (await response.json()) as { display_name?: string }
-            if (typeof data.display_name === "string" && data.display_name.trim().length > 0) {
-                setProposalCustomLocationLabel(data.display_name)
-            }
-        } catch {
-            // Fallback silencioso: se mantienen coordenadas.
-        }
-    }, [])
 
     const openMeetupProposal = () => {
         if (!selectedMeetup) {
@@ -1592,23 +1609,6 @@ function WallapopChatWorkspace() {
         setProposalStep(nextStep)
     }
 
-    const selectedLocationLabel = React.useMemo(() => {
-        const selectedOption = proposalOptions.find((option) => option.id === proposalSelectedOptionId)
-        if (!selectedOption) {
-            return ""
-        }
-        return selectedOption.kind === "safe"
-            ? `${selectedOption.label} (Punto seguro)`
-            : selectedOption.address
-    }, [proposalOptions, proposalSelectedOptionId])
-
-    const proposalCustomDistanceMeters = React.useMemo(() => {
-        if (!proposalCustomPoint) {
-            return null
-        }
-        return distanceBetweenPointsMeters(mapUserPosition, proposalCustomPoint)
-    }, [proposalCustomPoint])
-
     const canAccessProposalStepTwo = proposalSelectedOptionId.trim().length > 0
     const canAccessProposalStepThree =
         canAccessProposalStepTwo && parseLocalDateTimeValue(proposalScheduledAt) !== null
@@ -1676,7 +1676,7 @@ function WallapopChatWorkspace() {
     }
 
     return (
-        <main className="h-[100dvh] w-full bg-white">
+        <main className="h-100dvh w-full bg-white">
             <section className="hidden h-full overflow-hidden border-x border-[#D3DEE2] md:grid md:grid-cols-[360px_1fr]">
                 <div className="min-h-0 border-r border-[#E8ECEF]">
                     <InboxPane

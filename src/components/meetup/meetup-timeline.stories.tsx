@@ -39,6 +39,9 @@ const flowStatuses: MeetupStatus[] = [
 ]
 
 export const ByStatus: Story = {
+    args: {
+        currentStatus: null,
+    },
     render: () => (
         <div className="space-y-3">
             {flowStatuses.map((status) => (

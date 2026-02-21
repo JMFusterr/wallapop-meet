@@ -70,6 +70,14 @@ function MapHarness({
 }
 
 export const SafePointSelected: Story = {
+    args: {
+        center: { lat: safePoints[0].lat, lng: safePoints[0].lng },
+        safePoints,
+        selectedPointId: "station",
+        selectedCustomPoint: null,
+        onMapClick: () => undefined,
+        onSafePointClick: () => undefined,
+    },
     render: () => (
         <MapHarness
             initialCenter={{ lat: safePoints[0].lat, lng: safePoints[0].lng }}
@@ -80,6 +88,14 @@ export const SafePointSelected: Story = {
 }
 
 export const CustomPointSelected: Story = {
+    args: {
+        center: { lat: 41.3811, lng: 2.1462 },
+        safePoints,
+        selectedPointId: "custom",
+        selectedCustomPoint: { lat: 41.3811, lng: 2.1462 },
+        onMapClick: () => undefined,
+        onSafePointClick: () => undefined,
+    },
     render: () => (
         <MapHarness
             initialCenter={{ lat: 41.3811, lng: 2.1462 }}

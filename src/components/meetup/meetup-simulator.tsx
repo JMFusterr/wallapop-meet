@@ -13,7 +13,10 @@ const TEN_MINUTES_MS = 10 * 60 * 1000
 const THREE_HOURS_MS = 3 * 60 * 60 * 1000
 
 function MeetupSimulator() {
-    const scheduledAt = React.useMemo(() => new Date(Date.now() + HALF_HOUR_MS), [])
+    const scheduledAt = React.useMemo(() => {
+        const now = new Date()
+        return new Date(now.getTime() + HALF_HOUR_MS)
+    }, [])
     const chatContext = React.useMemo<MeetupChatContext>(
         () => ({
             conversationId: "conv-simulator-001",

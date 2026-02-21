@@ -83,6 +83,13 @@ function CardHarness({
 }
 
 export const ProposalSellerView: Story = {
+    args: {
+        meetup: createMeetupMachine({ scheduledAt, chatContext }),
+        actorRole: "SELLER",
+        currentTime: new Date("2026-02-20T16:00:00.000Z"),
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
     render: () => (
         <CardHarness
             initialMeetup={createMeetupMachine({ scheduledAt, chatContext })}
@@ -93,6 +100,13 @@ export const ProposalSellerView: Story = {
 }
 
 export const ConfirmedBuyerWindowOpen: Story = {
+    args: {
+        meetup: buildConfirmedMachine(),
+        actorRole: "BUYER",
+        currentTime: new Date("2026-02-20T17:50:00.000Z"),
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
     render: () => (
         <CardHarness
             initialMeetup={buildConfirmedMachine()}
