@@ -1,13 +1,13 @@
-# Inventario de `Product Card` observado en Wallapop Chat
+# Inventario de `Chat Product Card` observado en Wallapop Chat
 
 ## Fuente de analisis
 - URL: `https://es.wallapop.com/app/chat`
-- Fecha de captura: 2026-02-19
+- Fecha de captura: 2026-02-21
 - Metodo: inspeccion con MCP Chrome DevTools + `getComputedStyle`
 - Viewport de referencia: `1536x678` (`devicePixelRatio: 1.25`)
 - Contexto: panel derecho de conversacion con card del item
 
-## Especificacion visual del componente
+## Especificacion visual del componente (seller)
 
 ### 1) Contenedor `card`
 - Elemento/clase: `a.card`
@@ -23,7 +23,7 @@
 - Borde: `4px solid #FFFFFF`
 - Radio: `10px`
 
-### 3) Bloque de acciones
+### 3) Bloque de acciones (solo seller)
 - Nodo: `.actions-block`
 - Altura observada: `39.6px`
 - Padding: `12px 20px 0`
@@ -46,7 +46,7 @@ Botones embebidos:
   - Radio: `25px`
   - Tipografia: `12px/18px`, `400`, `Wallie, Helvetica`
 
-### 4) Boton de editar superpuesto
+### 4) Boton de editar superpuesto (solo seller)
 - Nodo: `a.btn.btn-edit`
 - Dimensiones: `40x40px`
 - Fondo: `#FFFFFF`
@@ -69,6 +69,12 @@ Texto:
   - `12px/26px`, `400`, `Wallie, Helvetica`
   - Color: `#607D8B`
 
+## Variante comprador (buyer)
+- No aparece boton de editar.
+- No aparecen botones `Reservar` / `Vendido`.
+- No aparecen metricas de visitas/likes junto al precio.
+- Puede mostrarse badge de estado comercial (`Vendido`) sobre la imagen.
+
 ## Tokens candidatos
 - `tokens.color.card.background = #FFFFFF`
 - `tokens.color.card.title = #253238`
@@ -79,6 +85,9 @@ Texto:
 - `tokens.radius.card.action_pill = 25px`
 
 ## Notas de normalizacion DS
-- Esta card mezcla preview de producto y quick actions del vendedor; para Meetup se recomienda separar:
-  - `ProductCard` (informacion)
-  - `ProductCardActions` (acciones contextuales)
+- El componente debe exponer `viewerRole`:
+  - `seller`: habilita acciones y metricas de publicacion.
+  - `buyer`: oculta acciones/metricas y mantiene vista informativa.
+- Referencias de implementacion:
+  - `src/components/ui/chat-product-card.tsx`
+  - `src/components/ui/chat-product-card.stories.tsx`

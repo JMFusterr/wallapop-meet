@@ -1,92 +1,131 @@
 import * as React from "react"
+import { Eye } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { cn } from "@/lib/utils"
 
+type ChatProductCardViewerRole = "seller" | "buyer"
+
 type ChatProductCardProps = React.ComponentProps<"article"> & {
-  imageSrc: string
-  imageAlt: string
-  title: string
-  price: string
-  stats?: string
-  onReserve?: () => void
-  onSold?: () => void
-  onEdit?: () => void
-  reserveLabel?: string
-  soldLabel?: string
+    imageSrc: string
+    imageAlt: string
+    title: string
+    price: string
+    stats?: string
+    onReserve?: () => void
+    onSold?: () => void
+    onEdit?: () => void
+    reserveLabel?: string
+    soldLabel?: string
+    viewerRole?: ChatProductCardViewerRole
+    viewsCount?: number
+    likesCount?: number
+    statusLabel?: string
 }
 
 function ChatProductCard({
-  className,
-  imageSrc,
-  imageAlt,
-  title,
-  price,
-  stats,
-  onReserve,
-  onSold,
-  onEdit,
-  reserveLabel = "Reservado",
-  soldLabel = "Vendido",
-  ...props
+    className,
+    imageSrc,
+    imageAlt,
+    title,
+    price,
+    stats,
+    onReserve,
+    onSold,
+    onEdit,
+    reserveLabel = "Reservar",
+    soldLabel = "Vendido",
+    viewerRole = "seller",
+    viewsCount,
+    likesCount,
+    statusLabel,
+    ...props
 }: ChatProductCardProps) {
-  return (
-    <article
-      data-slot="chat-product-card"
-      className={cn("relative w-full max-w-[302px] overflow-hidden rounded-[10px] bg-white", className)}
-      {...props}
-    >
-      <img
-        src={imageSrc}
-        alt={imageAlt}
-        className="h-[180px] w-full rounded-[10px] border-4 border-white object-cover"
-      />
-      {onEdit ? (
-        <button
-          type="button"
-          onClick={onEdit}
-          className="absolute top-3 right-3 flex h-11 w-11 items-center justify-center rounded-[8px] border-2 border-[rgba(207,216,220,0.5)] bg-white sm:h-10 sm:w-10"
-          aria-label="Editar anuncio"
+    const isSeller = viewerRole === "seller"
+    const showStats = isSeller && typeof viewsCount === "number" && typeof likesCount === "number"
+
+    return (
+        <article
+            data-slot="chat-product-card"
+            className={cn(
+                "relative w-full overflow-hidden rounded-[12px] border border-[#E8ECEF] bg-white",
+                className
+            )}
+            {...props}
         >
-          <WallapopIcon name="edit" size="small" className="text-[#253238]" />
-        </button>
-      ) : null}
-      <div className="px-3 py-3">
-        <p className="mb-3 font-wallie-chunky text-[16px] leading-5 text-[var(--wm-color-text-primary)]">
-          {title}
-        </p>
-        <p className="font-wallie text-[16px] leading-6 text-[var(--wm-color-text-primary)]">
-          {price}
-        </p>
-        {stats ? (
-          <p className="font-wallie text-[12px] leading-[26px] text-[#607D8B]">{stats}</p>
-        ) : null}
-      </div>
-      <div className="px-4 pt-3 pb-4 sm:px-5">
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="inline_action"
-            size="md"
-            onClick={onReserve}
-            className="h-11 flex-1 rounded-[25px] bg-[#4368CC] px-5 font-wallie text-[12px] leading-[18px] text-white sm:h-[27.6px]"
-          >
-            {reserveLabel}
-          </Button>
-          <Button
-            type="button"
-            variant="inline_action"
-            size="md"
-            onClick={onSold}
-            className="h-11 flex-1 rounded-[25px] bg-[#F75883] px-5 font-wallie text-[12px] leading-[18px] text-white sm:h-[27.6px]"
-          >
-            {soldLabel}
-          </Button>
-        </div>
-      </div>
-    </article>
-  )
+            <div className="relative">
+                <img src={imageSrc} alt={imageAlt} className="h-[200px] w-full object-cover" />
+                {isSeller && onEdit ? (
+                    <button
+                        type="button"
+                        onClick={onEdit}
+                        className="absolute top-3 right-3 inline-flex h-12 w-12 items-center justify-center rounded-[12px] border border-[#D3DEE2] bg-white text-[#546E7A]"
+                        aria-label="Editar anuncio"
+                    >
+                        <WallapopIcon name="edit" size={20} />
+                    </button>
+                ) : null}
+                {!isSeller && statusLabel ? (
+                    <span className="absolute right-4 bottom-4 inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 font-wallie-chunky text-[14px] text-[#EB4F8B]">
+                        <WallapopIcon name="bookmark" size={15} className="text-[#EB4F8B]" />
+                        {statusLabel}
+                    </span>
+                ) : null}
+            </div>
+
+            {isSeller ? (
+                <div className="px-4 pt-3">
+                    <div className="flex items-center gap-3">
+                        <Button
+                            type="button"
+                            variant="inline_action"
+                            size="md"
+                            onClick={onReserve}
+                            className="h-8 flex-1 rounded-full bg-[#4368CC] px-4 font-wallie-chunky text-[13px] text-white"
+                        >
+                            {reserveLabel}
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="inline_action"
+                            size="md"
+                            onClick={onSold}
+                            className="h-8 flex-1 rounded-full bg-[#F75883] px-4 font-wallie-chunky text-[13px] text-white"
+                        >
+                            {soldLabel}
+                        </Button>
+                    </div>
+                </div>
+            ) : null}
+
+            <div className="px-4 py-4">
+                <h4 className="font-wallie-chunky text-[16px] leading-[20px] text-[#253238]">
+                    {title}
+                </h4>
+                <div className="mt-2 flex items-center justify-between gap-4">
+                    <p className="font-wallie-fit text-[16px] text-[#253238]">
+                        {price}
+                    </p>
+                    {showStats ? (
+                        <div className="flex items-center gap-3 font-wallie-fit text-[14px] text-[#546E7A]">
+                            <span className="inline-flex items-center gap-1">
+                                <Eye size={15} />
+                                {viewsCount}
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                                <WallapopIcon name="heart" size={15} />
+                                {likesCount}
+                            </span>
+                        </div>
+                    ) : null}
+                </div>
+                {!showStats && stats ? (
+                    <p className="mt-1 font-wallie-fit text-[12px] text-[#607D8B]">{stats}</p>
+                ) : null}
+            </div>
+        </article>
+    )
 }
 
-export { ChatProductCard }
+export { ChatProductCard, type ChatProductCardViewerRole }

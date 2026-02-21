@@ -346,6 +346,32 @@ Reglas:
   - Mostrar distancia `m/km` en chip de una sola linea (`no-wrap`).
   - Bottom sheet de seleccion debe renderizarse por encima del mapa (`z-index` superior).
 
+## 21. Card de contraparte en chat (`ChatCounterpartCard`)
+Propiedades visuales:
+- `name`: nombre del usuario contraparte.
+- `rating`: puntuacion en estrellas (soporta media estrella).
+- `distanceLabel`: texto de distancia relativa (`N km de ti`).
+- `locationLabel`: texto de ubicacion o estado (`Desconocido`).
+- `profileImageSrc`: avatar circular opcional.
+
+Reglas:
+- Uso previsto en desktop dentro del sidebar derecho del workspace de chat.
+- Debe mantener jerarquia de lectura: nombre > rating > distancia/ubicacion.
+- El nombre comparte tamaño base con metadatos y se diferencia por peso tipografico.
+
+## 22. Card de producto en chat (`ChatProductCard`)
+Propiedades visuales:
+- `viewerRole`: `seller | buyer`.
+- `imageSrc`, `title`, `price`.
+- `viewsCount`, `likesCount` (solo `seller`).
+- `statusLabel` (solo `buyer`).
+- `onEdit`, `onReserve`, `onSold` (acciones solo `seller`).
+
+Reglas:
+- `seller`: mostrar lapiz sobre imagen, CTAs de publicacion y metricas (ojo/corazon) junto al precio.
+- `buyer`: ocultar lapiz, ocultar CTAs y ocultar metricas de publicacion.
+- Debe ser reutilizable en la columna lateral desktop del chat.
+
 ## Criterio de completitud
 - Cada componente define propiedades, estados, tokens y regla de uso.
 - No hay ambigüedad entre uso de `badge`, `chip`, `banner` y `toast`.
@@ -357,6 +383,7 @@ Reglas:
 - `docs/elements/chat-message-bubble.md`
 - `docs/elements/chat-security-banner.md`
 - `docs/elements/chat-product-card.md`
+- `docs/elements/chat-counterpart-card.md`
 - `docs/elements/chat-composer.md`
 - `docs/elements/badge.md`
 - `docs/elements/icons.md`

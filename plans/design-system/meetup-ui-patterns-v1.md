@@ -125,7 +125,7 @@ Patrones mínimos:
 - Todos los estados de negocio tienen UI y CTA asociada.
 - Se cubren happy path y rutas de error/expiración.
 
-## Referencias implementadas (2026-02-20)
+## Referencias implementadas (2026-02-21)
 - Workspace de chat con entrada de propuesta desde composer + overlay: `src/components/meetup/wallapop-chat-workspace.tsx`.
 - Mapa interactivo de seleccion de ubicacion: `src/components/meetup/meetup-location-map.tsx`.
 - Reglas de elegibilidad de entrada desde chat: `src/components/meetup/chat-meetup-entry-rules.ts`.
@@ -133,6 +133,10 @@ Patrones mínimos:
 - Timeline reusable de estados: `src/components/meetup/meetup-timeline.tsx`.
 - Tarjeta contextual de acciones: `src/components/meetup/meetup-card.tsx`.
 - Banner del dia con variante de ventana: `src/components/meetup/meetup-day-banner.tsx`.
+- Sidebar derecho desktop con contexto de contraparte + producto:
+  - `src/components/ui/chat-counterpart-card.tsx`
+  - `src/components/ui/chat-product-card.tsx`
+  - `src/components/meetup/wallapop-chat-workspace.tsx`
 - Stories de validacion visual:
   - `src/components/meetup/chat-meetup-entry.stories.tsx`
   - `src/components/meetup/meetup-simulator.stories.tsx`
@@ -140,12 +144,21 @@ Patrones mínimos:
   - `src/components/meetup/meetup-card.stories.tsx`
   - `src/components/meetup/meetup-day-banner.stories.tsx`
   - `src/components/meetup/meetup-location-map.stories.tsx`
+  - `src/components/ui/chat-counterpart-card.stories.tsx`
+  - `src/components/ui/chat-product-card.stories.tsx`
 
-Notas de UI del workspace (2026-02-20):
+Notas de UI del workspace (2026-02-21):
 - Header de `InboxPane`: sin boton `burguer_menu`.
 - Header de `ConversationPane`: avatar circular del comprador + boton `ellipsis_horizontal` alineado a la derecha (placeholder sin accion funcional por ahora).
 - Indicador de entrega en `ChatMessageBubble` y `ChatListItem` unificado con `WallapopIcon.name=double_check`.
 - Contenedor principal del workspace en desktop con ancho fluido completo (sin `max-w`), para ocupar todo el viewport horizontal y eliminar margenes laterales.
+- En desktop `lg+` el chat usa 3 columnas: inbox, conversacion y sidebar contextual.
+- El sidebar contextual agrupa 2 cards verticales:
+  - Card de contraparte (nombre, rating, distancia, ubicacion, avatar).
+  - Card de producto con variante por rol (`seller`/`buyer`).
+- Regla por rol en card de producto:
+  - `seller`: lapiz, `Reservar`, `Vendido`, metricas de visitas/likes.
+  - `buyer`: sin lapiz, sin CTAs comerciales y sin metricas.
 - Estado comercial en items del buzon reutilizando componentes documentados:
   - `Chat List Item With Bookmark` para reservado (`leadingIndicator="bookmark"`).
   - `Chat List Item With Deal` para vendido (`leadingIndicator="deal"`).

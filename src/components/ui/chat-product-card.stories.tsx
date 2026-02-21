@@ -15,7 +15,9 @@ const meta = {
     imageAlt: "Producto en venta",
     title: "Nintendo Switch OLED",
     price: "250 EUR",
-    stats: "320 visitas",
+    viewerRole: "seller",
+    viewsCount: 320,
+    likesCount: 24,
   },
 } satisfies Meta<typeof ChatProductCard>
 
@@ -27,5 +29,12 @@ export const Playground: Story = {}
 export const WithEditAction: Story = {
   args: {
     onEdit: () => undefined,
+  },
+}
+
+export const BuyerView: Story = {
+  args: {
+    viewerRole: "buyer",
+    statusLabel: "Vendido",
   },
 }

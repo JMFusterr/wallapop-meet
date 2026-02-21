@@ -6,8 +6,10 @@ import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-lea
 import { resolveChatMeetupEntryActionState } from "@/components/meetup/chat-meetup-entry-rules"
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { ChatComposer } from "@/components/ui/chat-composer"
+import { ChatCounterpartCard } from "@/components/ui/chat-counterpart-card"
 import { ChatListItem } from "@/components/ui/chat-list-item"
 import { ChatMessageBubble } from "@/components/ui/chat-message-bubble"
+import { ChatProductCard, type ChatProductCardViewerRole } from "@/components/ui/chat-product-card"
 import { ChatSecurityBanner } from "@/components/ui/chat-security-banner"
 import { InboxBottomNav } from "@/components/ui/inbox-bottom-nav"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
@@ -41,6 +43,13 @@ type Conversation = {
     unreadCount?: number
     lastMessageDeliveryState?: "sent" | "read"
     meetupContext?: MeetupChatContext
+    counterpartRating: number
+    counterpartDistanceLabel: string
+    counterpartLocationLabel: string
+    listingViewerRole: ChatProductCardViewerRole
+    listingViews?: number
+    listingLikes?: number
+    listingStatusLabel?: string
 }
 
 type SafeMeetingPoint = {
@@ -116,6 +125,12 @@ const conversations: Conversation[] = [
             sellerUserId: "user-seller-001",
             buyerUserId: "user-buyer-laura-001",
         },
+        counterpartRating: 4.5,
+        counterpartDistanceLabel: "3,4km de ti",
+        counterpartLocationLabel: "Desconocido",
+        listingViewerRole: "seller",
+        listingViews: 23,
+        listingLikes: 4,
     },
     {
         id: "conv-002",
@@ -130,6 +145,11 @@ const conversations: Conversation[] = [
             "https://images.pexels.com/photos/100582/pexels-photo-100582.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
             createProfileImage("Javi R.", "#5A8DEE"),
+        counterpartRating: 5,
+        counterpartDistanceLabel: "8,2km de ti",
+        counterpartLocationLabel: "Desconocido",
+        listingViewerRole: "buyer",
+        listingStatusLabel: "Vendido",
     },
     {
         id: "conv-003",
@@ -142,6 +162,12 @@ const conversations: Conversation[] = [
             "https://images.pexels.com/photos/51383/photo-camera-subject-photographer-51383.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
             createProfileImage("Marta P.", "#7A5AF8"),
+        counterpartRating: 4,
+        counterpartDistanceLabel: "1,9km de ti",
+        counterpartLocationLabel: "Desconocido",
+        listingViewerRole: "seller",
+        listingViews: 56,
+        listingLikes: 8,
     },
     {
         id: "conv-004",
@@ -155,6 +181,12 @@ const conversations: Conversation[] = [
             "https://images.pexels.com/photos/13871156/pexels-photo-13871156.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
             createProfileImage("Carlos G.", "#253238"),
+        counterpartRating: 4.5,
+        counterpartDistanceLabel: "2,7km de ti",
+        counterpartLocationLabel: "Desconocido",
+        listingViewerRole: "seller",
+        listingViews: 41,
+        listingLikes: 3,
     },
     {
         id: "conv-005",
@@ -168,6 +200,11 @@ const conversations: Conversation[] = [
             "https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
             createProfileImage("Alba T.", "#0EA5A4"),
+        counterpartRating: 5,
+        counterpartDistanceLabel: "4,1km de ti",
+        counterpartLocationLabel: "Desconocido",
+        listingViewerRole: "buyer",
+        listingStatusLabel: "Vendido",
     },
     {
         id: "conv-006",
@@ -181,6 +218,12 @@ const conversations: Conversation[] = [
             "https://images.pexels.com/photos/1038916/pexels-photo-1038916.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
             createProfileImage("Iker S.", "#1D4ED8"),
+        counterpartRating: 4,
+        counterpartDistanceLabel: "6,5km de ti",
+        counterpartLocationLabel: "Desconocido",
+        listingViewerRole: "seller",
+        listingViews: 19,
+        listingLikes: 2,
     },
 ]
 
@@ -1205,6 +1248,45 @@ function ConversationPane({
     )
 }
 
+function DesktopConversationSidebar({ conversation }: { conversation: Conversation }) {
+    return (
+        <aside className="hidden h-full min-h-0 flex-col gap-4 overflow-y-auto bg-[#F3F6F8] p-4 lg:flex">
+            <ChatCounterpartCard
+                name={conversation.userName}
+                rating={conversation.counterpartRating}
+                distanceLabel={conversation.counterpartDistanceLabel}
+                locationLabel={conversation.counterpartLocationLabel}
+                profileImageSrc={conversation.profileImageSrc}
+            />
+            <ChatProductCard
+                imageSrc={conversation.listingImageSrc ?? conversation.profileImageSrc ?? ""}
+                imageAlt={conversation.itemTitle}
+                title={conversation.itemTitle}
+                price={conversation.itemPrice}
+                viewerRole={conversation.listingViewerRole}
+                statusLabel={conversation.listingStatusLabel}
+                viewsCount={conversation.listingViews}
+                likesCount={conversation.listingLikes}
+                onEdit={
+                    conversation.listingViewerRole === "seller"
+                        ? () => undefined
+                        : undefined
+                }
+                onReserve={
+                    conversation.listingViewerRole === "seller"
+                        ? () => undefined
+                        : undefined
+                }
+                onSold={
+                    conversation.listingViewerRole === "seller"
+                        ? () => undefined
+                        : undefined
+                }
+            />
+        </aside>
+    )
+}
+
 function WallapopChatWorkspace() {
     const actorRole: ActorRole = "SELLER"
     const [selectedConversationId, setSelectedConversationId] = React.useState<string>(
@@ -1677,7 +1759,7 @@ function WallapopChatWorkspace() {
 
     return (
         <main className="h-100dvh w-full bg-white">
-            <section className="hidden h-full overflow-hidden border-x border-[#D3DEE2] md:grid md:grid-cols-[360px_1fr]">
+            <section className="hidden h-full overflow-hidden border-x border-[#D3DEE2] md:grid md:grid-cols-[360px_1fr] lg:grid-cols-[360px_1fr_320px]">
                 <div className="min-h-0 border-r border-[#E8ECEF]">
                     <InboxPane
                         selectedConversationId={selectedConversationId}
@@ -1699,6 +1781,7 @@ function WallapopChatWorkspace() {
                         errorMessage={lastError}
                     />
                 </div>
+                <DesktopConversationSidebar conversation={selectedConversation} />
             </section>
 
             <section className="h-full md:hidden">
