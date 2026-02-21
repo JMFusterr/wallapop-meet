@@ -310,6 +310,41 @@ Reglas:
 - Debe mostrar marcadores de puntos seguros en azul Wallapop.
 - Al seleccionar un punto seguro, mostrar tooltip persistente con formato `<nombre> - Punto seguro`.
 - Debe poder convivir dentro de un overlay con alto maximo y scroll interno sin desbordar viewport.
+- En contexto del wizard movil, ocultar controles de zoom `+/-` y mantener zoom por gesto tactil.
+
+## 20. Overlay de propuesta meetup (`MeetupProposalOverlay`)
+Propiedades visuales:
+- `step`: `1 | 2 | 3`
+- `selectedOptionId`: opcion actualmente seleccionada para propuesta.
+- `selectableOptions`: cola visual de 2 opciones seleccionables en paso 1.
+- `mapPickerOpen`: estado de vista de mapa para seleccion.
+- `errorMessage`: validacion contextual del wizard.
+
+Reglas:
+- Wizard en 3 pasos: punto, fecha/hora, preferencia de pago.
+- Paso 1 siempre muestra exactamente 2 opciones seleccionables.
+- El modelo de paso 1 es una cola de las 2 ultimas selecciones:
+  - Una seleccion nueva entra en primera posicion.
+  - La anterior pasa a segunda posicion.
+  - Si habia una tercera, se descarta.
+- Las cards de punto seguro muestran:
+  - Nombre
+  - Direccion
+  - Labels `Punto seguro` y `<N> ventas`.
+- Las cards de punto personalizado muestran:
+  - Icono `map pin`
+  - Direccion seleccionada
+  - Label `Personalizado`.
+- No existe boton `Cancelar` en el footer del wizard; cierre mediante boton `X` de cabecera.
+- Footer del wizard en movil:
+  - Bloque contextual de articulo/comprador alineado a la izquierda.
+  - CTA principal (`Siguiente` o `Proponer quedada`) alineado a la derecha.
+  - Texto de articulo truncado con elipsis para no desplazar la CTA.
+- En vista de mapa:
+  - Permitir seleccion de punto seguro y punto personalizado (tap libre sobre mapa).
+  - Al seleccionar personalizado, mostrar aviso de punto no verificado.
+  - Mostrar distancia `m/km` en chip de una sola linea (`no-wrap`).
+  - Bottom sheet de seleccion debe renderizarse por encima del mapa (`z-index` superior).
 
 ## Criterio de completitud
 - Cada componente define propiedades, estados, tokens y regla de uso.
@@ -326,6 +361,7 @@ Reglas:
 - `docs/elements/badge.md`
 - `docs/elements/icons.md`
 - `docs/elements/inbox-bottom-nav.md`
+- `docs/elements/meetup-proposal-overlay.md`
 - `src/components/meetup/meetup-timeline.tsx`
 - `src/components/meetup/meetup-simulator.tsx`
 - `src/components/meetup/meetup-card.tsx`

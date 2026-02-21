@@ -23,14 +23,19 @@ Contenido:
   - Desktop/tablet horizontal: centrado.
   - Movil: aparece desde abajo.
 - Wizard en 3 pasos:
-  - Paso 1: ubicacion en mapa real interactivo (OpenStreetMap) con puntos seguros + buscador.
+  - Paso 1: seleccion de punto de encuentro en lista (2 opciones visibles) con entrada a mapa para elegir punto seguro o personalizado.
   - Paso 2: fecha y hora.
   - Paso 3: importe final y preferencia de pago.
 - Reglas de avance del wizard:
   - Los pasos futuros se bloquean hasta completar validaciones de pasos previos.
   - El feedback de error se renderiza dentro del overlay.
-  - En paso 1, cuando se selecciona ubicacion, el mensaje "Has seleccionado..." se muestra encima del mapa en bloque destacado verde Wallapop.
+  - En paso 1 siempre hay 2 opciones seleccionables visibles.
+  - La lista de paso 1 funciona como cola de las 2 ultimas selecciones.
+  - Al seleccionar un punto nuevo desde mapa, se inserta arriba y desplaza el anterior a segunda posicion.
+  - Al pulsar la opcion inferior no desaparece la superior; solo cambia el estado seleccionado.
 - CTA final de confirmacion: `Proponer quedada`.
+- En el footer del wizard no se muestra boton `Cancelar`; el cierre se realiza con boton `X` en cabecera.
+- En movil, footer de wizard en una sola fila: contexto de articulo/comprador + CTA principal.
 
 Estados:
 - `PROPOSED` al enviar.
@@ -145,3 +150,9 @@ Notas de UI del workspace (2026-02-20):
   - `Chat List Item With Bookmark` para reservado (`leadingIndicator="bookmark"`).
   - `Chat List Item With Deal` para vendido (`leadingIndicator="deal"`).
 - Mock del buzon extendido con conversaciones realistas e imagen de articulo por cada chat.
+- Overlay de propuesta (actualizado 2026-02-21):
+  - Paso 1 con 2 cards visibles (seguras y/o personalizadas) y truncado defensivo de textos largos.
+  - Punto personalizado representado con icono de puntero; punto seguro con icono de escudo.
+  - Vista de mapa con buscador visual (icono lupa + placeholder), seleccion por marcador y por tap libre.
+  - Bottom sheet de mapa siempre en una linea para distancia (`m/km`) y con prioridad de capa sobre teselas.
+  - Controles `+/-` de zoom ocultos en mapa del wizard (zoom por gesto).

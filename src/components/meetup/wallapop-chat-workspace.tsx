@@ -1,6 +1,8 @@
 import * as React from "react"
+import L from "leaflet"
+import { MapPin, Search } from "lucide-react"
+import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet"
 
-import { MeetupLocationMap } from "@/components/meetup/meetup-location-map"
 import { resolveChatMeetupEntryActionState } from "@/components/meetup/chat-meetup-entry-rules"
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { ChatComposer } from "@/components/ui/chat-composer"
@@ -45,6 +47,9 @@ type SafeMeetingPoint = {
     id: string
     name: string
     hint: string
+    address: string
+    distanceMeters: number
+    completedSales: number
     lat: number
     lng: number
 }
@@ -54,6 +59,18 @@ type ProposalStep = 1 | 2 | 3
 type MapPoint = {
     lat: number
     lng: number
+}
+
+type ProposalSelectableOption = {
+    id: string
+    kind: "safe" | "custom"
+    label: string
+    address: string
+    lat: number
+    lng: number
+    distanceMeters: number
+    completedSales?: number
+    safePointId?: string
 }
 
 function escapeSvgText(value: string): string {
@@ -246,6 +263,9 @@ const safeMeetingPoints: SafeMeetingPoint[] = [
         id: "station",
         name: "Estacion de Sants",
         hint: "Zona principal con transito y camaras.",
+        address: "Placa dels Paisos Catalans, Barcelona",
+        distanceMeters: 320,
+        completedSales: 241,
         lat: 41.37906,
         lng: 2.14006,
     },
@@ -253,6 +273,9 @@ const safeMeetingPoints: SafeMeetingPoint[] = [
         id: "mall",
         name: "Centro comercial Arenas",
         hint: "Entrada principal, punto de informacion.",
+        address: "Gran Via de les Corts Catalanes, 373, Barcelona",
+        distanceMeters: 640,
+        completedSales: 198,
         lat: 41.37617,
         lng: 2.14918,
     },
@@ -260,10 +283,74 @@ const safeMeetingPoints: SafeMeetingPoint[] = [
         id: "police",
         name: "Comisaria Mossos - Les Corts",
         hint: "Punto seguro recomendado por proximidad.",
+        address: "Travessera de les Corts, 319, Barcelona",
+        distanceMeters: 1180,
+        completedSales: 173,
         lat: 41.38762,
         lng: 2.13441,
     },
+    {
+        id: "library",
+        name: "Biblioteca Joan Miro",
+        hint: "Acceso principal bien iluminado.",
+        address: "Carrer de Vilamari, 61, Barcelona",
+        distanceMeters: 1450,
+        completedSales: 109,
+        lat: 41.37682,
+        lng: 2.15281,
+    },
+    {
+        id: "market",
+        name: "Mercat de Sants",
+        hint: "Entrada lateral con presencia continua.",
+        address: "Carrer de Sant Jordi, 6, Barcelona",
+        distanceMeters: 1720,
+        completedSales: 147,
+        lat: 41.37559,
+        lng: 2.13363,
+    },
+    {
+        id: "civic-center",
+        name: "Centre Civic Cotxeres de Sants",
+        hint: "Vestibulo vigilado en horario comercial.",
+        address: "Carrer de Sants, 79, Barcelona",
+        distanceMeters: 2040,
+        completedSales: 126,
+        lat: 41.37507,
+        lng: 2.13699,
+    },
 ]
+
+const mapUserPosition: MapPoint = {
+    lat: 41.3782,
+    lng: 2.1459,
+}
+
+function toSafeOption(point: SafeMeetingPoint): ProposalSelectableOption {
+    return {
+        id: `safe:${point.id}`,
+        kind: "safe",
+        label: point.name,
+        address: point.address,
+        lat: point.lat,
+        lng: point.lng,
+        distanceMeters: point.distanceMeters,
+        completedSales: point.completedSales,
+        safePointId: point.id,
+    }
+}
+
+function toCustomOption(lat: number, lng: number, address: string): ProposalSelectableOption {
+    return {
+        id: `custom:${lat.toFixed(5)}:${lng.toFixed(5)}:${Date.now()}`,
+        kind: "custom",
+        label: address,
+        address,
+        lat,
+        lng,
+        distanceMeters: distanceBetweenPointsMeters(mapUserPosition, { lat, lng }),
+    }
+}
 
 function formatTime(date: Date): string {
     return date.toLocaleTimeString([], {
@@ -312,8 +399,35 @@ function parseLocalDateTimeValue(value: string): Date | null {
     return parsedDate
 }
 
-function mapClickToLocationLabel(lat: number, lng: number): string {
-    return `Punto seleccionado en mapa (${lat.toFixed(5)}, ${lng.toFixed(5)})`
+function formatDistance(distanceMeters: number): string {
+    if (distanceMeters < 1000) {
+        return `${distanceMeters} m`
+    }
+
+    return `${(distanceMeters / 1000).toFixed(1).replace(".", ",")} km`
+}
+
+function toRadians(value: number): number {
+    return (value * Math.PI) / 180
+}
+
+function distanceBetweenPointsMeters(from: MapPoint, to: MapPoint): number {
+    const earthRadius = 6371000
+    const deltaLat = toRadians(to.lat - from.lat)
+    const deltaLng = toRadians(to.lng - from.lng)
+    const fromLat = toRadians(from.lat)
+    const toLat = toRadians(to.lat)
+
+    const a =
+        Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+        Math.cos(fromLat) * Math.cos(toLat) * Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2)
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return Math.round(earthRadius * c)
+}
+
+function customLocationLabelFromPoint(lat: number, lng: number): string {
+    return `Punto personalizado (${lat.toFixed(4)}, ${lng.toFixed(4)})`
 }
 
 function paymentMethodLabel(method: MeetupPaymentMethod): string {
@@ -329,27 +443,128 @@ function paymentMethodLabel(method: MeetupPaymentMethod): string {
     }
 }
 
+const safePointMarkerIcon = L.divIcon({
+    className: "",
+    html: `
+        <span style="display:flex;height:34px;width:34px;align-items:center;justify-content:center;border-radius:999px;background:#13C1AC;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.22);">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
+            </svg>
+        </span>
+    `,
+    iconSize: [34, 34],
+    iconAnchor: [17, 34],
+})
+
+const selectedSafePointMarkerIcon = L.divIcon({
+    className: "",
+    html: `
+        <span style="display:flex;height:34px;width:34px;align-items:center;justify-content:center;border-radius:999px;background:#038673;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.28);">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
+            </svg>
+        </span>
+    `,
+    iconSize: [34, 34],
+    iconAnchor: [17, 34],
+})
+
+const userPositionIcon = L.divIcon({
+    className: "",
+    html: `
+        <span style="display:block;height:16px;width:16px;border-radius:999px;background:#2F6DF6;border:2px solid #FFFFFF;box-shadow:0 0 0 4px rgba(47,109,246,0.2);"></span>
+    `,
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+})
+
+const customPointIcon = L.divIcon({
+    className: "",
+    html: `
+        <span style="display:flex;height:34px;width:34px;align-items:center;justify-content:center;border-radius:999px;background:#2F6DF6;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.28);">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10Z"></path>
+                <circle cx="12" cy="11" r="2.2"></circle>
+            </svg>
+        </span>
+    `,
+    iconSize: [34, 34],
+    iconAnchor: [17, 34],
+})
+
+function ProposalMapCenterController({ center }: { center: MapPoint }) {
+    const map = useMap()
+
+    React.useEffect(() => {
+        map.flyTo([center.lat, center.lng], map.getZoom(), { duration: 0.45 })
+    }, [center, map])
+
+    return null
+}
+
+function ProposalMapClickHandler({
+    onMapClick,
+}: {
+    onMapClick: (lat: number, lng: number) => void
+}) {
+    useMapEvents({
+        click: (event) => {
+            onMapClick(event.latlng.lat, event.latlng.lng)
+        },
+    })
+
+    return null
+}
+
+function SafeShieldGlyph({ className = "" }: { className?: string }) {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+        </svg>
+    )
+}
+
 type MeetupProposalOverlayProps = {
     conversation: Conversation
     step: ProposalStep
     errorMessage: string
     canAccessStepTwo: boolean
     canAccessStepThree: boolean
-    searchValue: string
+    mapPickerOpen: boolean
     mapCenter: MapPoint
+    mapPickerPointId: string
+    allSafePoints: SafeMeetingPoint[]
+    selectableOptions: ProposalSelectableOption[]
+    selectedOptionId: string
     customPoint: MapPoint | null
+    customLocationLabel: string
+    customDistanceMeters: number | null
+    mapSearchValue: string
     dateTimeValue: string
-    selectedPointId: string
     finalPriceValue: string
     paymentMethod: MeetupPaymentMethod | ""
     selectedLocationLabel: string
-    onSearchChange: (nextValue: string) => void
-    onMapSelect: (lat: number, lng: number) => void
     onDateTimeChange: (nextValue: string) => void
-    onSelectPoint: (pointId: string) => void
+    onSelectPoint: (optionId: string) => void
     onFinalPriceChange: (nextValue: string) => void
     onPaymentMethodChange: (nextValue: MeetupPaymentMethod) => void
-    onSearchLocation: () => void
+    onOpenMapPicker: () => void
+    onCloseMapPicker: () => void
+    onMapSearchChange: (nextValue: string) => void
+    onMapClick: (lat: number, lng: number) => void
+    onSelectMapPickerPoint: (pointId: string) => void
+    onConfirmMapPickerPoint: () => void
     onStepChange: (nextStep: ProposalStep) => void
     onCancel: () => void
     onBack: () => void
@@ -363,21 +578,30 @@ function MeetupProposalOverlay({
     errorMessage,
     canAccessStepTwo,
     canAccessStepThree,
-    searchValue,
+    mapPickerOpen,
     mapCenter,
+    mapPickerPointId,
+    allSafePoints,
+    selectableOptions,
+    selectedOptionId,
     customPoint,
+    customLocationLabel,
+    customDistanceMeters,
+    mapSearchValue,
     dateTimeValue,
-    selectedPointId,
     finalPriceValue,
     paymentMethod,
     selectedLocationLabel,
-    onSearchChange,
-    onMapSelect,
     onDateTimeChange,
     onSelectPoint,
     onFinalPriceChange,
     onPaymentMethodChange,
-    onSearchLocation,
+    onOpenMapPicker,
+    onCloseMapPicker,
+    onMapSearchChange,
+    onMapClick,
+    onSelectMapPickerPoint,
+    onConfirmMapPickerPoint,
     onStepChange,
     onCancel,
     onBack,
@@ -385,111 +609,245 @@ function MeetupProposalOverlay({
     onSubmit,
 }: MeetupProposalOverlayProps) {
     const stepLabels: Array<{ id: ProposalStep; label: string }> = [
-        { id: 1, label: "Lugar" },
-        { id: 2, label: "Fecha y hora" },
+        { id: 1, label: "Punto de encuentro" },
+        { id: 2, label: "Dia y hora" },
         { id: 3, label: "Preferencia de pago" },
     ]
     const canContinueStepOne = selectedLocationLabel.trim().length > 0
+    const mapSelectedPoint = allSafePoints.find((point) => point.id === mapPickerPointId)
+    const isCustomPointSelected = mapPickerPointId === "custom" && customPoint
+    const visibleOptions = selectableOptions.slice(0, 2)
 
     return (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#253238]/50 p-0 md:items-center md:p-6 motion-safe:animate-in motion-safe:fade-in-0">
-            <section className="flex h-[92vh] w-full max-h-[92vh] flex-col rounded-t-[22px] bg-white p-4 shadow-[0_16px_48px_rgba(37,50,56,0.22)] motion-safe:animate-in motion-safe:slide-in-from-bottom-10 md:h-[86vh] md:max-h-[86vh] md:max-w-[760px] md:rounded-[20px] md:p-5 md:motion-safe:zoom-in-95">
-                <div className="flex items-start justify-between gap-4">
-                    <div className="flex min-w-0 items-center gap-3">
-                        <img
-                            src={conversation.listingImageSrc}
-                            alt={conversation.itemTitle}
-                            className="h-12 w-12 rounded-[12px] object-cover"
-                        />
-                        <div className="min-w-0">
-                            <p className="font-wallie-fit text-[12px] text-[#6E8792]">Proponer quedada</p>
-                            <h2 className="truncate font-wallie-chunky text-[20px] text-[#253238]">
-                                {conversation.userName}
-                            </h2>
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#253238]/50 p-0 md:items-center md:p-6">
+            <section className="flex h-[94vh] w-full max-h-[94vh] flex-col rounded-t-[22px] bg-white shadow-[0_16px_48px_rgba(37,50,56,0.22)] md:h-[88vh] md:max-h-[88vh] md:max-w-[760px] md:rounded-[20px]">
+                {mapPickerOpen ? (
+                    <div className="flex min-h-0 flex-1 flex-col">
+                        <div className="border-b border-[#E8ECEF] px-4 py-3">
+                            <div className="flex items-center justify-between">
+                                <button
+                                    type="button"
+                                    aria-label="Volver al paso anterior"
+                                    className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#253238]"
+                                    onClick={onCloseMapPicker}
+                                >
+                                    <WallapopIcon name="arrow_left" size={20} />
+                                </button>
+                                <h2 className="font-wallie-chunky text-[22px] text-[#253238] md:text-[24px]">Elige un punto</h2>
+                                <span className="h-10 w-10" aria-hidden />
+                            </div>
+                            <label className="mt-3 flex items-center gap-2 rounded-full border border-[#9BB0B9] bg-[#F3F6F8] px-4 py-2.5">
+                                <Search size={16} className="text-[#9BB0B9]" aria-hidden />
+                                <input
+                                    type="text"
+                                    value={mapSearchValue}
+                                    onChange={(event) => onMapSearchChange(event.target.value)}
+                                    placeholder="¿Donde?"
+                                    className="w-full bg-transparent font-wallie-fit text-[16px] text-[#4A5A63] outline-none placeholder:text-[#9BB0B9]"
+                                />
+                            </label>
+                        </div>
+
+                        <div className="relative min-h-0 flex-1 overflow-hidden">
+                            <MapContainer
+                                center={[mapCenter.lat, mapCenter.lng]}
+                                zoom={14}
+                                scrollWheelZoom
+                                zoomControl={false}
+                                className="z-0 h-full w-full"
+                            >
+                                <TileLayer
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+                                <ProposalMapCenterController center={mapCenter} />
+                                <ProposalMapClickHandler onMapClick={onMapClick} />
+                                <Marker position={[mapUserPosition.lat, mapUserPosition.lng]} icon={userPositionIcon} />
+                                {allSafePoints.map((point) => (
+                                    <Marker
+                                        key={point.id}
+                                        position={[point.lat, point.lng]}
+                                        icon={mapPickerPointId === point.id ? selectedSafePointMarkerIcon : safePointMarkerIcon}
+                                        eventHandlers={{
+                                            click: (event) => {
+                                                event.originalEvent.stopPropagation()
+                                                onSelectMapPickerPoint(point.id)
+                                            },
+                                        }}
+                                    />
+                                ))}
+                                {customPoint ? (
+                                    <Marker
+                                        position={[customPoint.lat, customPoint.lng]}
+                                        icon={customPointIcon}
+                                        eventHandlers={{
+                                            click: (event) => {
+                                                event.originalEvent.stopPropagation()
+                                                onSelectMapPickerPoint("custom")
+                                            },
+                                        }}
+                                    />
+                                ) : null}
+                            </MapContainer>
+
+                            {mapSelectedPoint || isCustomPointSelected ? (
+                                <div className="absolute inset-x-3 bottom-3 z-[1200] rounded-[16px] bg-white p-4 shadow-[0_10px_28px_rgba(37,50,56,0.2)]">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="min-w-0">
+                                            <p className="font-wallie-chunky text-[20px] text-[#253238] md:text-[22px]">
+                                                {mapSelectedPoint ? mapSelectedPoint.name : "Punto personalizado"}
+                                            </p>
+                                            <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                                                {mapSelectedPoint ? mapSelectedPoint.address : customLocationLabel}
+                                            </p>
+                                        </div>
+                                        <div className="shrink-0 whitespace-nowrap rounded-full bg-[#E6FAF6] px-3 py-1">
+                                            <p className="whitespace-nowrap font-wallie-chunky text-[15px] text-[#038673]">
+                                                {mapSelectedPoint
+                                                    ? formatDistance(mapSelectedPoint.distanceMeters)
+                                                    : formatDistance(customDistanceMeters ?? 0)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {mapSelectedPoint ? (
+                                        <p className="mt-2 font-wallie-fit text-[14px] text-[#4A5A63]">
+                                            {mapSelectedPoint.completedSales} ventas completadas en este punto seguro.
+                                        </p>
+                                    ) : (
+                                        <p className="mt-2 rounded-[8px] bg-[#FFF4E8] px-2 py-1 font-wallie-fit text-[13px] text-[#8A4A00]">
+                                            Este punto no es un punto seguro verificado.
+                                        </p>
+                                    )}
+                                    <button
+                                        type="button"
+                                        className="mt-4 w-full rounded-full bg-[#13C1AC] py-3 font-wallie-chunky text-[17px] text-[#0F252B]"
+                                        onClick={onConfirmMapPickerPoint}
+                                    >
+                                        Seleccionar
+                                    </button>
+                                </div>
+                            ) : null}
                         </div>
                     </div>
-                    <button
-                        type="button"
-                        aria-label="Cerrar configuracion de meetup"
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
-                        onClick={onCancel}
-                    >
-                        <WallapopIcon name="cross" size="small" />
-                    </button>
-                </div>
+                ) : (
+                    <>
+                        <div className="px-4 pt-3">
+                            <div className="flex items-center justify-between">
+                                <button
+                                    type="button"
+                                    aria-label="Cerrar configuracion de meetup"
+                                    className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#253238]"
+                                    onClick={onCancel}
+                                >
+                                    <WallapopIcon name="cross" size={22} />
+                                </button>
+                                <h2 className="font-wallie-chunky text-[18px] text-[#253238] md:text-[20px]">Paso {step} de 3</h2>
+                                <button type="button" className="font-wallie-chunky text-[15px] text-[#038673] md:text-[16px]">
+                                    Dudas?
+                                </button>
+                            </div>
 
-                <div className="mt-4 grid grid-cols-3 gap-2 rounded-[12px] bg-[#F3F6F8] p-2">
-                    {stepLabels.map((stepItem) => {
-                        const isLocked =
-                            (stepItem.id === 2 && !canAccessStepTwo) ||
-                            (stepItem.id === 3 && !canAccessStepThree)
-
-                        return (
-                            <button
-                                key={stepItem.id}
-                                type="button"
-                                onClick={() => onStepChange(stepItem.id)}
-                                disabled={isLocked}
-                                className={`rounded-[10px] px-3 py-2 text-center font-wallie-fit text-[13px] ${stepItem.id === step
-                                        ? "bg-white text-[#253238] shadow-[0_1px_2px_rgba(37,50,56,0.1)]"
-                                        : stepItem.id < step
-                                            ? "bg-[#E6FAF6] text-[#038673]"
-                                            : isLocked
-                                                ? "cursor-not-allowed text-[#9BB0B9]"
-                                                : "text-[#6E8792]"
-                                    }`}
-                            >
-                                {stepItem.id}. {stepItem.label}
-                            </button>
-                        )
-                    })}
-                </div>
+                            <div className="mt-3 grid grid-cols-3 gap-2">
+                                {stepLabels.map((stepItem) => {
+                                    const isLocked =
+                                        (stepItem.id === 2 && !canAccessStepTwo) ||
+                                        (stepItem.id === 3 && !canAccessStepThree)
+                                    return (
+                                        <button
+                                            key={stepItem.id}
+                                            type="button"
+                                            onClick={() => onStepChange(stepItem.id)}
+                                            disabled={isLocked}
+                                            className={`h-[5px] rounded-full ${stepItem.id <= step ? "bg-[#253238]" : "bg-[#D3DEE2]"
+                                                }`}
+                                            aria-label={`Paso ${stepItem.id}: ${stepItem.label}`}
+                                        />
+                                    )
+                                })}
+                            </div>
+                        </div>
                 {errorMessage ? (
-                    <p className="mt-3 rounded-[8px] bg-[#FDEBEC] px-3 py-2 font-wallie-fit text-[13px] text-[#A81F2D]">
+                    <p className="mx-4 mt-3 rounded-[8px] bg-[#FDEBEC] px-3 py-2 font-wallie-fit text-[13px] text-[#A81F2D]">
                         {errorMessage}
                     </p>
                 ) : null}
 
-                <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+                <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
                     {step === 1 ? (
                         <div className="mt-4 space-y-4">
-                            <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
-                                Selecciona el punto de encuentro sobre el mapa o usando el buscador.
-                            </p>
+                            <h3 className="font-wallie-chunky text-[22px] leading-[1.12] text-[#253238] md:text-[24px]">
+                                Seleccionar punto de encuentro
+                            </h3>
+                            {visibleOptions.map((option) => {
+                                const isSelected = selectedOptionId === option.id
+                                return (
+                                    <button
+                                        key={option.id}
+                                        type="button"
+                                        onClick={() => onSelectPoint(option.id)}
+                                        className={`w-full rounded-[18px] border px-4 py-4 text-left ${isSelected
+                                                ? "border-[#253238] shadow-[inset_0_0_0_1px_#253238]"
+                                                : "border-[#B8C9CF]"
+                                            }`}
+                                    >
+                                        <div className="flex items-start gap-3">
+                                            {option.kind === "safe" ? (
+                                                <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#E6FAF6] text-[#038673]">
+                                                    <SafeShieldGlyph />
+                                                </span>
+                                            ) : (
+                                                <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#E8F0FF] text-[#2F6DF6]">
+                                                    <MapPin size={16} />
+                                                </span>
+                                            )}
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-wallie-chunky text-[18px] leading-tight text-[#253238] md:text-[19px]">
+                                                    {option.label}
+                                                </p>
+                                                <p className="mt-1 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                                    {option.address}
+                                                </p>
+                                                <div className="mt-1 flex items-center gap-2">
+                                                    {option.kind === "safe" ? (
+                                                        <>
+                                                            <span className="rounded-full bg-[#E6FAF6] px-2 py-0.5 font-wallie-fit text-[12px] text-[#038673]">
+                                                                Punto seguro
+                                                            </span>
+                                                            <span className="rounded-full bg-[#EEF3F5] px-2 py-0.5 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                                                {option.completedSales ?? 0} ventas
+                                                            </span>
+                                                        </>
+                                                    ) : (
+                                                        <span className="rounded-full bg-[#EEF3F5] px-2 py-0.5 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                                            Personalizado
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                )
+                            })}
 
-                            <label className="block">
-                                <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
-                                    Buscar ubicacion
-                                </span>
-                                <input
-                                    type="text"
-                                    value={searchValue}
-                                    onChange={(event) => onSearchChange(event.target.value)}
-                                    onKeyDown={(event) => {
-                                        if (event.key === "Enter") {
-                                            event.preventDefault()
-                                            onSearchLocation()
-                                        }
-                                    }}
-                                    placeholder="Ej: estacion, centro comercial, comisaria"
-                                    className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
-                                />
-                            </label>
-
-                            {selectedLocationLabel ? (
-                                <p className="rounded-[10px] bg-[#13C1AC] px-3 py-2 font-wallie-fit text-[13px] text-white">
-                                    Has seleccionado: {selectedLocationLabel}
-                                </p>
-                            ) : null}
-
-                            <MeetupLocationMap
-                                center={mapCenter}
-                                safePoints={safeMeetingPoints}
-                                selectedPointId={selectedPointId}
-                                selectedCustomPoint={selectedPointId === "custom" ? customPoint : null}
-                                onMapClick={onMapSelect}
-                                onSafePointClick={onSelectPoint}
-                            />
+                            <button
+                                type="button"
+                                onClick={onOpenMapPicker}
+                                className="w-full rounded-[18px] border border-[#B8C9CF] px-4 py-4 text-left"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
+                                        <WallapopIcon name="plus" size={16} />
+                                    </span>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-wallie-chunky text-[18px] text-[#253238] md:text-[19px]">
+                                            Elige un punto
+                                        </p>
+                                        <p className="font-wallie-fit text-[13px] text-[#6E8792]">
+                                            Puede ser un punto personalizado u otro punto seguro.
+                                        </p>
+                                    </div>
+                                </div>
+                            </button>
                         </div>
                     ) : null}
 
@@ -577,47 +935,54 @@ function MeetupProposalOverlay({
                     ) : null}
                 </div>
 
-                <div className="mt-4 flex justify-end gap-2">
-                    {step < 3 ? (
-                        <>
-                            <button
-                                type="button"
-                                className="rounded-full border border-[#D3DEE2] px-4 py-2 font-wallie-fit text-[14px] text-[#253238]"
-                                onClick={onCancel}
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                type="button"
-                                className={`rounded-full px-4 py-2 font-wallie-chunky text-[14px] text-white ${step === 1 && !canContinueStepOne
-                                        ? "cursor-not-allowed bg-[#B6C4CB]"
-                                        : "bg-[#13C1AC]"
-                                    }`}
-                                onClick={onNext}
-                                disabled={step === 1 && !canContinueStepOne}
-                            >
-                                Siguiente
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <button
-                                type="button"
-                                className="rounded-full border border-[#D3DEE2] px-4 py-2 font-wallie-fit text-[14px] text-[#253238]"
-                                onClick={onCancel}
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                type="button"
-                                className="rounded-full bg-[#13C1AC] px-4 py-2 font-wallie-chunky text-[14px] text-white"
-                                onClick={onSubmit}
-                            >
-                                Proponer quedada
-                            </button>
-                        </>
-                    )}
+                <div className="mt-3 border-t border-[#E8ECEF] px-4 py-3">
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                            <div className="flex min-w-0 items-center gap-2">
+                                <img
+                                    src={conversation.listingImageSrc}
+                                    alt={conversation.itemTitle}
+                                    className="h-[42px] w-[42px] shrink-0 rounded-[10px] object-cover"
+                                />
+                                <div className="min-w-0">
+                                    <p className="truncate font-wallie-fit text-[12px] leading-tight text-[#6E8792]">Proponer quedada</p>
+                                    <p className="truncate font-wallie-chunky text-[15px] leading-tight text-[#253238]">
+                                        {conversation.userName}
+                                    </p>
+                                    <p className="truncate font-wallie-fit text-[12px] leading-tight text-[#4A5A63]">
+                                        {conversation.itemTitle}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="shrink-0 flex justify-end gap-2">
+                            {step < 3 ? (
+                                <button
+                                    type="button"
+                                    className={`rounded-full px-4 py-2 font-wallie-chunky text-[14px] text-white ${step === 1 && !canContinueStepOne
+                                            ? "cursor-not-allowed bg-[#B6C4CB]"
+                                            : "bg-[#13C1AC]"
+                                        }`}
+                                    onClick={onNext}
+                                    disabled={step === 1 && !canContinueStepOne}
+                                >
+                                    Siguiente
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    className="rounded-full bg-[#13C1AC] px-4 py-2 font-wallie-chunky text-[14px] text-white"
+                                    onClick={onSubmit}
+                                >
+                                    Proponer quedada
+                                </button>
+                            )}
+                        </div>
+                    </div>
                 </div>
+                    </>
+                )}
             </section>
         </div>
     )
@@ -855,15 +1220,23 @@ function WallapopChatWorkspace() {
     const [lastError, setLastError] = React.useState("")
     const [isProposalOverlayOpen, setIsProposalOverlayOpen] = React.useState(false)
     const [proposalStep, setProposalStep] = React.useState<ProposalStep>(1)
-    const [proposalSearch, setProposalSearch] = React.useState("")
+    const [proposalMapPickerOpen, setProposalMapPickerOpen] = React.useState(false)
+    const [proposalMapPickerPointId, setProposalMapPickerPointId] = React.useState("")
+    const [proposalMapSearchValue, setProposalMapSearchValue] = React.useState("")
     const [proposalMapCenter, setProposalMapCenter] = React.useState<MapPoint>({
         lat: safeMeetingPoints[0].lat,
         lng: safeMeetingPoints[0].lng,
     })
+    const [proposalOptions, setProposalOptions] = React.useState<ProposalSelectableOption[]>([
+        toSafeOption(safeMeetingPoints[0]),
+        toSafeOption(safeMeetingPoints[1]),
+    ])
+    const [proposalSelectedOptionId, setProposalSelectedOptionId] = React.useState<string>(
+        `safe:${safeMeetingPoints[0].id}`
+    )
     const [proposalCustomPoint, setProposalCustomPoint] = React.useState<MapPoint | null>(null)
-    const [proposalScheduledAt, setProposalScheduledAt] = React.useState("")
-    const [proposalPointId, setProposalPointId] = React.useState("")
     const [proposalCustomLocationLabel, setProposalCustomLocationLabel] = React.useState("")
+    const [proposalScheduledAt, setProposalScheduledAt] = React.useState("")
     const [proposalFinalPrice, setProposalFinalPrice] = React.useState("")
     const [proposalPaymentMethod, setProposalPaymentMethod] = React.useState<
         MeetupPaymentMethod | ""
@@ -885,12 +1258,15 @@ function WallapopChatWorkspace() {
     React.useEffect(() => {
         if (!selectedMeetup) {
             setProposalStep(1)
-            setProposalSearch("")
+            setProposalMapPickerOpen(false)
+            setProposalMapPickerPointId("")
+            setProposalMapSearchValue("")
             setProposalMapCenter({ lat: safeMeetingPoints[0].lat, lng: safeMeetingPoints[0].lng })
+            setProposalOptions([toSafeOption(safeMeetingPoints[0]), toSafeOption(safeMeetingPoints[1])])
+            setProposalSelectedOptionId(`safe:${safeMeetingPoints[0].id}`)
             setProposalCustomPoint(null)
-            setProposalScheduledAt("")
-            setProposalPointId("")
             setProposalCustomLocationLabel("")
+            setProposalScheduledAt("")
             setProposalFinalPrice("")
             setProposalPaymentMethod("")
             setProposalError("")
@@ -902,18 +1278,41 @@ function WallapopChatWorkspace() {
         const matchingPoint = safeMeetingPoints.find(
             (point) => point.name === selectedMeetup.proposedLocation
         )
-        const initialPoint = matchingPoint?.id ?? (selectedMeetup.proposedLocation ? "custom" : "")
-        setProposalPointId(initialPoint)
+        const hasCustomLocation = Boolean(selectedMeetup.proposedLocation && !matchingPoint)
+        if (matchingPoint) {
+            const selectedOption = toSafeOption(matchingPoint)
+            const fallbackOption = toSafeOption(
+                safeMeetingPoints.find((point) => point.id !== matchingPoint.id) ?? safeMeetingPoints[0]
+            )
+            setProposalOptions([selectedOption, fallbackOption])
+            setProposalSelectedOptionId(selectedOption.id)
+            setProposalMapPickerPointId(matchingPoint.id)
+        } else if (hasCustomLocation) {
+            const customOption = toCustomOption(
+                mapUserPosition.lat,
+                mapUserPosition.lng,
+                selectedMeetup.proposedLocation ?? customLocationLabelFromPoint(mapUserPosition.lat, mapUserPosition.lng)
+            )
+            setProposalOptions([customOption, toSafeOption(safeMeetingPoints[0])])
+            setProposalSelectedOptionId(customOption.id)
+            setProposalMapPickerPointId("custom")
+        } else {
+            setProposalOptions([toSafeOption(safeMeetingPoints[0]), toSafeOption(safeMeetingPoints[1])])
+            setProposalSelectedOptionId(`safe:${safeMeetingPoints[0].id}`)
+            setProposalMapPickerPointId("")
+        }
         if (matchingPoint) {
             setProposalMapCenter({ lat: matchingPoint.lat, lng: matchingPoint.lng })
             setProposalCustomPoint(null)
             setProposalCustomLocationLabel("")
-        } else if (selectedMeetup.proposedLocation) {
-            setProposalCustomLocationLabel(selectedMeetup.proposedLocation)
-            setProposalCustomPoint({ lat: safeMeetingPoints[0].lat, lng: safeMeetingPoints[0].lng })
+        } else if (hasCustomLocation) {
+            setProposalCustomPoint({ ...mapUserPosition })
+            setProposalCustomLocationLabel(selectedMeetup.proposedLocation ?? customLocationLabelFromPoint(mapUserPosition.lat, mapUserPosition.lng))
+            setProposalMapCenter({ ...mapUserPosition })
         } else {
-            setProposalCustomLocationLabel("")
+            setProposalMapCenter({ lat: safeMeetingPoints[0].lat, lng: safeMeetingPoints[0].lng })
             setProposalCustomPoint(null)
+            setProposalCustomLocationLabel("")
         }
         setProposalFinalPrice(
             selectedMeetup.finalPrice !== undefined ? String(selectedMeetup.finalPrice) : ""
@@ -954,31 +1353,76 @@ function WallapopChatWorkspace() {
         }))
     }
 
+    const resolveCustomPointAddress = React.useCallback(async (lat: number, lng: number) => {
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lng))}`
+            )
+            if (!response.ok) {
+                return
+            }
+            const data = (await response.json()) as { display_name?: string }
+            if (typeof data.display_name === "string" && data.display_name.trim().length > 0) {
+                setProposalCustomLocationLabel(data.display_name)
+            }
+        } catch {
+            // Fallback silencioso: se mantienen coordenadas.
+        }
+    }, [])
+
     const openMeetupProposal = () => {
         if (!selectedMeetup) {
             return
         }
 
         setProposalStep(1)
-        setProposalSearch("")
+        setProposalMapPickerOpen(false)
+        setProposalMapPickerPointId("")
+        setProposalMapSearchValue("")
         setProposalMapCenter({ lat: safeMeetingPoints[0].lat, lng: safeMeetingPoints[0].lng })
+        setProposalOptions([toSafeOption(safeMeetingPoints[0]), toSafeOption(safeMeetingPoints[1])])
+        setProposalSelectedOptionId(`safe:${safeMeetingPoints[0].id}`)
         setProposalCustomPoint(null)
+        setProposalCustomLocationLabel("")
         setProposalScheduledAt(toLocalDateTimeValue(selectedMeetup.scheduledAt))
         const matchingPoint = safeMeetingPoints.find(
             (point) => point.name === selectedMeetup.proposedLocation
         )
-        const initialPoint = matchingPoint?.id ?? (selectedMeetup.proposedLocation ? "custom" : "")
-        setProposalPointId(initialPoint)
+        const hasCustomLocation = Boolean(selectedMeetup.proposedLocation && !matchingPoint)
+        if (matchingPoint) {
+            const selectedOption = toSafeOption(matchingPoint)
+            const fallbackOption = toSafeOption(
+                safeMeetingPoints.find((point) => point.id !== matchingPoint.id) ?? safeMeetingPoints[0]
+            )
+            setProposalOptions([selectedOption, fallbackOption])
+            setProposalSelectedOptionId(selectedOption.id)
+            setProposalMapPickerPointId(matchingPoint.id)
+        } else if (hasCustomLocation) {
+            const customOption = toCustomOption(
+                mapUserPosition.lat,
+                mapUserPosition.lng,
+                selectedMeetup.proposedLocation ?? customLocationLabelFromPoint(mapUserPosition.lat, mapUserPosition.lng)
+            )
+            setProposalOptions([customOption, toSafeOption(safeMeetingPoints[0])])
+            setProposalSelectedOptionId(customOption.id)
+            setProposalMapPickerPointId("custom")
+        } else {
+            setProposalOptions([toSafeOption(safeMeetingPoints[0]), toSafeOption(safeMeetingPoints[1])])
+            setProposalSelectedOptionId(`safe:${safeMeetingPoints[0].id}`)
+            setProposalMapPickerPointId("")
+        }
         if (matchingPoint) {
             setProposalMapCenter({ lat: matchingPoint.lat, lng: matchingPoint.lng })
-            setProposalCustomLocationLabel("")
             setProposalCustomPoint(null)
-        } else if (selectedMeetup.proposedLocation) {
-            setProposalCustomLocationLabel(selectedMeetup.proposedLocation)
-            setProposalCustomPoint({ lat: safeMeetingPoints[0].lat, lng: safeMeetingPoints[0].lng })
+            setProposalCustomLocationLabel("")
+        } else if (hasCustomLocation) {
+            setProposalCustomPoint({ ...mapUserPosition })
+            setProposalCustomLocationLabel(selectedMeetup.proposedLocation ?? customLocationLabelFromPoint(mapUserPosition.lat, mapUserPosition.lng))
+            setProposalMapCenter({ ...mapUserPosition })
         } else {
-            setProposalCustomLocationLabel("")
+            setProposalMapCenter({ lat: safeMeetingPoints[0].lat, lng: safeMeetingPoints[0].lng })
             setProposalCustomPoint(null)
+            setProposalCustomLocationLabel("")
         }
         setProposalFinalPrice(
             selectedMeetup.finalPrice !== undefined ? String(selectedMeetup.finalPrice) : ""
@@ -990,66 +1434,110 @@ function WallapopChatWorkspace() {
 
     const closeMeetupProposal = () => {
         setProposalError("")
+        setProposalMapPickerOpen(false)
         setIsProposalOverlayOpen(false)
     }
 
-    const selectPointFromMap = (lat: number, lng: number) => {
-        setProposalPointId("custom")
-        setProposalCustomPoint({ lat, lng })
-        setProposalMapCenter({ lat, lng })
-        setProposalCustomLocationLabel(mapClickToLocationLabel(lat, lng))
-        setProposalError("")
+    const pushProposalOption = (nextOption: ProposalSelectableOption) => {
+        setProposalOptions((previous) => {
+            const withoutSame = previous.filter((option) => option.id !== nextOption.id)
+            return [nextOption, ...withoutSame].slice(0, 2)
+        })
+        setProposalSelectedOptionId(nextOption.id)
     }
 
-    const selectSafePoint = (pointId: string) => {
-        setProposalPointId(pointId)
+    const selectSafePoint = (pointId: string, options?: { pushToTop?: boolean }) => {
         const selected = safeMeetingPoints.find((point) => point.id === pointId)
         if (!selected) {
             return
         }
+        const safeOption = toSafeOption(selected)
+        if (options?.pushToTop) {
+            pushProposalOption(safeOption)
+        } else {
+            setProposalSelectedOptionId(safeOption.id)
+        }
+        setProposalMapPickerPointId(pointId)
         setProposalMapCenter({ lat: selected.lat, lng: selected.lng })
         setProposalCustomPoint(null)
         setProposalCustomLocationLabel("")
         setProposalError("")
     }
 
-    const searchLocationOnMap = async () => {
-        const query = proposalSearch.trim()
-        if (!query) {
-            return
-        }
+    const selectCustomPoint = (lat: number, lng: number) => {
+        setProposalCustomPoint({ lat, lng })
+        setProposalCustomLocationLabel(customLocationLabelFromPoint(lat, lng))
+        setProposalMapPickerPointId("custom")
+        setProposalMapCenter({ lat, lng })
+        setProposalError("")
+        void resolveCustomPointAddress(lat, lng)
+    }
 
-        try {
-            const response = await fetch(
-                `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`
-            )
-            if (!response.ok) {
-                setProposalError("No se pudo buscar la ubicacion ahora mismo.")
-                return
+    const openMapPicker = () => {
+        setProposalMapPickerOpen(true)
+        setProposalError("")
+        if (!proposalMapPickerPointId) {
+            const selectedOption = proposalOptions.find((option) => option.id === proposalSelectedOptionId)
+            if (selectedOption?.kind === "safe" && selectedOption.safePointId) {
+                setProposalMapPickerPointId(selectedOption.safePointId)
+                setProposalMapCenter({ lat: selectedOption.lat, lng: selectedOption.lng })
+            } else if (selectedOption?.kind === "custom") {
+                setProposalMapPickerPointId("custom")
+                setProposalMapCenter({ lat: selectedOption.lat, lng: selectedOption.lng })
+            } else {
+                setProposalMapPickerPointId(safeMeetingPoints[0].id)
+                setProposalMapCenter({ lat: safeMeetingPoints[0].lat, lng: safeMeetingPoints[0].lng })
             }
-            const data = (await response.json()) as Array<{ lat: string; lon: string; display_name: string }>
-            if (data.length === 0) {
-                setProposalError("No se encontraron resultados para esa busqueda.")
-                return
-            }
-            const lat = Number.parseFloat(data[0].lat)
-            const lng = Number.parseFloat(data[0].lon)
-            if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-                setProposalError("Resultado de busqueda invalido.")
-                return
-            }
-            setProposalPointId("custom")
-            setProposalCustomPoint({ lat, lng })
-            setProposalMapCenter({ lat, lng })
-            setProposalCustomLocationLabel(data[0].display_name)
-            setProposalError("")
-        } catch {
-            setProposalError("No se pudo buscar la ubicacion. Reintenta.")
         }
     }
 
+    const closeMapPicker = () => {
+        setProposalMapPickerOpen(false)
+    }
+
+    const selectMapPickerPoint = (pointId: string) => {
+        setProposalMapPickerPointId(pointId)
+        if (pointId === "custom") {
+            if (!proposalCustomPoint) {
+                selectCustomPoint(proposalMapCenter.lat, proposalMapCenter.lng)
+            }
+            return
+        }
+        const selected = safeMeetingPoints.find((point) => point.id === pointId)
+        if (!selected) {
+            return
+        }
+        setProposalCustomPoint(null)
+        setProposalCustomLocationLabel("")
+        setProposalMapCenter({ lat: selected.lat, lng: selected.lng })
+    }
+
+    const confirmMapPickerPoint = () => {
+        if (!proposalMapPickerPointId) {
+            setProposalError("Selecciona un punto de encuentro seguro.")
+            return
+        }
+        if (proposalMapPickerPointId === "custom") {
+            if (!proposalCustomPoint) {
+                setProposalError("Selecciona un punto personalizado en el mapa.")
+                return
+            }
+            const customOption = toCustomOption(
+                proposalCustomPoint.lat,
+                proposalCustomPoint.lng,
+                proposalCustomLocationLabel || customLocationLabelFromPoint(proposalCustomPoint.lat, proposalCustomPoint.lng)
+            )
+            pushProposalOption(customOption)
+            setProposalMapPickerOpen(false)
+            setProposalError("")
+            return
+        }
+        selectSafePoint(proposalMapPickerPointId, { pushToTop: true })
+        setProposalMapPickerOpen(false)
+    }
+
     const validateProposalStepOne = () => {
-        if (proposalPointId.trim().length === 0) {
+        if (proposalSelectedOptionId.trim().length === 0) {
             setProposalError("Selecciona un punto de encuentro en el mapa.")
             return false
         }
@@ -1105,17 +1593,23 @@ function WallapopChatWorkspace() {
     }
 
     const selectedLocationLabel = React.useMemo(() => {
-        const selectedPoint = safeMeetingPoints.find((point) => point.id === proposalPointId)
-        if (selectedPoint) {
-            return `${selectedPoint.name} (Punto seguro)`
+        const selectedOption = proposalOptions.find((option) => option.id === proposalSelectedOptionId)
+        if (!selectedOption) {
+            return ""
         }
-        if (proposalPointId === "custom" && proposalCustomLocationLabel) {
-            return proposalCustomLocationLabel
-        }
-        return ""
-    }, [proposalCustomLocationLabel, proposalPointId])
+        return selectedOption.kind === "safe"
+            ? `${selectedOption.label} (Punto seguro)`
+            : selectedOption.address
+    }, [proposalOptions, proposalSelectedOptionId])
 
-    const canAccessProposalStepTwo = proposalPointId.trim().length > 0
+    const proposalCustomDistanceMeters = React.useMemo(() => {
+        if (!proposalCustomPoint) {
+            return null
+        }
+        return distanceBetweenPointsMeters(mapUserPosition, proposalCustomPoint)
+    }, [proposalCustomPoint])
+
+    const canAccessProposalStepTwo = proposalSelectedOptionId.trim().length > 0
     const canAccessProposalStepThree =
         canAccessProposalStepTwo && parseLocalDateTimeValue(proposalScheduledAt) !== null
 
@@ -1131,10 +1625,8 @@ function WallapopChatWorkspace() {
             return
         }
 
-        const selectedPoint = safeMeetingPoints.find((point) => point.id === proposalPointId)
-        const resolvedLocation =
-            selectedPoint?.name ??
-            (proposalPointId === "custom" ? proposalCustomLocationLabel : "")
+        const selectedOption = proposalOptions.find((option) => option.id === proposalSelectedOptionId)
+        const resolvedLocation = selectedOption?.address ?? ""
 
         if (!resolvedLocation) {
             setProposalError("Selecciona un punto de encuentro seguro.")
@@ -1240,25 +1732,46 @@ function WallapopChatWorkspace() {
                     errorMessage={proposalError}
                     canAccessStepTwo={canAccessProposalStepTwo}
                     canAccessStepThree={canAccessProposalStepThree}
-                    searchValue={proposalSearch}
-                    mapCenter={proposalMapCenter}
+                    mapPickerOpen={proposalMapPickerOpen}
+                    mapPickerPointId={proposalMapPickerPointId}
+                    allSafePoints={safeMeetingPoints}
+                    selectableOptions={proposalOptions}
+                    selectedOptionId={proposalSelectedOptionId}
                     customPoint={proposalCustomPoint}
+                    customLocationLabel={proposalCustomLocationLabel}
+                    customDistanceMeters={proposalCustomDistanceMeters}
+                    mapSearchValue={proposalMapSearchValue}
+                    mapCenter={proposalMapCenter}
                     dateTimeValue={proposalScheduledAt}
-                    selectedPointId={proposalPointId}
                     finalPriceValue={proposalFinalPrice}
                     paymentMethod={proposalPaymentMethod}
                     selectedLocationLabel={selectedLocationLabel}
-                    onSearchChange={(nextValue) => {
-                        setProposalSearch(nextValue)
-                        setProposalError("")
-                    }}
-                    onSearchLocation={searchLocationOnMap}
-                    onMapSelect={selectPointFromMap}
                     onDateTimeChange={(nextValue) => {
                         setProposalScheduledAt(nextValue)
                         setProposalError("")
                     }}
-                    onSelectPoint={selectSafePoint}
+                    onSelectPoint={(optionId) => {
+                        const option = proposalOptions.find((entry) => entry.id === optionId)
+                        if (!option) {
+                            return
+                        }
+                        setProposalSelectedOptionId(option.id)
+                        if (option.kind === "safe" && option.safePointId) {
+                            setProposalMapPickerPointId(option.safePointId)
+                        } else {
+                            setProposalMapPickerPointId("custom")
+                            setProposalCustomPoint({ lat: option.lat, lng: option.lng })
+                            setProposalCustomLocationLabel(option.address)
+                        }
+                        setProposalMapCenter({ lat: option.lat, lng: option.lng })
+                        setProposalError("")
+                    }}
+                    onOpenMapPicker={openMapPicker}
+                    onCloseMapPicker={closeMapPicker}
+                    onMapSearchChange={setProposalMapSearchValue}
+                    onMapClick={selectCustomPoint}
+                    onSelectMapPickerPoint={selectMapPickerPoint}
+                    onConfirmMapPickerPoint={confirmMapPickerPoint}
                     onFinalPriceChange={(nextValue) => {
                         setProposalFinalPrice(nextValue)
                         setProposalError("")
