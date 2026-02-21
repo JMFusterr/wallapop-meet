@@ -44,7 +44,7 @@ function ChatListItem({
       data-slot="chat-list-item"
       data-selected={selected}
       className={cn(
-        "flex h-[100px] w-full cursor-pointer items-start gap-3 border-none bg-transparent pl-5 pt-5 pr-3 pb-5 text-left",
+        "flex h-[100px] w-full cursor-pointer items-start gap-3 border-0 bg-transparent pl-5 pt-5 pr-3 pb-5 text-left",
         showDivider && "border-b border-[var(--wm-color-border-default)]",
         "transition-colors hover:bg-[var(--wm-color-background-surface)] data-[selected=true]:bg-[var(--wm-color-background-surface)]",
         className

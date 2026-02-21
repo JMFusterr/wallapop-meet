@@ -81,10 +81,12 @@ Estados observados:
 - Storybook: `Design System/Chat Composer`.
 - Layout actual:
   - Wrapper: padding uniforme (`p-2` en movil, `p-3` en desktop).
-  - Caja interna: padding simetrico en los cuatro lados (`p-1.5`).
+  - Caja interna del input: padding simetrico en los cuatro lados (`p-1.5`).
+  - El boton de envio (`paper_plane`) se renderiza fuera de la caja del input, alineado a la derecha como accion primaria independiente.
 - Acciones disponibles:
-  - Accion primaria: boton circular de envio con icono `paper_plane`.
-  - Accion secundaria opcional: boton circular de meetup con icono `calendar` (a la derecha, justo antes de envio).
+  - Accion primaria: boton circular de envio con icono `paper_plane` (externo al input).
+  - Accion secundaria opcional: boton circular de meetup con icono `calendar`, dentro de la caja del input y situado a la derecha del textarea.
+  - Alineacion vertical: input y botones alineados al centro (`items-center`) para evitar desfase visual.
 - Props adicionales de integracion meetup:
   - `secondaryActionLabel`
   - `secondaryActionAriaLabel`

@@ -73,3 +73,13 @@
 
 ## Limitaciones de captura
 - No se detecto en pantalla una fila con badge visible (`>0`), pero se extrajeron sus estilos base desde el nodo runtime.
+
+## Implementacion actual en el repositorio (2026-02-21)
+- Componente: `src/components/ui/chat-list-item.tsx`.
+- Storybook: `Design System/Chat List Item`.
+- Separador entre filas:
+  - Se aplica `border-b` por defecto (`showDivider = true`) con color `var(--wm-color-border-default)` para replicar el stroke de inbox entre items.
+  - La base del boton usa `border-0` (en lugar de `border-none`) para permitir que el borde inferior sea visible.
+- Estado visual `selected` en inbox:
+  - Desktop: mantiene resaltado del item seleccionado para conservar el contexto de conversacion abierta.
+  - Movil: al volver desde una conversacion a la bandeja (`mobileView = "inbox"`), el item deja de mostrarse como pulsado para volver al estado inicial de lista.

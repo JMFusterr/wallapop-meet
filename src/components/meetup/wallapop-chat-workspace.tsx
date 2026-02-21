@@ -627,12 +627,14 @@ type InboxPaneProps = {
     selectedConversationId: string
     onSelectConversation: (conversationId: string) => void
     showBottomNav: boolean
+    highlightSelectedConversation?: boolean
 }
 
 function InboxPane({
     selectedConversationId,
     onSelectConversation,
     showBottomNav,
+    highlightSelectedConversation = true,
 }: InboxPaneProps) {
     return (
         <section className="flex h-full min-h-0 flex-col bg-white">
@@ -672,7 +674,10 @@ function InboxPane({
                         avatarAlt={conversation.itemTitle}
                         leadingIndicator={conversation.leadingIndicator}
                         unreadCount={conversation.unreadCount}
-                        selected={conversation.id === selectedConversationId}
+                        selected={
+                            highlightSelectedConversation &&
+                            conversation.id === selectedConversationId
+                        }
                         lastMessageDeliveryState={conversation.lastMessageDeliveryState}
                         onClick={() => onSelectConversation(conversation.id)}
                     />
@@ -1186,6 +1191,7 @@ function WallapopChatWorkspace() {
                         selectedConversationId={selectedConversationId}
                         onSelectConversation={openConversation}
                         showBottomNav={false}
+                        highlightSelectedConversation={true}
                     />
                 </div>
                 <div className="min-h-0">
@@ -1209,6 +1215,7 @@ function WallapopChatWorkspace() {
                         selectedConversationId={selectedConversationId}
                         onSelectConversation={openConversation}
                         showBottomNav={true}
+                        highlightSelectedConversation={false}
                     />
                 ) : (
                     <ConversationPane
