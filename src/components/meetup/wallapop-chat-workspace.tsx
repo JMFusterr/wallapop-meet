@@ -725,7 +725,7 @@ function ConversationPane({
     const canShowProposalAction = proposalActionState?.visible === true
 
     return (
-        <section className="flex h-full min-h-0 flex-col bg-[#F7FAFB]">
+        <section className="flex h-full min-h-0 flex-col bg-white">
             <header className="flex items-center gap-3 border-b border-[#E8ECEF] bg-white px-4 py-3">
                 {onBackToInbox ? (
                     <button
@@ -1184,7 +1184,7 @@ function WallapopChatWorkspace() {
     }
 
     return (
-        <main className="mx-auto h-[100dvh] w-full max-w-[1200px] bg-white">
+        <main className="h-[100dvh] w-full bg-white">
             <section className="hidden h-full overflow-hidden border-x border-[#D3DEE2] md:grid md:grid-cols-[360px_1fr]">
                 <div className="min-h-0 border-r border-[#E8ECEF]">
                     <InboxPane

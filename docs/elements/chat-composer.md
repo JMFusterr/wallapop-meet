@@ -87,6 +87,8 @@ Estados observados:
   - Accion primaria: boton circular de envio con icono `paper_plane` (externo al input).
   - Accion secundaria opcional: boton circular de meetup con icono `calendar`, dentro de la caja del input y situado a la derecha del textarea.
   - Alineacion vertical: input y botones alineados al centro (`items-center`) para evitar desfase visual.
+  - Ancho estable del textarea: cuando no existe accion secundaria se reserva el mismo hueco visual del boton (`11x11`/`10x10`) para evitar saltos de tamaño entre variantes.
+  - Radio del contenedor del input: `rounded-full` para mantener capsula completamente redonda en todos los estados.
 - Props adicionales de integracion meetup:
   - `secondaryActionLabel`
   - `secondaryActionAriaLabel`

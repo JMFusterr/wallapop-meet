@@ -45,6 +45,7 @@ Objetivos:
   - Las validaciones del wizard se muestran dentro del overlay (no como error en el hilo de chat).
 - `ChatSecurityBanner` fijado sobre el composer en formato compacto.
 - `MeetupCard` mostrando datos de propuesta (lugar, precio final y metodo de pago) una vez creado el meetup.
+- `WallapopChatWorkspace` en ancho fluido completo (`w-full`) sin `max-width` en desktop, para evitar margenes laterales blancos y adaptarse al ancho de cada dispositivo.
 - Header de buzon simplificado sin accion de menu tipo hamburguesa.
 - Accion de "mas opciones" (`ellipsis_horizontal`) ubicada en la cabecera de cada conversacion, alineada a la derecha.
 - Cabecera de conversacion con avatar circular de perfil del comprador junto al menu de tres puntos para mayor fidelidad al patron de Wallapop.

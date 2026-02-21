@@ -140,6 +140,7 @@ Notas de UI del workspace (2026-02-20):
 - Header de `InboxPane`: sin boton `burguer_menu`.
 - Header de `ConversationPane`: avatar circular del comprador + boton `ellipsis_horizontal` alineado a la derecha (placeholder sin accion funcional por ahora).
 - Indicador de entrega en `ChatMessageBubble` y `ChatListItem` unificado con `WallapopIcon.name=double_check`.
+- Contenedor principal del workspace en desktop con ancho fluido completo (sin `max-w`), para ocupar todo el viewport horizontal y eliminar margenes laterales.
 - Estado comercial en items del buzon reutilizando componentes documentados:
   - `Chat List Item With Bookmark` para reservado (`leadingIndicator="bookmark"`).
   - `Chat List Item With Deal` para vendido (`leadingIndicator="deal"`).

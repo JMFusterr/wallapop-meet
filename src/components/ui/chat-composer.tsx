@@ -38,6 +38,7 @@ function ChatComposer({
   const isControlled = value !== undefined
   const resolvedValue = isControlled ? String(value ?? "") : innerValue
   const isEmpty = resolvedValue.trim().length === 0
+  const hasSecondaryAction = Boolean(secondaryActionLabel || onSecondaryAction)
 
   const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = (event) => {
     if (!isControlled) {
@@ -77,7 +78,7 @@ function ChatComposer({
       >
         <div
           className={cn(
-            "flex min-w-0 flex-1 items-center gap-1.5 rounded-[24px] border-[0.8px] bg-white p-1.5 transition-colors",
+            "flex min-w-0 flex-1 items-center gap-1.5 rounded-full border-[0.8px] bg-white p-1.5 transition-colors",
             disabled
               ? "border-[var(--wm-color-border-default)]"
               : "border-[var(--wm-color-border-default)] focus-within:border-[#3DD2BA]"
@@ -96,7 +97,7 @@ function ChatComposer({
             )}
             {...props}
           />
-          {secondaryActionLabel || onSecondaryAction ? (
+          {hasSecondaryAction ? (
             <button
               type="button"
               aria-label={secondaryActionLabel ?? secondaryActionAriaLabel}
@@ -112,7 +113,12 @@ function ChatComposer({
             >
               <WallapopIcon name={secondaryActionIconName} size="small" />
             </button>
-          ) : null}
+          ) : (
+            <span
+              aria-hidden="true"
+              className="inline-flex h-11 w-11 shrink-0 sm:h-10 sm:w-10"
+            />
+          )}
         </div>
         <button
           type="button"
