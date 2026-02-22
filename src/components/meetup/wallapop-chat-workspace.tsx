@@ -600,6 +600,17 @@ function paymentMethodLabel(method: MeetupPaymentMethod): string {
     }
 }
 
+function ProposalSelectionIndicator({ selected }: { selected: boolean }) {
+    return (
+        <span
+            className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white ${
+                selected ? "border-[8px] border-[#253238]" : "border-2 border-[#6E8792]"
+            }`}
+            aria-hidden
+        />
+    )
+}
+
 const safePointMarkerIcon = L.divIcon({
     className: "",
     html: `
@@ -848,10 +859,9 @@ function MeetupProposalOverlay({
 
     const timeOptions = React.useMemo(() => {
         const options: string[] = []
-        for (let hour = 8; hour <= 22; hour += 1) {
-            options.push(`${String(hour).padStart(2, "0")}:00`)
-            if (hour !== 22) {
-                options.push(`${String(hour).padStart(2, "0")}:30`)
+        for (let hour = 0; hour <= 23; hour += 1) {
+            for (let minute = 0; minute < 60; minute += 15) {
+                options.push(`${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`)
             }
         }
         return options
@@ -1076,6 +1086,9 @@ function MeetupProposalOverlay({
                                                             )}
                                                         </div>
                                                     </div>
+                                                    <span className="mt-0.5">
+                                                        <ProposalSelectionIndicator selected={isSelected} />
+                                                    </span>
                                                 </div>
                                             </button>
                                         )
@@ -1111,6 +1124,7 @@ function MeetupProposalOverlay({
                                         onBack={onBack}
                                     />
                                     <CalendarPicker
+                                        label="Dia"
                                         monthDate={visibleCalendarMonth}
                                         selectedDateValue={selectedDateValue}
                                         minDateValue={minDateValue}
@@ -1213,6 +1227,7 @@ function MeetupProposalOverlay({
                                                                     {paymentMethodLabel(method)}
                                                                 </p>
                                                             </div>
+                                                            <ProposalSelectionIndicator selected={isSelected} />
                                                         </div>
                                                     </button>
                                                 )

@@ -45,8 +45,10 @@ Objetivos:
   - Las validaciones del wizard se muestran dentro del overlay (no como error en el hilo de chat).
 - Reglas actuales del paso 2 (fecha/hora):
   - El paso arranca sin valor precargado al abrir propuesta, obligando a seleccion manual de dia y hora.
-  - El calendario es interactivo y reutilizable (`CalendarPicker`), con dia seleccionado en estilo borde oscuro + texto oscuro.
+  - El calendario muestra label superior `Dia`, alineado con el patron visual del selector `Hora`.
+  - El calendario es interactivo y reutilizable (`CalendarPicker`), con dia seleccionado reforzado en tonos verdes Wallapop.
   - El selector de hora usa `Select` reutilizable con panel de altura fija y scroll interno.
+  - El selector de hora ofrece franjas de 15 minutos (`HH:00`, `HH:15`, `HH:30`, `HH:45`) durante todo el dia.
   - En movil, el dropdown de hora se despliega hacia arriba para evitar recorte por viewport.
   - El boton `Siguiente` no se deshabilita; al pulsar sin completar, muestra error global y marca en error los campos faltantes.
 - Reglas actuales del paso 3 (importe y pago):
@@ -69,6 +71,9 @@ Objetivos:
   - El sistema mantiene una cola de las 2 ultimas selecciones.
   - Si se selecciona un punto nuevo desde mapa, entra en primera posicion y desplaza el anterior a segunda.
   - Si se selecciona la opcion inferior en lista, no desaparece la superior; solo cambia el punto activo.
+  - Cada card muestra indicador visual `selected` / `unselected` a la derecha:
+    - `unselected`: aro fino con centro blanco.
+    - `selected`: aro oscuro grueso con centro blanco reducido.
   - Los puntos seguros muestran labels `Punto seguro` + `N ventas`.
   - Los puntos personalizados se muestran con icono de puntero de mapa.
 - Mapa en selector de punto:

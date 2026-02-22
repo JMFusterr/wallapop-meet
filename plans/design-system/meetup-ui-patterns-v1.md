@@ -190,12 +190,17 @@ Notas de UI del workspace (2026-02-21):
 - Overlay de propuesta (actualizado 2026-02-21):
   - Paso 1 con 2 cards visibles (seguras y/o personalizadas) y truncado defensivo de textos largos.
   - Punto personalizado representado con icono de puntero; punto seguro con icono de escudo.
+  - Cards seleccionables de paso 1 y paso 3 con indicador visual `selected/unselected` en el lateral derecho:
+    - `unselected`: aro fino con centro blanco.
+    - `selected`: aro oscuro grueso tipo donut con centro blanco reducido.
   - Vista de mapa con buscador visual (icono lupa + placeholder), seleccion por marcador y por tap libre.
   - Bottom sheet de mapa siempre en una linea para distancia (`m/km`) y con prioridad de capa sobre teselas.
   - Controles `+/-` de zoom ocultos en mapa del wizard (zoom por gesto).
   - Paso 2 actualizado (2026-02-22):
+    - Label `Dia` en la parte superior del calendario para consistencia con `Hora`.
     - Calendario compacto y reutilizable (`src/components/ui/calendar-picker.tsx`).
-    - Selector de hora con panel de altura fija y scroll interno para no forzar scroll de pantalla.
+    - Dia seleccionado con mayor contraste en verde Wallapop.
+    - Selector de hora con panel de altura fija y scroll interno para no forzar scroll de pantalla, con franjas de 15 minutos.
     - Error visual/tokenizado consistente con `Input` (`tokens.color.input.ring.error`, 2px).
   - Paso 3 actualizado (2026-02-22):
     - Importe final con `Input`.

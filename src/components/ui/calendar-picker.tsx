@@ -11,6 +11,7 @@ type CalendarDayCell = {
 }
 
 type CalendarPickerProps = {
+  label?: string
   monthDate: Date
   selectedDateValue: string
   minDateValue: string
@@ -54,6 +55,7 @@ function buildCalendarDayCells(monthDate: Date, minDateValue: string): CalendarD
 }
 
 function CalendarPicker({
+  label,
   monthDate,
   selectedDateValue,
   minDateValue,
@@ -72,6 +74,11 @@ function CalendarPicker({
 
   return (
     <div className="flex w-full flex-col gap-1.5">
+      {label ? (
+        <label className="text-[14px] font-medium leading-[1.4] text-[var(--wm-color-text-primary)]">
+          {label}
+        </label>
+      ) : null}
       <div
         className={cn(
           "rounded-[18px] border p-3",
@@ -139,7 +146,7 @@ function CalendarPicker({
               onClick={() => onSelectDate(cell.dateValue)}
               className={`h-8 rounded-[8px] border text-center text-[13px] ${
                 isSelected
-                  ? "border-[#253238] bg-white font-wallie-chunky text-[#253238] shadow-[inset_0_0_0_1px_#253238]"
+                  ? "border-[#038673] bg-[#E6FAF6] font-wallie-chunky text-[#0F252B] shadow-[inset_0_0_0_1px_#13C1AC]"
                   : `border-transparent bg-[#F8FBFC] font-wallie-fit hover:bg-[#EAF1F4] ${
                       cell.inCurrentMonth ? "text-[#253238]" : "text-[#9BB0B9]"
                     }`

@@ -29,6 +29,9 @@
 ### Comportamiento esperado
 - Si se pulsa la opcion inferior, no desaparece la superior.
 - Cambia solo la seleccion activa (`selectedOptionId`).
+- Cada opcion muestra indicador visual `selected` / `unselected` alineado a la derecha.
+  - `unselected`: aro fino con centro blanco.
+  - `selected`: aro oscuro mas grueso (donut) con centro blanco reducido.
 - Si se selecciona un nuevo punto desde mapa:
   - Aparece arriba.
   - Empuja al anterior hacia abajo.
@@ -84,11 +87,15 @@
 - Mensaje global de validacion: `Faltan campos por rellenar`.
 - Cada seccion incompleta muestra mensaje inferior especifico.
 - Paso 2:
+  - El calendario muestra label superior `Dia`.
   - Calendario (`CalendarPicker`) con estado `error` cuando falta dia.
+  - Dia seleccionado del calendario reforzado en verde Wallapop para mayor contraste.
   - Selector de hora (`Select`) con estado `error` cuando falta hora.
+  - Lista de hora en intervalos de 15 minutos durante todo el dia.
 - Paso 3:
   - Importe (`Input`) con estado `error` cuando falta o es invalido (< 0).
   - Metodo de pago: cada card se marca en rojo por separado cuando no hay seleccion.
+  - Cada card muestra indicador visual `selected` / `unselected` a la derecha.
 
 ## Tokens/estilo recomendados
 - Estado seleccionado en cards:
