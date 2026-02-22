@@ -165,6 +165,12 @@ const conversations: Conversation[] = [
             "https://images.pexels.com/photos/100582/pexels-photo-100582.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
             "https://images.pexels.com/photos/1758144/pexels-photo-1758144.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
+        meetupContext: {
+            conversationId: "conv-002",
+            listingId: "listing-bike-002",
+            sellerUserId: "user-seller-javi-002",
+            buyerUserId: "user-buyer-me-001",
+        },
         counterpartRating: 5,
         counterpartDistanceLabel: "8,2km de ti",
         counterpartLocationLabel: "Desconocido",
@@ -513,17 +519,40 @@ function formatTime(date: Date): string {
 }
 
 function buildInitialMeetupState(): Record<string, MeetupMachine> {
-    const scheduledAt = new Date(Date.now() + 30 * 60 * 1000)
+    const defaultScheduledAt = new Date(Date.now() + 30 * 60 * 1000)
     const state: Record<string, MeetupMachine> = {}
 
     for (const conversation of conversations) {
         if (!conversation.meetupContext) {
             continue
         }
-        state[conversation.id] = createMeetupMachine({
-            scheduledAt,
+
+        const baseMeetup = createMeetupMachine({
+            scheduledAt: defaultScheduledAt,
             chatContext: conversation.meetupContext,
         })
+
+        if (conversation.id === "conv-002") {
+            const incomingProposal: MeetupMachine = {
+                ...baseMeetup,
+                scheduledAt: new Date(Date.now() + 90 * 60 * 1000),
+                proposedLocation: "Estacion de Sants - Acceso principal",
+                proposedLocationLat: 41.37906,
+                proposedLocationLng: 2.14006,
+                finalPrice: 500,
+                proposedPaymentMethod: "BIZUM",
+            }
+            const proposedResult = transitionMeetup(incomingProposal, {
+                type: "PROPOSE",
+                actorRole: "SELLER",
+                occurredAt: new Date(),
+            })
+
+            state[conversation.id] = proposedResult.ok ? proposedResult.meetup : incomingProposal
+            continue
+        }
+
+        state[conversation.id] = baseMeetup
     }
 
     return state
@@ -1537,9 +1566,8 @@ function DesktopConversationSidebar({ conversation }: { conversation: Conversati
 }
 
 function WallapopChatWorkspace() {
-    const actorRole: ActorRole = "SELLER"
     const [selectedConversationId, setSelectedConversationId] = React.useState<string>(
-        conversations[0].id
+        "conv-002"
     )
     const [mobileView, setMobileView] = React.useState<"inbox" | "conversation">("inbox")
     const [messagesByConversation, setMessagesByConversation] = React.useState<
@@ -1592,6 +1620,8 @@ function WallapopChatWorkspace() {
     const selectedMeetup = selectedConversation
         ? meetupByConversation[selectedConversation.id]
         : undefined
+    const selectedActorRole: ActorRole =
+        selectedConversation?.listingViewerRole === "buyer" ? "BUYER" : "SELLER"
 
     const applyProposalDraftState = React.useCallback((draft: ProposalDraftState) => {
         setProposalStep(draft.step)
@@ -1961,7 +1991,7 @@ function WallapopChatWorkspace() {
             proposedPaymentMethod: proposalPaymentMethod,
         }
 
-        if (selectedMeetup.status === "PROPOSED" && actorRole === "SELLER") {
+        if (selectedMeetup.status === "PROPOSED" && selectedActorRole === "SELLER") {
             updateSelectedMeetup(draftMeetup)
             setProposalError("")
             setProposalStep(1)
@@ -1978,7 +2008,7 @@ function WallapopChatWorkspace() {
         }
 
         if (selectedMeetup.status === null) {
-            const eligibility = resolveChatMeetupEntryActionState(selectedMeetup, actorRole)
+            const eligibility = resolveChatMeetupEntryActionState(selectedMeetup, selectedActorRole)
             if (!eligibility.enabled) {
                 setProposalError(eligibility.message)
                 return
@@ -1989,7 +2019,7 @@ function WallapopChatWorkspace() {
             draftMeetup,
             {
                 type: "PROPOSE",
-                actorRole,
+                actorRole: selectedActorRole,
                 occurredAt: new Date(),
             }
         )
@@ -2018,7 +2048,7 @@ function WallapopChatWorkspace() {
                 </div>
                 <div className="min-h-0">
                     <ConversationPane
-                        actorRole={actorRole}
+                        actorRole={selectedActorRole}
                         conversation={selectedConversation}
                         messages={selectedMessages}
                         meetup={selectedMeetup}
@@ -2043,7 +2073,7 @@ function WallapopChatWorkspace() {
                     />
                 ) : (
                     <ConversationPane
-                        actorRole={actorRole}
+                        actorRole={selectedActorRole}
                         conversation={selectedConversation}
                         messages={selectedMessages}
                         meetup={selectedMeetup}

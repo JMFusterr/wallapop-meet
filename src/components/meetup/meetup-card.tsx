@@ -181,11 +181,23 @@ function MeetupCard({
         })
         actions.push({
             id: "counter",
-            label: "Contraofertar",
+            label: "Proponer cambios",
             variant: "inline_action",
             run: () =>
                 applyEvent({
                     type: "COUNTER_PROPOSE",
+                    actorRole,
+                    occurredAt: currentTime,
+                }),
+            disabled: actorRole !== "BUYER",
+        })
+        actions.push({
+            id: "reject",
+            label: "Rechazar",
+            variant: "critical",
+            run: () =>
+                applyEvent({
+                    type: "CANCEL",
                     actorRole,
                     occurredAt: currentTime,
                 }),
@@ -263,7 +275,8 @@ function MeetupCard({
         meetup.status !== "COMPLETED" &&
         meetup.status !== "EXPIRED" &&
         meetup.status !== "CANCELLED" &&
-        meetup.status !== null
+        meetup.status !== null &&
+        !(meetup.status === "PROPOSED" && actorRole === "BUYER")
     ) {
         actions.push({
             id: "cancel",
@@ -284,6 +297,10 @@ function MeetupCard({
     ].join(" \u00B7 ")
 
     const currentStatusPill = statusPill(meetup.status)
+    const title =
+        meetup.status === "PROPOSED" && actorRole === "BUYER"
+            ? "Solicitud de quedada"
+            : "Propuesta de quedada"
     const canEditProposal =
         actorRole === "SELLER" &&
         (meetup.status === "PROPOSED" || meetup.status === "COUNTER_PROPOSED")
@@ -327,7 +344,7 @@ function MeetupCard({
 
             <div className="space-y-2">
                 <p className="font-wallie-chunky text-[17px] leading-[1.1] text-[#253238]">
-                    Propuesta de quedada
+                    {title}
                 </p>
                 <span
                     className={`inline-flex rounded-full border px-2.5 py-1 font-wallie-fit text-[11px] leading-[1] ${currentStatusPill.className}`}

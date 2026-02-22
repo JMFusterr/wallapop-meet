@@ -257,7 +257,9 @@ Propiedades visuales:
 Reglas:
 - Debe renderizar acciones contextuales por estado de negocio y por rol visible en chat.
 - En `SELLER`, la card se alinea en el lado derecho del hilo cuando existe propuesta activa.
+- En `BUYER`, la card se alinea en el lado izquierdo del hilo cuando recibe una propuesta en `PROPOSED`.
 - Titulo fijo en card: `Propuesta de quedada`.
+- Variante inversa para propuesta recibida (`BUYER` + `PROPOSED`): titulo `Solicitud de quedada`.
 - Debe mostrar label de estado traducida en minusculas:
   - `PROPOSED` -> `pendiente`
   - `COUNTER_PROPOSED` -> `contraoferta`
@@ -288,6 +290,10 @@ Reglas:
 - `I'm here` solo habilitado en `CONFIRMED` y ventana valida (`-15m`, `+2h`).
 - Debe comunicar motivo de deshabilitado fuera de ventana.
 - Debe permitir `Editar` para `SELLER` en `PROPOSED` y `COUNTER_PROPOSED`.
+- En propuesta recibida por comprador (`BUYER` + `PROPOSED`) debe mostrar 3 acciones:
+  - `Aceptar`
+  - `Rechazar`
+  - `Proponer cambios`
 
 ## 16. Banner del dia (`MeetupDayBanner`)
 Propiedades visuales:

@@ -33,6 +33,25 @@ function buildConfirmedMachine(): MeetupMachine {
         : createMeetupMachine({ scheduledAt, chatContext })
 }
 
+function buildIncomingProposalMachine(): MeetupMachine {
+    const draft: MeetupMachine = {
+        ...createMeetupMachine({ scheduledAt, chatContext }),
+        scheduledAt: new Date("2026-02-20T18:30:00.000Z"),
+        proposedLocation: "Estacion de Sants - Acceso principal",
+        proposedLocationLat: 41.37906,
+        proposedLocationLng: 2.14006,
+        finalPrice: 500,
+        proposedPaymentMethod: "BIZUM",
+    }
+    const proposed = transitionMeetup(draft, {
+        type: "PROPOSE",
+        actorRole: "SELLER",
+        occurredAt: new Date("2026-02-20T16:30:00.000Z"),
+    })
+
+    return proposed.ok ? proposed.meetup : draft
+}
+
 const meta = {
     title: "Design System/Meetup Card",
     component: MeetupCard,
@@ -112,6 +131,23 @@ export const ConfirmedBuyerWindowOpen: Story = {
             initialMeetup={buildConfirmedMachine()}
             actorRole="BUYER"
             currentTime={new Date("2026-02-20T17:50:00.000Z")}
+        />
+    ),
+}
+
+export const IncomingProposalBuyerView: Story = {
+    args: {
+        meetup: buildIncomingProposalMachine(),
+        actorRole: "BUYER",
+        currentTime: new Date("2026-02-20T16:45:00.000Z"),
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
+    render: () => (
+        <CardHarness
+            initialMeetup={buildIncomingProposalMachine()}
+            actorRole="BUYER"
+            currentTime={new Date("2026-02-20T16:45:00.000Z")}
         />
     ),
 }

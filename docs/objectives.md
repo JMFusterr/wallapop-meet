@@ -90,6 +90,10 @@ Objetivos:
 - `MeetupCard` adaptada al estilo de mensaje de sistema de Wallapop:
   - Titulo visible: `Propuesta de quedada`.
   - Cuando el actor del chat es `SELLER`, la card se renderiza en el lado derecho de la conversacion.
+  - Variante inversa en propuesta recibida (`BUYER` + `PROPOSED`):
+    - Titulo: `Solicitud de quedada`.
+    - Acciones visibles: `Aceptar`, `Rechazar`, `Proponer cambios`.
+    - La card se renderiza en el lado izquierdo de la conversacion.
   - Estado visible en label traducida y en minusculas (`pendiente`, `contraoferta`, `confirmada`, `llegada`, `completada`, `expirada`, `cancelada`).
   - Resumen de datos en 3 filas con icono a la izquierda:
     - Calendario: dia y hora.
@@ -124,6 +128,7 @@ Objetivos:
   - `Button.variant=critical` usa radio tipo pill consistente con el resto de botones de accion Wallapop.
 - Estado de entrega con icono `double_check` unificado en listado y burbujas (`sent` gris, `read` verde), con bubble enviada usando padding horizontal simetrico.
 - Buzon de conversaciones con escenario realista: multiples interesados por articulo, textos de chat plausibles e imagen de producto por conversacion.
+- El chat de `Bicicleta fixie Fuji` (`conv-002`) incluye una propuesta activa del vendedor para validar la variante inversa de `MeetupCard` desde el rol comprador.
 - Estados comerciales representados en el listado de conversaciones con los indicadores visuales del sistema de diseno:
   - `WithBookmark` (`leadingIndicator="bookmark"`) para anuncios reservados.
   - `WithDeal` (`leadingIndicator="deal"`) para anuncios vendidos.
