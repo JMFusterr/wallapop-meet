@@ -37,6 +37,7 @@ function ChatListItem({
   ...props
 }: ChatListItemProps) {
   const indicatorIconName = leadingIndicator === "deal" ? "deal" : "bookmark"
+  const leadingIndicatorColor = leadingIndicator === "deal" ? "#D32069" : "#86418A"
 
   return (
     <button
@@ -61,7 +62,8 @@ function ChatListItem({
         ) : null}
         {leadingIndicator ? (
           <span
-            className="absolute -top-2 -left-2 z-10 inline-flex size-8 items-center justify-center rounded-full border border-[#ECEFF1] bg-white text-[#AC2B8B]"
+            className="absolute -top-2 -left-2 z-10 inline-flex size-8 items-center justify-center rounded-full border border-[#ECEFF1] bg-white"
+            style={{ color: leadingIndicatorColor }}
             aria-hidden="true"
           >
             <WallapopIcon name={indicatorIconName} size={15} strokeWidth={2} />

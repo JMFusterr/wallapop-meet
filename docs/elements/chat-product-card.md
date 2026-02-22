@@ -32,7 +32,7 @@ Botones embebidos:
 - `.btn.btn-reserve`
   - `120.8x27.6px`
   - Padding: `4px 20px`
-  - Fondo: `#4368CC`
+  - Fondo: `#86418A`
   - Texto: `#FFFFFF`
   - Borde: `0.8px solid transparent`
   - Radio: `25px`
@@ -40,7 +40,7 @@ Botones embebidos:
 - `.btn.btn-sold`
   - `120.8x27.6px`
   - Padding: `4px 20px`
-  - Fondo: `#F75883`
+  - Fondo: `#D32069`
   - Texto: `#FFFFFF`
   - Borde: `0.8px solid transparent`
   - Radio: `25px`
@@ -79,8 +79,8 @@ Texto:
 - `tokens.color.card.background = #FFFFFF`
 - `tokens.color.card.title = #253238`
 - `tokens.color.card.meta = #607D8B`
-- `tokens.color.card.action.reserve = #4368CC`
-- `tokens.color.card.action.sold = #F75883`
+- `tokens.color.card.action.reserve = #86418A`
+- `tokens.color.card.action.sold = #D32069`
 - `tokens.radius.card.base = 10px`
 - `tokens.radius.card.action_pill = 25px`
 

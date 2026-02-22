@@ -141,7 +141,7 @@ components
   - `contraoferta`: `color.semantic.warning.base` (tinte de fondo)
   - `confirmada`: `color.semantic.success.base` (tinte de fondo)
   - `llegada`: `color.semantic.info.base` (tinte de fondo)
-  - `completada`: `color.list_item.leading_indicator` (morado de sistema, tinte de fondo)
+  - `completada`: `color.list_item.leading_indicator.sold` (acento comercial, tinte de fondo)
   - `expirada`: `color.neutral.400/700` (fondo neutral)
   - `cancelada`: `color.semantic.error.base` (tinte de fondo)
 - Campos de formulario de meetup:
@@ -167,9 +167,14 @@ components
 - `label.line_height`: `14px`
 
 ### Color (`tokens.color.list_item`)
-- `leading_indicator`: `#AC2B8B`
+- `leading_indicator.reserved`: `#86418A`
+- `leading_indicator.sold`: `#D32069`
 - `delivery.sent`: `#C2CDD3`
 - `delivery.read`: `#13C1AC`
+
+### Color (`tokens.color.card.action`)
+- `reserve`: `#86418A`
+- `sold`: `#D32069`
 
 ## Checklist de aceptación v1
 - Estructura documentada y aplicada en `styles.json`.

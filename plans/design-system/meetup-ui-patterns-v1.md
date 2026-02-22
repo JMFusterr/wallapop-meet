@@ -187,6 +187,9 @@ Notas de UI del workspace (2026-02-21):
 - Estado comercial en items del buzon reutilizando componentes documentados:
   - `Chat List Item With Bookmark` para reservado (`leadingIndicator="bookmark"`).
   - `Chat List Item With Deal` para vendido (`leadingIndicator="deal"`).
+  - Colores oficiales de icono/acento por estado:
+    - `Reservado`: `#86418A`.
+    - `Vendido`: `#D32069`.
 - Mock del buzon extendido con conversaciones realistas e imagen de articulo por cada chat.
 - En `InboxPane`, la miniatura de cada fila corresponde al articulo (`listingImageSrc`), no al avatar de perfil.
 - Overlay de propuesta (actualizado 2026-02-21):

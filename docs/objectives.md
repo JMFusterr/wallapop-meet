@@ -132,6 +132,9 @@ Objetivos:
 - Estados comerciales representados en el listado de conversaciones con los indicadores visuales del sistema de diseno:
   - `WithBookmark` (`leadingIndicator="bookmark"`) para anuncios reservados.
   - `WithDeal` (`leadingIndicator="deal"`) para anuncios vendidos.
+  - Color oficial de icono/acento:
+    - `Reservado`: `#86418A`.
+    - `Vendido`: `#D32069`.
 
 ---
 

@@ -273,7 +273,7 @@ Reglas:
   - `contraoferta`: warning
   - `confirmada`: success
   - `llegada`: info
-  - `completada`: morado de sistema
+  - `completada`: acento de vendido (`#D32069`)
   - `expirada`: neutral
   - `cancelada`: error
 - El bloque informativo de la propuesta debe renderizar exactamente 3 filas con icono a la izquierda:
@@ -420,6 +420,12 @@ Reglas:
 - `seller`: mostrar lapiz sobre imagen, CTAs de publicacion y metricas (ojo/corazon) junto al precio.
 - `buyer`: ocultar lapiz, ocultar CTAs y ocultar metricas de publicacion.
 - Debe ser reutilizable en la columna lateral desktop del chat.
+- Color de acciones comerciales:
+  - `Reservar`: `tokens.color.card.action.reserve` (`#86418A`).
+  - `Vendido`: `tokens.color.card.action.sold` (`#D32069`).
+- Badge de estado comercial en modo `buyer`:
+  - `Reservado`: icono/texto en `tokens.color.list_item.leading_indicator.reserved` (`#86418A`).
+  - `Vendido`: icono/texto en `tokens.color.list_item.leading_indicator.sold` (`#D32069`).
 
 ## 23. Selector de calendario (`CalendarPicker`)
 Propiedades visuales:

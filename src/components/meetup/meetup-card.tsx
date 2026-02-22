@@ -56,7 +56,7 @@ function statusPill(status: MeetupStatus | null): StatusPill {
         case "COMPLETED":
             return {
                 label: "completada",
-                className: "border-[#AC2B8B] bg-[#F7EAF2] text-[#7B1E64]",
+                className: "border-[#D32069] bg-[#FDEAF2] text-[#9F1A53]",
             }
         case "EXPIRED":
             return {

@@ -49,7 +49,9 @@
 - Indicador sobre miniatura (esquina superior izquierda):
   - Variante `deal` (icono de trato/handshake)
   - Variante `bookmark` (icono de guardado)
-  - Contenedor circular blanco con borde suave y acento magenta
+  - Contenedor circular blanco con borde suave y acento por estado:
+    - `bookmark` (reservado): `#86418A`
+    - `deal` (vendido): `#D32069`
 - Estado de entrega en preview:
   - Doble check al inicio del texto (`messagePreview`) cuando el ultimo mensaje es del usuario
   - En Wallapop Meet se renderiza con `WallapopIcon(name="double_check")` para mantener consistencia con burbuja de mensaje
@@ -65,7 +67,8 @@
 - `tokens.color.list_item.meta = #90A4AE`
 - `tokens.color.badge.unread.background = #D32069`
 - `tokens.color.badge.unread.text = #FFFFFF`
-- `tokens.color.list_item.leading_indicator = #AC2B8B`
+- `tokens.color.list_item.leading_indicator.reserved = #86418A`
+- `tokens.color.list_item.leading_indicator.sold = #D32069`
 - `tokens.color.list_item.delivery.sent = #C2CDD3`
 - `tokens.color.list_item.delivery.read = #13C1AC`
 - `tokens.size.list_item.conversation.height = 100px`

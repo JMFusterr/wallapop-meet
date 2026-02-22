@@ -24,6 +24,17 @@ type ChatProductCardProps = React.ComponentProps<"article"> & {
     statusLabel?: string
 }
 
+function resolveStatusBadgeConfig(statusLabel?: string): { color: string; iconName: "bookmark" | "deal" } {
+    const normalized = statusLabel?.trim().toLowerCase() ?? ""
+    if (normalized.includes("reservad")) {
+        return { color: "#86418A", iconName: "bookmark" }
+    }
+    if (normalized.includes("vendid")) {
+        return { color: "#D32069", iconName: "deal" }
+    }
+    return { color: "#D32069", iconName: "deal" }
+}
+
 function ChatProductCard({
     className,
     imageSrc,
@@ -44,6 +55,7 @@ function ChatProductCard({
 }: ChatProductCardProps) {
     const isSeller = viewerRole === "seller"
     const showStats = isSeller && typeof viewsCount === "number" && typeof likesCount === "number"
+    const statusBadgeConfig = resolveStatusBadgeConfig(statusLabel)
 
     return (
         <article
@@ -67,8 +79,15 @@ function ChatProductCard({
                     </button>
                 ) : null}
                 {!isSeller && statusLabel ? (
-                    <span className="absolute right-4 bottom-4 inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 font-wallie-chunky text-[14px] text-[#EB4F8B]">
-                        <WallapopIcon name="bookmark" size={15} className="text-[#EB4F8B]" />
+                    <span
+                        className="absolute right-4 bottom-4 inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 font-wallie-chunky text-[14px]"
+                        style={{ color: statusBadgeConfig.color }}
+                    >
+                        <WallapopIcon
+                            name={statusBadgeConfig.iconName}
+                            size={15}
+                            style={{ color: statusBadgeConfig.color }}
+                        />
                         {statusLabel}
                     </span>
                 ) : null}
@@ -82,7 +101,7 @@ function ChatProductCard({
                             variant="inline_action"
                             size="md"
                             onClick={onReserve}
-                            className="h-8 flex-1 rounded-full bg-[#4368CC] px-4 font-wallie-chunky text-[13px] text-white"
+                            className="h-8 flex-1 rounded-full bg-[#86418A] px-4 font-wallie-chunky text-[13px] text-white"
                         >
                             {reserveLabel}
                         </Button>
@@ -91,7 +110,7 @@ function ChatProductCard({
                             variant="inline_action"
                             size="md"
                             onClick={onSold}
-                            className="h-8 flex-1 rounded-full bg-[#F75883] px-4 font-wallie-chunky text-[13px] text-white"
+                            className="h-8 flex-1 rounded-full bg-[#D32069] px-4 font-wallie-chunky text-[13px] text-white"
                         >
                             {soldLabel}
                         </Button>

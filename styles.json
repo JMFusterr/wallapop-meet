@@ -183,8 +183,14 @@
             },
             "list_item": {
                 "leading_indicator": {
-                    "value": "#AC2B8B",
-                    "type": "color"
+                    "reserved": {
+                        "value": "#86418A",
+                        "type": "color"
+                    },
+                    "sold": {
+                        "value": "#D32069",
+                        "type": "color"
+                    }
                 },
                 "delivery": {
                     "sent": {
@@ -193,6 +199,18 @@
                     },
                     "read": {
                         "value": "#13C1AC",
+                        "type": "color"
+                    }
+                }
+            },
+            "card": {
+                "action": {
+                    "reserve": {
+                        "value": "#86418A",
+                        "type": "color"
+                    },
+                    "sold": {
+                        "value": "#D32069",
                         "type": "color"
                     }
                 }
