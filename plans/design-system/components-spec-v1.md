@@ -278,6 +278,10 @@ Reglas:
   - Calendario: dia y hora.
   - Mapa: direccion.
   - Billete: metodo de pago y precio.
+- El copy de la accion critica en card debe ser corto: `Cancelar`.
+- El separador visual de las filas de contenido usa `\u00B7`:
+  - `dia \u00B7 hora`
+  - `metodo \u00B7 precio`
 - La miniatura superior debe ser un render real de mapa, sin texto superpuesto.
 - La miniatura superior debe ocultar controles de zoom `+/-`.
 - Tap en miniatura abre modal de mapa en grande, solo lectura, con cierre por `X`.

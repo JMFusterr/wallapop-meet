@@ -87,7 +87,11 @@ Objetivos:
     - Calendario: dia y hora.
     - Mapa: direccion.
     - Billete: metodo de pago + precio.
+  - Formato visual del tiempo en card:
+    - `dia \u00B7 hora` en la fila de calendario.
+    - `metodo \u00B7 precio` en la fila de pago.
   - Boton `Editar` disponible para vendedor mientras la propuesta no este confirmada (`PROPOSED`, `COUNTER_PROPOSED`).
+  - Accion critica abreviada en card: `Cancelar`.
   - `Editar` abre el overlay de propuesta reutilizando los datos ya cargados.
 - Mapa en card de propuesta:
   - Miniatura superior con render real de mapa (sin controles `+/-`).

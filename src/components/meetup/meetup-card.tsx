@@ -77,12 +77,15 @@ function statusPill(status: MeetupStatus | null): StatusPill {
 }
 
 function formatScheduledAt(value: Date): string {
-    return value.toLocaleString("es-ES", {
+    const datePart = value.toLocaleDateString("es-ES", {
         day: "2-digit",
         month: "short",
+    })
+    const timePart = value.toLocaleTimeString("es-ES", {
         hour: "2-digit",
         minute: "2-digit",
     })
+    return `${datePart} \u00B7 ${timePart}`
 }
 
 function buildStaticMapThumbnailUrl(lat: number, lng: number): string {
@@ -264,7 +267,7 @@ function MeetupCard({
     ) {
         actions.push({
             id: "cancel",
-            label: "Cancelar meetup",
+            label: "Cancelar",
             variant: "critical",
             run: () =>
                 applyEvent({
@@ -278,7 +281,7 @@ function MeetupCard({
     const paymentAndPriceValue = [
         meetup.proposedPaymentMethod ? paymentMethodLabel(meetup.proposedPaymentMethod) : "Sin metodo",
         meetup.finalPrice !== undefined ? `${meetup.finalPrice.toFixed(2)} EUR` : "sin precio",
-    ].join(" · ")
+    ].join(" \u00B7 ")
 
     const currentStatusPill = statusPill(meetup.status)
     const canEditProposal =
@@ -402,3 +405,4 @@ function MeetupCard({
 }
 
 export { MeetupCard }
+

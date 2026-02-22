@@ -207,6 +207,10 @@ Notas de UI del workspace (actualizado 2026-02-22):
 - En hilo de chat con actor `SELLER`, la card se alinea a la derecha.
 - Estado mostrado en label traducida (minusculas) con color semantico por estado.
 - Bloque de datos en 3 filas con iconos: calendario, ubicacion y billete.
+- Formato de contenido en filas:
+  - Calendario: `dia \u00B7 hora`.
+  - Pago: `metodo \u00B7 precio`.
+- Boton de accion critica en card: `Cancelar` (sin sufijo adicional).
 - Miniatura superior con render real de mapa y sin texto superpuesto.
 - La miniatura oculta controles de zoom `+/-`.
 - Tap en miniatura abre modal de mapa en grande, solo lectura:
