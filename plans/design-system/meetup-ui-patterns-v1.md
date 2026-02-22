@@ -207,6 +207,8 @@ Notas de UI del workspace (2026-02-21):
   - Paso 3 actualizado (2026-02-22):
     - Importe final con `Input`.
     - Moneda mostrada en UI con simbolo `€`.
+    - Validacion de importe con limite maximo `99999 €` y hasta `2` decimales.
+    - Si el importe supera `2000 €`, se muestra alerta destacada (estilo warning) sobre DAC7 + link `Más información` a ayuda Wallapop.
     - Metodos de pago en cards seleccionables con iconografia.
     - En error de metodo, cada card se marca en rojo de forma independiente (sin borde global envolvente).
 

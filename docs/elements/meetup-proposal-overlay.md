@@ -94,6 +94,10 @@
   - Lista de hora en intervalos de 15 minutos durante todo el dia.
 - Paso 3:
   - Importe (`Input`) con estado `error` cuando falta o es invalido (< 0).
+  - El campo de importe limita entrada a `99999 €` y `2` decimales.
+  - Si el importe supera `2000 €`, se muestra alerta destacada (warning naranja) indicando impacto DAC7.
+  - La alerta DAC7 incluye CTA textual `Más información` enlazada a ayuda oficial:
+    - `https://ayuda.wallapop.com/hc/es-es/articles/19093732048785--Qu%C3%A9-es-DAC7-y-a-que-vendedores-de-Wallapop-les-afecta`
   - Metodo de pago: cada card se marca en rojo por separado cuando no hay seleccion.
   - Cada card muestra indicador visual `selected` / `unselected` a la derecha.
 

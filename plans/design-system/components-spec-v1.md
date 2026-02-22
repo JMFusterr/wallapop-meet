@@ -381,6 +381,8 @@ Reglas:
   - Mensaje global unificado: `Faltan campos por rellenar`.
   - Cada bloque incompleto debe mostrar helper/error debajo del propio componente o grupo.
   - El estado de error debe usar mismo color y grosor que `Input` (`tokens.color.input.ring.error`, `2px`).
+  - En paso 3, el importe admite hasta `99999 €` con maximo `2` decimales.
+  - En paso 3, si el importe supera `2000 €`, mostrar alerta destacada de normativa DAC7 con enlace de ayuda (`Más información`).
 - En vista de mapa:
   - Permitir seleccion de punto seguro y punto personalizado (tap libre sobre mapa).
   - Al seleccionar personalizado, mostrar aviso de punto no verificado.

@@ -54,6 +54,8 @@ Objetivos:
 - Reglas actuales del paso 3 (importe y pago):
   - El importe usa el componente `Input` del design system.
   - El copy de moneda en UI usa simbolo `€` (no `EUR`).
+  - El importe admite formato decimal (`hasta 2 decimales`) y limita la entrada a un maximo de `99999 €`.
+  - Si el usuario supera `2000 €`, se muestra una alerta destacada de normativa DAC7 con enlace externo de ayuda (`Mas informacion`).
   - Los metodos de pago usan cards seleccionables con iconografia contextual (`CASH`, `BIZUM`, `WALLET`).
   - El CTA final usa el texto `Enviar propuesta`.
   - El CTA no se deshabilita; al pulsar sin completar, muestra error global y marca en error los campos faltantes.

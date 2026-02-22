@@ -109,6 +109,23 @@ type ProposalDraftState = {
     error: string
 }
 
+const DAC7_ALERT_THRESHOLD_EUR = 2000
+const MAX_FINAL_PRICE_EUR = 99999
+
+function parseFinalPrice(rawValue: string): number | null {
+    const normalizedValue = rawValue.trim().replace(",", ".")
+    if (!normalizedValue) {
+        return null
+    }
+
+    const parsedValue = Number.parseFloat(normalizedValue)
+    if (!Number.isFinite(parsedValue)) {
+        return null
+    }
+
+    return parsedValue
+}
+
 const conversations: Conversation[] = [
     {
         id: "conv-meetup-001",
@@ -867,16 +884,27 @@ function MeetupProposalOverlay({
     const hasMissingFieldsError = errorMessage === "Faltan campos por rellenar"
     const isStepTwoDateMissing = step === 2 && hasMissingFieldsError && !selectedDateValue
     const isStepTwoTimeMissing = step === 2 && hasMissingFieldsError && !selectedTimeValue
-    const normalizedFinalPriceValue = finalPriceValue.trim().replace(",", ".")
     const hasFinalPriceValue = finalPriceValue.trim().length > 0
-    const parsedFinalPriceValue = Number.parseFloat(normalizedFinalPriceValue)
+    const parsedFinalPriceValue = parseFinalPrice(finalPriceValue)
+    const isFinalPriceAboveMaximum =
+        parsedFinalPriceValue !== null && parsedFinalPriceValue > MAX_FINAL_PRICE_EUR
     const isFinalPriceValueInvalid =
         hasFinalPriceValue &&
-        (!Number.isFinite(parsedFinalPriceValue) || parsedFinalPriceValue < 0)
+        (parsedFinalPriceValue === null || parsedFinalPriceValue < 0 || isFinalPriceAboveMaximum)
     const isStepThreePriceMissing =
         step === 3 && hasMissingFieldsError && (!hasFinalPriceValue || isFinalPriceValueInvalid)
     const isStepThreePaymentMissing =
         step === 3 && hasMissingFieldsError && !paymentMethod
+    const shouldShowDac7Alert =
+        parsedFinalPriceValue !== null && parsedFinalPriceValue > DAC7_ALERT_THRESHOLD_EUR
+    const priceInputError =
+        isStepThreePriceMissing
+            ? "Introduce un importe de 0 € o superior."
+            : isFinalPriceAboveMaximum
+            ? `El importe maximo permitido es ${MAX_FINAL_PRICE_EUR} €.`
+            : undefined
+    const priceInputAlertText =
+        "Has excedido el importe maximo anual y Wallapop debera informar a Hacienda bajo la normativa DAC7."
 
     return (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#253238]/50 p-0 md:items-center md:p-6">
@@ -1150,20 +1178,31 @@ function MeetupProposalOverlay({
                                     />
                                     <Input
                                         label="Importe final acordado (€)"
-                                        type="number"
+                                        type="text"
+                                        inputMode="decimal"
                                         min="0"
-                                        step="0.01"
+                                        max={`${MAX_FINAL_PRICE_EUR}`}
+                                        maxLength={8}
                                         value={finalPriceValue}
                                         onChange={(event) => onFinalPriceChange(event.target.value)}
                                         placeholder="Ej: 220"
-                                        error={
-                                            isStepThreePriceMissing
-                                                ? "Introduce un importe de 0 € o superior."
-                                                : undefined
-                                        }
-                                        state={isStepThreePriceMissing ? "error" : "default"}
+                                        error={priceInputError}
+                                        state={priceInputError ? "error" : "default"}
                                         showCharCounter={false}
                                     />
+                                    {shouldShowDac7Alert ? (
+                                        <p className="rounded-[8px] bg-[#FFF4E8] px-2 py-2 font-wallie-fit text-[13px] text-[#8A4A00]">
+                                            {priceInputAlertText}{" "}
+                                            <a
+                                                href="https://ayuda.wallapop.com/hc/es-es/articles/19093732048785--Qu%C3%A9-es-DAC7-y-a-que-vendedores-de-Wallapop-les-afecta"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="font-wallie-chunky underline"
+                                            >
+                                                Más información
+                                            </a>
+                                        </p>
+                                    ) : null}
 
                                     <fieldset>
                                         <legend className="mb-2 font-wallie-fit text-[13px] text-[#253238]">
@@ -1902,9 +1941,13 @@ function WallapopChatWorkspace() {
             return
         }
 
-        const parsedFinalPrice = Number.parseFloat(trimmedFinalPrice.replace(",", "."))
-        if (!Number.isFinite(parsedFinalPrice) || parsedFinalPrice < 0) {
+        const parsedFinalPrice = parseFinalPrice(trimmedFinalPrice)
+        if (parsedFinalPrice === null || parsedFinalPrice < 0) {
             setProposalError("Faltan campos por rellenar")
+            return
+        }
+        if (parsedFinalPrice > MAX_FINAL_PRICE_EUR) {
+            setProposalError(`El importe maximo permitido es ${MAX_FINAL_PRICE_EUR} €.`)
             return
         }
 
@@ -2062,7 +2105,24 @@ function WallapopChatWorkspace() {
                     onSelectMapPickerPoint={selectMapPickerPoint}
                     onConfirmMapPickerPoint={confirmMapPickerPoint}
                     onFinalPriceChange={(nextValue) => {
-                        setProposalFinalPrice(nextValue)
+                        const normalizedValue = nextValue.replace(",", ".")
+                        if (normalizedValue === "") {
+                            setProposalFinalPrice("")
+                            setProposalError("")
+                            return
+                        }
+                        if (!/^\d{0,5}(\.\d{0,2})?$/.test(normalizedValue)) {
+                            return
+                        }
+
+                        const parsedValue = Number.parseFloat(normalizedValue)
+                        if (Number.isFinite(parsedValue) && parsedValue > MAX_FINAL_PRICE_EUR) {
+                            setProposalFinalPrice(String(MAX_FINAL_PRICE_EUR))
+                            setProposalError("")
+                            return
+                        }
+
+                        setProposalFinalPrice(normalizedValue)
                         setProposalError("")
                     }}
                     onPaymentMethodChange={(nextValue) => {
