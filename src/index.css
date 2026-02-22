@@ -225,3 +225,11 @@
     @apply bg-background font-sans text-foreground;
   }
 }
+
+/* Evita que panes de Leaflet de la miniatura del chat superen overlays globales. */
+.wm-mini-map .leaflet-pane,
+.wm-mini-map .leaflet-top,
+.wm-mini-map .leaflet-bottom,
+.wm-mini-map .leaflet-control-container {
+  z-index: 1 !important;
+}

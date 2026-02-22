@@ -298,7 +298,7 @@ function MeetupCard({
         <section className="max-w-[420px] rounded-[20px] border border-[#ECEFF1] bg-[#C6EDF6] px-4 py-3">
             <button
                 type="button"
-                className="relative mb-3 h-[88px] w-full overflow-hidden rounded-[14px] border border-[#B8DCE4] bg-[#EAF8FC] text-left"
+                className="wm-mini-map relative mb-3 h-[88px] w-full overflow-hidden rounded-[14px] border border-[#B8DCE4] bg-[#EAF8FC] text-left"
                 onClick={onOpenMapPreview}
             >
                 {hasMapCoordinates && mapThumbnailPosition ? (
@@ -322,7 +322,7 @@ function MeetupCard({
                 ) : null}
             </button>
 
-            <div className="flex items-start justify-between gap-3">
+            <div className="space-y-2">
                 <p className="font-wallie-chunky text-[17px] leading-[1.1] text-[#253238]">
                     Propuesta de quedada
                 </p>
