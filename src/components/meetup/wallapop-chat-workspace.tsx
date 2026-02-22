@@ -7,6 +7,7 @@ import { resolveChatMeetupEntryActionState } from "@/components/meetup/chat-meet
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { MeetupProposalFooter } from "@/components/meetup/meetup-proposal-footer"
 import { MeetupProposalHeader } from "@/components/meetup/meetup-proposal-header"
+import { resolveProposalScheduledAtValue } from "@/components/meetup/wallapop-chat-workspace-utils"
 import { MeetupWizardStepHeading } from "@/components/meetup/meetup-wizard-step-heading"
 import { ChatComposer } from "@/components/ui/chat-composer"
 import { ChatCounterpartCard } from "@/components/ui/chat-counterpart-card"
@@ -600,7 +601,6 @@ type MeetupProposalOverlayProps = {
     dateTimeValue: string
     finalPriceValue: string
     paymentMethod: MeetupPaymentMethod | ""
-    selectedLocationLabel: string
     onDateTimeChange: (nextValue: string) => void
     onSelectPoint: (optionId: string) => void
     onFinalPriceChange: (nextValue: string) => void
@@ -637,7 +637,6 @@ function MeetupProposalOverlay({
     dateTimeValue,
     finalPriceValue,
     paymentMethod,
-    selectedLocationLabel,
     onDateTimeChange,
     onSelectPoint,
     onFinalPriceChange,
@@ -1417,7 +1416,7 @@ function WallapopChatWorkspace() {
             return
         }
 
-        setProposalScheduledAt("")
+        setProposalScheduledAt(resolveProposalScheduledAtValue(selectedMeetup))
         const matchingPoint = safeMeetingPoints.find(
             (point) => point.name === selectedMeetup.proposedLocation
         )
@@ -1480,16 +1479,6 @@ function WallapopChatWorkspace() {
             // Fallback silencioso: se mantienen coordenadas.
         }
     }, [])
-
-    const selectedLocationLabel = React.useMemo(() => {
-        const selectedOption = proposalOptions.find((option) => option.id === proposalSelectedOptionId)
-        if (!selectedOption) {
-            return ""
-        }
-        return selectedOption.kind === "safe"
-            ? `${selectedOption.label} (Punto seguro)`
-            : selectedOption.address
-    }, [proposalOptions, proposalSelectedOptionId])
 
     const proposalCustomDistanceMeters = React.useMemo(() => {
         if (!proposalCustomPoint) {
@@ -1917,7 +1906,6 @@ function WallapopChatWorkspace() {
                     dateTimeValue={proposalScheduledAt}
                     finalPriceValue={proposalFinalPrice}
                     paymentMethod={proposalPaymentMethod}
-                    selectedLocationLabel={selectedLocationLabel}
                     onDateTimeChange={(nextValue) => {
                         setProposalScheduledAt(nextValue)
                         setProposalError("")
