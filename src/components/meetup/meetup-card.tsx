@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button"
+import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { resolveArrivalActionState } from "@/components/meetup/meetup-ui-rules"
+import { Banknote, MapPin } from "lucide-react"
 import { transitionMeetup } from "@/meetup/state-machine"
 import type { ActorRole, MeetupMachine, MeetupPaymentMethod, MeetupStatus } from "@/meetup/types"
 
@@ -10,6 +12,7 @@ type MeetupCardProps = {
     onMeetupChange: (next: MeetupMachine) => void
     onError: (message: string) => void
     onEditProposal?: () => void
+    onOpenMapPreview?: () => void
 }
 
 type CardAction = {
@@ -29,43 +32,43 @@ function statusPill(status: MeetupStatus | null): StatusPill {
     switch (status) {
         case "PROPOSED":
             return {
-                label: "Pending",
+                label: "pendiente",
                 className:
                     "border-[var(--wm-color-border-default)] bg-[var(--wm-color-background-base)] text-[var(--wm-color-text-secondary)]",
             }
         case "COUNTER_PROPOSED":
             return {
-                label: "COUNTER_PROPOSED",
+                label: "contraoferta",
                 className: "border-[#F4A000] bg-[#FFF3DE] text-[#8A5B00]",
             }
         case "CONFIRMED":
             return {
-                label: "CONFIRMED",
+                label: "confirmada",
                 className: "border-[#19A05D] bg-[#E6F7EF] text-[#177A4B]",
             }
         case "ARRIVED":
             return {
-                label: "ARRIVED",
+                label: "llegada",
                 className: "border-[#0D84FF] bg-[#E8F2FF] text-[#0A5EB5]",
             }
         case "COMPLETED":
             return {
-                label: "COMPLETED",
+                label: "completada",
                 className: "border-[#AC2B8B] bg-[#F7EAF2] text-[#7B1E64]",
             }
         case "EXPIRED":
             return {
-                label: "EXPIRED",
+                label: "expirada",
                 className: "border-[#A8B2B8] bg-[#F5F7F8] text-[#4A5A63]",
             }
         case "CANCELLED":
             return {
-                label: "CANCELLED",
+                label: "cancelada",
                 className: "border-[#FF5A5F] bg-[#FDEBEC] text-[#A81F2D]",
             }
         default:
             return {
-                label: "Sin propuesta",
+                label: "sin propuesta",
                 className: "border-[#D3DEE2] bg-white text-[#4A5A63]",
             }
     }
@@ -100,6 +103,7 @@ function MeetupCard({
     onMeetupChange,
     onError,
     onEditProposal,
+    onOpenMapPreview,
 }: MeetupCardProps) {
     const arrivalAction = resolveArrivalActionState(meetup, currentTime)
 
@@ -251,34 +255,10 @@ function MeetupCard({
         })
     }
 
-    const details = [
-        {
-            id: "schedule",
-            label: "Dia y hora",
-            value: formatScheduledAt(meetup.scheduledAt),
-        },
-        meetup.proposedLocation
-            ? {
-                id: "location",
-                label: "Punto de encuentro",
-                value: meetup.proposedLocation,
-            }
-            : null,
-        meetup.finalPrice !== undefined
-            ? {
-                id: "price",
-                label: "Precio acordado",
-                value: `${meetup.finalPrice.toFixed(2)} EUR`,
-            }
-            : null,
-        meetup.proposedPaymentMethod
-            ? {
-                id: "payment",
-                label: "Pago",
-                value: paymentMethodLabel(meetup.proposedPaymentMethod),
-            }
-            : null,
-    ].filter((detail): detail is { id: string; label: string; value: string } => detail !== null)
+    const paymentAndPriceValue = [
+        meetup.proposedPaymentMethod ? paymentMethodLabel(meetup.proposedPaymentMethod) : "Sin metodo",
+        meetup.finalPrice !== undefined ? `${meetup.finalPrice.toFixed(2)} EUR` : "sin precio",
+    ].join(" · ")
 
     const currentStatusPill = statusPill(meetup.status)
     const canEditProposal =
@@ -287,8 +267,25 @@ function MeetupCard({
 
     return (
         <section className="max-w-[420px] rounded-[20px] border border-[#ECEFF1] bg-[#C6EDF6] px-4 py-3">
+            <button
+                type="button"
+                className="relative mb-3 h-[88px] w-full overflow-hidden rounded-[14px] border border-[#B8DCE4] bg-[linear-gradient(135deg,#EAF8FC_0%,#D2F0F7_48%,#C2EAF4_100%)] text-left"
+                onClick={onOpenMapPreview}
+            >
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(255,255,255,0.7),transparent_45%),radial-gradient(circle_at_80%_72%,rgba(255,255,255,0.5),transparent_40%)]" />
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-[#0D84FF] p-2 text-white">
+                    <MapPin size={16} />
+                </span>
+                <span className="absolute right-3 top-3 rounded-full bg-white/80 px-2 py-1 font-wallie-fit text-[11px] text-[#253238]">
+                    ver mapa
+                </span>
+                <span className="absolute bottom-3 left-4 right-4 truncate font-wallie-fit text-[12px] text-[#253238]">
+                    {meetup.proposedLocation || "Punto de encuentro sin definir"}
+                </span>
+            </button>
+
             <div className="flex items-start justify-between gap-3">
-                <p className="font-wallie-fit text-[11px] uppercase tracking-[0.06em] text-[#2C8CA0]">
+                <p className="font-wallie-chunky text-[17px] leading-[1.1] text-[#253238]">
                     Propuesta de quedada
                 </p>
                 <span
@@ -298,13 +295,31 @@ function MeetupCard({
                 </span>
             </div>
 
-            <dl className="mt-3 space-y-1.5">
-                {details.map((detail) => (
-                    <div key={detail.id} className="grid grid-cols-[112px_1fr] gap-2">
-                        <dt className="font-wallie-fit text-[12px] text-[#2C8CA0]">{detail.label}</dt>
-                        <dd className="font-wallie-fit text-[12px] text-[#253238]">{detail.value}</dd>
-                    </div>
-                ))}
+            <dl className="mt-3 space-y-2.5">
+                <div className="flex items-start gap-2.5">
+                    <dt className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF5F8] text-[#253238]">
+                        <WallapopIcon name="calendar" size={14} />
+                    </dt>
+                    <dd className="font-wallie-fit text-[13px] text-[#253238]">
+                        {formatScheduledAt(meetup.scheduledAt)}
+                    </dd>
+                </div>
+                <div className="flex items-start gap-2.5">
+                    <dt className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF5F8] text-[#2F6DF6]">
+                        <MapPin size={14} />
+                    </dt>
+                    <dd className="font-wallie-fit text-[13px] text-[#253238]">
+                        {meetup.proposedLocation || "Calle sin definir"}
+                    </dd>
+                </div>
+                <div className="flex items-start gap-2.5">
+                    <dt className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF5F8] text-[#253238]">
+                        <Banknote size={14} />
+                    </dt>
+                    <dd className="font-wallie-fit text-[13px] text-[#253238]">
+                        {paymentAndPriceValue}
+                    </dd>
+                </div>
             </dl>
 
             {meetup.status === "CONFIRMED" ? (

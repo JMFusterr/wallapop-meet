@@ -1278,6 +1278,7 @@ type ConversationPaneProps = {
     onSubmitMessage: (value: string) => void
     onMeetupChange: (next: MeetupMachine) => void
     onOpenMeetupProposal: () => void
+    onOpenMeetupMapPreview: () => void
     onError: (message: string) => void
     errorMessage: string
 }
@@ -1291,6 +1292,7 @@ function ConversationPane({
     onSubmitMessage,
     onMeetupChange,
     onOpenMeetupProposal,
+    onOpenMeetupMapPreview,
     onError,
     errorMessage,
 }: ConversationPaneProps) {
@@ -1368,6 +1370,7 @@ function ConversationPane({
                                 onMeetupChange={onMeetupChange}
                                 onError={onError}
                                 onEditProposal={onOpenMeetupProposal}
+                                onOpenMapPreview={onOpenMeetupMapPreview}
                             />
                         </div>
                     </div>
@@ -1613,6 +1616,11 @@ function WallapopChatWorkspace() {
 
         applyProposalDraftState(buildProposalDraftState(selectedMeetup))
         setIsProposalOverlayOpen(true)
+    }
+
+    const openMeetupMapPreview = () => {
+        openMeetupProposal()
+        setProposalMapPickerOpen(true)
     }
 
     const closeMeetupProposal = () => {
@@ -1909,6 +1917,7 @@ function WallapopChatWorkspace() {
                         onSubmitMessage={appendOutgoingMessage}
                         onMeetupChange={updateSelectedMeetup}
                         onOpenMeetupProposal={openMeetupProposal}
+                        onOpenMeetupMapPreview={openMeetupMapPreview}
                         onError={setLastError}
                         errorMessage={lastError}
                     />
@@ -1934,6 +1943,7 @@ function WallapopChatWorkspace() {
                         onSubmitMessage={appendOutgoingMessage}
                         onMeetupChange={updateSelectedMeetup}
                         onOpenMeetupProposal={openMeetupProposal}
+                        onOpenMeetupMapPreview={openMeetupMapPreview}
                         onError={setLastError}
                         errorMessage={lastError}
                     />
