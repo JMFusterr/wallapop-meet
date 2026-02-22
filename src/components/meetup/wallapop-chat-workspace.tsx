@@ -89,6 +89,22 @@ type ProposalSelectableOption = {
     safePointId?: string
 }
 
+type ProposalDraftState = {
+    step: ProposalStep
+    mapPickerOpen: boolean
+    mapPickerPointId: string
+    mapSearchValue: string
+    mapCenter: MapPoint
+    options: ProposalSelectableOption[]
+    selectedOptionId: string
+    customPoint: MapPoint | null
+    customLocationLabel: string
+    scheduledAt: string
+    finalPrice: string
+    paymentMethod: MeetupPaymentMethod | ""
+    error: string
+}
+
 function escapeSvgText(value: string): string {
     return value
         .replaceAll("&", "&amp;")
@@ -399,6 +415,94 @@ function toCustomOption(lat: number, lng: number, address: string): ProposalSele
         lat,
         lng,
         distanceMeters: distanceBetweenPointsMeters(mapUserPosition, { lat, lng }),
+    }
+}
+
+function buildProposalDraftState(meetup: MeetupMachine | undefined): ProposalDraftState {
+    const firstSafeOption = toSafeOption(safeMeetingPoints[0])
+    const secondSafeOption = toSafeOption(safeMeetingPoints[1])
+
+    if (!meetup) {
+        return {
+            step: 1,
+            mapPickerOpen: false,
+            mapPickerPointId: "",
+            mapSearchValue: "",
+            mapCenter: { lat: safeMeetingPoints[0].lat, lng: safeMeetingPoints[0].lng },
+            options: [firstSafeOption, secondSafeOption],
+            selectedOptionId: firstSafeOption.id,
+            customPoint: null,
+            customLocationLabel: "",
+            scheduledAt: "",
+            finalPrice: "",
+            paymentMethod: "",
+            error: "",
+        }
+    }
+
+    const matchingPoint = safeMeetingPoints.find((point) => point.name === meetup.proposedLocation)
+    const hasCustomLocation = Boolean(meetup.proposedLocation && !matchingPoint)
+
+    if (matchingPoint) {
+        const selectedOption = toSafeOption(matchingPoint)
+        const fallbackPoint =
+            safeMeetingPoints.find((point) => point.id !== matchingPoint.id) ?? safeMeetingPoints[0]
+        const fallbackOption = toSafeOption(fallbackPoint)
+
+        return {
+            step: 1,
+            mapPickerOpen: false,
+            mapPickerPointId: matchingPoint.id,
+            mapSearchValue: "",
+            mapCenter: { lat: matchingPoint.lat, lng: matchingPoint.lng },
+            options: [selectedOption, fallbackOption],
+            selectedOptionId: selectedOption.id,
+            customPoint: null,
+            customLocationLabel: "",
+            scheduledAt: resolveProposalScheduledAtValue(meetup),
+            finalPrice: meetup.finalPrice !== undefined ? String(meetup.finalPrice) : "",
+            paymentMethod: meetup.proposedPaymentMethod ?? "",
+            error: "",
+        }
+    }
+
+    if (hasCustomLocation) {
+        const customAddress =
+            meetup.proposedLocation ??
+            customLocationLabelFromPoint(mapUserPosition.lat, mapUserPosition.lng)
+        const customOption = toCustomOption(mapUserPosition.lat, mapUserPosition.lng, customAddress)
+
+        return {
+            step: 1,
+            mapPickerOpen: false,
+            mapPickerPointId: "custom",
+            mapSearchValue: "",
+            mapCenter: { ...mapUserPosition },
+            options: [customOption, firstSafeOption],
+            selectedOptionId: customOption.id,
+            customPoint: { ...mapUserPosition },
+            customLocationLabel: customAddress,
+            scheduledAt: resolveProposalScheduledAtValue(meetup),
+            finalPrice: meetup.finalPrice !== undefined ? String(meetup.finalPrice) : "",
+            paymentMethod: meetup.proposedPaymentMethod ?? "",
+            error: "",
+        }
+    }
+
+    return {
+        step: 1,
+        mapPickerOpen: false,
+        mapPickerPointId: "",
+        mapSearchValue: "",
+        mapCenter: { lat: safeMeetingPoints[0].lat, lng: safeMeetingPoints[0].lng },
+        options: [firstSafeOption, secondSafeOption],
+        selectedOptionId: firstSafeOption.id,
+        customPoint: null,
+        customLocationLabel: "",
+        scheduledAt: resolveProposalScheduledAtValue(meetup),
+        finalPrice: meetup.finalPrice !== undefined ? String(meetup.finalPrice) : "",
+        paymentMethod: meetup.proposedPaymentMethod ?? "",
+        error: "",
     }
 }
 
@@ -1397,71 +1501,31 @@ function WallapopChatWorkspace() {
         ? meetupByConversation[selectedConversation.id]
         : undefined
 
+    const applyProposalDraftState = React.useCallback((draft: ProposalDraftState) => {
+        setProposalStep(draft.step)
+        setProposalMapPickerOpen(draft.mapPickerOpen)
+        setProposalMapPickerPointId(draft.mapPickerPointId)
+        setProposalMapSearchValue(draft.mapSearchValue)
+        setProposalMapCenter(draft.mapCenter)
+        setProposalOptions(draft.options)
+        setProposalSelectedOptionId(draft.selectedOptionId)
+        setProposalCustomPoint(draft.customPoint)
+        setProposalCustomLocationLabel(draft.customLocationLabel)
+        setProposalScheduledAt(draft.scheduledAt)
+        setProposalFinalPrice(draft.finalPrice)
+        setProposalPaymentMethod(draft.paymentMethod)
+        setProposalError(draft.error)
+    }, [])
+
     React.useEffect(() => {
         if (!selectedMeetup) {
-            setProposalStep(1)
-            setProposalMapPickerOpen(false)
-            setProposalMapPickerPointId("")
-            setProposalMapSearchValue("")
-            setProposalMapCenter({ lat: safeMeetingPoints[0].lat, lng: safeMeetingPoints[0].lng })
-            setProposalOptions([toSafeOption(safeMeetingPoints[0]), toSafeOption(safeMeetingPoints[1])])
-            setProposalSelectedOptionId(`safe:${safeMeetingPoints[0].id}`)
-            setProposalCustomPoint(null)
-            setProposalCustomLocationLabel("")
-            setProposalScheduledAt("")
-            setProposalFinalPrice("")
-            setProposalPaymentMethod("")
-            setProposalError("")
+            applyProposalDraftState(buildProposalDraftState(undefined))
             setIsProposalOverlayOpen(false)
             return
         }
 
-        setProposalScheduledAt(resolveProposalScheduledAtValue(selectedMeetup))
-        const matchingPoint = safeMeetingPoints.find(
-            (point) => point.name === selectedMeetup.proposedLocation
-        )
-        const hasCustomLocation = Boolean(selectedMeetup.proposedLocation && !matchingPoint)
-        if (matchingPoint) {
-            const selectedOption = toSafeOption(matchingPoint)
-            const fallbackOption = toSafeOption(
-                safeMeetingPoints.find((point) => point.id !== matchingPoint.id) ?? safeMeetingPoints[0]
-            )
-            setProposalOptions([selectedOption, fallbackOption])
-            setProposalSelectedOptionId(selectedOption.id)
-            setProposalMapPickerPointId(matchingPoint.id)
-        } else if (hasCustomLocation) {
-            const customOption = toCustomOption(
-                mapUserPosition.lat,
-                mapUserPosition.lng,
-                selectedMeetup.proposedLocation ?? customLocationLabelFromPoint(mapUserPosition.lat, mapUserPosition.lng)
-            )
-            setProposalOptions([customOption, toSafeOption(safeMeetingPoints[0])])
-            setProposalSelectedOptionId(customOption.id)
-            setProposalMapPickerPointId("custom")
-        } else {
-            setProposalOptions([toSafeOption(safeMeetingPoints[0]), toSafeOption(safeMeetingPoints[1])])
-            setProposalSelectedOptionId(`safe:${safeMeetingPoints[0].id}`)
-            setProposalMapPickerPointId("")
-        }
-        if (matchingPoint) {
-            setProposalMapCenter({ lat: matchingPoint.lat, lng: matchingPoint.lng })
-            setProposalCustomPoint(null)
-            setProposalCustomLocationLabel("")
-        } else if (hasCustomLocation) {
-            setProposalCustomPoint({ ...mapUserPosition })
-            setProposalCustomLocationLabel(selectedMeetup.proposedLocation ?? customLocationLabelFromPoint(mapUserPosition.lat, mapUserPosition.lng))
-            setProposalMapCenter({ ...mapUserPosition })
-        } else {
-            setProposalMapCenter({ lat: safeMeetingPoints[0].lat, lng: safeMeetingPoints[0].lng })
-            setProposalCustomPoint(null)
-            setProposalCustomLocationLabel("")
-        }
-        setProposalFinalPrice(
-            selectedMeetup.finalPrice !== undefined ? String(selectedMeetup.finalPrice) : ""
-        )
-        setProposalPaymentMethod(selectedMeetup.proposedPaymentMethod ?? "")
-        setProposalError("")
-    }, [selectedConversationId, selectedMeetup])
+        applyProposalDraftState(buildProposalDraftState(selectedMeetup))
+    }, [selectedConversationId, selectedMeetup, applyProposalDraftState])
 
     const resolveCustomPointAddress = React.useCallback(async (lat: number, lng: number) => {
         try {
@@ -1524,60 +1588,7 @@ function WallapopChatWorkspace() {
             return
         }
 
-        setProposalStep(1)
-        setProposalMapPickerOpen(false)
-        setProposalMapPickerPointId("")
-        setProposalMapSearchValue("")
-        setProposalMapCenter({ lat: safeMeetingPoints[0].lat, lng: safeMeetingPoints[0].lng })
-        setProposalOptions([toSafeOption(safeMeetingPoints[0]), toSafeOption(safeMeetingPoints[1])])
-        setProposalSelectedOptionId(`safe:${safeMeetingPoints[0].id}`)
-        setProposalCustomPoint(null)
-        setProposalCustomLocationLabel("")
-        setProposalScheduledAt("")
-        const matchingPoint = safeMeetingPoints.find(
-            (point) => point.name === selectedMeetup.proposedLocation
-        )
-        const hasCustomLocation = Boolean(selectedMeetup.proposedLocation && !matchingPoint)
-        if (matchingPoint) {
-            const selectedOption = toSafeOption(matchingPoint)
-            const fallbackOption = toSafeOption(
-                safeMeetingPoints.find((point) => point.id !== matchingPoint.id) ?? safeMeetingPoints[0]
-            )
-            setProposalOptions([selectedOption, fallbackOption])
-            setProposalSelectedOptionId(selectedOption.id)
-            setProposalMapPickerPointId(matchingPoint.id)
-        } else if (hasCustomLocation) {
-            const customOption = toCustomOption(
-                mapUserPosition.lat,
-                mapUserPosition.lng,
-                selectedMeetup.proposedLocation ?? customLocationLabelFromPoint(mapUserPosition.lat, mapUserPosition.lng)
-            )
-            setProposalOptions([customOption, toSafeOption(safeMeetingPoints[0])])
-            setProposalSelectedOptionId(customOption.id)
-            setProposalMapPickerPointId("custom")
-        } else {
-            setProposalOptions([toSafeOption(safeMeetingPoints[0]), toSafeOption(safeMeetingPoints[1])])
-            setProposalSelectedOptionId(`safe:${safeMeetingPoints[0].id}`)
-            setProposalMapPickerPointId("")
-        }
-        if (matchingPoint) {
-            setProposalMapCenter({ lat: matchingPoint.lat, lng: matchingPoint.lng })
-            setProposalCustomPoint(null)
-            setProposalCustomLocationLabel("")
-        } else if (hasCustomLocation) {
-            setProposalCustomPoint({ ...mapUserPosition })
-            setProposalCustomLocationLabel(selectedMeetup.proposedLocation ?? customLocationLabelFromPoint(mapUserPosition.lat, mapUserPosition.lng))
-            setProposalMapCenter({ ...mapUserPosition })
-        } else {
-            setProposalMapCenter({ lat: safeMeetingPoints[0].lat, lng: safeMeetingPoints[0].lng })
-            setProposalCustomPoint(null)
-            setProposalCustomLocationLabel("")
-        }
-        setProposalFinalPrice(
-            selectedMeetup.finalPrice !== undefined ? String(selectedMeetup.finalPrice) : ""
-        )
-        setProposalPaymentMethod(selectedMeetup.proposedPaymentMethod ?? "")
-        setProposalError("")
+        applyProposalDraftState(buildProposalDraftState(selectedMeetup))
         setIsProposalOverlayOpen(true)
     }
 
