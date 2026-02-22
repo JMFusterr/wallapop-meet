@@ -31,7 +31,8 @@ const selectBaseClass =
 
 const selectStateClass: Record<SelectState, string> = {
   default: "border-[var(--wm-color-border-default)]",
-  error: "border-[var(--wm-color-border-error)] focus-visible:ring-[var(--wm-color-border-error)]",
+  error:
+    "border-2 border-[var(--wm-color-input-ring-error)] focus-visible:ring-[var(--wm-color-input-ring-error)]",
 }
 
 const selectSizeClass: Record<SelectSize, string> = {
@@ -42,7 +43,7 @@ const selectSizeClass: Record<SelectSize, string> = {
 const helperTextClass =
   "text-[12px] leading-[1.4] text-[var(--wm-color-text-secondary)]"
 
-const errorTextClass = "text-[12px] leading-[1.4] text-[var(--wm-color-semantic-error)]"
+const errorTextClass = "text-[12px] leading-[1.4] text-[var(--wm-color-input-ring-error)]"
 
 function extractOptionsFromChildren(children: React.ReactNode): SelectOption[] {
   return React.Children.toArray(children).flatMap((child) => {

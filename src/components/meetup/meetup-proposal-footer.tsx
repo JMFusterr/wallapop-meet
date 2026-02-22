@@ -46,7 +46,7 @@ function MeetupProposalFooter({
             type="button"
             className={`rounded-full px-4 py-2 font-wallie-chunky text-[14px] ${
               actionDisabled
-                ? "cursor-not-allowed bg-[#B6C4CB] text-[#0F252B]"
+                ? "cursor-not-allowed border border-[#B8C9CF] bg-[#E8ECEF] text-[#6E8792] shadow-none"
                 : actionTextTone === "light"
                   ? "bg-[#13C1AC] text-white"
                   : "bg-[#13C1AC] text-[#0F252B]"

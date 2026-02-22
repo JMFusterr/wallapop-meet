@@ -1,6 +1,6 @@
 import * as React from "react"
 import L from "leaflet"
-import { MapPin, Search } from "lucide-react"
+import { Banknote, MapPin, QrCode, Search, Smartphone, type LucideIcon } from "lucide-react"
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet"
 
 import { resolveChatMeetupEntryActionState } from "@/components/meetup/chat-meetup-entry-rules"
@@ -16,6 +16,7 @@ import { ChatProductCard, type ChatProductCardViewerRole } from "@/components/ui
 import { ChatSecurityBanner } from "@/components/ui/chat-security-banner"
 import { CalendarPicker, toLocalDateValue } from "@/components/ui/calendar-picker"
 import { InboxBottomNav } from "@/components/ui/inbox-bottom-nav"
+import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { createMeetupMachine } from "@/meetup"
@@ -658,7 +659,6 @@ function MeetupProposalOverlay({
         { id: 2, label: "Dia y hora" },
         { id: 3, label: "Preferencia de pago" },
     ]
-    const canContinueStepOne = selectedLocationLabel.trim().length > 0
     const mapSelectedPoint = allSafePoints.find((point) => point.id === mapPickerPointId)
     const isCustomPointSelected = mapPickerPointId === "custom" && customPoint
     const visibleOptions = selectableOptions.slice(0, 2)
@@ -704,8 +704,6 @@ function MeetupProposalOverlay({
         }
         return options
     }, [])
-    const canContinueStepTwo = parseLocalDateTimeValue(dateTimeValue) !== null
-
     const updateDateTimeValue = (nextDateValue: string, nextTimeValue: string) => {
         if (!nextDateValue || !nextTimeValue) {
             onDateTimeChange("")
@@ -728,6 +726,19 @@ function MeetupProposalOverlay({
         setSelectedTimeValue(nextTimeValue)
         updateDateTimeValue(selectedDateValue, nextTimeValue)
     }
+    const hasMissingFieldsError = errorMessage === "Faltan campos por rellenar"
+    const isStepTwoDateMissing = step === 2 && hasMissingFieldsError && !selectedDateValue
+    const isStepTwoTimeMissing = step === 2 && hasMissingFieldsError && !selectedTimeValue
+    const normalizedFinalPriceValue = finalPriceValue.trim().replace(",", ".")
+    const hasFinalPriceValue = finalPriceValue.trim().length > 0
+    const parsedFinalPriceValue = Number.parseFloat(normalizedFinalPriceValue)
+    const isFinalPriceValueInvalid =
+        hasFinalPriceValue &&
+        (!Number.isFinite(parsedFinalPriceValue) || parsedFinalPriceValue < 0)
+    const isStepThreePriceMissing =
+        step === 3 && hasMissingFieldsError && (!hasFinalPriceValue || isFinalPriceValueInvalid)
+    const isStepThreePaymentMissing =
+        step === 3 && hasMissingFieldsError && !paymentMethod
 
     return (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#253238]/50 p-0 md:items-center md:p-6">
@@ -953,12 +964,24 @@ function MeetupProposalOverlay({
                                         minDateValue={minDateValue}
                                         onMonthChange={setVisibleCalendarMonth}
                                         onSelectDate={handleDateSelection}
+                                        state={isStepTwoDateMissing ? "error" : "default"}
+                                        error={
+                                            isStepTwoDateMissing
+                                                ? "Selecciona un dia para continuar."
+                                                : undefined
+                                        }
                                     />
                                     <Select
                                         label="Hora"
                                         value={selectedTimeValue}
                                         placeholder="Selecciona hora"
                                         onValueChange={handleTimeSelection}
+                                        error={
+                                            isStepTwoTimeMissing
+                                                ? "Selecciona una hora para continuar."
+                                                : undefined
+                                        }
+                                        state={isStepTwoTimeMissing ? "error" : "default"}
                                         maxVisibleOptions={6}
                                         dropdownDirection="up"
                                         options={[
@@ -971,7 +994,7 @@ function MeetupProposalOverlay({
                                                     timeOption < minTimeValue,
                                             })),
                                         ]}
-                                        className="rounded-[10px] border border-[#D3DEE2] bg-white px-3 py-2 font-wallie-fit text-[14px] text-[#253238] focus:border-[#3DD2BA]"
+                                        className="rounded-[10px] bg-white px-3 py-2 font-wallie-fit text-[14px] text-[#253238] focus:border-[#3DD2BA]"
                                     />
                                 </div>
                             ) : null}
@@ -979,43 +1002,75 @@ function MeetupProposalOverlay({
                             {step === 3 ? (
                                 <div className="mt-4 space-y-4">
                                     <MeetupWizardStepHeading
-                                        caption="Define el pago final y la preferencia de pago."
+                                        caption="Paso anterior"
+                                        title="Selecciona la preferencia de pago"
                                         onBack={onBack}
                                     />
-                                    <label className="block">
-                                        <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
-                                            Importe final acordado (EUR)
-                                        </span>
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            value={finalPriceValue}
-                                            onChange={(event) => onFinalPriceChange(event.target.value)}
-                                            placeholder="Ej: 220"
-                                            className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
-                                        />
-                                    </label>
+                                    <Input
+                                        label="Importe final acordado (EUR)"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={finalPriceValue}
+                                        onChange={(event) => onFinalPriceChange(event.target.value)}
+                                        placeholder="Ej: 220"
+                                        error={
+                                            isStepThreePriceMissing
+                                                ? "Introduce un importe de 0 EUR o superior."
+                                                : undefined
+                                        }
+                                        state={isStepThreePriceMissing ? "error" : "default"}
+                                        showCharCounter={false}
+                                    />
 
                                     <fieldset>
                                         <legend className="mb-2 font-wallie-fit text-[13px] text-[#253238]">
                                             Preferencia de pago
                                         </legend>
-                                        <div className="grid gap-2 sm:grid-cols-3">
-                                            {(["CASH", "BIZUM", "WALLET"] as MeetupPaymentMethod[]).map((method) => (
-                                                <button
-                                                    key={method}
-                                                    type="button"
-                                                    onClick={() => onPaymentMethodChange(method)}
-                                                    className={`rounded-[12px] border px-3 py-2 font-wallie-fit text-[13px] ${paymentMethod === method
-                                                        ? "border-[#3DD2BA] bg-[#E6FAF6] text-[#253238]"
-                                                        : "border-[#D3DEE2] bg-white text-[#4A5A63]"
+                                        <div className="grid gap-3 sm:grid-cols-3">
+                                            {(
+                                                [
+                                                    { method: "CASH", icon: Banknote },
+                                                    { method: "BIZUM", icon: Smartphone },
+                                                    { method: "WALLET", icon: QrCode },
+                                                ] as Array<{
+                                                    method: MeetupPaymentMethod
+                                                    icon: LucideIcon
+                                                }>
+                                            ).map(({ method, icon: Icon }) => {
+                                                const isSelected = paymentMethod === method
+                                                return (
+                                                    <button
+                                                        key={method}
+                                                        type="button"
+                                                        onClick={() => onPaymentMethodChange(method)}
+                                                        className={`rounded-[18px] border px-4 py-3 text-left ${
+                                                            isStepThreePaymentMissing
+                                                                ? "border-2 border-[var(--wm-color-input-ring-error)]"
+                                                                : isSelected
+                                                                ? "border-[#253238] shadow-[inset_0_0_0_1px_#253238]"
+                                                                : "border-[var(--wm-color-input-ring-default)]"
                                                         }`}
-                                                >
-                                                    {paymentMethodLabel(method)}
-                                                </button>
-                                            ))}
+                                                    >
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
+                                                                <Icon size={16} />
+                                                            </span>
+                                                            <div className="min-w-0 flex-1">
+                                                                <p className="font-wallie-fit text-[14px] leading-[1.2] text-[#253238] md:text-[15px]">
+                                                                    {paymentMethodLabel(method)}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </button>
+                                                )
+                                            })}
                                         </div>
+                                        {isStepThreePaymentMissing ? (
+                                            <p className="mt-2 text-[12px] leading-[1.4] text-[var(--wm-color-input-ring-error)]">
+                                                Selecciona un metodo de pago para continuar.
+                                            </p>
+                                        ) : null}
                                     </fieldset>
                                 </div>
                             ) : null}
@@ -1025,14 +1080,9 @@ function MeetupProposalOverlay({
                             listingImageSrc={conversation.listingImageSrc}
                             itemTitle={conversation.itemTitle}
                             userName={conversation.userName}
-                            actionLabel={step < 3 ? "Siguiente" : "Proponer quedada"}
-                            actionTextTone={step < 3 ? "dark" : "light"}
-                            actionDisabled={
-                                step < 3
-                                    ? (step === 1 && !canContinueStepOne) ||
-                                      (step === 2 && !canContinueStepTwo)
-                                    : false
-                            }
+                            actionLabel={step < 3 ? "Siguiente" : "Enviar propuesta"}
+                            actionTextTone="dark"
+                            actionDisabled={false}
                             onAction={step < 3 ? onNext : onSubmit}
                         />
                     </>
@@ -1660,9 +1710,18 @@ function WallapopChatWorkspace() {
             return false
         }
 
+        const [selectedDateValue = "", selectedTimeValue = ""] = proposalScheduledAt.split("T")
+        if (!selectedDateValue) {
+            setProposalError("Faltan campos por rellenar")
+            return false
+        }
+        if (!selectedTimeValue) {
+            setProposalError("Faltan campos por rellenar")
+            return false
+        }
         const scheduledAt = parseLocalDateTimeValue(proposalScheduledAt)
         if (!scheduledAt) {
-            setProposalError("Selecciona una fecha y hora validas para continuar.")
+            setProposalError("Faltan campos por rellenar")
             return false
         }
         setProposalError("")
@@ -1712,9 +1771,18 @@ function WallapopChatWorkspace() {
             return
         }
 
+        const [selectedDateValue = "", selectedTimeValue = ""] = proposalScheduledAt.split("T")
+        if (!selectedDateValue) {
+            setProposalError("Faltan campos por rellenar")
+            return
+        }
+        if (!selectedTimeValue) {
+            setProposalError("Faltan campos por rellenar")
+            return
+        }
         const scheduledAt = parseLocalDateTimeValue(proposalScheduledAt)
         if (!scheduledAt) {
-            setProposalError("Selecciona una fecha y hora validas para la propuesta.")
+            setProposalError("Faltan campos por rellenar")
             return
         }
 
@@ -1726,13 +1794,23 @@ function WallapopChatWorkspace() {
             return
         }
 
-        const parsedFinalPrice = Number.parseFloat(proposalFinalPrice)
-        if (!Number.isFinite(parsedFinalPrice) || parsedFinalPrice <= 0) {
-            setProposalError("Introduce un precio final valido mayor que cero.")
+        const trimmedFinalPrice = proposalFinalPrice.trim()
+        if (!trimmedFinalPrice && !proposalPaymentMethod) {
+            setProposalError("Faltan campos por rellenar")
+            return
+        }
+        if (!trimmedFinalPrice) {
+            setProposalError("Faltan campos por rellenar")
             return
         }
         if (!proposalPaymentMethod) {
-            setProposalError("Selecciona una preferencia de pago para la propuesta.")
+            setProposalError("Faltan campos por rellenar")
+            return
+        }
+
+        const parsedFinalPrice = Number.parseFloat(trimmedFinalPrice.replace(",", "."))
+        if (!Number.isFinite(parsedFinalPrice) || parsedFinalPrice < 0) {
+            setProposalError("Faltan campos por rellenar")
             return
         }
 

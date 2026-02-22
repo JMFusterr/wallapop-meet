@@ -16,6 +16,8 @@ type CalendarPickerProps = {
   minDateValue: string
   onMonthChange: (nextMonthDate: Date) => void
   onSelectDate: (nextDateValue: string) => void
+  state?: "default" | "error"
+  error?: string
   dayLabels?: string[]
   locale?: string
   className?: string
@@ -57,6 +59,8 @@ function CalendarPicker({
   minDateValue,
   onMonthChange,
   onSelectDate,
+  state = "default",
+  error,
   dayLabels = ["L", "M", "X", "J", "V", "S", "D"],
   locale = "es-ES",
   className,
@@ -67,7 +71,16 @@ function CalendarPicker({
   )
 
   return (
-    <div className={cn("rounded-[18px] border border-[#B8C9CF] p-3", className)}>
+    <div className="flex w-full flex-col gap-1.5">
+      <div
+        className={cn(
+          "rounded-[18px] border p-3",
+          state === "error"
+            ? "border-2 border-[var(--wm-color-input-ring-error)]"
+            : "border-[var(--wm-color-border-default)]",
+          className
+        )}
+      >
       <div className="mb-2 flex items-center justify-between">
         <button
           type="button"
@@ -124,12 +137,12 @@ function CalendarPicker({
               aria-pressed={isSelected}
               disabled={cell.isPast}
               onClick={() => onSelectDate(cell.dateValue)}
-              className={`h-8 rounded-[8px] text-center font-wallie-fit text-[13px] ${
-                cell.inCurrentMonth ? "text-[#253238]" : "text-[#9BB0B9]"
-              } ${
+              className={`h-8 rounded-[8px] border text-center text-[13px] ${
                 isSelected
-                  ? "bg-[#13C1AC] text-[#0F252B]"
-                  : "bg-[#F8FBFC] hover:bg-[#EAF1F4]"
+                  ? "border-[#253238] bg-white font-wallie-chunky text-[#253238] shadow-[inset_0_0_0_1px_#253238]"
+                  : `border-transparent bg-[#F8FBFC] font-wallie-fit hover:bg-[#EAF1F4] ${
+                      cell.inCurrentMonth ? "text-[#253238]" : "text-[#9BB0B9]"
+                    }`
               } ${
                 cell.isPast
                   ? "cursor-not-allowed opacity-40 hover:bg-[#F8FBFC]"
@@ -141,6 +154,12 @@ function CalendarPicker({
           )
         })}
       </div>
+      </div>
+      {error ? (
+        <p className="text-[12px] leading-[1.4] text-[var(--wm-color-input-ring-error)]">
+          {error}
+        </p>
+      ) : null}
     </div>
   )
 }

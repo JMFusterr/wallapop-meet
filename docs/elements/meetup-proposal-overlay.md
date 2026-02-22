@@ -2,7 +2,7 @@
 
 ## Fuente de analisis
 - Implementacion de referencia: `src/components/meetup/wallapop-chat-workspace.tsx`
-- Fecha de actualizacion: 2026-02-21
+- Fecha de actualizacion: 2026-02-22
 - Contexto: flujo `Proponer quedada` iniciado desde `ChatComposer`.
 
 ## Estructura funcional
@@ -75,12 +75,29 @@
   - Izquierda: contexto de articulo/comprador.
   - Derecha: CTA principal del paso.
 - Texto de articulo truncado con elipsis para no desplazar boton.
+- CTA por paso:
+  - Paso 1 y 2: `Siguiente`
+  - Paso 3: `Enviar propuesta`
+- El CTA no se deshabilita por campos incompletos; valida al pulsar.
+
+## Validaciones y errores (paso 2 y 3)
+- Mensaje global de validacion: `Faltan campos por rellenar`.
+- Cada seccion incompleta muestra mensaje inferior especifico.
+- Paso 2:
+  - Calendario (`CalendarPicker`) con estado `error` cuando falta dia.
+  - Selector de hora (`Select`) con estado `error` cuando falta hora.
+- Paso 3:
+  - Importe (`Input`) con estado `error` cuando falta o es invalido (< 0).
+  - Metodo de pago: cada card se marca en rojo por separado cuando no hay seleccion.
 
 ## Tokens/estilo recomendados
 - Estado seleccionado en cards:
   - Borde oscuro + `inset` de refuerzo.
 - Estado neutro:
-  - Borde gris claro.
+  - Borde base de tokens (`tokens.color.input.ring.default` para cards de pago en paso 3).
+- Estado error (unificado):
+  - Borde `2px` en `tokens.color.input.ring.error`.
+  - Mensaje de error inferior en `tokens.color.input.ring.error`.
 - Labels:
   - `Punto seguro`: fondo verde claro.
   - `Ventas`: fondo neutro claro.

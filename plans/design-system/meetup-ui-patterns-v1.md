@@ -35,11 +35,14 @@ Contenido:
 - Reglas de avance del wizard:
   - Los pasos futuros se bloquean hasta completar validaciones de pasos previos.
   - El feedback de error se renderiza dentro del overlay.
+  - El mensaje global de validacion es: `Faltan campos por rellenar`.
+  - Cada campo/seccion incompleta muestra mensaje inferior especifico.
+  - Los CTA de paso (`Siguiente` / `Enviar propuesta`) no se deshabilitan por falta de campos; validan al pulsar.
   - En paso 1 siempre hay 2 opciones seleccionables visibles.
   - La lista de paso 1 funciona como cola de las 2 ultimas selecciones.
   - Al seleccionar un punto nuevo desde mapa, se inserta arriba y desplaza el anterior a segunda posicion.
   - Al pulsar la opcion inferior no desaparece la superior; solo cambia el estado seleccionado.
-- CTA final de confirmacion: `Proponer quedada`.
+- CTA final de confirmacion: `Enviar propuesta`.
 - En el footer del wizard no se muestra boton `Cancelar`; el cierre se realiza con boton `X` en cabecera.
 - En movil, footer de wizard en una sola fila: contexto de articulo/comprador + CTA principal.
 
@@ -178,3 +181,8 @@ Notas de UI del workspace (2026-02-21):
   - Paso 2 actualizado (2026-02-22):
     - Calendario compacto y reutilizable (`src/components/ui/calendar-picker.tsx`).
     - Selector de hora con panel de altura fija y scroll interno para no forzar scroll de pantalla.
+    - Error visual/tokenizado consistente con `Input` (`tokens.color.input.ring.error`, 2px).
+  - Paso 3 actualizado (2026-02-22):
+    - Importe final con `Input`.
+    - Metodos de pago en cards seleccionables con iconografia.
+    - En error de metodo, cada card se marca en rojo de forma independiente (sin borde global envolvente).

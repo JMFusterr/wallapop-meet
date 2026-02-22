@@ -125,7 +125,7 @@ Notas:
 | --- | --- | --- |
 | `default` | Borde `tokens.color.border.default` + icono de desplegable | Selección disponible |
 | `focused` | `focus ring` + borde `tokens.color.border.focus` | Navegable por teclado |
-| `error` | Borde `tokens.color.border.error` + mensaje de error | `aria-invalid=true` |
+| `error` | Borde `2px` en `tokens.color.input.ring.error` + mensaje de error | `aria-invalid=true` |
 | `disabled` | Opacidad reducida + cursor no interactivo | No se puede abrir |
 
 Notas:
@@ -343,8 +343,13 @@ Reglas:
 - No existe boton `Cancelar` en el footer del wizard; cierre mediante boton `X` de cabecera.
 - Footer del wizard en movil:
   - Bloque contextual de articulo/comprador alineado a la izquierda.
-  - CTA principal (`Siguiente` o `Proponer quedada`) alineado a la derecha.
+  - CTA principal (`Siguiente` o `Enviar propuesta`) alineado a la derecha.
   - Texto de articulo truncado con elipsis para no desplazar la CTA.
+- Validaciones del wizard:
+  - El CTA no se deshabilita por campos incompletos.
+  - Mensaje global unificado: `Faltan campos por rellenar`.
+  - Cada bloque incompleto debe mostrar helper/error debajo del propio componente o grupo.
+  - El estado de error debe usar mismo color y grosor que `Input` (`tokens.color.input.ring.error`, `2px`).
 - En vista de mapa:
   - Permitir seleccion de punto seguro y punto personalizado (tap libre sobre mapa).
   - Al seleccionar personalizado, mostrar aviso de punto no verificado.
@@ -384,13 +389,16 @@ Propiedades visuales:
 - `minDateValue`: fecha mínima seleccionable.
 - `onMonthChange`: navegación de mes.
 - `onSelectDate`: selección de día.
+- `state`: `default | error`.
+- `error`: texto de ayuda/error inferior opcional.
 
 Reglas:
 - Grid fijo de 6 semanas (42 celdas) para evitar saltos de layout entre meses.
 - Días fuera del mes visible se muestran con menor contraste.
 - Días bloqueados por fecha mínima deben estar deshabilitados visual y semánticamente.
-- Día seleccionado usa estilo de acción principal Wallapop (`#13C1AC`) con texto oscuro.
+- Día seleccionado usa borde oscuro + texto oscuro (sin fondo de acción principal).
 - Flechas de navegación izquierda/derecha deben compartir el mismo lenguaje visual (`chevron`).
+- En `error`, usar borde `2px` en `tokens.color.input.ring.error` y helper inferior en el mismo color.
 
 ## 24. Cabecera de paso de wizard (`MeetupWizardStepHeading`)
 Propiedades visuales:
@@ -458,3 +466,6 @@ Notas:
 - Fuente runtime de chat: `https://es.wallapop.com/app/chat`.
 - Fecha de captura de los nuevos inventarios: `2026-02-19`.
 - Cuando se actualice cualquier inventario de `docs/elements/`, revisar impacto en tokens (`styles.json`) antes de implementar componentes.
+- Regla de implementacion para nuevas secciones:
+  - Reutilizar primero componentes existentes del DS.
+  - Si falta un componente, crearlo y documentarlo siguiendo tokens/estados del DS antes de usarlo en una nueva seccion.

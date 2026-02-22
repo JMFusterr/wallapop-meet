@@ -45,10 +45,21 @@ Objetivos:
   - Las validaciones del wizard se muestran dentro del overlay (no como error en el hilo de chat).
 - Reglas actuales del paso 2 (fecha/hora):
   - El paso arranca sin valor precargado al abrir propuesta, obligando a seleccion manual de dia y hora.
-  - El calendario es interactivo y reutilizable (`CalendarPicker`), con dia seleccionado en azul Wallapop y texto oscuro.
+  - El calendario es interactivo y reutilizable (`CalendarPicker`), con dia seleccionado en estilo borde oscuro + texto oscuro.
   - El selector de hora usa `Select` reutilizable con panel de altura fija y scroll interno.
   - En movil, el dropdown de hora se despliega hacia arriba para evitar recorte por viewport.
-  - El boton `Siguiente` se mantiene deshabilitado hasta tener fecha y hora validas.
+  - El boton `Siguiente` no se deshabilita; al pulsar sin completar, muestra error global y marca en error los campos faltantes.
+- Reglas actuales del paso 3 (importe y pago):
+  - El importe usa el componente `Input` del design system.
+  - Los metodos de pago usan cards seleccionables con iconografia contextual (`CASH`, `BIZUM`, `WALLET`).
+  - El CTA final usa el texto `Enviar propuesta`.
+  - El CTA no se deshabilita; al pulsar sin completar, muestra error global y marca en error los campos faltantes.
+  - Se permite importe `0` como valor valido.
+- Reglas actuales de validacion visual:
+  - Mensaje global unificado: `Faltan campos por rellenar`.
+  - Cada seccion incompleta muestra mensaje inferior especifico.
+  - El color y grosor de error se unifican con la linea de `Input` (`tokens.color.input.ring.error`, 2px).
+  - En paso 3, si falta metodo de pago, cada card se marca en error por separado (no con borde envolvente unico).
 - Header y footer del wizard componentizados:
   - Cabecera superior del overlay extraida a `MeetupProposalHeader` (paso actual, cierre y barra de progreso).
   - Cabecera interna de pasos extraida a `MeetupWizardStepHeading`.
@@ -76,10 +87,21 @@ Objetivos:
 - En cabecera de conversacion, la primera linea del bloque contextual muestra el precio del articulo en lugar del nombre del usuario.
 - Footer del wizard de propuesta en movil con layout estable en una sola fila:
   - Bloque contextual (articulo/comprador) a la izquierda.
-  - CTA principal (`Siguiente`/`Proponer quedada`) a la derecha sin desplazamiento vertical.
+  - CTA principal (`Siguiente`/`Enviar propuesta`) a la derecha sin desplazamiento vertical.
   - Titulo de articulo truncado con elipsis para evitar salto de layout.
 - Estado de entrega con icono `double_check` unificado en listado y burbujas (`sent` gris, `read` verde), con bubble enviada usando padding horizontal simetrico.
 - Buzon de conversaciones con escenario realista: multiples interesados por articulo, textos de chat plausibles e imagen de producto por conversacion.
 - Estados comerciales representados en el listado de conversaciones con los indicadores visuales del sistema de diseno:
   - `WithBookmark` (`leadingIndicator="bookmark"`) para anuncios reservados.
   - `WithDeal` (`leadingIndicator="deal"`) para anuncios vendidos.
+
+---
+
+### Norma interna de implementacion de nuevas secciones
+
+- Al crear una nueva seccion/apartado de UI, reutilizar primero componentes existentes del design system.
+- Si el componente necesario no existe:
+  - Definirlo y documentarlo siguiendo tokens y reglas del design system.
+  - Registrar su story bajo `Design System/*` en Storybook.
+  - Implementar despues la seccion funcional consumiendo ese componente (no con UI ad-hoc).
+- Antes de mergear, sincronizar cambios de implementacion y documentacion en `plans/design-system/` y `docs/elements/`.
