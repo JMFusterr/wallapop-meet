@@ -1360,13 +1360,16 @@ function ConversationPane({
 
                 {meetup && meetup.status !== null ? (
                     <div className="mt-5 space-y-4">
-                        <MeetupCard
-                            meetup={meetup}
-                            actorRole={actorRole}
-                            currentTime={currentTime}
-                            onMeetupChange={onMeetupChange}
-                            onError={onError}
-                        />
+                        <div className={actorRole === "SELLER" ? "flex justify-end" : "flex justify-start"}>
+                            <MeetupCard
+                                meetup={meetup}
+                                actorRole={actorRole}
+                                currentTime={currentTime}
+                                onMeetupChange={onMeetupChange}
+                                onError={onError}
+                                onEditProposal={onOpenMeetupProposal}
+                            />
+                        </div>
                     </div>
                 ) : null}
 
@@ -1834,20 +1837,40 @@ function WallapopChatWorkspace() {
             return
         }
 
-        const eligibility = resolveChatMeetupEntryActionState(selectedMeetup, actorRole)
-        if (!eligibility.enabled) {
-            setProposalError(eligibility.message)
+        const draftMeetup: MeetupMachine = {
+            ...selectedMeetup,
+            scheduledAt,
+            proposedLocation: resolvedLocation,
+            finalPrice: Number(parsedFinalPrice.toFixed(2)),
+            proposedPaymentMethod: proposalPaymentMethod,
+        }
+
+        if (selectedMeetup.status === "PROPOSED" && actorRole === "SELLER") {
+            updateSelectedMeetup(draftMeetup)
+            setProposalError("")
+            setProposalStep(1)
+            setIsProposalOverlayOpen(false)
             return
         }
 
+        if (
+            selectedMeetup.status !== null &&
+            selectedMeetup.status !== "COUNTER_PROPOSED"
+        ) {
+            setProposalError("Esta propuesta ya no se puede editar.")
+            return
+        }
+
+        if (selectedMeetup.status === null) {
+            const eligibility = resolveChatMeetupEntryActionState(selectedMeetup, actorRole)
+            if (!eligibility.enabled) {
+                setProposalError(eligibility.message)
+                return
+            }
+        }
+
         const result = transitionMeetup(
-            {
-                ...selectedMeetup,
-                scheduledAt,
-                proposedLocation: resolvedLocation,
-                finalPrice: Number(parsedFinalPrice.toFixed(2)),
-                proposedPaymentMethod: proposalPaymentMethod,
-            },
+            draftMeetup,
             {
                 type: "PROPOSE",
                 actorRole,

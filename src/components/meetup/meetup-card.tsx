@@ -9,6 +9,7 @@ type MeetupCardProps = {
     currentTime: Date
     onMeetupChange: (next: MeetupMachine) => void
     onError: (message: string) => void
+    onEditProposal?: () => void
 }
 
 type CardAction = {
@@ -28,38 +29,39 @@ function statusPill(status: MeetupStatus | null): StatusPill {
     switch (status) {
         case "PROPOSED":
             return {
-                label: "Propuesta enviada",
-                className: "border-[#66C9DB] bg-[#D9F3F9] text-[#1E7D92]",
+                label: "Pending",
+                className:
+                    "border-[var(--wm-color-border-default)] bg-[var(--wm-color-background-base)] text-[var(--wm-color-text-secondary)]",
             }
         case "COUNTER_PROPOSED":
             return {
-                label: "Contraoferta recibida",
-                className: "border-[#F3C56A] bg-[#FFF1D6] text-[#8A5B00]",
+                label: "COUNTER_PROPOSED",
+                className: "border-[#F4A000] bg-[#FFF3DE] text-[#8A5B00]",
             }
         case "CONFIRMED":
             return {
-                label: "Quedada confirmada",
-                className: "border-[#9ED6B8] bg-[#E8F8EE] text-[#177A4B]",
+                label: "CONFIRMED",
+                className: "border-[#19A05D] bg-[#E6F7EF] text-[#177A4B]",
             }
         case "ARRIVED":
             return {
-                label: "Persona llegada",
-                className: "border-[#9BB8F8] bg-[#EAF1FF] text-[#2A5BB6]",
+                label: "ARRIVED",
+                className: "border-[#0D84FF] bg-[#E8F2FF] text-[#0A5EB5]",
             }
         case "COMPLETED":
             return {
-                label: "Venta completada",
-                className: "border-[#97D6B5] bg-[#E5F7ED] text-[#187347]",
+                label: "COMPLETED",
+                className: "border-[#AC2B8B] bg-[#F7EAF2] text-[#7B1E64]",
             }
         case "EXPIRED":
             return {
-                label: "Solicitud expirada",
-                className: "border-[#F1B3B8] bg-[#FDEBEC] text-[#A81F2D]",
+                label: "EXPIRED",
+                className: "border-[#A8B2B8] bg-[#F5F7F8] text-[#4A5A63]",
             }
         case "CANCELLED":
             return {
-                label: "Solicitud cancelada",
-                className: "border-[#CDD8DD] bg-[#F3F6F8] text-[#4A5A63]",
+                label: "CANCELLED",
+                className: "border-[#FF5A5F] bg-[#FDEBEC] text-[#A81F2D]",
             }
         default:
             return {
@@ -67,34 +69,6 @@ function statusPill(status: MeetupStatus | null): StatusPill {
                 className: "border-[#D3DEE2] bg-white text-[#4A5A63]",
             }
     }
-}
-
-function statusHeadline(status: MeetupStatus | null, actorRole: ActorRole): string {
-    if (status === "PROPOSED" && actorRole === "SELLER") {
-        return "Has enviado una solicitud de quedada."
-    }
-    if (status === "PROPOSED" && actorRole === "BUYER") {
-        return "Tienes una solicitud de quedada pendiente."
-    }
-    if (status === "COUNTER_PROPOSED") {
-        return "Se ha actualizado la propuesta de quedada."
-    }
-    if (status === "CONFIRMED") {
-        return "La quedada esta confirmada."
-    }
-    if (status === "ARRIVED") {
-        return "Una de las partes ya ha llegado al punto de encuentro."
-    }
-    if (status === "COMPLETED") {
-        return "La operacion se marco como completada."
-    }
-    if (status === "EXPIRED") {
-        return "La solicitud ha expirado."
-    }
-    if (status === "CANCELLED") {
-        return "La solicitud fue cancelada."
-    }
-    return "Previsualizacion de solicitud de quedada."
 }
 
 function formatScheduledAt(value: Date): string {
@@ -125,6 +99,7 @@ function MeetupCard({
     currentTime,
     onMeetupChange,
     onError,
+    onEditProposal,
 }: MeetupCardProps) {
     const arrivalAction = resolveArrivalActionState(meetup, currentTime)
 
@@ -306,12 +281,15 @@ function MeetupCard({
     ].filter((detail): detail is { id: string; label: string; value: string } => detail !== null)
 
     const currentStatusPill = statusPill(meetup.status)
+    const canEditProposal =
+        actorRole === "SELLER" &&
+        (meetup.status === "PROPOSED" || meetup.status === "COUNTER_PROPOSED")
 
     return (
         <section className="max-w-[420px] rounded-[20px] border border-[#ECEFF1] bg-[#C6EDF6] px-4 py-3">
             <div className="flex items-start justify-between gap-3">
                 <p className="font-wallie-fit text-[11px] uppercase tracking-[0.06em] text-[#2C8CA0]">
-                    Sistema Wallapop Meet
+                    Propuesta de quedada
                 </p>
                 <span
                     className={`inline-flex rounded-full border px-2.5 py-1 font-wallie-fit text-[11px] leading-[1] ${currentStatusPill.className}`}
@@ -319,10 +297,6 @@ function MeetupCard({
                     {currentStatusPill.label}
                 </span>
             </div>
-
-            <p className="mt-2 font-wallie-fit text-[15px] leading-[1.35] text-[#253238]">
-                {statusHeadline(meetup.status, actorRole)}
-            </p>
 
             <dl className="mt-3 space-y-1.5">
                 {details.map((detail) => (
@@ -352,6 +326,22 @@ function MeetupCard({
                             {action.label}
                         </Button>
                     ))}
+                    {canEditProposal && onEditProposal ? (
+                        <Button
+                            variant="inline_action"
+                            size="sm"
+                            onClick={onEditProposal}
+                        >
+                            Editar
+                        </Button>
+                    ) : null}
+                </div>
+            ) : null}
+            {actions.length === 0 && canEditProposal && onEditProposal ? (
+                <div className="mt-3">
+                    <Button variant="inline_action" size="sm" onClick={onEditProposal}>
+                        Editar
+                    </Button>
                 </div>
             ) : null}
         </section>
