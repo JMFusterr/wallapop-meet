@@ -673,6 +673,49 @@ function ProposalMapClickHandler({
     return null
 }
 
+function MeetupMapPreviewModal({
+    center,
+    onClose,
+}: {
+    center: MapPoint
+    onClose: () => void
+}) {
+    return (
+        <div className="fixed inset-0 z-[60] bg-[#253238]/55 p-0 md:p-6">
+            <section className="flex h-full w-full flex-col bg-white md:mx-auto md:h-[88vh] md:max-w-[760px] md:rounded-[18px]">
+                <header className="flex items-center justify-between border-b border-[#E8ECEF] px-4 py-3">
+                    <p className="font-wallie-chunky text-[18px] text-[#253238]">Mapa de la quedada</p>
+                    <button
+                        type="button"
+                        aria-label="Cerrar mapa"
+                        onClick={onClose}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
+                    >
+                        <WallapopIcon name="cross" size="small" />
+                    </button>
+                </header>
+                <div className="min-h-0 flex-1">
+                    <MapContainer
+                        center={[center.lat, center.lng]}
+                        zoom={15}
+                        className="h-full w-full"
+                        attributionControl={false}
+                        zoomControl={false}
+                        scrollWheelZoom={false}
+                        dragging={true}
+                        doubleClickZoom={false}
+                        touchZoom={true}
+                        keyboard={false}
+                    >
+                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                        <Marker position={[center.lat, center.lng]} icon={customPointIcon} />
+                    </MapContainer>
+                </div>
+            </section>
+        </div>
+    )
+}
+
 function SafeShieldGlyph({ className = "" }: { className?: string }) {
     return (
         <svg
@@ -1280,7 +1323,7 @@ type ConversationPaneProps = {
     onSubmitMessage: (value: string) => void
     onMeetupChange: (next: MeetupMachine) => void
     onOpenMeetupProposal: () => void
-    onOpenMeetupMapPreview: () => void
+    onOpenMeetupMapPreview: (meetup: MeetupMachine) => void
     onError: (message: string) => void
     errorMessage: string
 }
@@ -1372,7 +1415,7 @@ function ConversationPane({
                                 onMeetupChange={onMeetupChange}
                                 onError={onError}
                                 onEditProposal={onOpenMeetupProposal}
-                                onOpenMapPreview={onOpenMeetupMapPreview}
+                                onOpenMapPreview={() => onOpenMeetupMapPreview(meetup)}
                             />
                         </div>
                     </div>
@@ -1500,6 +1543,11 @@ function WallapopChatWorkspace() {
         MeetupPaymentMethod | ""
     >("")
     const [proposalError, setProposalError] = React.useState("")
+    const [mapPreviewOpen, setMapPreviewOpen] = React.useState(false)
+    const [mapPreviewCenter, setMapPreviewCenter] = React.useState<MapPoint>({
+        lat: safeMeetingPoints[0].lat,
+        lng: safeMeetingPoints[0].lng,
+    })
     const proposalCustomPointRef = React.useRef<MapPoint | null>(null)
     const reverseGeocodeRequestIdRef = React.useRef(0)
 
@@ -1620,9 +1668,31 @@ function WallapopChatWorkspace() {
         setIsProposalOverlayOpen(true)
     }
 
-    const openMeetupMapPreview = () => {
-        openMeetupProposal()
-        setProposalMapPickerOpen(true)
+    const openMeetupMapPreview = (meetup: MeetupMachine) => {
+        const hasPoint =
+            typeof meetup.proposedLocationLat === "number" &&
+            typeof meetup.proposedLocationLng === "number"
+
+        if (hasPoint) {
+            setMapPreviewCenter({
+                lat: meetup.proposedLocationLat as number,
+                lng: meetup.proposedLocationLng as number,
+            })
+            setMapPreviewOpen(true)
+            return
+        }
+
+        const matchingPoint = safeMeetingPoints.find(
+            (point) =>
+                point.name === meetup.proposedLocation || point.address === meetup.proposedLocation
+        )
+        if (matchingPoint) {
+            setMapPreviewCenter({ lat: matchingPoint.lat, lng: matchingPoint.lng })
+            setMapPreviewOpen(true)
+            return
+        }
+
+        setLastError("No hay un punto de mapa disponible para esta propuesta.")
     }
 
     const closeMeetupProposal = () => {
@@ -2013,6 +2083,13 @@ function WallapopChatWorkspace() {
                     onBack={goToPreviousProposalStep}
                     onNext={goToNextProposalStep}
                     onSubmit={confirmMeetupProposal}
+                />
+            ) : null}
+
+            {mapPreviewOpen ? (
+                <MeetupMapPreviewModal
+                    center={mapPreviewCenter}
+                    onClose={() => setMapPreviewOpen(false)}
                 />
             ) : null}
         </main>

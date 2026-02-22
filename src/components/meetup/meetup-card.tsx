@@ -84,8 +84,14 @@ function formatScheduledAt(value: Date): string {
 }
 
 function buildStaticMapThumbnailUrl(lat: number, lng: number): string {
-    const center = `${lat.toFixed(6)},${lng.toFixed(6)}`
-    return `https://staticmap.openstreetmap.de/staticmap.php?center=${center}&zoom=15&size=640x220&maptype=mapnik&markers=${center},red-pushpin`
+    const latDelta = 0.0038
+    const lngDelta = 0.0058
+    const left = (lng - lngDelta).toFixed(6)
+    const bottom = (lat - latDelta).toFixed(6)
+    const right = (lng + lngDelta).toFixed(6)
+    const top = (lat + latDelta).toFixed(6)
+    const marker = `${lat.toFixed(6)},${lng.toFixed(6)}`
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${marker}`
 }
 
 function paymentMethodLabel(method: MeetupPaymentMethod): string {
@@ -284,19 +290,13 @@ function MeetupCard({
                 onClick={onOpenMapPreview}
             >
                 {hasMapCoordinates ? (
-                    <img
+                    <iframe
+                        title={`Miniatura del mapa de ${meetup.proposedLocation || "punto de encuentro"}`}
                         src={mapThumbnailUrl}
-                        alt={`Mapa de ${meetup.proposedLocation || "punto de encuentro"}`}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full border-0 [pointer-events:none]"
                         loading="lazy"
                     />
-                ) : (
-                    <div className="flex h-full w-full items-center px-4">
-                        <span className="font-wallie-fit text-[12px] text-[#4A5A63]">
-                            Punto de encuentro sin coordenadas disponibles.
-                        </span>
-                    </div>
-                )}
+                ) : null}
             </button>
 
             <div className="flex items-start justify-between gap-3">
