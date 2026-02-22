@@ -7,7 +7,11 @@ import { resolveChatMeetupEntryActionState } from "@/components/meetup/chat-meet
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { MeetupProposalFooter } from "@/components/meetup/meetup-proposal-footer"
 import { MeetupProposalHeader } from "@/components/meetup/meetup-proposal-header"
-import { resolveProposalScheduledAtValue } from "@/components/meetup/wallapop-chat-workspace-utils"
+import {
+    buildReverseGeocodeUrl,
+    resolveProposalScheduledAtValue,
+    shouldApplyReverseGeocodeResult,
+} from "@/components/meetup/wallapop-chat-workspace-utils"
 import { MeetupWizardStepHeading } from "@/components/meetup/meetup-wizard-step-heading"
 import { ChatComposer } from "@/components/ui/chat-composer"
 import { ChatCounterpartCard } from "@/components/ui/chat-counterpart-card"
@@ -1488,6 +1492,8 @@ function WallapopChatWorkspace() {
         MeetupPaymentMethod | ""
     >("")
     const [proposalError, setProposalError] = React.useState("")
+    const proposalCustomPointRef = React.useRef<MapPoint | null>(null)
+    const reverseGeocodeRequestIdRef = React.useRef(0)
 
     const selectedConversation = React.useMemo(
         () => conversations.find((conversation) => conversation.id === selectedConversationId),
@@ -1527,16 +1533,30 @@ function WallapopChatWorkspace() {
         applyProposalDraftState(buildProposalDraftState(selectedMeetup))
     }, [selectedConversationId, selectedMeetup, applyProposalDraftState])
 
+    React.useEffect(() => {
+        proposalCustomPointRef.current = proposalCustomPoint
+    }, [proposalCustomPoint])
+
     const resolveCustomPointAddress = React.useCallback(async (lat: number, lng: number) => {
+        const requestId = reverseGeocodeRequestIdRef.current + 1
+        reverseGeocodeRequestIdRef.current = requestId
+        const requestedPoint: MapPoint = { lat, lng }
+
         try {
-            const response = await fetch(
-                `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lng))}`
-            )
+            const response = await fetch(buildReverseGeocodeUrl(requestedPoint))
             if (!response.ok) {
                 return
             }
             const data = (await response.json()) as { display_name?: string }
-            if (typeof data.display_name === "string" && data.display_name.trim().length > 0) {
+            if (
+                shouldApplyReverseGeocodeResult({
+                    requestId,
+                    latestRequestId: reverseGeocodeRequestIdRef.current,
+                    requestedPoint,
+                    currentPoint: proposalCustomPointRef.current,
+                    responseAddress: data.display_name,
+                })
+            ) {
                 setProposalCustomLocationLabel(data.display_name)
             }
         } catch {
