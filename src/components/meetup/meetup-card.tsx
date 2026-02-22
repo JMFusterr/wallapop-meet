@@ -280,7 +280,7 @@ function MeetupCard({
 
     const paymentAndPriceValue = [
         meetup.proposedPaymentMethod ? paymentMethodLabel(meetup.proposedPaymentMethod) : "Sin metodo",
-        meetup.finalPrice !== undefined ? `${meetup.finalPrice.toFixed(2)} EUR` : "sin precio",
+        meetup.finalPrice !== undefined ? `${meetup.finalPrice.toFixed(2)} €` : "sin precio",
     ].join(" \u00B7 ")
 
     const currentStatusPill = statusPill(meetup.status)

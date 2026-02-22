@@ -9,6 +9,7 @@ Definir pantallas y patrones de interacción para cubrir el ciclo completo de un
 - El contexto de chat (anuncio, participantes y acuerdo previo) alimenta la propuesta inicial.
 - En implementacion actual, la vista de buzon evita accion global de hamburguesa y delega acciones contextuales al header de cada conversacion (icono de tres puntos verticales).
 - El header de cada conversacion incluye avatar circular del usuario comprador junto al icono de tres puntos para reforzar el contexto del interlocutor.
+- El avatar de perfil en conversacion abierta y sidebar puede ser persona o contenido no-personal (paisaje/objeto) para reflejar casuistica real de Wallapop.
 - En la cabecera abierta de conversacion, la linea principal muestra el precio del articulo; el titulo del anuncio queda en la linea secundaria.
 
 ## 1. Propuesta inicial (vendedor)
@@ -187,6 +188,7 @@ Notas de UI del workspace (2026-02-21):
   - `Chat List Item With Bookmark` para reservado (`leadingIndicator="bookmark"`).
   - `Chat List Item With Deal` para vendido (`leadingIndicator="deal"`).
 - Mock del buzon extendido con conversaciones realistas e imagen de articulo por cada chat.
+- En `InboxPane`, la miniatura de cada fila corresponde al articulo (`listingImageSrc`), no al avatar de perfil.
 - Overlay de propuesta (actualizado 2026-02-21):
   - Paso 1 con 2 cards visibles (seguras y/o personalizadas) y truncado defensivo de textos largos.
   - Punto personalizado representado con icono de puntero; punto seguro con icono de escudo.
@@ -204,6 +206,7 @@ Notas de UI del workspace (2026-02-21):
     - Error visual/tokenizado consistente con `Input` (`tokens.color.input.ring.error`, 2px).
   - Paso 3 actualizado (2026-02-22):
     - Importe final con `Input`.
+    - Moneda mostrada en UI con simbolo `€`.
     - Metodos de pago en cards seleccionables con iconografia.
     - En error de metodo, cada card se marca en rojo de forma independiente (sin borde global envolvente).
 

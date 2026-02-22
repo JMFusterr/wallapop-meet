@@ -53,6 +53,7 @@ Objetivos:
   - El boton `Siguiente` no se deshabilita; al pulsar sin completar, muestra error global y marca en error los campos faltantes.
 - Reglas actuales del paso 3 (importe y pago):
   - El importe usa el componente `Input` del design system.
+  - El copy de moneda en UI usa simbolo `€` (no `EUR`).
   - Los metodos de pago usan cards seleccionables con iconografia contextual (`CASH`, `BIZUM`, `WALLET`).
   - El CTA final usa el texto `Enviar propuesta`.
   - El CTA no se deshabilita; al pulsar sin completar, muestra error global y marca en error los campos faltantes.
@@ -111,6 +112,7 @@ Objetivos:
 - Header de buzon simplificado sin accion de menu tipo hamburguesa.
 - Accion de "mas opciones" (`ellipsis_horizontal`) ubicada en la cabecera de cada conversacion, alineada a la derecha.
 - Cabecera de conversacion con avatar circular de perfil del comprador junto al menu de tres puntos para mayor fidelidad al patron de Wallapop.
+- Las fotos de perfil de contraparte en conversacion/sidebar usan imagenes realistas (personas, paisaje u objeto) para simular uso real de Wallapop.
 - En cabecera de conversacion, la primera linea del bloque contextual muestra el precio del articulo en lugar del nombre del usuario.
 - Footer del wizard de propuesta en movil con layout estable en una sola fila:
   - Bloque contextual (articulo/comprador) a la izquierda.

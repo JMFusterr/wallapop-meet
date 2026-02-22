@@ -109,42 +109,18 @@ type ProposalDraftState = {
     error: string
 }
 
-function escapeSvgText(value: string): string {
-    return value
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&apos;")
-}
-
-function toSvgDataUri(svg: string): string {
-    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
-}
-
-function createProfileImage(name: string, color: string): string {
-    const parts = name.trim().split(/\s+/)
-    const initials = escapeSvgText((parts[0]?.[0] ?? "").concat(parts[1]?.[0] ?? "").toUpperCase())
-    const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
-  <circle cx="100" cy="100" r="100" fill="${color}" />
-  <text x="50%" y="56%" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="74" font-weight="700">${initials}</text>
-</svg>`
-    return toSvgDataUri(svg)
-}
-
 const conversations: Conversation[] = [
     {
         id: "conv-meetup-001",
         userName: "Laura M.",
-        itemPrice: "240 EUR",
+        itemPrice: "240 €",
         messageDate: "Hoy",
         itemTitle: "Nintendo Switch OLED + dock",
         messagePreview: "Si te va bien, quedamos manana en Sants.",
         listingImageSrc:
             "https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
-            createProfileImage("Laura M.", "#13C1AC"),
+            "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
         lastMessageDeliveryState: "read",
         meetupContext: {
             conversationId: "conv-meetup-001",
@@ -162,7 +138,7 @@ const conversations: Conversation[] = [
     {
         id: "conv-002",
         userName: "Javi R.",
-        itemPrice: "520 EUR",
+        itemPrice: "520 €",
         messageDate: "Ayer",
         itemTitle: "Bicicleta fixie Fuji",
         messagePreview: "Te la reservo hasta las 20:00, ok?",
@@ -171,7 +147,7 @@ const conversations: Conversation[] = [
         listingImageSrc:
             "https://images.pexels.com/photos/100582/pexels-photo-100582.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
-            createProfileImage("Javi R.", "#5A8DEE"),
+            "https://images.pexels.com/photos/1758144/pexels-photo-1758144.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
         counterpartRating: 5,
         counterpartDistanceLabel: "8,2km de ti",
         counterpartLocationLabel: "Desconocido",
@@ -181,14 +157,14 @@ const conversations: Conversation[] = [
     {
         id: "conv-003",
         userName: "Marta P.",
-        itemPrice: "640 EUR",
+        itemPrice: "640 €",
         messageDate: "18 feb",
         itemTitle: "Camara Fujifilm X-T20",
         messagePreview: "Si incluyes bateria extra, me la quedo.",
         listingImageSrc:
             "https://images.pexels.com/photos/51383/photo-camera-subject-photographer-51383.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
-            createProfileImage("Marta P.", "#7A5AF8"),
+            "https://images.pexels.com/photos/370799/pexels-photo-370799.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
         counterpartRating: 4,
         counterpartDistanceLabel: "1,9km de ti",
         counterpartLocationLabel: "Desconocido",
@@ -199,7 +175,7 @@ const conversations: Conversation[] = [
     {
         id: "conv-004",
         userName: "Carlos G.",
-        itemPrice: "310 EUR",
+        itemPrice: "310 €",
         messageDate: "15 feb",
         itemTitle: "Silla gamer Secretlab",
         messagePreview: "Perfecto, gracias por todo. Venta cerrada.",
@@ -207,7 +183,7 @@ const conversations: Conversation[] = [
         listingImageSrc:
             "https://images.pexels.com/photos/13871156/pexels-photo-13871156.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
-            createProfileImage("Carlos G.", "#253238"),
+            "https://images.pexels.com/photos/1382731/pexels-photo-1382731.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
         counterpartRating: 4.5,
         counterpartDistanceLabel: "2,7km de ti",
         counterpartLocationLabel: "Desconocido",
@@ -218,7 +194,7 @@ const conversations: Conversation[] = [
     {
         id: "conv-005",
         userName: "Alba T.",
-        itemPrice: "175 EUR",
+        itemPrice: "175 €",
         messageDate: "14 feb",
         itemTitle: "AirPods Pro 2",
         messagePreview: "Si funcionan perfectos, te pago en mano.",
@@ -226,7 +202,7 @@ const conversations: Conversation[] = [
         listingImageSrc:
             "https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
-            createProfileImage("Alba T.", "#0EA5A4"),
+            "https://images.pexels.com/photos/414171/pexels-photo-414171.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
         counterpartRating: 5,
         counterpartDistanceLabel: "4,1km de ti",
         counterpartLocationLabel: "Desconocido",
@@ -236,7 +212,7 @@ const conversations: Conversation[] = [
     {
         id: "conv-006",
         userName: "Iker S.",
-        itemPrice: "210 EUR",
+        itemPrice: "210 €",
         messageDate: "12 feb",
         itemTitle: "Monitor LG 27 pulgadas 144Hz",
         messagePreview: "Me pasas foto del panel encendido?",
@@ -244,7 +220,7 @@ const conversations: Conversation[] = [
         listingImageSrc:
             "https://images.pexels.com/photos/1038916/pexels-photo-1038916.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
-            createProfileImage("Iker S.", "#1D4ED8"),
+            "https://images.pexels.com/photos/301599/pexels-photo-301599.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
         counterpartRating: 4,
         counterpartDistanceLabel: "6,5km de ti",
         counterpartLocationLabel: "Desconocido",
@@ -1173,7 +1149,7 @@ function MeetupProposalOverlay({
                                         onBack={onBack}
                                     />
                                     <Input
-                                        label="Importe final acordado (EUR)"
+                                        label="Importe final acordado (€)"
                                         type="number"
                                         min="0"
                                         step="0.01"
@@ -1182,7 +1158,7 @@ function MeetupProposalOverlay({
                                         placeholder="Ej: 220"
                                         error={
                                             isStepThreePriceMissing
-                                                ? "Introduce un importe de 0 EUR o superior."
+                                                ? "Introduce un importe de 0 € o superior."
                                                 : undefined
                                         }
                                         state={isStepThreePriceMissing ? "error" : "default"}

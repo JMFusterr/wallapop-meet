@@ -11,7 +11,7 @@ const meta = {
     tags: ["autodocs"],
     args: {
         label: "Precio final",
-        placeholder: "Ej. 25 EUR",
+        placeholder: "Ej. 25 €",
         hint: "Usa el importe acordado en el chat.",
         maxLength: 50,
     },
