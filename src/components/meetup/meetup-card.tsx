@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { resolveArrivalActionState } from "@/components/meetup/meetup-ui-rules"
+import L from "leaflet"
 import { Banknote, MapPin } from "lucide-react"
+import { MapContainer, Marker, TileLayer } from "react-leaflet"
 import { transitionMeetup } from "@/meetup/state-machine"
 import type { ActorRole, MeetupMachine, MeetupPaymentMethod, MeetupStatus } from "@/meetup/types"
 
@@ -84,15 +86,22 @@ function formatScheduledAt(value: Date): string {
 }
 
 function buildStaticMapThumbnailUrl(lat: number, lng: number): string {
-    const latDelta = 0.0038
-    const lngDelta = 0.0058
-    const left = (lng - lngDelta).toFixed(6)
-    const bottom = (lat - latDelta).toFixed(6)
-    const right = (lng + lngDelta).toFixed(6)
-    const top = (lat + latDelta).toFixed(6)
-    const marker = `${lat.toFixed(6)},${lng.toFixed(6)}`
-    return `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${marker}`
+    return `${lat.toFixed(6)},${lng.toFixed(6)}`
 }
+
+const miniMapMarkerIcon = L.divIcon({
+    className: "",
+    html: `
+        <span style="display:flex;height:28px;width:28px;align-items:center;justify-content:center;border-radius:999px;background:#2F6DF6;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.28);">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10Z"></path>
+                <circle cx="12" cy="11" r="2"></circle>
+            </svg>
+        </span>
+    `,
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+})
 
 function paymentMethodLabel(method: MeetupPaymentMethod): string {
     switch (method) {
@@ -278,9 +287,12 @@ function MeetupCard({
     const hasMapCoordinates =
         typeof meetup.proposedLocationLat === "number" &&
         typeof meetup.proposedLocationLng === "number"
-    const mapThumbnailUrl = hasMapCoordinates
+    const mapThumbnailCenter = hasMapCoordinates
         ? buildStaticMapThumbnailUrl(meetup.proposedLocationLat, meetup.proposedLocationLng)
         : ""
+    const mapThumbnailPosition = mapThumbnailCenter
+        ? (mapThumbnailCenter.split(",").map(Number) as [number, number])
+        : null
 
     return (
         <section className="max-w-[420px] rounded-[20px] border border-[#ECEFF1] bg-[#C6EDF6] px-4 py-3">
@@ -289,13 +301,24 @@ function MeetupCard({
                 className="relative mb-3 h-[88px] w-full overflow-hidden rounded-[14px] border border-[#B8DCE4] bg-[#EAF8FC] text-left"
                 onClick={onOpenMapPreview}
             >
-                {hasMapCoordinates ? (
-                    <iframe
-                        title={`Miniatura del mapa de ${meetup.proposedLocation || "punto de encuentro"}`}
-                        src={mapThumbnailUrl}
-                        className="h-full w-full border-0 [pointer-events:none]"
-                        loading="lazy"
-                    />
+                {hasMapCoordinates && mapThumbnailPosition ? (
+                    <div className="h-full w-full [pointer-events:none]">
+                        <MapContainer
+                            center={mapThumbnailPosition}
+                            zoom={15}
+                            className="h-full w-full"
+                            attributionControl={false}
+                            zoomControl={false}
+                            dragging={false}
+                            touchZoom={false}
+                            doubleClickZoom={false}
+                            scrollWheelZoom={false}
+                            keyboard={false}
+                        >
+                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                            <Marker position={mapThumbnailPosition} icon={miniMapMarkerIcon} />
+                        </MapContainer>
+                    </div>
                 ) : null}
             </button>
 
