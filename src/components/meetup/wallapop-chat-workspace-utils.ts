@@ -23,6 +23,13 @@ export function resolveProposalScheduledAtValue(meetup: MeetupMachine): string {
     return `${year}-${month}-${day}T${hours}:${minutes}`
 }
 
+export function resolveInitialProposalDateTimeValue(meetup: MeetupMachine): string {
+    if (meetup.status === null) {
+        return ""
+    }
+    return resolveProposalScheduledAtValue(meetup)
+}
+
 export function buildReverseGeocodeUrl(point: MapPoint): string {
     const lat = encodeURIComponent(String(point.lat))
     const lng = encodeURIComponent(String(point.lng))

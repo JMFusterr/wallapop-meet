@@ -9,7 +9,7 @@ import { MeetupProposalFooter } from "@/components/meetup/meetup-proposal-footer
 import { MeetupProposalHeader } from "@/components/meetup/meetup-proposal-header"
 import {
     buildReverseGeocodeUrl,
-    resolveProposalScheduledAtValue,
+    resolveInitialProposalDateTimeValue,
     shouldApplyReverseGeocodeResult,
 } from "@/components/meetup/wallapop-chat-workspace-utils"
 import { MeetupWizardStepHeading } from "@/components/meetup/meetup-wizard-step-heading"
@@ -463,7 +463,7 @@ function buildProposalDraftState(meetup: MeetupMachine | undefined): ProposalDra
             selectedOptionId: selectedOption.id,
             customPoint: null,
             customLocationLabel: "",
-            scheduledAt: resolveProposalScheduledAtValue(meetup),
+            scheduledAt: resolveInitialProposalDateTimeValue(meetup),
             finalPrice: meetup.finalPrice !== undefined ? String(meetup.finalPrice) : "",
             paymentMethod: meetup.proposedPaymentMethod ?? "",
             error: "",
@@ -486,7 +486,7 @@ function buildProposalDraftState(meetup: MeetupMachine | undefined): ProposalDra
             selectedOptionId: customOption.id,
             customPoint: { ...mapUserPosition },
             customLocationLabel: customAddress,
-            scheduledAt: resolveProposalScheduledAtValue(meetup),
+            scheduledAt: resolveInitialProposalDateTimeValue(meetup),
             finalPrice: meetup.finalPrice !== undefined ? String(meetup.finalPrice) : "",
             paymentMethod: meetup.proposedPaymentMethod ?? "",
             error: "",
@@ -503,7 +503,7 @@ function buildProposalDraftState(meetup: MeetupMachine | undefined): ProposalDra
         selectedOptionId: firstSafeOption.id,
         customPoint: null,
         customLocationLabel: "",
-        scheduledAt: resolveProposalScheduledAtValue(meetup),
+        scheduledAt: resolveInitialProposalDateTimeValue(meetup),
         finalPrice: meetup.finalPrice !== undefined ? String(meetup.finalPrice) : "",
         paymentMethod: meetup.proposedPaymentMethod ?? "",
         error: "",
