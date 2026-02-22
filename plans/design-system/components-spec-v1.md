@@ -251,12 +251,39 @@ Propiedades visuales:
 - `currentTime`: hora de referencia para reglas temporales.
 - `onMeetupChange`: callback de transicion valida.
 - `onError`: callback de error de transicion.
+- `onEditProposal`: callback para reabrir el wizard en modo edicion.
+- `onOpenMapPreview`: callback para abrir previsualizacion de mapa en grande.
 
 Reglas:
-- Debe renderizar acciones contextuales por estado de negocio.
+- Debe renderizar acciones contextuales por estado de negocio y por rol visible en chat.
+- En `SELLER`, la card se alinea en el lado derecho del hilo cuando existe propuesta activa.
+- Titulo fijo en card: `Propuesta de quedada`.
+- Debe mostrar label de estado traducida en minusculas:
+  - `PROPOSED` -> `pendiente`
+  - `COUNTER_PROPOSED` -> `contraoferta`
+  - `CONFIRMED` -> `confirmada`
+  - `ARRIVED` -> `llegada`
+  - `COMPLETED` -> `completada`
+  - `EXPIRED` -> `expirada`
+  - `CANCELLED` -> `cancelada`
+- Colores de label por estado:
+  - `pendiente`: blanco/neutro
+  - `contraoferta`: warning
+  - `confirmada`: success
+  - `llegada`: info
+  - `completada`: morado de sistema
+  - `expirada`: neutral
+  - `cancelada`: error
+- El bloque informativo de la propuesta debe renderizar exactamente 3 filas con icono a la izquierda:
+  - Calendario: dia y hora.
+  - Mapa: direccion.
+  - Billete: metodo de pago y precio.
+- La miniatura superior debe ser un render real de mapa, sin texto superpuesto.
+- La miniatura superior debe ocultar controles de zoom `+/-`.
+- Tap en miniatura abre modal de mapa en grande, solo lectura, con cierre por `X`.
 - `I'm here` solo habilitado en `CONFIRMED` y ventana valida (`-15m`, `+2h`).
 - Debe comunicar motivo de deshabilitado fuera de ventana.
-- Debe integrar `MeetupTimeline` como referencia de progreso.
+- Debe permitir `Editar` para `SELLER` en `PROPOSED` y `COUNTER_PROPOSED`.
 
 ## 16. Banner del dia (`MeetupDayBanner`)
 Propiedades visuales:

@@ -79,6 +79,24 @@ Objetivos:
   - En flujo movil no se muestran controles de zoom `+/-` (zoom por gesto tactil).
 - `ChatSecurityBanner` fijado sobre el composer en formato compacto.
 - `MeetupCard` mostrando datos de propuesta (lugar, precio final y metodo de pago) una vez creado el meetup.
+- `MeetupCard` adaptada al estilo de mensaje de sistema de Wallapop:
+  - Titulo visible: `Propuesta de quedada`.
+  - Cuando el actor del chat es `SELLER`, la card se renderiza en el lado derecho de la conversacion.
+  - Estado visible en label traducida y en minusculas (`pendiente`, `contraoferta`, `confirmada`, `llegada`, `completada`, `expirada`, `cancelada`).
+  - Resumen de datos en 3 filas con icono a la izquierda:
+    - Calendario: dia y hora.
+    - Mapa: direccion.
+    - Billete: metodo de pago + precio.
+  - Boton `Editar` disponible para vendedor mientras la propuesta no este confirmada (`PROPOSED`, `COUNTER_PROPOSED`).
+  - `Editar` abre el overlay de propuesta reutilizando los datos ya cargados.
+- Mapa en card de propuesta:
+  - Miniatura superior con render real de mapa (sin controles `+/-`).
+  - Sin texto superpuesto sobre la miniatura para evitar crecimiento vertical por direcciones largas.
+  - Tap en miniatura abre una previsualizacion en grande, solo lectura, con cierre por `X`.
+  - La previsualizacion en grande no incluye buscador ni acciones de seleccion.
+- Robustez de datos de ubicacion:
+  - La propuesta guarda latitud/longitud (`proposedLocationLat`, `proposedLocationLng`) junto a `proposedLocation`.
+  - Se evita depender de geocodificacion en tiempo de render para dibujar mapa en card.
 - `WallapopChatWorkspace` en ancho fluido completo (`w-full`) sin `max-width` en desktop, para evitar margenes laterales blancos y adaptarse al ancho de cada dispositivo.
 - Layout mobile del workspace ajustado para mantener el composer anclado al fondo sin hueco inferior.
 - Header de buzon simplificado sin accion de menu tipo hamburguesa.
@@ -89,6 +107,8 @@ Objetivos:
   - Bloque contextual (articulo/comprador) a la izquierda.
   - CTA principal (`Siguiente`/`Enviar propuesta`) a la derecha sin desplazamiento vertical.
   - Titulo de articulo truncado con elipsis para evitar salto de layout.
+- Ajuste de botones:
+  - `Button.variant=critical` usa radio tipo pill consistente con el resto de botones de accion Wallapop.
 - Estado de entrega con icono `double_check` unificado en listado y burbujas (`sent` gris, `read` verde), con bubble enviada usando padding horizontal simetrico.
 - Buzon de conversaciones con escenario realista: multiples interesados por articulo, textos de chat plausibles e imagen de producto por conversacion.
 - Estados comerciales representados en el listado de conversaciones con los indicadores visuales del sistema de diseno:

@@ -49,6 +49,7 @@ Contenido:
 Estados:
 - `PROPOSED` al enviar.
 - Error de validación si faltan campos.
+- En UI de chat, `PROPOSED` se muestra como label `pendiente`.
 
 ## 2. Revisión de propuesta (comprador)
 Contenido:
@@ -61,6 +62,11 @@ Estados:
 - `CONFIRMED` al aceptar.
 - `COUNTER_PROPOSED` al contraofertar.
 
+Patron adicional (edicion pre-confirmacion por vendedor):
+- Si la propuesta esta en `PROPOSED`, vendedor puede usar `Editar` para corregir datos sin cambiar de estado.
+- Si esta en `COUNTER_PROPOSED`, vendedor puede editar y reenviar propuesta.
+- Una vez `CONFIRMED`, no se permite editar desde card.
+
 ## 3. Línea temporal de estado
 Estados soportados:
 - `PROPOSED`
@@ -70,6 +76,15 @@ Estados soportados:
 - `COMPLETED`
 - `EXPIRED`
 - `CANCELLED`
+
+Etiquetas visibles en UI (español, minusculas):
+- `pendiente`
+- `contraoferta`
+- `confirmada`
+- `llegada`
+- `completada`
+- `expirada`
+- `cancelada`
 
 Reglas visuales:
 - Estado actual resaltado.
@@ -186,3 +201,15 @@ Notas de UI del workspace (2026-02-21):
     - Importe final con `Input`.
     - Metodos de pago en cards seleccionables con iconografia.
     - En error de metodo, cada card se marca en rojo de forma independiente (sin borde global envolvente).
+
+Notas de UI del workspace (actualizado 2026-02-22):
+- `MeetupCard` con patron de mensaje de sistema y titulo `Propuesta de quedada`.
+- En hilo de chat con actor `SELLER`, la card se alinea a la derecha.
+- Estado mostrado en label traducida (minusculas) con color semantico por estado.
+- Bloque de datos en 3 filas con iconos: calendario, ubicacion y billete.
+- Miniatura superior con render real de mapa y sin texto superpuesto.
+- La miniatura oculta controles de zoom `+/-`.
+- Tap en miniatura abre modal de mapa en grande, solo lectura:
+  - Sin buscador.
+  - Sin seleccion de punto.
+  - Con boton `X` de cierre.

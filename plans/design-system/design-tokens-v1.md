@@ -136,10 +136,20 @@ components
 - Acción "I'm here":
   - Botón principal: `components.button.primary`
   - Estado deshabilitado fuera de ventana: `components.button.primary.disabled`
+- Chips/labels de estado en `MeetupCard`:
+  - `pendiente`: `color.background.base` + `color.border.default` + `color.text.secondary`
+  - `contraoferta`: `color.semantic.warning.base` (tinte de fondo)
+  - `confirmada`: `color.semantic.success.base` (tinte de fondo)
+  - `llegada`: `color.semantic.info.base` (tinte de fondo)
+  - `completada`: `color.list_item.leading_indicator` (morado de sistema, tinte de fondo)
+  - `expirada`: `color.neutral.400/700` (fondo neutral)
+  - `cancelada`: `color.semantic.error.base` (tinte de fondo)
 - Campos de formulario de meetup:
   - Input base: `components.input`
   - Estado error: `components.input.ring_color_error`
   - Estado success: `components.input.ring_color_success`
+- Botones de acciones criticas en card:
+  - `components.button.critical` debe usar radio tipo pill alineado con `components.button.inline_action`.
 
 ## Mapeo de inbox movil (2026-02-19)
 
