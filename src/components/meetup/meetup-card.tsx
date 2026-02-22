@@ -83,6 +83,11 @@ function formatScheduledAt(value: Date): string {
     })
 }
 
+function buildStaticMapThumbnailUrl(lat: number, lng: number): string {
+    const center = `${lat.toFixed(6)},${lng.toFixed(6)}`
+    return `https://staticmap.openstreetmap.de/staticmap.php?center=${center}&zoom=15&size=640x220&maptype=mapnik&markers=${center},red-pushpin`
+}
+
 function paymentMethodLabel(method: MeetupPaymentMethod): string {
     switch (method) {
         case "CASH":
@@ -264,24 +269,34 @@ function MeetupCard({
     const canEditProposal =
         actorRole === "SELLER" &&
         (meetup.status === "PROPOSED" || meetup.status === "COUNTER_PROPOSED")
+    const hasMapCoordinates =
+        typeof meetup.proposedLocationLat === "number" &&
+        typeof meetup.proposedLocationLng === "number"
+    const mapThumbnailUrl = hasMapCoordinates
+        ? buildStaticMapThumbnailUrl(meetup.proposedLocationLat, meetup.proposedLocationLng)
+        : ""
 
     return (
         <section className="max-w-[420px] rounded-[20px] border border-[#ECEFF1] bg-[#C6EDF6] px-4 py-3">
             <button
                 type="button"
-                className="relative mb-3 h-[88px] w-full overflow-hidden rounded-[14px] border border-[#B8DCE4] bg-[linear-gradient(135deg,#EAF8FC_0%,#D2F0F7_48%,#C2EAF4_100%)] text-left"
+                className="relative mb-3 h-[88px] w-full overflow-hidden rounded-[14px] border border-[#B8DCE4] bg-[#EAF8FC] text-left"
                 onClick={onOpenMapPreview}
             >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(255,255,255,0.7),transparent_45%),radial-gradient(circle_at_80%_72%,rgba(255,255,255,0.5),transparent_40%)]" />
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-[#0D84FF] p-2 text-white">
-                    <MapPin size={16} />
-                </span>
-                <span className="absolute right-3 top-3 rounded-full bg-white/80 px-2 py-1 font-wallie-fit text-[11px] text-[#253238]">
-                    ver mapa
-                </span>
-                <span className="absolute bottom-3 left-4 right-4 truncate font-wallie-fit text-[12px] text-[#253238]">
-                    {meetup.proposedLocation || "Punto de encuentro sin definir"}
-                </span>
+                {hasMapCoordinates ? (
+                    <img
+                        src={mapThumbnailUrl}
+                        alt={`Mapa de ${meetup.proposedLocation || "punto de encuentro"}`}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                    />
+                ) : (
+                    <div className="flex h-full w-full items-center px-4">
+                        <span className="font-wallie-fit text-[12px] text-[#4A5A63]">
+                            Punto de encuentro sin coordenadas disponibles.
+                        </span>
+                    </div>
+                )}
             </button>
 
             <div className="flex items-start justify-between gap-3">
@@ -296,24 +311,24 @@ function MeetupCard({
             </div>
 
             <dl className="mt-3 space-y-2.5">
-                <div className="flex items-start gap-2.5">
-                    <dt className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF5F8] text-[#253238]">
+                <div className="flex items-center gap-2.5">
+                    <dt className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF5F8] text-[#253238]">
                         <WallapopIcon name="calendar" size={14} />
                     </dt>
                     <dd className="font-wallie-fit text-[13px] text-[#253238]">
                         {formatScheduledAt(meetup.scheduledAt)}
                     </dd>
                 </div>
-                <div className="flex items-start gap-2.5">
-                    <dt className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF5F8] text-[#2F6DF6]">
+                <div className="flex items-center gap-2.5">
+                    <dt className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF5F8] text-[#253238]">
                         <MapPin size={14} />
                     </dt>
                     <dd className="font-wallie-fit text-[13px] text-[#253238]">
                         {meetup.proposedLocation || "Calle sin definir"}
                     </dd>
                 </div>
-                <div className="flex items-start gap-2.5">
-                    <dt className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF5F8] text-[#253238]">
+                <div className="flex items-center gap-2.5">
+                    <dt className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF5F8] text-[#253238]">
                         <Banknote size={14} />
                     </dt>
                     <dd className="font-wallie-fit text-[13px] text-[#253238]">

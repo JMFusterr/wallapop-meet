@@ -26,7 +26,7 @@ const buttonVariants = cva(
         ghost:
           "bg-transparent text-[var(--wm-color-text-primary)] hover:bg-[var(--wm-color-background-surface)]",
         critical:
-          "bg-[var(--wm-color-semantic-error)] text-[var(--wm-color-brand-on-primary)] hover:brightness-95",
+          "rounded-[25px] border-transparent bg-[var(--wm-color-semantic-error)] text-[var(--wm-color-brand-on-primary)] hover:brightness-95",
       },
       size: {
         sm: "h-9 px-3 text-[14px]",

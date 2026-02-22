@@ -471,20 +471,22 @@ function buildProposalDraftState(meetup: MeetupMachine | undefined): ProposalDra
     }
 
     if (hasCustomLocation) {
+        const customLat = meetup.proposedLocationLat ?? mapUserPosition.lat
+        const customLng = meetup.proposedLocationLng ?? mapUserPosition.lng
         const customAddress =
             meetup.proposedLocation ??
-            customLocationLabelFromPoint(mapUserPosition.lat, mapUserPosition.lng)
-        const customOption = toCustomOption(mapUserPosition.lat, mapUserPosition.lng, customAddress)
+            customLocationLabelFromPoint(customLat, customLng)
+        const customOption = toCustomOption(customLat, customLng, customAddress)
 
         return {
             step: 1,
             mapPickerOpen: false,
             mapPickerPointId: "custom",
             mapSearchValue: "",
-            mapCenter: { ...mapUserPosition },
+            mapCenter: { lat: customLat, lng: customLng },
             options: [customOption, firstSafeOption],
             selectedOptionId: customOption.id,
-            customPoint: { ...mapUserPosition },
+            customPoint: { lat: customLat, lng: customLng },
             customLocationLabel: customAddress,
             scheduledAt: resolveInitialProposalDateTimeValue(meetup),
             finalPrice: meetup.finalPrice !== undefined ? String(meetup.finalPrice) : "",
@@ -1849,6 +1851,8 @@ function WallapopChatWorkspace() {
             ...selectedMeetup,
             scheduledAt,
             proposedLocation: resolvedLocation,
+            proposedLocationLat: selectedOption?.lat,
+            proposedLocationLng: selectedOption?.lng,
             finalPrice: Number(parsedFinalPrice.toFixed(2)),
             proposedPaymentMethod: proposalPaymentMethod,
         }
