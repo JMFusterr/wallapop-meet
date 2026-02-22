@@ -26,6 +26,12 @@ Contenido:
   - Paso 1: seleccion de punto de encuentro en lista (2 opciones visibles) con entrada a mapa para elegir punto seguro o personalizado.
   - Paso 2: fecha y hora.
   - Paso 3: importe final y preferencia de pago.
+  - En paso 2, usar componentes de DS reutilizables:
+    - `CalendarPicker` para día.
+    - `Select` para hora con `dropdownDirection="up"` dentro de overlay móvil.
+    - `MeetupProposalHeader` para cabecera superior del wizard (paso actual + progreso + cierre).
+    - `MeetupWizardStepHeading` para cabecera de pasos con navegación hacia atrás.
+    - `MeetupProposalFooter` para contexto + CTA fijo en la parte inferior del wizard.
 - Reglas de avance del wizard:
   - Los pasos futuros se bloquean hasta completar validaciones de pasos previos.
   - El feedback de error se renderiza dentro del overlay.
@@ -169,3 +175,6 @@ Notas de UI del workspace (2026-02-21):
   - Vista de mapa con buscador visual (icono lupa + placeholder), seleccion por marcador y por tap libre.
   - Bottom sheet de mapa siempre en una linea para distancia (`m/km`) y con prioridad de capa sobre teselas.
   - Controles `+/-` de zoom ocultos en mapa del wizard (zoom por gesto).
+  - Paso 2 actualizado (2026-02-22):
+    - Calendario compacto y reutilizable (`src/components/ui/calendar-picker.tsx`).
+    - Selector de hora con panel de altura fija y scroll interno para no forzar scroll de pantalla.

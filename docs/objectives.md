@@ -30,7 +30,7 @@ Objetivos:
 
 ---
 
-### Estado de implementacion actual (2026-02-21)
+### Estado de implementacion actual (2026-02-22)
 
 - Entrada desde chat integrada en `wallapop-chat-workspace`.
 - CTA secundario circular en `ChatComposer` para iniciar propuesta (`Proponer quedar`) con icono calendario, ubicado a la derecha (junto al boton enviar), visible solo para el vendedor cuando no hay meetup activo.
@@ -43,6 +43,16 @@ Objetivos:
   - Paso 3: precio final y preferencia de pago (`CASH`, `BIZUM`, `WALLET`).
   - Los pasos posteriores no son navegables si el paso actual no esta completo.
   - Las validaciones del wizard se muestran dentro del overlay (no como error en el hilo de chat).
+- Reglas actuales del paso 2 (fecha/hora):
+  - El paso arranca sin valor precargado al abrir propuesta, obligando a seleccion manual de dia y hora.
+  - El calendario es interactivo y reutilizable (`CalendarPicker`), con dia seleccionado en azul Wallapop y texto oscuro.
+  - El selector de hora usa `Select` reutilizable con panel de altura fija y scroll interno.
+  - En movil, el dropdown de hora se despliega hacia arriba para evitar recorte por viewport.
+  - El boton `Siguiente` se mantiene deshabilitado hasta tener fecha y hora validas.
+- Header y footer del wizard componentizados:
+  - Cabecera superior del overlay extraida a `MeetupProposalHeader` (paso actual, cierre y barra de progreso).
+  - Cabecera interna de pasos extraida a `MeetupWizardStepHeading`.
+  - Footer contextual con CTA extraido a `MeetupProposalFooter`.
 - Reglas actuales del paso 1 (selector de ubicacion):
   - Siempre hay exactamente 2 puntos seleccionables visibles.
   - El sistema mantiene una cola de las 2 ultimas selecciones.
@@ -59,6 +69,7 @@ Objetivos:
 - `ChatSecurityBanner` fijado sobre el composer en formato compacto.
 - `MeetupCard` mostrando datos de propuesta (lugar, precio final y metodo de pago) una vez creado el meetup.
 - `WallapopChatWorkspace` en ancho fluido completo (`w-full`) sin `max-width` en desktop, para evitar margenes laterales blancos y adaptarse al ancho de cada dispositivo.
+- Layout mobile del workspace ajustado para mantener el composer anclado al fondo sin hueco inferior.
 - Header de buzon simplificado sin accion de menu tipo hamburguesa.
 - Accion de "mas opciones" (`ellipsis_horizontal`) ubicada en la cabecera de cada conversacion, alineada a la derecha.
 - Cabecera de conversacion con avatar circular de perfil del comprador junto al menu de tres puntos para mayor fidelidad al patron de Wallapop.

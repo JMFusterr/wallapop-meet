@@ -84,10 +84,14 @@ Reglas:
 Propiedades visuales:
 - `state`: `default | focused | error | disabled`
 - `size`: `md | lg`
+- `dropdownDirection`: `down | up`
+- `maxVisibleOptions`: número de opciones visibles antes de scroll
 
 Reglas:
 - Debe soportar lista de puntos de encuentro sugeridos.
 - Altura táctil mínima de 44 px.
+- El panel del dropdown debe tener altura fija y scroll interno para listas largas.
+- En overlays móviles, permitir desplegar hacia arriba (`dropdownDirection=up`) para no ocultar opciones fuera de viewport.
 
 ## Matriz de estados (fase inicial)
 
@@ -127,6 +131,7 @@ Notas:
 Notas:
 - Tamaños soportados: `md` (44 px) y `lg` (48 px).
 - Debe aceptar opciones de puntos de encuentro sugeridos.
+- Cuando la lista supere `maxVisibleOptions`, usar scroll interno sin desplazar layout general.
 
 ## 4. Chip / Etiqueta (`Chip/Tag`)
 Propiedades visuales:
@@ -371,6 +376,59 @@ Reglas:
 - `seller`: mostrar lapiz sobre imagen, CTAs de publicacion y metricas (ojo/corazon) junto al precio.
 - `buyer`: ocultar lapiz, ocultar CTAs y ocultar metricas de publicacion.
 - Debe ser reutilizable en la columna lateral desktop del chat.
+
+## 23. Selector de calendario (`CalendarPicker`)
+Propiedades visuales:
+- `monthDate`: mes visible actual.
+- `selectedDateValue`: fecha seleccionada en formato local (`YYYY-MM-DD`).
+- `minDateValue`: fecha mínima seleccionable.
+- `onMonthChange`: navegación de mes.
+- `onSelectDate`: selección de día.
+
+Reglas:
+- Grid fijo de 6 semanas (42 celdas) para evitar saltos de layout entre meses.
+- Días fuera del mes visible se muestran con menor contraste.
+- Días bloqueados por fecha mínima deben estar deshabilitados visual y semánticamente.
+- Día seleccionado usa estilo de acción principal Wallapop (`#13C1AC`) con texto oscuro.
+- Flechas de navegación izquierda/derecha deben compartir el mismo lenguaje visual (`chevron`).
+
+## 24. Cabecera de paso de wizard (`MeetupWizardStepHeading`)
+Propiedades visuales:
+- `caption`: texto contextual de paso.
+- `title`: título opcional del bloque.
+- `onBack`: acción de volver.
+
+Reglas:
+- Botón de vuelta circular con iconografía `arrow_left`.
+- `caption` siempre visible para contexto, incluso si no existe título.
+- Si `title` existe, usar jerarquía tipográfica de encabezado de paso (`20/22`).
+
+## 25. Footer de propuesta (`MeetupProposalFooter`)
+Propiedades visuales:
+- `listingImageSrc`, `itemTitle`, `userName`: contexto de la propuesta.
+- `actionLabel`: etiqueta de CTA final.
+- `actionDisabled`: estado deshabilitado.
+- `actionTextTone`: `dark | light` para ajustar contraste del CTA.
+- `onAction`: callback de CTA.
+
+Reglas:
+- Layout de 2 zonas: contexto de ítem/comprador (izquierda) + CTA (derecha).
+- Debe truncar textos largos sin desplazar la CTA.
+- En estado deshabilitado, CTA mantiene fondo gris y texto oscuro.
+
+## 26. Cabecera de propuesta (`MeetupProposalHeader`)
+Propiedades visuales:
+- `currentStep`: paso actual.
+- `totalSteps`: total de pasos del wizard.
+- `steps`: metadatos de cada paso (`id`, `label`, `disabled`).
+- `onClose`: cierre de overlay.
+- `onStepChange`: navegación por paso.
+- `helpLabel`: texto de ayuda contextual.
+
+Reglas:
+- Estructura en 2 bloques: fila superior (cerrar, título, ayuda) + barra de progreso clicable.
+- La barra de progreso debe reflejar estado activo/inactivo por paso.
+- Los pasos bloqueados deben deshabilitar interacción manteniendo señal visual.
 
 ## Criterio de completitud
 - Cada componente define propiedades, estados, tokens y regla de uso.

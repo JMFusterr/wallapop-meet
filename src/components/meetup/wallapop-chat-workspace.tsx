@@ -5,13 +5,18 @@ import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-lea
 
 import { resolveChatMeetupEntryActionState } from "@/components/meetup/chat-meetup-entry-rules"
 import { MeetupCard } from "@/components/meetup/meetup-card"
+import { MeetupProposalFooter } from "@/components/meetup/meetup-proposal-footer"
+import { MeetupProposalHeader } from "@/components/meetup/meetup-proposal-header"
+import { MeetupWizardStepHeading } from "@/components/meetup/meetup-wizard-step-heading"
 import { ChatComposer } from "@/components/ui/chat-composer"
 import { ChatCounterpartCard } from "@/components/ui/chat-counterpart-card"
 import { ChatListItem } from "@/components/ui/chat-list-item"
 import { ChatMessageBubble } from "@/components/ui/chat-message-bubble"
 import { ChatProductCard, type ChatProductCardViewerRole } from "@/components/ui/chat-product-card"
 import { ChatSecurityBanner } from "@/components/ui/chat-security-banner"
+import { CalendarPicker, toLocalDateValue } from "@/components/ui/calendar-picker"
 import { InboxBottomNav } from "@/components/ui/inbox-bottom-nav"
+import { Select } from "@/components/ui/select"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { createMeetupMachine } from "@/meetup"
 import { transitionMeetup } from "@/meetup/state-machine"
@@ -419,14 +424,11 @@ function buildInitialMeetupState(): Record<string, MeetupMachine> {
     return state
 }
 
-function toLocalDateTimeValue(date: Date): string {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const day = String(date.getDate()).padStart(2, "0")
+function toLocalTimeValue(date: Date): string {
     const hours = String(date.getHours()).padStart(2, "0")
     const minutes = String(date.getMinutes()).padStart(2, "0")
 
-    return `${year}-${month}-${day}T${hours}:${minutes}`
+    return `${hours}:${minutes}`
 }
 
 function parseLocalDateTimeValue(value: string): Date | null {
@@ -660,6 +662,72 @@ function MeetupProposalOverlay({
     const mapSelectedPoint = allSafePoints.find((point) => point.id === mapPickerPointId)
     const isCustomPointSelected = mapPickerPointId === "custom" && customPoint
     const visibleOptions = selectableOptions.slice(0, 2)
+    const initialNow = React.useMemo(() => new Date(), [])
+    const minDateValue = toLocalDateValue(initialNow)
+    const minTimeValue = toLocalTimeValue(initialNow)
+    const [selectedDateValue, setSelectedDateValue] = React.useState(() => {
+        const [dateValue] = dateTimeValue.split("T")
+        return dateValue ?? ""
+    })
+    const [selectedTimeValue, setSelectedTimeValue] = React.useState(() => {
+        const [, timeValue = ""] = dateTimeValue.split("T")
+        return timeValue.slice(0, 5)
+    })
+    const [visibleCalendarMonth, setVisibleCalendarMonth] = React.useState(() => {
+        if (selectedDateValue) {
+            const [year, month] = selectedDateValue.split("-")
+            return new Date(Number(year), Number(month) - 1, 1)
+        }
+        return new Date(initialNow.getFullYear(), initialNow.getMonth(), 1)
+    })
+
+    React.useEffect(() => {
+        const [dateValue = ""] = dateTimeValue.split("T")
+        const [, timeValue = ""] = dateTimeValue.split("T")
+        setSelectedDateValue(dateValue)
+        setSelectedTimeValue(timeValue.slice(0, 5))
+        if (dateValue) {
+            const [year, month] = dateValue.split("-")
+            setVisibleCalendarMonth(new Date(Number(year), Number(month) - 1, 1))
+        } else {
+            setVisibleCalendarMonth(new Date(initialNow.getFullYear(), initialNow.getMonth(), 1))
+        }
+    }, [dateTimeValue, initialNow])
+
+    const timeOptions = React.useMemo(() => {
+        const options: string[] = []
+        for (let hour = 8; hour <= 22; hour += 1) {
+            options.push(`${String(hour).padStart(2, "0")}:00`)
+            if (hour !== 22) {
+                options.push(`${String(hour).padStart(2, "0")}:30`)
+            }
+        }
+        return options
+    }, [])
+    const canContinueStepTwo = parseLocalDateTimeValue(dateTimeValue) !== null
+
+    const updateDateTimeValue = (nextDateValue: string, nextTimeValue: string) => {
+        if (!nextDateValue || !nextTimeValue) {
+            onDateTimeChange("")
+            return
+        }
+        onDateTimeChange(`${nextDateValue}T${nextTimeValue}`)
+    }
+
+    const handleDateSelection = (nextDateValue: string) => {
+        let nextTimeValue = selectedTimeValue
+        if (nextDateValue === minDateValue && selectedTimeValue && selectedTimeValue < minTimeValue) {
+            nextTimeValue = ""
+            setSelectedTimeValue("")
+        }
+        setSelectedDateValue(nextDateValue)
+        updateDateTimeValue(nextDateValue, nextTimeValue)
+    }
+
+    const handleTimeSelection = (nextTimeValue: string) => {
+        setSelectedTimeValue(nextTimeValue)
+        updateDateTimeValue(selectedDateValue, nextTimeValue)
+    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#253238]/50 p-0 md:items-center md:p-6">
@@ -774,41 +842,19 @@ function MeetupProposalOverlay({
                     </div>
                 ) : (
                     <>
-                        <div className="px-4 pt-3">
-                            <div className="flex items-center justify-between">
-                                <button
-                                    type="button"
-                                    aria-label="Cerrar configuracion de meetup"
-                                    className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#253238]"
-                                    onClick={onCancel}
-                                >
-                                    <WallapopIcon name="cross" size={22} />
-                                </button>
-                                <h2 className="font-wallie-chunky text-[18px] text-[#253238] md:text-[20px]">Paso {step} de 3</h2>
-                                <button type="button" className="font-wallie-chunky text-[15px] text-[#038673] md:text-[16px]">
-                                    Dudas?
-                                </button>
-                            </div>
-
-                            <div className="mt-3 grid grid-cols-3 gap-2">
-                                {stepLabels.map((stepItem) => {
-                                    const isLocked =
-                                        (stepItem.id === 2 && !canAccessStepTwo) ||
-                                        (stepItem.id === 3 && !canAccessStepThree)
-                                    return (
-                                        <button
-                                            key={stepItem.id}
-                                            type="button"
-                                            onClick={() => onStepChange(stepItem.id)}
-                                            disabled={isLocked}
-                                            className={`h-[5px] rounded-full ${stepItem.id <= step ? "bg-[#253238]" : "bg-[#D3DEE2]"
-                                                }`}
-                                            aria-label={`Paso ${stepItem.id}: ${stepItem.label}`}
-                                        />
-                                    )
-                                })}
-                            </div>
-                        </div>
+                        <MeetupProposalHeader
+                            currentStep={step}
+                            totalSteps={3}
+                            steps={stepLabels.map((stepItem) => ({
+                                id: stepItem.id,
+                                label: stepItem.label,
+                                disabled:
+                                    (stepItem.id === 2 && !canAccessStepTwo) ||
+                                    (stepItem.id === 3 && !canAccessStepThree),
+                            }))}
+                            onStepChange={(stepId) => onStepChange(stepId as ProposalStep)}
+                            onClose={onCancel}
+                        />
                         {errorMessage ? (
                             <p className="mx-4 mt-3 rounded-[8px] bg-[#FDEBEC] px-3 py-2 font-wallie-fit text-[13px] text-[#A81F2D]">
                                 {errorMessage}
@@ -818,7 +864,7 @@ function MeetupProposalOverlay({
                         <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
                             {step === 1 ? (
                                 <div className="mt-4 space-y-4">
-                                    <h3 className="font-wallie-chunky text-[22px] leading-[1.12] text-[#253238] md:text-[24px]">
+                                    <h3 className="font-wallie-chunky text-[20px] leading-[1.12] text-[#253238] md:text-[22px]">
                                         Seleccionar punto de encuentro
                                     </h3>
                                     {visibleOptions.map((option) => {
@@ -896,49 +942,46 @@ function MeetupProposalOverlay({
 
                             {step === 2 ? (
                                 <div className="mt-4 space-y-4">
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            type="button"
-                                            aria-label="Volver al paso anterior"
-                                            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
-                                            onClick={onBack}
-                                        >
-                                            <WallapopIcon name="arrow_left" size="small" />
-                                        </button>
-                                        <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
-                                            Selecciona fecha y hora para la quedada.
-                                        </p>
-                                    </div>
-                                    <label className="block">
-                                        <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
-                                            Fecha y hora
-                                        </span>
-                                        <input
-                                            type="datetime-local"
-                                            value={dateTimeValue}
-                                            min={toLocalDateTimeValue(new Date())}
-                                            onChange={(event) => onDateTimeChange(event.target.value)}
-                                            className="w-full rounded-[10px] border border-[#D3DEE2] px-3 py-2 font-wallie-fit text-[14px] text-[#253238] outline-none focus:border-[#3DD2BA]"
-                                        />
-                                    </label>
+                                    <MeetupWizardStepHeading
+                                        caption="Paso anterior"
+                                        title="Seleccionar dia y hora"
+                                        onBack={onBack}
+                                    />
+                                    <CalendarPicker
+                                        monthDate={visibleCalendarMonth}
+                                        selectedDateValue={selectedDateValue}
+                                        minDateValue={minDateValue}
+                                        onMonthChange={setVisibleCalendarMonth}
+                                        onSelectDate={handleDateSelection}
+                                    />
+                                    <Select
+                                        label="Hora"
+                                        value={selectedTimeValue}
+                                        placeholder="Selecciona hora"
+                                        onValueChange={handleTimeSelection}
+                                        maxVisibleOptions={6}
+                                        dropdownDirection="up"
+                                        options={[
+                                            { value: "", label: "Selecciona hora", disabled: true },
+                                            ...timeOptions.map((timeOption) => ({
+                                                value: timeOption,
+                                                label: timeOption,
+                                                disabled:
+                                                    selectedDateValue === minDateValue &&
+                                                    timeOption < minTimeValue,
+                                            })),
+                                        ]}
+                                        className="rounded-[10px] border border-[#D3DEE2] bg-white px-3 py-2 font-wallie-fit text-[14px] text-[#253238] focus:border-[#3DD2BA]"
+                                    />
                                 </div>
                             ) : null}
 
                             {step === 3 ? (
                                 <div className="mt-4 space-y-4">
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            type="button"
-                                            aria-label="Volver al paso anterior"
-                                            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
-                                            onClick={onBack}
-                                        >
-                                            <WallapopIcon name="arrow_left" size="small" />
-                                        </button>
-                                        <p className="font-wallie-fit text-[13px] text-[#4A5A63]">
-                                            Define el pago final y la preferencia de pago.
-                                        </p>
-                                    </div>
+                                    <MeetupWizardStepHeading
+                                        caption="Define el pago final y la preferencia de pago."
+                                        onBack={onBack}
+                                    />
                                     <label className="block">
                                         <span className="mb-2 block font-wallie-fit text-[13px] text-[#253238]">
                                             Importe final acordado (EUR)
@@ -978,52 +1021,20 @@ function MeetupProposalOverlay({
                             ) : null}
                         </div>
 
-                        <div className="mt-3 border-t border-[#E8ECEF] px-4 py-3">
-                            <div className="flex items-center justify-between gap-3">
-                                <div className="min-w-0 flex-1">
-                                    <div className="flex min-w-0 items-center gap-2">
-                                        <img
-                                            src={conversation.listingImageSrc}
-                                            alt={conversation.itemTitle}
-                                            className="h-[42px] w-[42px] shrink-0 rounded-[10px] object-cover"
-                                        />
-                                        <div className="min-w-0">
-                                            <p className="truncate font-wallie-fit text-[12px] leading-tight text-[#6E8792]">Proponer quedada</p>
-                                            <p className="truncate font-wallie-chunky text-[15px] leading-tight text-[#253238]">
-                                                {conversation.userName}
-                                            </p>
-                                            <p className="truncate font-wallie-fit text-[12px] leading-tight text-[#4A5A63]">
-                                                {conversation.itemTitle}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="shrink-0 flex justify-end gap-2">
-                                    {step < 3 ? (
-                                        <button
-                                            type="button"
-                                            className={`rounded-full px-4 py-2 font-wallie-chunky text-[14px] text-white ${step === 1 && !canContinueStepOne
-                                                ? "cursor-not-allowed bg-[#B6C4CB]"
-                                                : "bg-[#13C1AC]"
-                                                }`}
-                                            onClick={onNext}
-                                            disabled={step === 1 && !canContinueStepOne}
-                                        >
-                                            Siguiente
-                                        </button>
-                                    ) : (
-                                        <button
-                                            type="button"
-                                            className="rounded-full bg-[#13C1AC] px-4 py-2 font-wallie-chunky text-[14px] text-white"
-                                            onClick={onSubmit}
-                                        >
-                                            Proponer quedada
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
+                        <MeetupProposalFooter
+                            listingImageSrc={conversation.listingImageSrc}
+                            itemTitle={conversation.itemTitle}
+                            userName={conversation.userName}
+                            actionLabel={step < 3 ? "Siguiente" : "Proponer quedada"}
+                            actionTextTone={step < 3 ? "dark" : "light"}
+                            actionDisabled={
+                                step < 3
+                                    ? (step === 1 && !canContinueStepOne) ||
+                                      (step === 2 && !canContinueStepTwo)
+                                    : false
+                            }
+                            onAction={step < 3 ? onNext : onSubmit}
+                        />
                     </>
                 )}
             </section>
@@ -1356,7 +1367,7 @@ function WallapopChatWorkspace() {
             return
         }
 
-        setProposalScheduledAt(toLocalDateTimeValue(selectedMeetup.scheduledAt))
+        setProposalScheduledAt("")
         const matchingPoint = safeMeetingPoints.find(
             (point) => point.name === selectedMeetup.proposedLocation
         )
@@ -1483,7 +1494,7 @@ function WallapopChatWorkspace() {
         setProposalSelectedOptionId(`safe:${safeMeetingPoints[0].id}`)
         setProposalCustomPoint(null)
         setProposalCustomLocationLabel("")
-        setProposalScheduledAt(toLocalDateTimeValue(selectedMeetup.scheduledAt))
+        setProposalScheduledAt("")
         const matchingPoint = safeMeetingPoints.find(
             (point) => point.name === selectedMeetup.proposedLocation
         )
@@ -1758,7 +1769,7 @@ function WallapopChatWorkspace() {
     }
 
     return (
-        <main className="h-100dvh w-full bg-white">
+        <main className="h-[100dvh] w-full overflow-hidden bg-white">
             <section className="hidden h-full overflow-hidden border-x border-[#D3DEE2] md:grid md:grid-cols-[360px_1fr] lg:grid-cols-[360px_1fr_320px]">
                 <div className="min-h-0 border-r border-[#E8ECEF]">
                     <InboxPane
@@ -1784,7 +1795,7 @@ function WallapopChatWorkspace() {
                 <DesktopConversationSidebar conversation={selectedConversation} />
             </section>
 
-            <section className="h-full md:hidden">
+            <section className="h-full min-h-0 md:hidden">
                 {mobileView === "inbox" ? (
                     <InboxPane
                         selectedConversationId={selectedConversationId}

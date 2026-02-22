@@ -61,3 +61,22 @@ export const Disabled: Story = {
   },
   render: (args) => <Select {...args}>{locationOptions}</Select>,
 }
+
+export const CompactScrollableUpward: Story = {
+  args: {
+    label: "Hora",
+    placeholder: "Selecciona hora",
+    dropdownDirection: "up",
+    maxVisibleOptions: 6,
+    options: [
+      { value: "", label: "Selecciona hora", disabled: true },
+      ...Array.from({ length: 20 }, (_, index) => {
+        const baseHour = 8 + Math.floor(index / 2)
+        const minutes = index % 2 === 0 ? "00" : "30"
+        const label = `${String(baseHour).padStart(2, "0")}:${minutes}`
+        return { value: label, label }
+      }),
+    ],
+  },
+  render: (args) => <Select {...args} />,
+}
