@@ -38,6 +38,7 @@ import { api } from "../../../convex/_generated/api"
 
 type Message = {
     id: string
+    senderUserId?: string
     text: string
     variant: "sent" | "received"
     time: string
@@ -1621,7 +1622,18 @@ function WallapopChatWorkspace() {
     const [mobileView, setMobileView] = React.useState<"inbox" | "conversation">("inbox")
     const [messagesByConversation, setMessagesByConversation] = React.useState<
         Record<string, Message[]>
-    >(initialMessagesByConversation)
+    >(() =>
+        Object.fromEntries(
+            Object.entries(initialMessagesByConversation).map(([conversationId, messages]) => [
+                conversationId,
+                messages.map((message) => ({
+                    ...message,
+                    senderUserId:
+                        message.variant === "sent" ? localChatUserId : `counterpart:${conversationId}`,
+                })),
+            ])
+        )
+    )
     const [meetupByConversation, setMeetupByConversation] = React.useState<
         Record<string, MeetupMachine>
     >(buildInitialMeetupState)
@@ -1668,8 +1680,9 @@ function WallapopChatWorkspace() {
         if (!selectedConversation) {
             return []
         }
-        return messagesByConversation[selectedConversation.id] ?? []
-    }, [messagesByConversation, selectedConversation])
+        const conversationMessages = messagesByConversation[selectedConversation.id] ?? []
+        return conversationMessages.filter((message) => message.senderUserId === localChatUserId)
+    }, [localChatUserId, messagesByConversation, selectedConversation])
     const selectedMeetup = selectedConversation
         ? meetupByConversation[selectedConversation.id]
         : undefined
@@ -1731,11 +1744,15 @@ function WallapopChatWorkspace() {
 
                 const nextMessages = [...existingMessages]
                 for (const persistedMessage of persistedMessages) {
+                    if (persistedMessage.senderUserId !== localChatUserId) {
+                        continue
+                    }
                     if (existingIds.has(persistedMessage.clientMessageId)) {
                         continue
                     }
                     nextMessages.push({
                         id: persistedMessage.clientMessageId,
+                        senderUserId: persistedMessage.senderUserId,
                         text: persistedMessage.text,
                         variant:
                             persistedMessage.senderUserId === localChatUserId
@@ -1811,6 +1828,7 @@ function WallapopChatWorkspace() {
     const appendOutgoingMessage = (text: string) => {
         const nextMessage: Message = {
             id: `m-${Date.now()}`,
+            senderUserId: localChatUserId,
             text,
             variant: "sent",
             time: formatTime(new Date()),
@@ -1857,6 +1875,7 @@ function WallapopChatWorkspace() {
     const appendSystemMessage = (text: string) => {
         const nextMessage: Message = {
             id: `sys-${Date.now()}`,
+            senderUserId: localChatUserId,
             text,
             variant: "sent",
             time: formatTime(new Date()),
@@ -1872,6 +1891,7 @@ function WallapopChatWorkspace() {
     const appendCounterpartMessage = (text: string) => {
         const nextMessage: Message = {
             id: `cp-${Date.now()}`,
+            senderUserId: `counterpart:${selectedConversation.id}`,
             text,
             variant: "received",
             time: formatTime(new Date()),
