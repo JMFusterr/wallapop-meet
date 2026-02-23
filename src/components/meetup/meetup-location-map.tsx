@@ -33,9 +33,22 @@ type MeetupLocationMapProps = {
 
 const customPointIcon = L.divIcon({
     className: "",
-    html: '<span style="display:block;width:16px;height:16px;border-radius:999px;background:#0A84FF;border:2px solid #ffffff;box-shadow:0 1px 4px rgba(0,0,0,0.35)"></span>',
-    iconSize: [16, 16],
-    iconAnchor: [8, 8],
+    html: `
+        <span style="display:inline-flex;flex-direction:column;align-items:center;">
+            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:#0D907A;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.28);padding:0 10px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m11 17 2 2a1 1 0 1 0 3-3"></path>
+                    <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path>
+                    <path d="m21 3 1 11h-2"></path>
+                    <path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"></path>
+                    <path d="M3 4h8"></path>
+                </svg>
+            </span>
+            <span style="margin-top:-1px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #0D907A;"></span>
+        </span>
+    `,
+    iconSize: [40, 37],
+    iconAnchor: [20, 36],
 })
 
 function MapClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) {

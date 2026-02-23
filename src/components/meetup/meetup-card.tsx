@@ -136,15 +136,21 @@ function buildMeetupIcs(meetup: MeetupMachine): string {
 const miniMapMarkerIcon = L.divIcon({
     className: "",
     html: `
-        <span style="display:flex;height:28px;width:28px;align-items:center;justify-content:center;border-radius:999px;background:#2F6DF6;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.28);">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10Z"></path>
-                <circle cx="12" cy="11" r="2"></circle>
-            </svg>
+        <span style="display:inline-flex;flex-direction:column;align-items:center;">
+            <span style="display:flex;min-width:34px;height:26px;align-items:center;justify-content:center;border-radius:999px;background:#13C1AC;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.24);padding:0 8px;">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m11 17 2 2a1 1 0 1 0 3-3"></path>
+                    <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path>
+                    <path d="m21 3 1 11h-2"></path>
+                    <path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"></path>
+                    <path d="M3 4h8"></path>
+                </svg>
+            </span>
+            <span style="margin-top:-1px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #13C1AC;"></span>
         </span>
     `,
-    iconSize: [28, 28],
-    iconAnchor: [14, 28],
+    iconSize: [34, 33],
+    iconAnchor: [17, 32],
 })
 
 function paymentMethodLabel(method: MeetupPaymentMethod): string {
@@ -185,7 +191,7 @@ function MeetupCard({
     const isCalendarFallbackWindow =
         currentTime.getTime() >= meetup.scheduledAt.getTime() - 30 * 60 * 1000 &&
         currentTime.getTime() <= meetup.scheduledAt.getTime() + 2 * 60 * 60 * 1000
-    const [isRedZoneModalOpen, setIsRedZoneModalOpen] = React.useState(false)
+    const [isCancelModalOpen, setIsCancelModalOpen] = React.useState(false)
 
     const applyEvent = (
         event:
@@ -214,26 +220,19 @@ function MeetupCard({
         "h-auto border-transparent bg-transparent px-0 py-1 font-wallie-chunky text-[16px] text-[#6F7C83] underline underline-offset-2 hover:bg-transparent hover:text-[#4A5A63]"
 
     const runCancel = () => {
-        if (isRedZoneCancellation) {
-            setIsRedZoneModalOpen(true)
-            return
-        }
-
-        applyEvent({
-            type: "CANCEL",
-            actorRole,
-            occurredAt: currentTime,
-        })
+        setIsCancelModalOpen(true)
     }
 
-    const confirmRedZoneCancellation = () => {
-        setIsRedZoneModalOpen(false)
+    const confirmCancellation = () => {
+        setIsCancelModalOpen(false)
         applyEvent({
             type: "CANCEL",
             actorRole,
             occurredAt: currentTime,
         })
-        onRedZoneCancelConfirmed?.()
+        if (isRedZoneCancellation) {
+            onRedZoneCancelConfirmed?.()
+        }
     }
 
     const addToCalendar = () => {
@@ -460,10 +459,9 @@ function MeetupCard({
     const mapThumbnailPosition = mapThumbnailCenter
         ? (mapThumbnailCenter.split(",").map(Number) as [number, number])
         : null
-
     return (
         <>
-            <section className="relative w-[360px] rounded-[20px] border border-[#E4EAED] bg-white px-4 pb-3 pt-3 shadow-[0_3px_12px_rgba(37,50,56,0.08)]">
+            <section className="relative w-full max-w-[360px] rounded-[20px] border border-[var(--wm-color-border-default)] bg-white px-4 pb-3 pt-3">
             <button
                 type="button"
                 className="wm-mini-map relative mb-3 h-[88px] w-full overflow-hidden rounded-[14px] border border-[#B8DCE4] bg-[#EAF8FC] text-left"
@@ -577,25 +575,36 @@ function MeetupCard({
                 </p>
             ) : null}
             </section>
-            {isRedZoneModalOpen ? (
+            {isCancelModalOpen ? (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#253238]/50 px-4">
                     <div className="w-full max-w-[420px] rounded-[16px] bg-white p-4 shadow-[0_8px_30px_rgba(37,50,56,0.22)]">
                         <h3 className="font-wallie-chunky text-[18px] text-[#253238]">
-                            Faltan menos de 30 min para la quedada
+                            Seguro que quieres cancelar o rechazar la quedada?
                         </h3>
-                        <p className="mt-2 rounded-[12px] border border-[#F4C578] bg-[#FFF7E9] px-3 py-2 font-wallie-fit text-[13px] text-[#8A5B00]">
-                            Cancelar ahora afectara a tu fiabilidad.
+                        <p className="mt-2 font-wallie-fit text-[14px] text-[#4A5A63]">
+                            Esta accion no se puede deshacer.
                         </p>
-                        <div className="mt-4 flex flex-wrap gap-2">
-                            <Button variant="critical" size="sm" onClick={confirmRedZoneCancellation}>
-                                Cancelar igualmente
+                        {isRedZoneCancellation ? (
+                            <p className="mt-2 rounded-[12px] border border-[#F4C578] bg-[#FFF7E9] px-3 py-2 font-wallie-fit text-[13px] text-[#8A5B00]">
+                                Estas en los ultimos 30 min y esto afectara a tu fiabilidad.
+                            </p>
+                        ) : null}
+                        <div className="mt-4 space-y-2">
+                            <Button
+                                variant="primary"
+                                size="sm"
+                                className={PRIMARY_ACTION_CLASS}
+                                onClick={confirmCancellation}
+                            >
+                                Si
                             </Button>
                             <Button
-                                variant="ghost"
+                                variant="secondary"
                                 size="sm"
-                                onClick={() => setIsRedZoneModalOpen(false)}
+                                className={OUTLINE_ACTION_CLASS}
+                                onClick={() => setIsCancelModalOpen(false)}
                             >
-                                Cerrar
+                                No
                             </Button>
                         </div>
                     </div>

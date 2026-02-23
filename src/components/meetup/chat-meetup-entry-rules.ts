@@ -10,14 +10,6 @@ export function resolveChatMeetupEntryActionState(
     meetup: MeetupMachine,
     actorRole: ActorRole
 ): ChatMeetupEntryActionState {
-    if (meetup.status !== null) {
-        return {
-            visible: false,
-            enabled: false,
-            message: "Ya existe una propuesta activa en este chat.",
-        }
-    }
-
     if (actorRole !== "SELLER") {
         return {
             visible: false,
@@ -26,10 +18,17 @@ export function resolveChatMeetupEntryActionState(
         }
     }
 
+    if (meetup.status === null || meetup.status === "CANCELLED") {
+        return {
+            visible: true,
+            enabled: true,
+            message: "Inicia la propuesta desde esta conversacion con el comprador.",
+        }
+    }
+
     return {
-        visible: true,
-        enabled: true,
-        message: "Inicia la propuesta desde esta conversación con el comprador.",
+        visible: false,
+        enabled: false,
+        message: "Ya existe una propuesta activa en este chat.",
     }
 }
-

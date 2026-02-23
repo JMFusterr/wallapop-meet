@@ -650,33 +650,39 @@ function ProposalSelectionIndicator({ selected }: { selected: boolean }) {
 const safePointMarkerIcon = L.divIcon({
     className: "",
     html: `
-        <span style="display:flex;height:34px;width:34px;align-items:center;justify-content:center;border-radius:999px;background:#13C1AC;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.22);">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
-            </svg>
+        <span style="display:inline-flex;flex-direction:column;align-items:center;">
+            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:#13C1AC;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.22);padding:0 10px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
+                </svg>
+            </span>
+            <span style="margin-top:-1px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #13C1AC;"></span>
         </span>
     `,
-    iconSize: [34, 34],
-    iconAnchor: [17, 34],
+    iconSize: [40, 37],
+    iconAnchor: [20, 36],
 })
 
 const selectedSafePointMarkerIcon = L.divIcon({
     className: "",
     html: `
-        <span style="display:flex;height:34px;width:34px;align-items:center;justify-content:center;border-radius:999px;background:#038673;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.28);">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
-            </svg>
+        <span style="display:inline-flex;flex-direction:column;align-items:center;">
+            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:#038673;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.28);padding:0 10px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
+                </svg>
+            </span>
+            <span style="margin-top:-1px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #038673;"></span>
         </span>
     `,
-    iconSize: [34, 34],
-    iconAnchor: [17, 34],
+    iconSize: [40, 37],
+    iconAnchor: [20, 36],
 })
 
 const userPositionIcon = L.divIcon({
     className: "",
     html: `
-        <span style="display:block;height:16px;width:16px;border-radius:999px;background:#2F6DF6;border:2px solid #FFFFFF;box-shadow:0 0 0 4px rgba(47,109,246,0.2);"></span>
+        <span style="display:block;height:16px;width:16px;border-radius:999px;background:#13C1AC;border:2px solid #FFFFFF;box-shadow:0 0 0 4px rgba(19,193,172,0.24);"></span>
     `,
     iconSize: [16, 16],
     iconAnchor: [8, 8],
@@ -685,15 +691,21 @@ const userPositionIcon = L.divIcon({
 const customPointIcon = L.divIcon({
     className: "",
     html: `
-        <span style="display:flex;height:34px;width:34px;align-items:center;justify-content:center;border-radius:999px;background:#2F6DF6;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.28);">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10Z"></path>
-                <circle cx="12" cy="11" r="2.2"></circle>
-            </svg>
+        <span style="display:inline-flex;flex-direction:column;align-items:center;">
+            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:#0D907A;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.28);padding:0 10px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m11 17 2 2a1 1 0 1 0 3-3"></path>
+                    <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path>
+                    <path d="m21 3 1 11h-2"></path>
+                    <path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"></path>
+                    <path d="M3 4h8"></path>
+                </svg>
+            </span>
+            <span style="margin-top:-1px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #0D907A;"></span>
         </span>
     `,
-    iconSize: [34, 34],
-    iconAnchor: [17, 34],
+    iconSize: [40, 37],
+    iconAnchor: [20, 36],
 })
 
 function ProposalMapCenterController({ center }: { center: MapPoint }) {
@@ -1041,7 +1053,7 @@ function MeetupProposalOverlay({
                                         </div>
                                     </div>
                                     {mapSelectedPoint ? (
-                                        <p className="mt-2 font-wallie-fit text-[14px] text-[#4A5A63]">
+                                        <p className="mt-2 rounded-[8px] bg-[#E6FAF6] px-2 py-1 font-wallie-fit text-[13px] text-[#038673]">
                                             {mapSelectedPoint.completedSales} ventas completadas en este punto seguro.
                                         </p>
                                     ) : (
@@ -1431,7 +1443,7 @@ function ConversationPane({
                 {onBackToInbox ? (
                     <button
                         type="button"
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
+                        className="inline-flex h-8 w-8 items-center justify-center text-[#253238]"
                         aria-label="Volver a conversaciones"
                         onClick={onBackToInbox}
                     >
@@ -2081,7 +2093,8 @@ function WallapopChatWorkspace() {
 
         if (
             selectedMeetup.status !== null &&
-            selectedMeetup.status !== "COUNTER_PROPOSED"
+            selectedMeetup.status !== "COUNTER_PROPOSED" &&
+            selectedMeetup.status !== "CANCELLED"
         ) {
             setProposalError("Esta propuesta ya no se puede editar.")
             return

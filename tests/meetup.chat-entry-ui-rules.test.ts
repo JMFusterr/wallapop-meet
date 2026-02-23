@@ -45,4 +45,30 @@ describe("chat meetup entry ui rules", () => {
         expect(state.visible).toBe(false)
         expect(state.enabled).toBe(false)
     })
+
+    it("vuelve a mostrar la entrada para vendedor tras cancelar", () => {
+        const initial = createMeetupMachine({ scheduledAt, chatContext })
+        const proposed = transitionMeetup(initial, {
+            type: "PROPOSE",
+            actorRole: "SELLER",
+            occurredAt: new Date("2026-02-20T16:00:00.000Z"),
+        })
+        if (!proposed.ok) {
+            throw new Error("Se esperaba meetup propuesto para la prueba.")
+        }
+
+        const cancelled = transitionMeetup(proposed.meetup, {
+            type: "CANCEL",
+            actorRole: "BUYER",
+            occurredAt: new Date("2026-02-20T16:05:00.000Z"),
+        })
+        if (!cancelled.ok) {
+            throw new Error("Se esperaba meetup cancelado para la prueba.")
+        }
+
+        const state = resolveChatMeetupEntryActionState(cancelled.meetup, "SELLER")
+
+        expect(state.visible).toBe(true)
+        expect(state.enabled).toBe(true)
+    })
 })

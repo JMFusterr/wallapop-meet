@@ -77,7 +77,10 @@ export function transitionMeetup(
     meetup: MeetupMachine,
     event: MeetupEvent
 ): TransitionResult {
-    if (isTerminalStatus(meetup.status)) {
+    const canReproposeAfterCancellation =
+        meetup.status === "CANCELLED" && event.type === "PROPOSE"
+
+    if (isTerminalStatus(meetup.status) && !canReproposeAfterCancellation) {
         return fail(`No se permiten transiciones desde estado final ${meetup.status}.`)
     }
 
@@ -87,14 +90,30 @@ export function transitionMeetup(
                 return fail("Solo el vendedor puede iniciar o reenviar propuesta.")
             }
 
-            if (meetup.status !== null && meetup.status !== "COUNTER_PROPOSED") {
-                return fail("PROPOSE solo es valido desde estado inicial o COUNTER_PROPOSED.")
+            if (
+                meetup.status !== null &&
+                meetup.status !== "COUNTER_PROPOSED" &&
+                meetup.status !== "CANCELLED"
+            ) {
+                return fail(
+                    "PROPOSE solo es valido desde estado inicial, COUNTER_PROPOSED o CANCELLED."
+                )
             }
 
+            const isReproposalAfterCancellation = meetup.status === "CANCELLED"
             return success({
                 ...meetup,
                 status: "PROPOSED",
                 proposedAt: nowFallback(event.occurredAt),
+                cancelledAt: isReproposalAfterCancellation ? undefined : meetup.cancelledAt,
+                confirmedAt: isReproposalAfterCancellation ? undefined : meetup.confirmedAt,
+                arrivedAt: isReproposalAfterCancellation ? undefined : meetup.arrivedAt,
+                completedAt: isReproposalAfterCancellation ? undefined : meetup.completedAt,
+                expiredAt: isReproposalAfterCancellation ? undefined : meetup.expiredAt,
+                arrivalCheckins: isReproposalAfterCancellation
+                    ? undefined
+                    : meetup.arrivalCheckins,
+                lateNotices: isReproposalAfterCancellation ? undefined : meetup.lateNotices,
             })
         }
 

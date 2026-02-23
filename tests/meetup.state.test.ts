@@ -221,6 +221,36 @@ describe("meetup state machine", () => {
         }
     })
 
+    it("permite nueva propuesta del vendedor tras CANCELLED", () => {
+        const initial = createMeetupMachine({ scheduledAt, chatContext })
+        const proposed = transitionMeetup(initial, {
+            type: "PROPOSE",
+            actorRole: "SELLER",
+        })
+        if (!proposed.ok) {
+            throw new Error("Se esperaba PROPOSE valido para el escenario.")
+        }
+
+        const cancelled = transitionMeetup(proposed.meetup, {
+            type: "CANCEL",
+            actorRole: "BUYER",
+        })
+        if (!cancelled.ok) {
+            throw new Error("Se esperaba CANCEL valido para el escenario.")
+        }
+
+        const reproposed = transitionMeetup(cancelled.meetup, {
+            type: "PROPOSE",
+            actorRole: "SELLER",
+        })
+
+        expect(reproposed.ok).toBe(true)
+        if (reproposed.ok) {
+            expect(reproposed.meetup.status).toBe("PROPOSED")
+            expect(reproposed.meetup.cancelledAt).toBeUndefined()
+        }
+    })
+
     it("bloquea transiciones desde estado final", () => {
         const initial = createMeetupMachine({ scheduledAt, chatContext })
         const cancelled = transitionMeetup(initial, {
