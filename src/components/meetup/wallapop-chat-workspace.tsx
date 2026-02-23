@@ -1837,8 +1837,20 @@ function WallapopChatWorkspace() {
                 deliveryState: nextMessage.deliveryState,
                 createdAt: Date.now(),
             })
-            .catch(() => {
-                setLastError("No se pudo guardar el mensaje en Convex.")
+            .catch(async () => {
+                try {
+                    await convexClient.mutation((api as any).messages.saveUserTextMessage, {
+                        conversationId: selectedConversation.id,
+                        clientMessageId: nextMessage.id,
+                        text: nextMessage.text,
+                        variant: nextMessage.variant,
+                        time: nextMessage.time,
+                        deliveryState: nextMessage.deliveryState,
+                        createdAt: Date.now(),
+                    })
+                } catch {
+                    setLastError("No se pudo guardar el mensaje en Convex.")
+                }
             })
     }
 

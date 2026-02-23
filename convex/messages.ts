@@ -6,8 +6,9 @@ export const saveUserTextMessage = mutation({
     args: {
         conversationId: v.string(),
         clientMessageId: v.string(),
-        senderUserId: v.string(),
+        senderUserId: v.optional(v.string()),
         text: v.string(),
+        variant: v.optional(v.union(v.literal("sent"), v.literal("received"))),
         time: v.string(),
         deliveryState: v.optional(v.union(v.literal("sent"), v.literal("read"))),
         createdAt: v.number(),
@@ -22,7 +23,15 @@ export const saveUserTextMessage = mutation({
             return existing._id
         }
 
-        return await ctx.db.insert("chatMessages", args)
+        return await ctx.db.insert("chatMessages", {
+            conversationId: args.conversationId,
+            clientMessageId: args.clientMessageId,
+            senderUserId: args.senderUserId ?? `legacy:${args.conversationId}`,
+            text: args.text,
+            time: args.time,
+            deliveryState: args.deliveryState,
+            createdAt: args.createdAt,
+        })
     },
 })
 
