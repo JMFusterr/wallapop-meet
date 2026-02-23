@@ -22,8 +22,10 @@ import { ChatSecurityBanner } from "@/components/ui/chat-security-banner"
 import { CalendarPicker, toLocalDateValue } from "@/components/ui/calendar-picker"
 import { InboxBottomNav } from "@/components/ui/inbox-bottom-nav"
 import { Input } from "@/components/ui/input"
+import { getOrCreateLocalChatUserId } from "@/lib/local-chat-user-id"
 import { Select } from "@/components/ui/select"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
+import { getConvexHttpClient } from "@/lib/convex-client"
 import { createMeetupMachine } from "@/meetup"
 import { transitionMeetup } from "@/meetup/state-machine"
 import type {
@@ -32,11 +34,22 @@ import type {
     MeetupMachine,
     MeetupPaymentMethod,
 } from "@/meetup/types"
+import { api } from "../../../convex/_generated/api"
 
 type Message = {
     id: string
     text: string
     variant: "sent" | "received"
+    time: string
+    deliveryState?: "sent" | "read"
+}
+
+type ConvexChatMessage = {
+    conversationId: string
+    clientMessageId: string
+    senderUserId?: string
+    text: string
+    variant?: "sent" | "received"
     time: string
     deliveryState?: "sent" | "read"
 }
@@ -1601,6 +1614,7 @@ function DesktopConversationSidebar({ conversation }: { conversation: Conversati
 }
 
 function WallapopChatWorkspace() {
+    const localChatUserId = React.useMemo(() => getOrCreateLocalChatUserId(), [])
     const [selectedConversationId, setSelectedConversationId] = React.useState<string>(
         "conv-002"
     )
@@ -1643,15 +1657,19 @@ function WallapopChatWorkspace() {
     })
     const proposalCustomPointRef = React.useRef<MapPoint | null>(null)
     const reverseGeocodeRequestIdRef = React.useRef(0)
+    const convexHydrationRequestIdRef = React.useRef(0)
 
     const selectedConversation = React.useMemo(
         () => conversations.find((conversation) => conversation.id === selectedConversationId),
         [selectedConversationId]
     )
 
-    const selectedMessages = selectedConversation
-        ? (messagesByConversation[selectedConversation.id] ?? [])
-        : []
+    const selectedMessages = React.useMemo(() => {
+        if (!selectedConversation) {
+            return []
+        }
+        return messagesByConversation[selectedConversation.id] ?? []
+    }, [messagesByConversation, selectedConversation])
     const selectedMeetup = selectedConversation
         ? meetupByConversation[selectedConversation.id]
         : undefined
@@ -1687,6 +1705,64 @@ function WallapopChatWorkspace() {
     React.useEffect(() => {
         proposalCustomPointRef.current = proposalCustomPoint
     }, [proposalCustomPoint])
+
+    const hydrateConversationMessagesFromConvex = React.useCallback(async (conversationId: string) => {
+        const convexClient = getConvexHttpClient()
+        if (!convexClient) {
+            return
+        }
+
+        const requestId = convexHydrationRequestIdRef.current + 1
+        convexHydrationRequestIdRef.current = requestId
+
+        try {
+            const persistedMessages = (await convexClient.query(
+                (api as any).messages.listByConversation,
+                { conversationId }
+            )) as ConvexChatMessage[]
+
+            if (convexHydrationRequestIdRef.current !== requestId) {
+                return
+            }
+
+            setMessagesByConversation((previous) => {
+                const existingMessages = previous[conversationId] ?? []
+                const existingIds = new Set(existingMessages.map((message) => message.id))
+
+                const nextMessages = [...existingMessages]
+                for (const persistedMessage of persistedMessages) {
+                    if (existingIds.has(persistedMessage.clientMessageId)) {
+                        continue
+                    }
+                    nextMessages.push({
+                        id: persistedMessage.clientMessageId,
+                        text: persistedMessage.text,
+                        variant:
+                            persistedMessage.senderUserId === localChatUserId
+                                ? "sent"
+                                : persistedMessage.variant ?? "received",
+                        time: persistedMessage.time,
+                        deliveryState: persistedMessage.deliveryState,
+                    })
+                    existingIds.add(persistedMessage.clientMessageId)
+                }
+
+                return {
+                    ...previous,
+                    [conversationId]: nextMessages,
+                }
+            })
+        } catch {
+            setLastError("No se pudieron recuperar los mensajes guardados en Convex.")
+        }
+    }, [localChatUserId])
+
+    React.useEffect(() => {
+        if (!selectedConversation) {
+            return
+        }
+        void hydrateConversationMessagesFromConvex(selectedConversation.id)
+    }, [hydrateConversationMessagesFromConvex, selectedConversation])
 
     const resolveCustomPointAddress = React.useCallback(async (lat: number, lng: number) => {
         const requestId = reverseGeocodeRequestIdRef.current + 1
@@ -1745,6 +1821,25 @@ function WallapopChatWorkspace() {
             ...previous,
             [selectedConversation.id]: [...(previous[selectedConversation.id] ?? []), nextMessage],
         }))
+
+        const convexClient = getConvexHttpClient()
+        if (!convexClient) {
+            return
+        }
+
+        void convexClient
+            .mutation((api as any).messages.saveUserTextMessage, {
+                conversationId: selectedConversation.id,
+                clientMessageId: nextMessage.id,
+                senderUserId: localChatUserId,
+                text: nextMessage.text,
+                time: nextMessage.time,
+                deliveryState: nextMessage.deliveryState,
+                createdAt: Date.now(),
+            })
+            .catch(() => {
+                setLastError("No se pudo guardar el mensaje en Convex.")
+            })
     }
 
     const appendSystemMessage = (text: string) => {
