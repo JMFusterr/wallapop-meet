@@ -1,4 +1,4 @@
-const MINUTES_BEFORE_SCHEDULED = 15
+const MINUTES_BEFORE_SCHEDULED = 30
 const HOURS_AFTER_SCHEDULED = 2
 
 export type ArrivalWindow = {

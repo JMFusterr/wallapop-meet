@@ -1,5 +1,5 @@
 import { isWithinArrivalWindow } from "@/meetup/arrival-window"
-import type { MeetupMachine } from "@/meetup/types"
+import type { ActorRole, MeetupMachine } from "@/meetup/types"
 
 type ArrivalActionState = {
     enabled: boolean
@@ -8,26 +8,35 @@ type ArrivalActionState = {
 
 export function resolveArrivalActionState(
     meetup: MeetupMachine,
-    currentTime: Date
+    currentTime: Date,
+    actorRole?: ActorRole
 ): ArrivalActionState {
-    if (meetup.status !== "CONFIRMED") {
+    if (meetup.status !== "CONFIRMED" && meetup.status !== "ARRIVED") {
         return {
             enabled: false,
-            message: "La accion de llegada solo aplica a meetups confirmados.",
+            message: "La accion de llegada solo aplica a meetups confirmados o en curso.",
         }
     }
 
     const inWindow = isWithinArrivalWindow(meetup.scheduledAt, currentTime)
-    if (inWindow) {
+    if (!inWindow) {
         return {
-            enabled: true,
-            message: "Ya puedes marcar que has llegado.",
+            enabled: false,
+            message: "",
+        }
+    }
+
+    if (actorRole && meetup.arrivalCheckins?.[actorRole]) {
+        return {
+            enabled: false,
+            message: "Ya has marcado que has llegado.",
         }
     }
 
     return {
-        enabled: false,
-        message: "Disponible entre 15 minutos antes y 2 horas despues de la cita.",
+        enabled: true,
+        message:
+            "Acercate a menos de 100 metros del punto de encuentro para indicar que has llegado.",
     }
 }
 

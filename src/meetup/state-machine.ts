@@ -19,6 +19,8 @@ function success(meetup: MeetupMachine): TransitionResult {
     return { ok: true, meetup }
 }
 
+const RED_ZONE_CANCELLATION_MINUTES = 30
+
 function isTerminalStatus(status: MeetupMachine["status"]): boolean {
     return (
         status === "COMPLETED" || status === "EXPIRED" || status === "CANCELLED"
@@ -132,8 +134,8 @@ export function transitionMeetup(
         }
 
         case "MARK_ARRIVED": {
-            if (meetup.status !== "CONFIRMED") {
-                return fail("MARK_ARRIVED solo es valido desde CONFIRMED.")
+            if (meetup.status !== "CONFIRMED" && meetup.status !== "ARRIVED") {
+                return fail("MARK_ARRIVED solo es valido desde CONFIRMED o ARRIVED.")
             }
 
             if (!isWithinArrivalWindow(meetup.scheduledAt, event.occurredAt)) {
@@ -142,16 +144,53 @@ export function transitionMeetup(
                 )
             }
 
+            if (meetup.arrivalCheckins?.[event.actorRole]) {
+                return fail("Este actor ya ha marcado llegada para esta quedada.")
+            }
+
+            const nextCheckins = {
+                ...(meetup.arrivalCheckins ?? {}),
+                [event.actorRole]: {
+                    occurredAt: event.occurredAt,
+                    distanceMeters: event.distanceMeters,
+                    withinSafeRadius: event.withinSafeRadius,
+                },
+            } satisfies MeetupMachine["arrivalCheckins"]
+
             return success({
                 ...meetup,
                 status: "ARRIVED",
-                arrivedAt: event.occurredAt,
+                arrivedAt: meetup.arrivedAt ?? event.occurredAt,
+                arrivalCheckins: nextCheckins,
+            })
+        }
+
+        case "LATE_NOTICE": {
+            if (meetup.status !== "CONFIRMED") {
+                return fail("LATE_NOTICE solo es valido desde CONFIRMED.")
+            }
+
+            const occurredAt = nowFallback(event.occurredAt)
+            return success({
+                ...meetup,
+                lateNotices: [
+                    ...(meetup.lateNotices ?? []),
+                    {
+                        actorRole: event.actorRole,
+                        etaMinutes: event.etaMinutes,
+                        occurredAt,
+                    },
+                ],
             })
         }
 
         case "COMPLETE": {
             if (meetup.status !== "ARRIVED") {
                 return fail("COMPLETE solo es valido desde ARRIVED.")
+            }
+
+            if (event.actorRole !== "SELLER") {
+                return fail("Solo el vendedor puede confirmar la venta.")
             }
 
             return success({
@@ -166,10 +205,29 @@ export function transitionMeetup(
                 return fail("No existe una propuesta activa para cancelar.")
             }
 
+            const cancelledAt = nowFallback(event.occurredAt)
+            const minutesBeforeScheduled = Math.floor(
+                (meetup.scheduledAt.getTime() - cancelledAt.getTime()) / (60 * 1000)
+            )
+            const inRedZone =
+                minutesBeforeScheduled >= 0 &&
+                minutesBeforeScheduled <= RED_ZONE_CANCELLATION_MINUTES
+
             return success({
                 ...meetup,
                 status: "CANCELLED",
-                cancelledAt: nowFallback(event.occurredAt),
+                cancelledAt,
+                reliabilityImpacts: inRedZone
+                    ? [
+                          ...(meetup.reliabilityImpacts ?? []),
+                          {
+                              type: "RED_ZONE_CANCELLATION",
+                              actorRole: event.actorRole,
+                              occurredAt: cancelledAt,
+                              minutesBeforeScheduled,
+                          },
+                      ]
+                    : meetup.reliabilityImpacts,
             })
         }
 

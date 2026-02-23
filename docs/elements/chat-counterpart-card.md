@@ -40,6 +40,45 @@
 - Debe aceptar tanto comprador como vendedor como contraparte de la conversacion.
 - Debe mantener lectura rapida: nombre primero, contexto de distancia/ubicacion despues.
 
+---
+
+## Actualizacion v2 (2026-02-23)
+
+Esta seccion refleja la implementacion actual del componente.
+Si hay conflicto con la descripcion original, prevalece v2.
+
+### 1) Cambio de metrica secundaria
+- Se reemplaza la linea de ubicacion por metrica de asistencia a quedadas.
+- Formato actual:
+  - Alta/media asistencia: `X% de asistencia (N)`.
+  - Baja asistencia (`<70`): `Baja asistencia a quedadas`.
+
+### 2) Semaforo de asistencia
+- `>90`: color success.
+- `70-89`: color warning (`semantic.warning.base`, implementado como `#F4A000`).
+- `<70`: color error y sin mostrar porcentaje.
+
+### 3) Rating con volumen
+- Junto a las estrellas se muestra el total de valoraciones:
+  - `(<numero valoraciones>)`
+- Ejemplo: `(110)`.
+
+### 4) Jerarquia tipografica actual
+- Nombre: `16px` destacado.
+- Distancia (`N km de ti`): `14px`.
+- Asistencia: `14px`.
+- Conteo de valoraciones `(N)`: `14px`.
+
+### 5) API de props actual
+- `name: string`
+- `rating: number`
+- `ratingCount?: number`
+- `distanceLabel: string`
+- `attendanceRate?: number`
+- `attendanceMeetups?: number`
+- `profileImageSrc?: string`
+- `profileImageAlt?: string`
+
 ## Referencias de implementacion
 - Componente: `src/components/ui/chat-counterpart-card.tsx`
 - Storybook: `src/components/ui/chat-counterpart-card.stories.tsx`

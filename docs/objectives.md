@@ -146,3 +146,126 @@ Objetivos:
   - Registrar su story bajo `Design System/*` en Storybook.
   - Implementar despues la seccion funcional consumiendo ese componente (no con UI ad-hoc).
 - Antes de mergear, sincronizar cambios de implementacion y documentacion en `plans/design-system/` y `docs/elements/`.
+
+---
+
+### Contrato funcional v2 (2026-02-23)
+
+Esta seccion define la version de referencia para flujo de estados y comportamiento por rol.
+Si hay conflicto con secciones anteriores, prevalece este contrato v2.
+
+#### 1) Estados soportados
+
+- `PROPOSED`
+- `COUNTER_PROPOSED`
+- `CONFIRMED`
+- `ARRIVED`
+- `COMPLETED`
+- `EXPIRED`
+- `CANCELLED`
+
+No se introducen nuevos estados terminales en esta iteracion.
+
+#### 2) Flujo por rol (decision complete)
+
+- Estado `null` (sin meetup activo):
+  - `SELLER`: puede iniciar propuesta (`PROPOSE`).
+  - `BUYER`: no puede iniciar propuesta.
+- Estado `PROPOSED`:
+  - `BUYER`: puede `ACCEPT`, `COUNTER_PROPOSE`, `CANCEL`.
+  - `SELLER`: puede editar propuesta sin cambiar estado.
+- Estado `COUNTER_PROPOSED`:
+  - `SELLER`: puede `ACCEPT`, `PROPOSE` (reenviar), `CANCEL` y editar propuesta.
+  - `BUYER`: espera respuesta del vendedor.
+- Estado `CONFIRMED`:
+  - `SELLER` y `BUYER`: pueden `MARK_ARRIVED`.
+  - `SELLER` y `BUYER`: pueden `CANCEL` hasta el ultimo segundo antes/durante la cita.
+  - `EXPIRE` no se expone como accion manual.
+  - Se habilita accion de retraso `LATE_NOTICE` con opciones `+10 min` y `+20 min`.
+- Estado `ARRIVED`:
+  - Se alcanza cuando al menos una parte marca llegada dentro de la ventana valida.
+  - Si ambos marcan llegada y hay geovalidacion positiva, queda evidencia objetiva de asistencia.
+  - Solo `SELLER` puede ejecutar `COMPLETE`.
+- Estados terminales:
+  - `COMPLETED`: venta cerrada.
+  - `CANCELLED`: cancelacion manual por una de las partes.
+  - `EXPIRED`: cierre automatico del sistema por no-show o no resolucion temporal.
+
+#### 3) Reglas temporales y de evidencia
+
+- Ventana de llegada: `scheduledAt - 15 min` hasta `scheduledAt + 2 h`.
+- Zona roja de cancelacion: ultimos `30 min` antes de `scheduledAt`.
+- Cancelacion en zona roja:
+  - Mostrar advertencia de impacto en fiabilidad.
+  - Enviar notificacion prioritaria a la contraparte para evitar desplazamientos innecesarios.
+- Check-in cruzado:
+  - `MARK_ARRIVED` es el mecanismo de evidencia de presencia.
+  - Geovalidacion por defecto: radio `<= 100m` del punto pactado.
+  - Si solo una parte valida llegada y la otra no, debe poder resolverse como no-show atribuible.
+
+#### 4) Politica de expiracion y cierres automaticos
+
+- `EXPIRE` se considera evento interno de sistema.
+- `EXPIRE` no debe aparecer como CTA manual en UI.
+- El sistema puede cerrar en `EXPIRED` por timeout de no-show o por falta de resolucion.
+
+#### 5) Fiabilidad y seguimiento post-encuentro
+
+- La fiabilidad se comunica como indicador positivo en perfil (porcentaje de asistencia), evitando framing punitivo.
+- El primer prompt post-encuentro para confirmar/valorar debe lanzarse entre `+1 h` y `+2 h` tras la cita.
+- Default inicial: `+2 h`, configurable por producto.
+
+#### 6) Contrato de API para siguiente fase de implementacion
+
+- `MeetupEvent`:
+  - Mantener eventos actuales.
+  - Tratar `EXPIRE` como evento de sistema (no disparable desde UI).
+  - Incorporar `LATE_NOTICE` con `etaMinutes: 10 | 20`.
+- `MeetupMachine`:
+  - Añadir metadata de check-in por rol (timestamp y resultado de proximidad).
+  - Añadir metadata de resolucion de no-show (reportante, ausente inferido, fuente de evidencia).
+  - Añadir metadata de impacto de fiabilidad para cancelaciones en zona roja.
+
+---
+
+### Actualizacion de implementacion v3 (2026-02-23)
+
+Esta seccion refleja el estado implementado real al cierre de esta conversacion.
+Si hay conflicto con bloques anteriores, prevalece v3.
+
+#### 1) Flujo y estados en UI
+
+- `EXPIRE` se mantiene como evento interno de sistema (sin CTA manual en card).
+- El estado `COUNTER_PROPOSED` se representa visualmente como `pendiente` (en lugar de `contraoferta`) para mantener foco en revision del vendedor.
+- En propuesta recibida (`BUYER` + `PROPOSED`), la accion `Proponer cambios` abre el overlay de propuesta para editar parametros existentes.
+- Al enviar esos cambios desde comprador, la entidad transiciona a `COUNTER_PROPOSED` con los nuevos datos propuestos.
+- Tras confirmacion (`CONFIRMED` y estados posteriores), el titulo de card pasa a `Quedada con <nombre contraparte>`.
+
+#### 2) Ventana de llegada y acciones en confirmado
+
+- Ventana de llegada vigente: `scheduledAt - 30 min` hasta `scheduledAt + 2 h`.
+- Mensaje de llegada en card dentro de ventana:
+  - `Acercate a menos de 100 metros del punto de encuentro para indicar que has llegado.`
+- En `CONFIRMED`:
+  - Dentro de ventana: CTA `I'm here` + `Cancelar`.
+  - Fuera de ventana: solo CTAs `Cancelar` y `Anadir a Calendar`.
+- El boton `Anadir a Calendar` exporta un `.ics` local para calendario personal.
+
+#### 3) Cancelacion en zona roja
+
+- Zona roja: ultimos `30 min` previos a la cita.
+- La cancelacion muestra modal de advertencia y requiere confirmacion explicita.
+- Al confirmar cancelacion en zona roja se mantiene registro de impacto reputacional en metadata.
+
+#### 4) Card de contraparte en desktop
+
+- La metrica ambigua previa fue sustituida por asistencia estructurada.
+- Nuevo formato:
+  - `X% de asistencia (N)` cuando existe dato suficiente.
+  - `Baja asistencia a quedadas` cuando `X < 70`.
+- Semaforo visual:
+  - `> 90`: color success del sistema.
+  - `70-89`: color warning del sistema.
+  - `< 70`: color error del sistema y sin porcentaje.
+- Las estrellas muestran recuento de valoraciones al lado: `(N)`.
+- El tamano tipografico de `km de ti`, asistencia y `(N)` de valoraciones esta alineado en `14px`.

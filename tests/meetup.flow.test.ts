@@ -98,6 +98,7 @@ describe("meetup flow integration", () => {
         machine = expectSuccess(
             transitionMeetup(machine, {
                 type: "EXPIRE",
+                trigger: "SYSTEM",
                 occurredAt: new Date("2026-02-20T21:00:00.000Z"),
             })
         )

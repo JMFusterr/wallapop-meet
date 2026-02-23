@@ -55,8 +55,10 @@ type Conversation = {
     lastMessageDeliveryState?: "sent" | "read"
     meetupContext?: MeetupChatContext
     counterpartRating: number
+    counterpartRatingCount: number
     counterpartDistanceLabel: string
-    counterpartLocationLabel: string
+    counterpartAttendanceRate: number
+    counterpartAttendanceMeetups: number
     listingViewerRole: ChatProductCardViewerRole
     listingViews?: number
     listingLikes?: number
@@ -146,8 +148,10 @@ const conversations: Conversation[] = [
             buyerUserId: "user-buyer-laura-001",
         },
         counterpartRating: 4.5,
+        counterpartRatingCount: 110,
         counterpartDistanceLabel: "3,4km de ti",
-        counterpartLocationLabel: "Desconocido",
+        counterpartAttendanceRate: 96,
+        counterpartAttendanceMeetups: 28,
         listingViewerRole: "seller",
         listingViews: 23,
         listingLikes: 4,
@@ -172,8 +176,10 @@ const conversations: Conversation[] = [
             buyerUserId: "user-buyer-me-001",
         },
         counterpartRating: 5,
+        counterpartRatingCount: 84,
         counterpartDistanceLabel: "8,2km de ti",
-        counterpartLocationLabel: "Desconocido",
+        counterpartAttendanceRate: 92,
+        counterpartAttendanceMeetups: 41,
         listingViewerRole: "buyer",
         listingStatusLabel: "Vendido",
     },
@@ -189,8 +195,10 @@ const conversations: Conversation[] = [
         profileImageSrc:
             "https://images.pexels.com/photos/370799/pexels-photo-370799.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
         counterpartRating: 4,
+        counterpartRatingCount: 57,
         counterpartDistanceLabel: "1,9km de ti",
-        counterpartLocationLabel: "Desconocido",
+        counterpartAttendanceRate: 88,
+        counterpartAttendanceMeetups: 17,
         listingViewerRole: "seller",
         listingViews: 56,
         listingLikes: 8,
@@ -208,8 +216,10 @@ const conversations: Conversation[] = [
         profileImageSrc:
             "https://images.pexels.com/photos/1382731/pexels-photo-1382731.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
         counterpartRating: 4.5,
+        counterpartRatingCount: 132,
         counterpartDistanceLabel: "2,7km de ti",
-        counterpartLocationLabel: "Desconocido",
+        counterpartAttendanceRate: 99,
+        counterpartAttendanceMeetups: 52,
         listingViewerRole: "seller",
         listingViews: 41,
         listingLikes: 3,
@@ -227,8 +237,10 @@ const conversations: Conversation[] = [
         profileImageSrc:
             "https://images.pexels.com/photos/414171/pexels-photo-414171.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
         counterpartRating: 5,
+        counterpartRatingCount: 76,
         counterpartDistanceLabel: "4,1km de ti",
-        counterpartLocationLabel: "Desconocido",
+        counterpartAttendanceRate: 93,
+        counterpartAttendanceMeetups: 31,
         listingViewerRole: "buyer",
         listingStatusLabel: "Vendido",
     },
@@ -245,8 +257,10 @@ const conversations: Conversation[] = [
         profileImageSrc:
             "https://images.pexels.com/photos/301599/pexels-photo-301599.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
         counterpartRating: 4,
+        counterpartRatingCount: 21,
         counterpartDistanceLabel: "6,5km de ti",
-        counterpartLocationLabel: "Desconocido",
+        counterpartAttendanceRate: 64,
+        counterpartAttendanceMeetups: 11,
         listingViewerRole: "seller",
         listingViews: 19,
         listingLikes: 2,
@@ -1381,6 +1395,7 @@ type ConversationPaneProps = {
     onBackToInbox?: () => void
     onSubmitMessage: (value: string) => void
     onMeetupChange: (next: MeetupMachine) => void
+    onMeetupRedZoneCancel: () => void
     onOpenMeetupProposal: () => void
     onOpenMeetupMapPreview: (meetup: MeetupMachine) => void
     onError: (message: string) => void
@@ -1395,6 +1410,7 @@ function ConversationPane({
     onBackToInbox,
     onSubmitMessage,
     onMeetupChange,
+    onMeetupRedZoneCancel,
     onOpenMeetupProposal,
     onOpenMeetupMapPreview,
     onError,
@@ -1472,6 +1488,8 @@ function ConversationPane({
                                 actorRole={actorRole}
                                 currentTime={currentTime}
                                 onMeetupChange={onMeetupChange}
+                                counterpartName={conversation.userName}
+                                onRedZoneCancelConfirmed={onMeetupRedZoneCancel}
                                 onError={onError}
                                 onEditProposal={onOpenMeetupProposal}
                                 onOpenMapPreview={() => onOpenMeetupMapPreview(meetup)}
@@ -1532,8 +1550,10 @@ function DesktopConversationSidebar({ conversation }: { conversation: Conversati
             <ChatCounterpartCard
                 name={conversation.userName}
                 rating={conversation.counterpartRating}
+                ratingCount={conversation.counterpartRatingCount}
                 distanceLabel={conversation.counterpartDistanceLabel}
-                locationLabel={conversation.counterpartLocationLabel}
+                attendanceRate={conversation.counterpartAttendanceRate}
+                attendanceMeetups={conversation.counterpartAttendanceMeetups}
                 profileImageSrc={conversation.profileImageSrc}
             />
             <ChatProductCard
@@ -1710,6 +1730,44 @@ function WallapopChatWorkspace() {
             ...previous,
             [selectedConversation.id]: [...(previous[selectedConversation.id] ?? []), nextMessage],
         }))
+    }
+
+    const appendSystemMessage = (text: string) => {
+        const nextMessage: Message = {
+            id: `sys-${Date.now()}`,
+            text,
+            variant: "sent",
+            time: formatTime(new Date()),
+            deliveryState: "sent",
+        }
+
+        setMessagesByConversation((previous) => ({
+            ...previous,
+            [selectedConversation.id]: [...(previous[selectedConversation.id] ?? []), nextMessage],
+        }))
+    }
+
+    const appendCounterpartMessage = (text: string) => {
+        const nextMessage: Message = {
+            id: `cp-${Date.now()}`,
+            text,
+            variant: "received",
+            time: formatTime(new Date()),
+        }
+
+        setMessagesByConversation((previous) => ({
+            ...previous,
+            [selectedConversation.id]: [...(previous[selectedConversation.id] ?? []), nextMessage],
+        }))
+    }
+
+    const handleMeetupRedZoneCancel = () => {
+        appendSystemMessage(
+            "Cancelaste en los ultimos 30 min. Se notifico de forma prioritaria a la otra persona."
+        )
+        appendCounterpartMessage(
+            "He recibido la cancelacion de la quedada. Busquemos otra hora si te encaja."
+        )
     }
 
     const updateSelectedMeetup = (next: MeetupMachine) => {
@@ -1999,6 +2057,25 @@ function WallapopChatWorkspace() {
             return
         }
 
+        if (selectedMeetup.status === "PROPOSED" && selectedActorRole === "BUYER") {
+            const counterResult = transitionMeetup(draftMeetup, {
+                type: "COUNTER_PROPOSE",
+                actorRole: selectedActorRole,
+                occurredAt: new Date(),
+            })
+
+            if (!counterResult.ok) {
+                setProposalError(counterResult.reason)
+                return
+            }
+
+            updateSelectedMeetup(counterResult.meetup)
+            setProposalError("")
+            setProposalStep(1)
+            setIsProposalOverlayOpen(false)
+            return
+        }
+
         if (
             selectedMeetup.status !== null &&
             selectedMeetup.status !== "COUNTER_PROPOSED"
@@ -2054,6 +2131,7 @@ function WallapopChatWorkspace() {
                         meetup={selectedMeetup}
                         onSubmitMessage={appendOutgoingMessage}
                         onMeetupChange={updateSelectedMeetup}
+                        onMeetupRedZoneCancel={handleMeetupRedZoneCancel}
                         onOpenMeetupProposal={openMeetupProposal}
                         onOpenMeetupMapPreview={openMeetupMapPreview}
                         onError={setLastError}
@@ -2080,6 +2158,7 @@ function WallapopChatWorkspace() {
                         onBackToInbox={() => setMobileView("inbox")}
                         onSubmitMessage={appendOutgoingMessage}
                         onMeetupChange={updateSelectedMeetup}
+                        onMeetupRedZoneCancel={handleMeetupRedZoneCancel}
                         onOpenMeetupProposal={openMeetupProposal}
                         onOpenMeetupMapPreview={openMeetupMapPreview}
                         onError={setLastError}

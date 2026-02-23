@@ -230,3 +230,112 @@ Notas de UI del workspace (actualizado 2026-02-22):
   - Sin buscador.
   - Sin seleccion de punto.
   - Con boton `X` de cierre.
+
+---
+
+## Anexo v2 (2026-02-23) - Contrato de flujo por rol y matriz de CTAs
+
+Este anexo cierra el flujo completo comprador/vendedor.
+Si hay conflicto con reglas anteriores del documento, prevalece este anexo v2.
+
+### A. Matriz de CTAs por estado y rol
+
+| Estado | SELLER | BUYER | Comentarios |
+| --- | --- | --- | --- |
+| `null` | `Proponer quedar` | Sin CTA de propuesta | Entrada exclusiva de vendedor |
+| `PROPOSED` | `Editar` | `Aceptar`, `Proponer cambios`, `Cancelar` | Comprador decide sobre propuesta inicial |
+| `COUNTER_PROPOSED` | `Aceptar contraoferta`, `Reenviar propuesta`, `Editar`, `Cancelar` | Espera respuesta | Vendedor retoma control |
+| `CONFIRMED` | `I'm here`, `Llego tarde`, `Cancelar` | `I'm here`, `Llego tarde`, `Cancelar` | `EXPIRE` no visible en UI |
+| `ARRIVED` | `Confirmar venta`, `Cancelar` | `I'm here` (si aun no marco), `Cancelar` | `COMPLETE` solo vendedor |
+| `COMPLETED` | Sin CTA de transicion | Sin CTA de transicion | Estado final |
+| `EXPIRED` | Sin CTA de transicion | Sin CTA de transicion | Estado final automatico |
+| `CANCELLED` | Sin CTA de transicion | Sin CTA de transicion | Estado final manual |
+
+### B. Politica de cancelacion y zona roja
+
+- Se permite cancelar en cualquier momento pre-terminal.
+- En los ultimos `30 min` antes de `scheduledAt` (zona roja):
+  - Mostrar modal de advertencia antes de confirmar cancelacion.
+  - Copy recomendado:
+    - Titulo: `Faltan menos de 30 min para la quedada`
+    - Mensaje: `Cancelar ahora afectara a tu fiabilidad. Si solo llegas tarde, avisa con "Llego tarde".`
+    - Acciones: `Llego tarde` (secundaria) y `Cancelar igualmente` (critica).
+  - Al confirmar cancelacion, generar notificacion prioritaria a contraparte.
+
+### C. Patron "Llego tarde" (`LATE_NOTICE`)
+
+- Disponible para ambos roles en `CONFIRMED`.
+- Quick actions:
+  - `Llego en 10 min`
+  - `Llego en 20 min`
+- Efecto esperado:
+  - Registrar evento `LATE_NOTICE` con `etaMinutes`.
+  - Notificar de inmediato a la contraparte dentro del chat.
+  - No cambia estado de meetup.
+
+### D. Patron de no-show basado en evidencia de check-in
+
+- El boton `I'm here` es la fuente principal de evidencia de asistencia.
+- Regla de evidencia:
+  - Si ambos usuarios marcan llegada y geovalidan proximidad (`<=100m`), se considera encuentro validado.
+  - Si solo una parte marca llegada valida y la otra no comparece, se habilita flujo de no-show atribuible.
+- Resultado de no-show:
+  - Resolucion automatica por sistema hacia `EXPIRED` cuando venza la ventana temporal de no-show.
+  - Debe quedar trazabilidad de actor presente/ausente en metadata (para siguiente fase de implementacion).
+
+### E. Check-in y expiracion
+
+- Ventana de `I'm here`: `-15 min` a `+2 h` respecto a `scheduledAt`.
+- `EXPIRE` es evento interno del sistema:
+  - No existe boton manual `Expirar meetup`.
+  - No se muestra CTA equivalente en tarjeta, timeline ni banner.
+
+### F. Seguimiento post-encuentro
+
+- Primer prompt de confirmacion/valoracion: entre `+1 h` y `+2 h` tras la hora pactada.
+- Default v2: `+2 h`.
+- Se prioriza feedback cercano al evento (se descarta esperar 24-48h como primer contacto).
+
+---
+
+## Anexo v3 (2026-02-23) - Estado implementado real
+
+Si hay conflicto con anexo v2 o secciones previas, prevalece v3.
+
+### A. Matriz de CTAs actual en `CONFIRMED`
+
+| Rango temporal | CTAs visibles |
+| --- | --- |
+| Dentro de `-30 min` a `+2 h` | `I'm here`, `Cancelar` |
+| Fuera de ese rango | `Cancelar`, `Anadir a Calendar` |
+
+Reglas:
+- No existe CTA `Expirar meetup`.
+- No existen CTAs `Llego en 10 min` / `Llego en 20 min` en la UI actual.
+- El aviso informativo de llegada solo se muestra dentro de la ventana `-30/+2h`.
+
+### B. Proponer cambios (comprador)
+
+- En `PROPOSED` con actor `BUYER`, `Proponer cambios` abre el overlay editable con los parametros existentes.
+- Al enviar cambios, se persiste la nueva propuesta y la maquina transiciona a `COUNTER_PROPOSED`.
+- La label visual para `COUNTER_PROPOSED` es `pendiente`.
+
+### C. Titulo de card de meetup
+
+- Antes de confirmar:
+  - `Solicitud de quedada` en propuesta recibida por comprador.
+  - `Propuesta de quedada` en el resto pre-confirmacion.
+- Desde `CONFIRMED` en adelante:
+  - `Quedada con <nombre contraparte>`.
+
+### D. Sidebar desktop de contraparte
+
+- Se sustituye el texto de ubicacion genérico por metrica de asistencia.
+- Formato visible:
+  - `X% de asistencia (N)` cuando `X >= 70`.
+  - `Baja asistencia a quedadas` cuando `X < 70`.
+- Semaforo:
+  - `>90`: success.
+  - `70-89`: warning.
+  - `<70`: error, sin porcentaje.
+- El bloque de rating muestra `(<numero valoraciones>)` a la derecha de estrellas.

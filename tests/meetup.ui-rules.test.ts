@@ -62,6 +62,7 @@ describe("meetup ui rules", () => {
         const meetup = buildConfirmedMeetup()
         const expired = transitionMeetup(meetup, {
             type: "EXPIRE",
+            trigger: "SYSTEM",
             occurredAt: new Date("2026-02-20T21:30:00.000Z"),
         })
         if (!expired.ok) {

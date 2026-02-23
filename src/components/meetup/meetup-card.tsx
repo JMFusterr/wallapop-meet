@@ -1,3 +1,4 @@
+import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { resolveArrivalActionState } from "@/components/meetup/meetup-ui-rules"
@@ -13,8 +14,10 @@ type MeetupCardProps = {
     currentTime: Date
     onMeetupChange: (next: MeetupMachine) => void
     onError: (message: string) => void
+    counterpartName?: string
     onEditProposal?: () => void
     onOpenMapPreview?: () => void
+    onRedZoneCancelConfirmed?: () => void
 }
 
 type CardAction = {
@@ -24,6 +27,8 @@ type CardAction = {
     run: () => void
     disabled?: boolean
 }
+
+const RED_ZONE_CANCELLATION_MINUTES = 30
 
 type StatusPill = {
     label: string
@@ -40,8 +45,9 @@ function statusPill(status: MeetupStatus | null): StatusPill {
             }
         case "COUNTER_PROPOSED":
             return {
-                label: "contraoferta",
-                className: "border-[#F4A000] bg-[#FFF3DE] text-[#8A5B00]",
+                label: "pendiente",
+                className:
+                    "border-[var(--wm-color-border-default)] bg-[var(--wm-color-background-base)] text-[var(--wm-color-text-secondary)]",
             }
         case "CONFIRMED":
             return {
@@ -92,6 +98,32 @@ function buildStaticMapThumbnailUrl(lat: number, lng: number): string {
     return `${lat.toFixed(6)},${lng.toFixed(6)}`
 }
 
+function formatIcsDate(value: Date): string {
+    const iso = value.toISOString().replace(/[-:]/g, "")
+    return iso.replace(/\.\d{3}Z$/, "Z")
+}
+
+function buildMeetupIcs(meetup: MeetupMachine): string {
+    const startAt = meetup.scheduledAt
+    const endAt = new Date(startAt.getTime() + 60 * 60 * 1000)
+    const location = meetup.proposedLocation ?? "Punto por confirmar"
+
+    return [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Wallapop Meet//ES",
+        "BEGIN:VEVENT",
+        `UID:wallapop-meet-${startAt.getTime()}@wallapop.local`,
+        `DTSTAMP:${formatIcsDate(new Date())}`,
+        `DTSTART:${formatIcsDate(startAt)}`,
+        `DTEND:${formatIcsDate(endAt)}`,
+        "SUMMARY:Quedada Wallapop Meet",
+        `LOCATION:${location}`,
+        "END:VEVENT",
+        "END:VCALENDAR",
+    ].join("\r\n")
+}
+
 const miniMapMarkerIcon = L.divIcon({
     className: "",
     html: `
@@ -125,10 +157,21 @@ function MeetupCard({
     currentTime,
     onMeetupChange,
     onError,
+    counterpartName,
     onEditProposal,
     onOpenMapPreview,
+    onRedZoneCancelConfirmed,
 }: MeetupCardProps) {
-    const arrivalAction = resolveArrivalActionState(meetup, currentTime)
+    const arrivalAction = resolveArrivalActionState(meetup, currentTime, actorRole)
+    const minutesToMeetup = Math.floor(
+        (meetup.scheduledAt.getTime() - currentTime.getTime()) / (60 * 1000)
+    )
+    const isRedZoneCancellation =
+        minutesToMeetup >= 0 && minutesToMeetup <= RED_ZONE_CANCELLATION_MINUTES
+    const isCalendarFallbackWindow =
+        currentTime.getTime() >= meetup.scheduledAt.getTime() - 30 * 60 * 1000 &&
+        currentTime.getTime() <= meetup.scheduledAt.getTime() + 2 * 60 * 60 * 1000
+    const [isRedZoneModalOpen, setIsRedZoneModalOpen] = React.useState(false)
 
     const applyEvent = (
         event:
@@ -138,7 +181,6 @@ function MeetupCard({
             | { type: "MARK_ARRIVED"; actorRole: ActorRole; occurredAt: Date }
             | { type: "COMPLETE"; actorRole: ActorRole; occurredAt: Date }
             | { type: "CANCEL"; actorRole: ActorRole; occurredAt: Date }
-            | { type: "EXPIRE"; occurredAt: Date }
     ) => {
         const result = transitionMeetup(meetup, event)
         if (!result.ok) {
@@ -150,6 +192,47 @@ function MeetupCard({
     }
 
     const actions: CardAction[] = []
+
+    const runCancel = () => {
+        if (isRedZoneCancellation) {
+            setIsRedZoneModalOpen(true)
+            return
+        }
+
+        applyEvent({
+            type: "CANCEL",
+            actorRole,
+            occurredAt: currentTime,
+        })
+    }
+
+    const confirmRedZoneCancellation = () => {
+        setIsRedZoneModalOpen(false)
+        applyEvent({
+            type: "CANCEL",
+            actorRole,
+            occurredAt: currentTime,
+        })
+        onRedZoneCancelConfirmed?.()
+    }
+
+    const addToCalendar = () => {
+        if (typeof window === "undefined" || typeof document === "undefined") {
+            onError("No se pudo abrir el calendario en este entorno.")
+            return
+        }
+
+        const icsContent = buildMeetupIcs(meetup)
+        const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" })
+        const url = URL.createObjectURL(blob)
+        const anchor = document.createElement("a")
+        anchor.href = url
+        anchor.download = "wallapop-meet.ics"
+        document.body.appendChild(anchor)
+        anchor.click()
+        document.body.removeChild(anchor)
+        URL.revokeObjectURL(url)
+    }
 
     if (meetup.status === null) {
         actions.push({
@@ -183,24 +266,21 @@ function MeetupCard({
             id: "counter",
             label: "Proponer cambios",
             variant: "inline_action",
-            run: () =>
-                applyEvent({
-                    type: "COUNTER_PROPOSE",
-                    actorRole,
-                    occurredAt: currentTime,
-                }),
+            run: onEditProposal
+                ? onEditProposal
+                : () =>
+                    applyEvent({
+                        type: "COUNTER_PROPOSE",
+                        actorRole,
+                        occurredAt: currentTime,
+                    }),
             disabled: actorRole !== "BUYER",
         })
         actions.push({
             id: "reject",
             label: "Rechazar",
             variant: "critical",
-            run: () =>
-                applyEvent({
-                    type: "CANCEL",
-                    actorRole,
-                    occurredAt: currentTime,
-                }),
+            run: runCancel,
             disabled: actorRole !== "BUYER",
         })
     }
@@ -233,42 +313,58 @@ function MeetupCard({
     }
 
     if (meetup.status === "CONFIRMED") {
-        actions.push({
-            id: "arrived",
-            label: "I'm here",
-            variant: "primary",
-            run: () =>
-                applyEvent({
-                    type: "MARK_ARRIVED",
-                    actorRole,
-                    occurredAt: currentTime,
-                }),
-            disabled: !arrivalAction.enabled,
-        })
-        actions.push({
-            id: "expire",
-            label: "Expirar meetup",
-            variant: "critical",
-            run: () =>
-                applyEvent({
-                    type: "EXPIRE",
-                    occurredAt: currentTime,
-                }),
-        })
+        if (isCalendarFallbackWindow) {
+            actions.push({
+                id: "arrived",
+                label: "I'm here",
+                variant: "primary",
+                run: () =>
+                    applyEvent({
+                        type: "MARK_ARRIVED",
+                        actorRole,
+                        occurredAt: currentTime,
+                    }),
+                disabled: !arrivalAction.enabled,
+            })
+        } else {
+            actions.push({
+                id: "calendar",
+                label: "Anadir a Calendar",
+                variant: "inline_action",
+                run: addToCalendar,
+            })
+        }
     }
 
     if (meetup.status === "ARRIVED") {
-        actions.push({
-            id: "complete",
-            label: "Confirmar venta",
-            variant: "primary",
-            run: () =>
-                applyEvent({
-                    type: "COMPLETE",
-                    actorRole,
-                    occurredAt: currentTime,
-                }),
-        })
+        if (arrivalAction.enabled) {
+            actions.push({
+                id: "arrived",
+                label: "I'm here",
+                variant: "primary",
+                run: () =>
+                    applyEvent({
+                        type: "MARK_ARRIVED",
+                        actorRole,
+                        occurredAt: currentTime,
+                    }),
+                disabled: !arrivalAction.enabled,
+            })
+        }
+
+        if (actorRole === "SELLER") {
+            actions.push({
+                id: "complete",
+                label: "Confirmar venta",
+                variant: "primary",
+                run: () =>
+                    applyEvent({
+                        type: "COMPLETE",
+                        actorRole,
+                        occurredAt: currentTime,
+                    }),
+            })
+        }
     }
 
     if (
@@ -282,12 +378,7 @@ function MeetupCard({
             id: "cancel",
             label: "Cancelar",
             variant: "critical",
-            run: () =>
-                applyEvent({
-                    type: "CANCEL",
-                    actorRole,
-                    occurredAt: currentTime,
-                }),
+            run: runCancel,
         })
     }
 
@@ -298,9 +389,15 @@ function MeetupCard({
 
     const currentStatusPill = statusPill(meetup.status)
     const title =
-        meetup.status === "PROPOSED" && actorRole === "BUYER"
-            ? "Solicitud de quedada"
-            : "Propuesta de quedada"
+        meetup.status === "CONFIRMED" ||
+        meetup.status === "ARRIVED" ||
+        meetup.status === "COMPLETED" ||
+        meetup.status === "EXPIRED" ||
+        meetup.status === "CANCELLED"
+            ? `Quedada con ${counterpartName ?? "usuario"}`
+            : meetup.status === "PROPOSED" && actorRole === "BUYER"
+              ? "Solicitud de quedada"
+              : "Propuesta de quedada"
     const canEditProposal =
         actorRole === "SELLER" &&
         (meetup.status === "PROPOSED" || meetup.status === "COUNTER_PROPOSED")
@@ -315,7 +412,8 @@ function MeetupCard({
         : null
 
     return (
-        <section className="max-w-[420px] rounded-[20px] border border-[#ECEFF1] bg-[#C6EDF6] px-4 py-3">
+        <>
+            <section className="max-w-[420px] rounded-[20px] border border-[#ECEFF1] bg-[#C6EDF6] px-4 py-3">
             <button
                 type="button"
                 className="wm-mini-map relative mb-3 h-[88px] w-full overflow-hidden rounded-[14px] border border-[#B8DCE4] bg-[#EAF8FC] text-left"
@@ -380,7 +478,7 @@ function MeetupCard({
                 </div>
             </dl>
 
-            {meetup.status === "CONFIRMED" ? (
+            {meetup.status === "CONFIRMED" && isCalendarFallbackWindow ? (
                 <p className="mt-3 rounded-[12px] border border-[#B4D9E2] bg-[#E8F7FB] px-3 py-2 font-wallie-fit text-[12px] text-[#1E7D92]">
                     {arrivalAction.message}
                 </p>
@@ -417,7 +515,32 @@ function MeetupCard({
                     </Button>
                 </div>
             ) : null}
-        </section>
+            </section>
+            {isRedZoneModalOpen ? (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#253238]/50 px-4">
+                    <div className="w-full max-w-[420px] rounded-[16px] bg-white p-4 shadow-[0_8px_30px_rgba(37,50,56,0.22)]">
+                        <h3 className="font-wallie-chunky text-[18px] text-[#253238]">
+                            Faltan menos de 30 min para la quedada
+                        </h3>
+                        <p className="mt-2 rounded-[12px] border border-[#F4C578] bg-[#FFF7E9] px-3 py-2 font-wallie-fit text-[13px] text-[#8A5B00]">
+                            Cancelar ahora afectara a tu fiabilidad.
+                        </p>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                            <Button variant="critical" size="sm" onClick={confirmRedZoneCancellation}>
+                                Cancelar igualmente
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setIsRedZoneModalOpen(false)}
+                            >
+                                Cerrar
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            ) : null}
+        </>
     )
 }
 

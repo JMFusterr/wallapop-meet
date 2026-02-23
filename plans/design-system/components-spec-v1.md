@@ -487,6 +487,176 @@ Reglas:
 - Cada componente define propiedades, estados, tokens y regla de uso.
 - No hay ambigüedad entre uso de `badge`, `chip`, `banner` y `toast`.
 
+---
+
+## Addendum v2 (2026-02-23) - Componentes y contratos para flujo completo por rol
+
+Si hay conflicto con especificaciones anteriores de este documento, prevalece este addendum v2.
+
+## A. Ajustes de contrato en `MeetupCard`
+
+Reglas funcionales actualizadas:
+- El CTA manual `Expirar meetup` queda fuera del contrato UI.
+- `EXPIRE` se considera cierre automatico del sistema y no se renderiza como accion del usuario.
+- En `CONFIRMED`, ambos roles muestran:
+  - `I'm here` (segun ventana de llegada).
+  - `Llego tarde` (nuevo patron).
+  - `Cancelar`.
+- En `ARRIVED`, `COMPLETE` (`Confirmar venta`) solo para `SELLER`.
+
+Estados y disponibilidad:
+- `I'm here`: solo dentro de `-15 min` a `+2 h`.
+- `Cancelar`: permitido siempre en estados no terminales, con comportamiento especial en zona roja.
+
+## B. Nuevo patron de accion de retraso (`LATE_NOTICE`)
+
+Componente recomendado:
+- Reusar `Button.variant=inline_action` para activar selector rapido.
+- Usar `Modal.variant=confirmation` o `List Item.selectable` en bottom sheet para seleccionar ETA.
+
+API funcional esperada:
+- Evento de dominio: `LATE_NOTICE`.
+- Payload: `etaMinutes: 10 | 20`.
+- Efecto en UI:
+  - No cambia estado de meetup.
+  - Muestra confirmacion local y dispara notificacion a contraparte.
+
+Copy recomendado:
+- Titulo de accion: `Llego tarde`.
+- Opciones:
+  - `Llego en 10 min`
+  - `Llego en 20 min`
+
+## C. Modal de cancelacion en zona roja (`< 30 min`)
+
+Componente:
+- `Modal.variant=destructive`.
+- `size=md`.
+
+Props minimas:
+- `isRedZone: boolean`
+- `minutesToMeetup: number`
+- `onConfirmCancel`
+- `onChooseLateNotice` (opcional para desvio a `LATE_NOTICE`)
+
+Comportamiento:
+- Fuera de zona roja: confirmacion de cancelacion estandar.
+- En zona roja:
+  - Mensaje de impacto en fiabilidad.
+  - Opcion alternativa de avisar retraso.
+  - Confirmacion explicita para continuar con cancelacion.
+
+Copy base en zona roja:
+- Titulo: `Faltan menos de 30 min para la quedada`.
+- Cuerpo: `Cancelar ahora afectara a tu fiabilidad. Si puedes llegar, avisa con "Llego tarde".`
+- CTA primario: `Llego tarde`
+- CTA critico: `Cancelar igualmente`
+
+## D. Feedback visual de fiabilidad
+
+Objetivo:
+- Comunicar impacto reputacional sin lenguaje punitivo.
+
+Componente sugerido:
+- `Banner.variant=warning` en modal/confirmacion de cancelacion en zona roja.
+- `Chip/Tag.variant=info` o `Badge.neutral` para representar indicador de asistencia en perfil.
+
+Contrato de contenido:
+- Mostrar mensaje orientado a transparencia:
+  - `Tu porcentaje de asistencia ayuda a generar confianza en futuras quedadas.`
+- Evitar copy de castigo directo.
+
+## E. Metadata funcional requerida (para siguiente fase de implementacion)
+
+Aunque esta iteracion es documental, se fija el contrato que debera soportar el dominio:
+- Check-in por rol:
+  - timestamp por actor (`SELLER`/`BUYER`).
+  - resultado de geovalidacion.
+  - distancia al punto acordado.
+- Resolucion no-show:
+  - actor reportante.
+  - actor ausente inferido.
+  - fuente de evidencia.
+- Impacto de fiabilidad:
+  - indicador de cancelacion en zona roja.
+  - fecha/hora del evento reputacional.
+
+## F. Escenarios de QA vinculados a componentes
+
+Los siguientes escenarios deben tener story de estado o caso de prueba visual:
+1. `MeetupCard` en `CONFIRMED` sin CTA de expirar.
+2. `MeetupCard` en `CONFIRMED` con `Llego tarde`.
+3. Modal de cancelacion fuera de zona roja.
+4. Modal de cancelacion en zona roja con warning de fiabilidad.
+5. Selector rapido de `LATE_NOTICE` (`10`/`20` min).
+6. `MeetupCard` en `ARRIVED` con `Confirmar venta` solo para `SELLER`.
+
+---
+
+## Addendum v3 (2026-02-23) - API visual implementada
+
+Si hay conflicto entre addendum v2 y v3, prevalece v3.
+
+## A. `MeetupCard` (contrato vigente)
+
+Ajustes de props:
+- Añadido `counterpartName?: string` para titulado contextual tras confirmacion.
+
+Titulos:
+- Pre-confirmacion:
+  - `Solicitud de quedada` (`BUYER` + `PROPOSED`).
+  - `Propuesta de quedada` (resto de casos).
+- Post-confirmacion (`CONFIRMED`, `ARRIVED`, `COMPLETED`, `EXPIRED`, `CANCELLED`):
+  - `Quedada con <counterpartName>`.
+
+Acciones en `CONFIRMED`:
+- Dentro de ventana `-30 min` a `+2 h`: `I'm here` + `Cancelar`.
+- Fuera de ventana: `Cancelar` + `Anadir a Calendar`.
+- `Anadir a Calendar` genera descarga local de archivo `.ics`.
+
+Etiqueta de estado:
+- `COUNTER_PROPOSED` se muestra como `pendiente`.
+
+Flujo de cambios comprador:
+- `Proponer cambios` en propuesta recibida abre overlay de edicion (reusa `onEditProposal`).
+
+## B. `ChatCounterpartCard` (contrato vigente)
+
+Props actuales:
+- `name: string`
+- `rating: number`
+- `ratingCount?: number`
+- `distanceLabel: string`
+- `attendanceRate?: number`
+- `attendanceMeetups?: number`
+- `profileImageSrc?: string`
+- `profileImageAlt?: string`
+
+Reglas de contenido:
+- Rating:
+  - Mostrar estrellas + `(<ratingCount>)` a la derecha cuando exista dato.
+- Distancia:
+  - Mantener `distanceLabel` en `14px`.
+- Asistencia:
+  - `>90`: `X% de asistencia (N)` en success.
+  - `70-89`: `X% de asistencia (N)` en warning.
+  - `<70`: ocultar porcentaje y mostrar `Baja asistencia a quedadas` en error.
+
+Reglas de color:
+- Solo usar colores/tokens ya existentes del sistema.
+- Warning de asistencia media: `semantic.warning.base` (en implementacion actual: `#F4A000`).
+
+## C. QA minimo actualizado
+
+Casos que deben seguir cubiertos en story/test visual:
+1. `MeetupCard` en `CONFIRMED` dentro de ventana (mensaje de proximidad + `I'm here`).
+2. `MeetupCard` en `CONFIRMED` fuera de ventana (solo `Cancelar` + `Anadir a Calendar`).
+3. `MeetupCard` con titulo post-confirmacion `Quedada con <nombre>`.
+4. `COUNTER_PROPOSED` renderizado como `pendiente`.
+5. `ChatCounterpartCard` asistencia alta (`>90`).
+6. `ChatCounterpartCard` asistencia media (`70-89`, warning).
+7. `ChatCounterpartCard` asistencia baja (`<70`, mensaje rojo sin porcentaje).
+
 ## Inventarios de referencia (captura oficial)
 - `docs/elements/buttons.md`
 - `docs/elements/Input.md`
