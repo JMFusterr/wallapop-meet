@@ -261,7 +261,7 @@ Reglas:
 - Titulo fijo en card para todos los estados: `Quedada con <counterpartName>`.
 - Debe mostrar label de estado traducida en minusculas:
   - `PROPOSED` -> `pendiente`
-  - `COUNTER_PROPOSED` -> `contraoferta`
+  - `COUNTER_PROPOSED` -> `pendiente`
   - `CONFIRMED` -> `confirmada`
   - `ARRIVED` -> `llegada`
   - `COMPLETED` -> `completada`
@@ -285,6 +285,7 @@ Reglas:
   - `metodo \u00B7 precio`
 - La miniatura superior debe ser un render real de mapa, sin texto superpuesto.
 - La miniatura superior debe ocultar controles de zoom `+/-`.
+- La card debe mantener fondo blanco y sin sombreado, alineada visualmente al estilo de burbuja de chat.
 - Tap en miniatura abre modal de mapa en grande, solo lectura, con cierre por `X`.
 - `I'm here` solo habilitado en `CONFIRMED` y ventana valida (`-15m`, `+2h`).
 - Debe comunicar motivo de deshabilitado fuera de ventana.
@@ -297,6 +298,9 @@ Reglas:
   - `principal`: accion primaria del estado (`Aceptar`, `I'm here`, `Confirmar venta`, etc.).
   - `outline`: accion secundaria de continuidad (`Editar`, `Proponer cambios`, `Anadir a Calendar`, `Reenviar propuesta`).
   - `texto`: accion destructiva suave (`Cancelar quedada`, `Rechazar quedada`).
+- Al ejecutar accion `Cancelar quedada` o `Rechazar quedada`, siempre abrir modal de confirmacion:
+  - CTA principal: `Si`.
+  - CTA secundaria outline: `No`.
 - Tipografia de botones en `MeetupCard`:
   - Todos los botones de accion (`principal`, `outline`, `texto`) usan `16px`.
 - Hora de envio en card:
@@ -333,6 +337,7 @@ Reglas:
 - En workspace de meetup, la accion secundaria se ubica a la derecha, justo antes de `paper_plane`.
 - El icono por defecto para esta accion en meetup es `calendar`.
 - La accion secundaria debe ocultarse cuando el actor no es `SELLER`; para `BUYER` solo se renderiza el boton de envio.
+- Para `SELLER`, la accion secundaria se muestra cuando no hay meetup activo o cuando el ultimo estado fue `CANCELLED`.
 
 ## 18. Banner de seguridad de chat (`ChatSecurityBanner`)
 Propiedades visuales:
@@ -358,7 +363,9 @@ Propiedades visuales:
 Reglas:
 - Implementado con `react-leaflet` + teselas OpenStreetMap.
 - Debe permitir seleccionar ubicacion custom con click en mapa.
-- Debe mostrar marcadores de puntos seguros en azul Wallapop.
+- Debe mostrar marcadores con estilo Wallapop tipo capsula + mini triangulo unido:
+  - Punto seguro: icono `shield`.
+  - Punto personalizado: icono `deal` (manos).
 - Al seleccionar un punto seguro, mostrar tooltip persistente con formato `<nombre> - Punto seguro`.
 - Debe poder convivir dentro de un overlay con alto maximo y scroll interno sin desbordar viewport.
 - En contexto del wizard movil, ocultar controles de zoom `+/-` y mantener zoom por gesto tactil.
@@ -383,7 +390,7 @@ Reglas:
   - Direccion
   - Labels `Punto seguro` y `<N> ventas`.
 - Las cards de punto personalizado muestran:
-  - Icono `map pin`
+  - Icono `deal` (manos) en el pin del mapa
   - Direccion seleccionada
   - Label `Personalizado`.
 - No existe boton `Cancelar` en el footer del wizard; cierre mediante boton `X` de cabecera.
@@ -401,6 +408,7 @@ Reglas:
 - En vista de mapa:
   - Permitir seleccion de punto seguro y punto personalizado (tap libre sobre mapa).
   - Al seleccionar personalizado, mostrar aviso de punto no verificado.
+  - Al seleccionar punto seguro, mostrar bloque de ventas con el mismo patron visual del aviso de no verificado, usando variante verde Wallapop.
   - Mostrar distancia `m/km` en chip de una sola linea (`no-wrap`).
   - Bottom sheet de seleccion debe renderizarse por encima del mapa (`z-index` superior).
 

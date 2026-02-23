@@ -33,7 +33,7 @@ Objetivos:
 ### Estado de implementacion actual (2026-02-22)
 
 - Entrada desde chat integrada en `wallapop-chat-workspace`.
-- CTA secundario circular en `ChatComposer` para iniciar propuesta (`Proponer quedar`) con icono calendario, ubicado a la derecha (junto al boton enviar), visible solo para el vendedor cuando no hay meetup activo.
+- CTA secundario circular en `ChatComposer` para iniciar propuesta (`Proponer quedar`) con icono calendario, ubicado a la derecha (junto al boton enviar), visible solo para el vendedor cuando no hay meetup activo o cuando la propuesta anterior quedo en `CANCELLED`.
 - Overlay de propuesta responsive:
   - Centrado en desktop/tablet horizontal.
   - Entrada desde abajo en movil.
@@ -78,7 +78,7 @@ Objetivos:
     - `unselected`: aro fino con centro blanco.
     - `selected`: aro oscuro grueso con centro blanco reducido.
   - Los puntos seguros muestran labels `Punto seguro` + `N ventas`.
-  - Los puntos personalizados se muestran con icono de puntero de mapa.
+  - Los puntos personalizados se muestran con icono `deal` (manos) dentro del pin.
 - Mapa en selector de punto:
   - Implementado sobre OpenStreetMap (`react-leaflet`).
   - Permite seleccionar puntos seguros y tambien cualquier punto personalizado pulsando sobre el mapa.
@@ -93,7 +93,9 @@ Objetivos:
   - Variante inversa en propuesta recibida (`BUYER` + `PROPOSED`):
     - Acciones visibles: `Aceptar` (principal), `Proponer cambios` (outline), `Rechazar quedada` (texto).
     - La card se renderiza en el lado izquierdo de la conversacion.
-  - Estado visible en label traducida y en minusculas (`pendiente`, `contraoferta`, `confirmada`, `llegada`, `completada`, `expirada`, `cancelada`).
+  - Estado visible en label traducida y en minusculas (`pendiente`, `confirmada`, `llegada`, `completada`, `expirada`, `cancelada`).
+  - `COUNTER_PROPOSED` se representa como `pendiente` (no `contraoferta`).
+  - Fondo de card en blanco y sin sombra, tanto en envio propio como en recepcion.
   - Resumen de datos en 3 filas con icono a la izquierda:
     - Calendario: dia y hora.
     - Mapa: direccion.
@@ -111,6 +113,7 @@ Objetivos:
   - Sin texto superpuesto sobre la miniatura para evitar crecimiento vertical por direcciones largas.
   - Tap en miniatura abre una previsualizacion en grande, solo lectura, con cierre por `X`.
   - La previsualizacion en grande no incluye buscador ni acciones de seleccion.
+  - El pin de miniatura usa estilo Wallapop (capsula turquesa + mini triangulo unido).
 - Robustez de datos de ubicacion:
   - La propuesta guarda latitud/longitud (`proposedLocationLat`, `proposedLocationLng`) junto a `proposedLocation`.
   - Se evita depender de geocodificacion en tiempo de render para dibujar mapa en card.
@@ -191,6 +194,7 @@ No se introducen nuevos estados terminales en esta iteracion.
   - `COMPLETED`: venta cerrada.
   - `CANCELLED`: cancelacion manual por una de las partes.
   - `EXPIRED`: cierre automatico del sistema por no-show o no resolucion temporal.
+  - Excepcion funcional: tras `CANCELLED`, `SELLER` puede reabrir el flujo con un nuevo `PROPOSE` desde el composer.
 
 #### 3) Reglas temporales y de evidencia
 
@@ -199,6 +203,10 @@ No se introducen nuevos estados terminales en esta iteracion.
 - Cancelacion en zona roja:
   - Mostrar advertencia de impacto en fiabilidad.
   - Enviar notificacion prioritaria a la contraparte para evitar desplazamientos innecesarios.
+- Cancelacion/rechazo desde card:
+  - Siempre requiere modal de confirmacion.
+  - CTA primario: `Si`.
+  - CTA secundario (outline): `No`.
 - Check-in cruzado:
   - `MARK_ARRIVED` es el mecanismo de evidencia de presencia.
   - Geovalidacion por defecto: radio `<= 100m` del punto pactado.

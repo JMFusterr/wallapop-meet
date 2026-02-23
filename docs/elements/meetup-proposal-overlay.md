@@ -2,7 +2,7 @@
 
 ## Fuente de analisis
 - Implementacion de referencia: `src/components/meetup/wallapop-chat-workspace.tsx`
-- Fecha de actualizacion: 2026-02-22
+- Fecha de actualizacion: 2026-02-23
 - Contexto: flujo `Proponer quedada` iniciado desde `ChatComposer`.
 
 ## Estructura funcional
@@ -43,7 +43,7 @@
   - Nombre + direccion.
   - Labels: `Punto seguro` y `<N> ventas`.
 - Punto personalizado:
-  - Icono puntero de mapa (`map pin`).
+  - Icono `deal` (manos) dentro del pin.
   - Direccion seleccionada.
   - Label: `Personalizado`.
 
@@ -53,6 +53,10 @@
 - Permite seleccionar:
   - Marcadores de puntos seguros.
   - Cualquier punto personalizado con tap libre sobre mapa.
+- Estilo de marcador en mapa (seguro/custom):
+  - Forma capsula Wallapop con mini triangulo unido al cuerpo.
+  - Punto seguro: icono escudo.
+  - Punto personalizado: icono `deal` (manos).
 - Al seleccionar personalizado:
   - Se genera direccion (reverse geocoding con fallback a coordenadas).
   - Se calcula distancia desde posicion de referencia.
@@ -63,7 +67,9 @@
   - Titulo del punto.
   - Direccion.
   - Chip de distancia en `m/km`.
-  - Mensaje de seguridad para puntos no seguros.
+  - Mensaje contextual:
+    - Punto seguro: `<N> ventas completadas` en patron visual de banner verde Wallapop.
+    - Punto personalizado: mensaje de punto no verificado.
   - CTA `Seleccionar`.
 - Reglas:
   - Debe renderizarse por encima del mapa (`z-index` superior).

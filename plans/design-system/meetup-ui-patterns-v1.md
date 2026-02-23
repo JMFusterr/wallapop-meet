@@ -18,7 +18,7 @@ Contenido:
 - Punto de encuentro sugerido.
 - Precio final acordado.
 - Entrada desde composer de chat con CTA secundario circular (`Proponer quedar`) y icono `calendar`, ubicado a la derecha junto al boton de envio.
-  - Esta CTA solo se muestra cuando el actor del chat es `SELLER` y no existe meetup activo.
+  - Esta CTA solo se muestra cuando el actor del chat es `SELLER` y no existe meetup activo, o cuando el estado previo quedo en `CANCELLED`.
   - Si el actor es `BUYER`, el composer muestra solo la accion de enviar mensaje.
 - Overlay de configuracion:
   - Desktop/tablet horizontal: centrado.
@@ -194,7 +194,8 @@ Notas de UI del workspace (2026-02-21):
 - En `InboxPane`, la miniatura de cada fila corresponde al articulo (`listingImageSrc`), no al avatar de perfil.
 - Overlay de propuesta (actualizado 2026-02-21):
   - Paso 1 con 2 cards visibles (seguras y/o personalizadas) y truncado defensivo de textos largos.
-  - Punto personalizado representado con icono de puntero; punto seguro con icono de escudo.
+  - Punto personalizado representado con icono `deal` (manos) dentro del pin; punto seguro con icono de escudo.
+  - Todos los pines usan estilo Wallapop tipo capsula con mini triangulo unido al cuerpo.
   - Cards seleccionables de paso 1 y paso 3 con indicador visual `selected/unselected` en el lateral derecho:
     - `unselected`: aro fino con centro blanco.
     - `selected`: aro oscuro grueso tipo donut con centro blanco reducido.
@@ -218,6 +219,7 @@ Notas de UI del workspace (2026-02-21):
 Notas de UI del workspace (actualizado 2026-02-23):
 - `MeetupCard` con patron de mensaje de sistema y titulo fijo `Quedada con <nombre contraparte>`.
 - En hilo de chat con actor `SELLER`, la card se alinea a la derecha.
+- Card sin sombra y con fondo blanco en ambos sentidos del chat.
 - Estado mostrado en label traducida (minusculas) con color semantico por estado.
 - Bloque de datos en 3 filas con iconos: calendario, ubicacion y billete.
 - Formato de contenido en filas:
@@ -228,6 +230,9 @@ Notas de UI del workspace (actualizado 2026-02-23):
   - `outline`: accion secundaria (`Editar`, `Proponer cambios`, `Anadir a Calendar`, `Reenviar propuesta`).
   - `texto`: accion de salida/descarte (`Cancelar quedada`, `Rechazar quedada`).
 - Tipografia de acciones en card: `16px` en los 3 tipos.
+- Al pulsar `Cancelar quedada` o `Rechazar quedada`, se abre modal de confirmacion con:
+  - CTA principal `Si`.
+  - CTA secundaria outline `No`.
 - Hora de envio:
   - Fija en esquina inferior derecha.
   - Alineada verticalmente con el ultimo elemento visible de la card.
@@ -257,17 +262,14 @@ Si hay conflicto con reglas anteriores del documento, prevalece este anexo v2.
 | `ARRIVED` | `Confirmar venta` (principal), `Cancelar quedada` (texto) | `I'm here` (principal, si aun no marco), `Cancelar quedada` (texto) | `COMPLETE` solo vendedor |
 | `COMPLETED` | Sin CTA de transicion | Sin CTA de transicion | Estado final |
 | `EXPIRED` | Sin CTA de transicion | Sin CTA de transicion | Estado final automatico |
-| `CANCELLED` | Sin CTA de transicion | Sin CTA de transicion | Estado final manual |
+| `CANCELLED` | `Proponer quedar` (desde composer) | Sin CTA de propuesta | Se permite reiniciar con nueva propuesta del vendedor |
 
 ### B. Politica de cancelacion y zona roja
 
 - Se permite cancelar en cualquier momento pre-terminal.
+- La accion de cancelar/rechazar siempre pide confirmacion explicita (`Si` / `No`).
 - En los ultimos `30 min` antes de `scheduledAt` (zona roja):
-  - Mostrar modal de advertencia antes de confirmar cancelacion.
-  - Copy recomendado:
-    - Titulo: `Faltan menos de 30 min para la quedada`
-    - Mensaje: `Cancelar ahora afectara a tu fiabilidad.`
-    - Acciones: `Cerrar` (secundaria) y `Cancelar igualmente` (critica).
+  - Mostrar aviso adicional de impacto en fiabilidad dentro del modal.
   - Al confirmar cancelacion, generar notificacion prioritaria a contraparte.
 
 ### C. Patron de no-show basado en evidencia de check-in
@@ -333,3 +335,15 @@ Reglas:
   - `70-89`: warning.
   - `<70`: error, sin porcentaje.
 - El bloque de rating muestra `(<numero valoraciones>)` a la derecha de estrellas.
+
+### E. Ajustes visuales recientes de mapa y cabecera movil
+
+- Cabecera de conversacion movil:
+  - Boton de volver como icono `arrow_left` sin contenedor circular.
+- Selector de mapa (wizard):
+  - Punto seguro: pin capsula turquesa + `shield` + mini triangulo unido.
+  - Punto seguro seleccionado: misma forma en tono verde mas oscuro.
+  - Punto personalizado: pin capsula en verde con icono `deal` (manos) + mini triangulo unido.
+  - Bloque `N ventas completadas` en punto seguro con mismo patron visual del aviso de no verificado, en variante verde Wallapop.
+- Mini mapa de `MeetupCard`:
+  - Reutiliza pin tipo capsula con mini triangulo unido.
