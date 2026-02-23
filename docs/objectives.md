@@ -88,11 +88,10 @@ Objetivos:
 - `ChatSecurityBanner` fijado sobre el composer en formato compacto.
 - `MeetupCard` mostrando datos de propuesta (lugar, precio final y metodo de pago) una vez creado el meetup.
 - `MeetupCard` adaptada al estilo de mensaje de sistema de Wallapop:
-  - Titulo visible: `Propuesta de quedada`.
+  - Titulo visible fijo: `Quedada con <nombre contraparte>`.
   - Cuando el actor del chat es `SELLER`, la card se renderiza en el lado derecho de la conversacion.
   - Variante inversa en propuesta recibida (`BUYER` + `PROPOSED`):
-    - Titulo: `Solicitud de quedada`.
-    - Acciones visibles: `Aceptar`, `Rechazar`, `Proponer cambios`.
+    - Acciones visibles: `Aceptar` (principal), `Proponer cambios` (outline), `Rechazar quedada` (texto).
     - La card se renderiza en el lado izquierdo de la conversacion.
   - Estado visible en label traducida y en minusculas (`pendiente`, `contraoferta`, `confirmada`, `llegada`, `completada`, `expirada`, `cancelada`).
   - Resumen de datos en 3 filas con icono a la izquierda:
@@ -102,8 +101,10 @@ Objetivos:
   - Formato visual del tiempo en card:
     - `dia \u00B7 hora` en la fila de calendario.
     - `metodo \u00B7 precio` en la fila de pago.
-  - Boton `Editar` disponible para vendedor mientras la propuesta no este confirmada (`PROPOSED`, `COUNTER_PROPOSED`).
-  - Accion critica abreviada en card: `Cancelar`.
+  - Boton `Editar` (outline) disponible para vendedor mientras la propuesta no este confirmada (`PROPOSED`, `COUNTER_PROPOSED`).
+  - Accion critica en card: `Cancelar quedada`.
+  - Tipografia unificada en acciones de card (principal, outline y texto): `16px`.
+  - Hora de envio fija en esquina inferior derecha, alineada con el ultimo elemento visible de la card, sin crear bloque de espacio extra al final.
   - `Editar` abre el overlay de propuesta reutilizando los datos ya cargados.
 - Mapa en card de propuesta:
   - Miniatura superior con render real de mapa (sin controles `+/-`).
@@ -181,7 +182,7 @@ No se introducen nuevos estados terminales en esta iteracion.
   - `SELLER` y `BUYER`: pueden `MARK_ARRIVED`.
   - `SELLER` y `BUYER`: pueden `CANCEL` hasta el ultimo segundo antes/durante la cita.
   - `EXPIRE` no se expone como accion manual.
-  - Se habilita accion de retraso `LATE_NOTICE` con opciones `+10 min` y `+20 min`.
+  - `LATE_NOTICE` queda fuera de la UI actual (evento reservado para futura fase si se reactiva).
 - Estado `ARRIVED`:
   - Se alcanza cuando al menos una parte marca llegada dentro de la ventana valida.
   - Si ambos marcan llegada y hay geovalidacion positiva, queda evidencia objetiva de asistencia.
@@ -220,7 +221,7 @@ No se introducen nuevos estados terminales en esta iteracion.
 - `MeetupEvent`:
   - Mantener eventos actuales.
   - Tratar `EXPIRE` como evento de sistema (no disparable desde UI).
-  - Incorporar `LATE_NOTICE` con `etaMinutes: 10 | 20`.
+  - `LATE_NOTICE` se mantiene como capacidad de dominio no expuesta en UI por ahora.
 - `MeetupMachine`:
   - Añadir metadata de check-in por rol (timestamp y resultado de proximidad).
   - Añadir metadata de resolucion de no-show (reportante, ausente inferido, fuente de evidencia).
@@ -239,7 +240,7 @@ Si hay conflicto con bloques anteriores, prevalece v3.
 - El estado `COUNTER_PROPOSED` se representa visualmente como `pendiente` (en lugar de `contraoferta`) para mantener foco en revision del vendedor.
 - En propuesta recibida (`BUYER` + `PROPOSED`), la accion `Proponer cambios` abre el overlay de propuesta para editar parametros existentes.
 - Al enviar esos cambios desde comprador, la entidad transiciona a `COUNTER_PROPOSED` con los nuevos datos propuestos.
-- Tras confirmacion (`CONFIRMED` y estados posteriores), el titulo de card pasa a `Quedada con <nombre contraparte>`.
+- En todos los estados visibles de la card, el titulo es `Quedada con <nombre contraparte>`.
 
 #### 2) Ventana de llegada y acciones en confirmado
 
@@ -247,8 +248,8 @@ Si hay conflicto con bloques anteriores, prevalece v3.
 - Mensaje de llegada en card dentro de ventana:
   - `Acercate a menos de 100 metros del punto de encuentro para indicar que has llegado.`
 - En `CONFIRMED`:
-  - Dentro de ventana: CTA `I'm here` + `Cancelar`.
-  - Fuera de ventana: solo CTAs `Cancelar` y `Anadir a Calendar`.
+  - Dentro de ventana: CTA `I'm here` + `Cancelar quedada`.
+  - Fuera de ventana: CTAs `Anadir a Calendar` + `Cancelar quedada`.
 - El boton `Anadir a Calendar` exporta un `.ics` local para calendario personal.
 
 #### 3) Cancelacion en zona roja

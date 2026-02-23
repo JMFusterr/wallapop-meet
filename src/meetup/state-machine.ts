@@ -110,6 +110,7 @@ export function transitionMeetup(
             return success({
                 ...meetup,
                 status: "COUNTER_PROPOSED",
+                proposedAt: nowFallback(event.occurredAt),
             })
         }
 

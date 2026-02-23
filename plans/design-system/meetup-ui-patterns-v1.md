@@ -215,15 +215,23 @@ Notas de UI del workspace (2026-02-21):
     - Metodos de pago en cards seleccionables con iconografia.
     - En error de metodo, cada card se marca en rojo de forma independiente (sin borde global envolvente).
 
-Notas de UI del workspace (actualizado 2026-02-22):
-- `MeetupCard` con patron de mensaje de sistema y titulo `Propuesta de quedada`.
+Notas de UI del workspace (actualizado 2026-02-23):
+- `MeetupCard` con patron de mensaje de sistema y titulo fijo `Quedada con <nombre contraparte>`.
 - En hilo de chat con actor `SELLER`, la card se alinea a la derecha.
 - Estado mostrado en label traducida (minusculas) con color semantico por estado.
 - Bloque de datos en 3 filas con iconos: calendario, ubicacion y billete.
 - Formato de contenido en filas:
   - Calendario: `dia \u00B7 hora`.
   - Pago: `metodo \u00B7 precio`.
-- Boton de accion critica en card: `Cancelar` (sin sufijo adicional).
+- Tipologia de acciones en card:
+  - `principal`: accion prioritaria del estado.
+  - `outline`: accion secundaria (`Editar`, `Proponer cambios`, `Anadir a Calendar`, `Reenviar propuesta`).
+  - `texto`: accion de salida/descarte (`Cancelar quedada`, `Rechazar quedada`).
+- Tipografia de acciones en card: `16px` en los 3 tipos.
+- Hora de envio:
+  - Fija en esquina inferior derecha.
+  - Alineada verticalmente con el ultimo elemento visible de la card.
+  - Sin reservar bloque de espacio inferior adicional.
 - Miniatura superior con render real de mapa y sin texto superpuesto.
 - La miniatura oculta controles de zoom `+/-`.
 - Tap en miniatura abre modal de mapa en grande, solo lectura:
@@ -243,10 +251,10 @@ Si hay conflicto con reglas anteriores del documento, prevalece este anexo v2.
 | Estado | SELLER | BUYER | Comentarios |
 | --- | --- | --- | --- |
 | `null` | `Proponer quedar` | Sin CTA de propuesta | Entrada exclusiva de vendedor |
-| `PROPOSED` | `Editar` | `Aceptar`, `Proponer cambios`, `Cancelar` | Comprador decide sobre propuesta inicial |
-| `COUNTER_PROPOSED` | `Aceptar contraoferta`, `Reenviar propuesta`, `Editar`, `Cancelar` | Espera respuesta | Vendedor retoma control |
-| `CONFIRMED` | `I'm here`, `Llego tarde`, `Cancelar` | `I'm here`, `Llego tarde`, `Cancelar` | `EXPIRE` no visible en UI |
-| `ARRIVED` | `Confirmar venta`, `Cancelar` | `I'm here` (si aun no marco), `Cancelar` | `COMPLETE` solo vendedor |
+| `PROPOSED` | `Editar` (outline), `Cancelar quedada` (texto) | `Aceptar` (principal), `Proponer cambios` (outline), `Rechazar quedada` (texto) | Comprador decide sobre propuesta inicial |
+| `COUNTER_PROPOSED` | `Editar` (outline), `Aceptar contraoferta` (principal), `Reenviar propuesta` (outline), `Cancelar quedada` (texto) | Espera respuesta | Vendedor retoma control |
+| `CONFIRMED` | `I'm here` (principal) o `Anadir a Calendar` (outline), `Cancelar quedada` (texto) | `I'm here` (principal) o `Anadir a Calendar` (outline), `Cancelar quedada` (texto) | `EXPIRE` no visible en UI |
+| `ARRIVED` | `Confirmar venta` (principal), `Cancelar quedada` (texto) | `I'm here` (principal, si aun no marco), `Cancelar quedada` (texto) | `COMPLETE` solo vendedor |
 | `COMPLETED` | Sin CTA de transicion | Sin CTA de transicion | Estado final |
 | `EXPIRED` | Sin CTA de transicion | Sin CTA de transicion | Estado final automatico |
 | `CANCELLED` | Sin CTA de transicion | Sin CTA de transicion | Estado final manual |
@@ -258,22 +266,11 @@ Si hay conflicto con reglas anteriores del documento, prevalece este anexo v2.
   - Mostrar modal de advertencia antes de confirmar cancelacion.
   - Copy recomendado:
     - Titulo: `Faltan menos de 30 min para la quedada`
-    - Mensaje: `Cancelar ahora afectara a tu fiabilidad. Si solo llegas tarde, avisa con "Llego tarde".`
-    - Acciones: `Llego tarde` (secundaria) y `Cancelar igualmente` (critica).
+    - Mensaje: `Cancelar ahora afectara a tu fiabilidad.`
+    - Acciones: `Cerrar` (secundaria) y `Cancelar igualmente` (critica).
   - Al confirmar cancelacion, generar notificacion prioritaria a contraparte.
 
-### C. Patron "Llego tarde" (`LATE_NOTICE`)
-
-- Disponible para ambos roles en `CONFIRMED`.
-- Quick actions:
-  - `Llego en 10 min`
-  - `Llego en 20 min`
-- Efecto esperado:
-  - Registrar evento `LATE_NOTICE` con `etaMinutes`.
-  - Notificar de inmediato a la contraparte dentro del chat.
-  - No cambia estado de meetup.
-
-### D. Patron de no-show basado en evidencia de check-in
+### C. Patron de no-show basado en evidencia de check-in
 
 - El boton `I'm here` es la fuente principal de evidencia de asistencia.
 - Regla de evidencia:
@@ -283,14 +280,14 @@ Si hay conflicto con reglas anteriores del documento, prevalece este anexo v2.
   - Resolucion automatica por sistema hacia `EXPIRED` cuando venza la ventana temporal de no-show.
   - Debe quedar trazabilidad de actor presente/ausente en metadata (para siguiente fase de implementacion).
 
-### E. Check-in y expiracion
+### D. Check-in y expiracion
 
 - Ventana de `I'm here`: `-15 min` a `+2 h` respecto a `scheduledAt`.
 - `EXPIRE` es evento interno del sistema:
   - No existe boton manual `Expirar meetup`.
   - No se muestra CTA equivalente en tarjeta, timeline ni banner.
 
-### F. Seguimiento post-encuentro
+### E. Seguimiento post-encuentro
 
 - Primer prompt de confirmacion/valoracion: entre `+1 h` y `+2 h` tras la hora pactada.
 - Default v2: `+2 h`.
@@ -306,8 +303,8 @@ Si hay conflicto con anexo v2 o secciones previas, prevalece v3.
 
 | Rango temporal | CTAs visibles |
 | --- | --- |
-| Dentro de `-30 min` a `+2 h` | `I'm here`, `Cancelar` |
-| Fuera de ese rango | `Cancelar`, `Anadir a Calendar` |
+| Dentro de `-30 min` a `+2 h` | `I'm here`, `Cancelar quedada` |
+| Fuera de ese rango | `Anadir a Calendar`, `Cancelar quedada` |
 
 Reglas:
 - No existe CTA `Expirar meetup`.
@@ -322,10 +319,7 @@ Reglas:
 
 ### C. Titulo de card de meetup
 
-- Antes de confirmar:
-  - `Solicitud de quedada` en propuesta recibida por comprador.
-  - `Propuesta de quedada` en el resto pre-confirmacion.
-- Desde `CONFIRMED` en adelante:
+- En todos los estados:
   - `Quedada con <nombre contraparte>`.
 
 ### D. Sidebar desktop de contraparte

@@ -23,9 +23,11 @@ type MeetupCardProps = {
 type CardAction = {
     id: string
     label: string
-    variant: "primary" | "inline_action" | "critical"
+    variant: "primary" | "inline_action" | "critical" | "secondary" | "ghost"
     run: () => void
     disabled?: boolean
+    className?: string
+    fullWidth?: boolean
 }
 
 const RED_ZONE_CANCELLATION_MINUTES = 30
@@ -94,6 +96,13 @@ function formatScheduledAt(value: Date): string {
     return `${datePart} \u00B7 ${timePart}`
 }
 
+function formatMessageTime(value: Date): string {
+    return value.toLocaleTimeString("es-ES", {
+        hour: "2-digit",
+        minute: "2-digit",
+    })
+}
+
 function buildStaticMapThumbnailUrl(lat: number, lng: number): string {
     return `${lat.toFixed(6)},${lng.toFixed(6)}`
 }
@@ -151,6 +160,11 @@ function paymentMethodLabel(method: MeetupPaymentMethod): string {
     }
 }
 
+function PaymentMethodIcon({ method }: { method: MeetupPaymentMethod | undefined }) {
+    void method
+    return <Banknote size={16} className="text-[#253238]" />
+}
+
 function MeetupCard({
     meetup,
     actorRole,
@@ -192,6 +206,12 @@ function MeetupCard({
     }
 
     const actions: CardAction[] = []
+    const PRIMARY_ACTION_CLASS =
+        "h-10 w-full font-wallie-chunky text-[16px]"
+    const OUTLINE_ACTION_CLASS =
+        "h-10 w-full rounded-[999px] border-[#0FA58A] bg-white font-wallie-chunky text-[16px] text-[#0D907A] hover:bg-[#F5FFFD]"
+    const TEXT_ACTION_CLASS =
+        "h-auto border-transparent bg-transparent px-0 py-1 font-wallie-chunky text-[16px] text-[#6F7C83] underline underline-offset-2 hover:bg-transparent hover:text-[#4A5A63]"
 
     const runCancel = () => {
         if (isRedZoneCancellation) {
@@ -246,6 +266,8 @@ function MeetupCard({
                     occurredAt: currentTime,
                 }),
             disabled: actorRole !== "SELLER",
+            className: PRIMARY_ACTION_CLASS,
+            fullWidth: true,
         })
     }
 
@@ -261,11 +283,14 @@ function MeetupCard({
                     occurredAt: currentTime,
                 }),
             disabled: actorRole !== "BUYER",
+            className:
+                `${PRIMARY_ACTION_CLASS} rounded-[999px] bg-[#14C8A8] text-[#16343A] shadow-[inset_0_-2px_0_rgba(0,0,0,0.08)]`,
+            fullWidth: true,
         })
         actions.push({
             id: "counter",
             label: "Proponer cambios",
-            variant: "inline_action",
+            variant: "secondary",
             run: onEditProposal
                 ? onEditProposal
                 : () =>
@@ -275,13 +300,18 @@ function MeetupCard({
                         occurredAt: currentTime,
                     }),
             disabled: actorRole !== "BUYER",
+            className:
+                OUTLINE_ACTION_CLASS,
+            fullWidth: true,
         })
         actions.push({
             id: "reject",
-            label: "Rechazar",
-            variant: "critical",
+            label: "Rechazar quedada",
+            variant: "ghost",
             run: runCancel,
             disabled: actorRole !== "BUYER",
+            className: TEXT_ACTION_CLASS,
+            fullWidth: true,
         })
     }
 
@@ -297,11 +327,13 @@ function MeetupCard({
                     occurredAt: currentTime,
                 }),
             disabled: actorRole !== "SELLER",
+            className: PRIMARY_ACTION_CLASS,
+            fullWidth: true,
         })
         actions.push({
             id: "repropose",
             label: "Reenviar propuesta",
-            variant: "inline_action",
+            variant: "secondary",
             run: () =>
                 applyEvent({
                     type: "PROPOSE",
@@ -309,6 +341,8 @@ function MeetupCard({
                     occurredAt: currentTime,
             }),
             disabled: actorRole !== "SELLER",
+            className: OUTLINE_ACTION_CLASS,
+            fullWidth: true,
         })
     }
 
@@ -325,13 +359,17 @@ function MeetupCard({
                         occurredAt: currentTime,
                     }),
                 disabled: !arrivalAction.enabled,
+                className: PRIMARY_ACTION_CLASS,
+                fullWidth: true,
             })
         } else {
             actions.push({
                 id: "calendar",
                 label: "Anadir a Calendar",
-                variant: "inline_action",
+                variant: "secondary",
                 run: addToCalendar,
+                className: OUTLINE_ACTION_CLASS,
+                fullWidth: true,
             })
         }
     }
@@ -349,6 +387,8 @@ function MeetupCard({
                         occurredAt: currentTime,
                     }),
                 disabled: !arrivalAction.enabled,
+                className: PRIMARY_ACTION_CLASS,
+                fullWidth: true,
             })
         }
 
@@ -363,6 +403,8 @@ function MeetupCard({
                         actorRole,
                         occurredAt: currentTime,
                     }),
+                className: PRIMARY_ACTION_CLASS,
+                fullWidth: true,
             })
         }
     }
@@ -376,44 +418,52 @@ function MeetupCard({
     ) {
         actions.push({
             id: "cancel",
-            label: "Cancelar",
-            variant: "critical",
+            label: "Cancelar quedada",
+            variant: "ghost",
             run: runCancel,
+            className: TEXT_ACTION_CLASS,
+            fullWidth: true,
         })
     }
 
-    const paymentAndPriceValue = [
-        meetup.proposedPaymentMethod ? paymentMethodLabel(meetup.proposedPaymentMethod) : "Sin metodo",
-        meetup.finalPrice !== undefined ? `${meetup.finalPrice.toFixed(2)} €` : "sin precio",
-    ].join(" \u00B7 ")
-
+    const paymentMethodValue = meetup.proposedPaymentMethod
+        ? paymentMethodLabel(meetup.proposedPaymentMethod)
+        : "Sin metodo"
+    const formattedPrice =
+        meetup.finalPrice !== undefined ? `${meetup.finalPrice.toFixed(2)} \u20AC` : "sin precio"
     const currentStatusPill = statusPill(meetup.status)
-    const title =
-        meetup.status === "CONFIRMED" ||
-        meetup.status === "ARRIVED" ||
-        meetup.status === "COMPLETED" ||
-        meetup.status === "EXPIRED" ||
-        meetup.status === "CANCELLED"
-            ? `Quedada con ${counterpartName ?? "usuario"}`
-            : meetup.status === "PROPOSED" && actorRole === "BUYER"
-              ? "Solicitud de quedada"
-              : "Propuesta de quedada"
+    const title = `Quedada con ${counterpartName ?? "usuario"}`
     const canEditProposal =
         actorRole === "SELLER" &&
         (meetup.status === "PROPOSED" || meetup.status === "COUNTER_PROPOSED")
+    const isPendingActionStatus = meetup.status === "PROPOSED" || meetup.status === "COUNTER_PROPOSED"
+    const sentAt = meetup.proposedAt ?? meetup.confirmedAt ?? meetup.cancelledAt ?? null
+    if (canEditProposal && onEditProposal) {
+        actions.unshift({
+            id: "edit",
+            label: "Editar",
+            variant: "secondary",
+            run: onEditProposal,
+            className: OUTLINE_ACTION_CLASS,
+            fullWidth: true,
+        })
+    }
+    const primaryActions = actions.filter((action) => action.variant !== "ghost")
+    const footerAction = actions.find((action) => action.variant === "ghost")
     const hasMapCoordinates =
         typeof meetup.proposedLocationLat === "number" &&
         typeof meetup.proposedLocationLng === "number"
-    const mapThumbnailCenter = hasMapCoordinates
-        ? buildStaticMapThumbnailUrl(meetup.proposedLocationLat, meetup.proposedLocationLng)
-        : ""
+    const mapThumbnailCenter =
+        typeof meetup.proposedLocationLat === "number" && typeof meetup.proposedLocationLng === "number"
+            ? buildStaticMapThumbnailUrl(meetup.proposedLocationLat, meetup.proposedLocationLng)
+            : ""
     const mapThumbnailPosition = mapThumbnailCenter
         ? (mapThumbnailCenter.split(",").map(Number) as [number, number])
         : null
 
     return (
         <>
-            <section className="max-w-[420px] rounded-[20px] border border-[#ECEFF1] bg-[#C6EDF6] px-4 py-3">
+            <section className="relative w-[360px] rounded-[20px] border border-[#E4EAED] bg-white px-4 pb-3 pt-3 shadow-[0_3px_12px_rgba(37,50,56,0.08)]">
             <button
                 type="button"
                 className="wm-mini-map relative mb-3 h-[88px] w-full overflow-hidden rounded-[14px] border border-[#B8DCE4] bg-[#EAF8FC] text-left"
@@ -440,12 +490,16 @@ function MeetupCard({
                 ) : null}
             </button>
 
-            <div className="space-y-2">
+            <div className="flex items-center gap-2.5">
                 <p className="font-wallie-chunky text-[17px] leading-[1.1] text-[#253238]">
                     {title}
                 </p>
                 <span
-                    className={`inline-flex rounded-full border px-2.5 py-1 font-wallie-fit text-[11px] leading-[1] ${currentStatusPill.className}`}
+                    className={`inline-flex rounded-full border px-2.5 py-1 font-wallie-fit text-[11px] leading-[1] ${
+                        isPendingActionStatus
+                            ? "border-[#D7DEE2] bg-[#EEF2F4] text-[#75838A]"
+                            : currentStatusPill.className
+                    }`}
                 >
                     {currentStatusPill.label}
                 </span>
@@ -453,7 +507,7 @@ function MeetupCard({
 
             <dl className="mt-3 space-y-2.5">
                 <div className="flex items-center gap-2.5">
-                    <dt className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF5F8] text-[#253238]">
+                    <dt className="inline-flex items-center justify-center text-[#253238]">
                         <WallapopIcon name="calendar" size={14} />
                     </dt>
                     <dd className="font-wallie-fit text-[13px] text-[#253238]">
@@ -461,7 +515,7 @@ function MeetupCard({
                     </dd>
                 </div>
                 <div className="flex items-center gap-2.5">
-                    <dt className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF5F8] text-[#253238]">
+                    <dt className="inline-flex items-center justify-center text-[#253238]">
                         <MapPin size={14} />
                     </dt>
                     <dd className="font-wallie-fit text-[13px] text-[#253238]">
@@ -469,11 +523,14 @@ function MeetupCard({
                     </dd>
                 </div>
                 <div className="flex items-center gap-2.5">
-                    <dt className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#EAF5F8] text-[#253238]">
-                        <Banknote size={14} />
+                    <dt className="inline-flex items-center justify-center text-[#253238]">
+                        <PaymentMethodIcon method={meetup.proposedPaymentMethod} />
                     </dt>
                     <dd className="font-wallie-fit text-[13px] text-[#253238]">
-                        {paymentAndPriceValue}
+                        {paymentMethodValue} {" \u00B7 "}
+                        <span className="font-wallie-chunky text-[#1E2A2F]">
+                            {formattedPrice}
+                        </span>
                     </dd>
                 </div>
             </dl>
@@ -484,36 +541,40 @@ function MeetupCard({
                 </p>
             ) : null}
 
-            {actions.length > 0 ? (
-                <div className="mt-3 flex flex-wrap gap-2">
-                    {actions.map((action) => (
+            {primaryActions.length > 0 ? (
+                <div className="mt-4 space-y-2">
+                    {primaryActions.map((action) => (
                         <Button
                             key={action.id}
                             variant={action.variant}
                             size="sm"
                             onClick={action.run}
                             disabled={action.disabled}
+                            className={`${action.fullWidth ? "w-full" : ""} ${action.className ?? ""}`.trim()}
                         >
                             {action.label}
                         </Button>
                     ))}
-                    {canEditProposal && onEditProposal ? (
-                        <Button
-                            variant="inline_action"
-                            size="sm"
-                            onClick={onEditProposal}
-                        >
-                            Editar
-                        </Button>
-                    ) : null}
                 </div>
             ) : null}
-            {actions.length === 0 && canEditProposal && onEditProposal ? (
-                <div className="mt-3">
-                    <Button variant="inline_action" size="sm" onClick={onEditProposal}>
-                        Editar
+
+            {footerAction ? (
+                <div className="mt-1 flex min-h-8 items-center justify-center">
+                    <Button
+                        variant={footerAction.variant}
+                        size="sm"
+                        onClick={footerAction.run}
+                        disabled={footerAction.disabled}
+                        className={`${footerAction.className} text-center`}
+                    >
+                        {footerAction.label}
                     </Button>
                 </div>
+            ) : null}
+            {sentAt ? (
+                <p className="absolute bottom-3 right-4 text-right font-wallie-fit text-[12px] text-[#7A878E]">
+                    {formatMessageTime(sentAt)}
+                </p>
             ) : null}
             </section>
             {isRedZoneModalOpen ? (
@@ -545,4 +606,6 @@ function MeetupCard({
 }
 
 export { MeetupCard }
+
+
 

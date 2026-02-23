@@ -1,6 +1,6 @@
 import * as React from "react"
 import L from "leaflet"
-import { Banknote, MapPin, QrCode, Search, Smartphone, type LucideIcon } from "lucide-react"
+import { Banknote, MapPin, QrCode, Search, Smartphone } from "lucide-react"
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet"
 
 import { resolveChatMeetupEntryActionState } from "@/components/meetup/chat-meetup-entry-rules"
@@ -1254,14 +1254,17 @@ function MeetupProposalOverlay({
                                         <div className="grid gap-3 sm:grid-cols-3">
                                             {(
                                                 [
-                                                    { method: "CASH", icon: Banknote },
-                                                    { method: "BIZUM", icon: Smartphone },
-                                                    { method: "WALLET", icon: QrCode },
+                                                    { method: "CASH", icon: () => <Banknote size={16} /> },
+                                                    {
+                                                        method: "BIZUM",
+                                                        icon: () => <Smartphone size={16} />,
+                                                    },
+                                                    { method: "WALLET", icon: () => <QrCode size={16} /> },
                                                 ] as Array<{
                                                     method: MeetupPaymentMethod
-                                                    icon: LucideIcon
+                                                    icon: () => React.ReactNode
                                                 }>
-                                            ).map(({ method, icon: Icon }) => {
+                                            ).map(({ method, icon }) => {
                                                 const isSelected = paymentMethod === method
                                                 return (
                                                     <button
@@ -1278,7 +1281,7 @@ function MeetupProposalOverlay({
                                                     >
                                                         <div className="flex items-center gap-3">
                                                             <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
-                                                                <Icon size={16} />
+                                                                {icon()}
                                                             </span>
                                                             <div className="min-w-0 flex-1">
                                                                 <p className="font-wallie-fit text-[14px] leading-[1.2] text-[#253238] md:text-[15px]">
@@ -1693,7 +1696,7 @@ function WallapopChatWorkspace() {
                     responseAddress: data.display_name,
                 })
             ) {
-                setProposalCustomLocationLabel(data.display_name)
+                setProposalCustomLocationLabel(data.display_name ?? "")
             }
         } catch {
             // Fallback silencioso: se mantienen coordenadas.

@@ -258,8 +258,7 @@ Reglas:
 - Debe renderizar acciones contextuales por estado de negocio y por rol visible en chat.
 - En `SELLER`, la card se alinea en el lado derecho del hilo cuando existe propuesta activa.
 - En `BUYER`, la card se alinea en el lado izquierdo del hilo cuando recibe una propuesta en `PROPOSED`.
-- Titulo fijo en card: `Propuesta de quedada`.
-- Variante inversa para propuesta recibida (`BUYER` + `PROPOSED`): titulo `Solicitud de quedada`.
+- Titulo fijo en card para todos los estados: `Quedada con <counterpartName>`.
 - Debe mostrar label de estado traducida en minusculas:
   - `PROPOSED` -> `pendiente`
   - `COUNTER_PROPOSED` -> `contraoferta`
@@ -280,7 +279,7 @@ Reglas:
   - Calendario: dia y hora.
   - Mapa: direccion.
   - Billete: metodo de pago y precio.
-- El copy de la accion critica en card debe ser corto: `Cancelar`.
+- El copy de la accion critica en card debe usar sufijo de contexto: `Cancelar quedada` o `Rechazar quedada`.
 - El separador visual de las filas de contenido usa `\u00B7`:
   - `dia \u00B7 hora`
   - `metodo \u00B7 precio`
@@ -292,8 +291,18 @@ Reglas:
 - Debe permitir `Editar` para `SELLER` en `PROPOSED` y `COUNTER_PROPOSED`.
 - En propuesta recibida por comprador (`BUYER` + `PROPOSED`) debe mostrar 3 acciones:
   - `Aceptar`
-  - `Rechazar`
+  - `Rechazar quedada`
   - `Proponer cambios`
+- Tipologia de botones en `MeetupCard`:
+  - `principal`: accion primaria del estado (`Aceptar`, `I'm here`, `Confirmar venta`, etc.).
+  - `outline`: accion secundaria de continuidad (`Editar`, `Proponer cambios`, `Anadir a Calendar`, `Reenviar propuesta`).
+  - `texto`: accion destructiva suave (`Cancelar quedada`, `Rechazar quedada`).
+- Tipografia de botones en `MeetupCard`:
+  - Todos los botones de accion (`principal`, `outline`, `texto`) usan `16px`.
+- Hora de envio en card:
+  - Se muestra en esquina inferior derecha.
+  - Debe quedar alineada verticalmente con el ultimo elemento visible de la card.
+  - No debe crear un bloque extra de espacio en blanco al final del componente.
 
 ## 16. Banner del dia (`MeetupDayBanner`)
 Propiedades visuales:
@@ -500,13 +509,13 @@ Reglas funcionales actualizadas:
 - `EXPIRE` se considera cierre automatico del sistema y no se renderiza como accion del usuario.
 - En `CONFIRMED`, ambos roles muestran:
   - `I'm here` (segun ventana de llegada).
-  - `Llego tarde` (nuevo patron).
-  - `Cancelar`.
+  - `Anadir a Calendar` (fuera de ventana).
+  - `Cancelar quedada`.
 - En `ARRIVED`, `COMPLETE` (`Confirmar venta`) solo para `SELLER`.
 
 Estados y disponibilidad:
 - `I'm here`: solo dentro de `-15 min` a `+2 h`.
-- `Cancelar`: permitido siempre en estados no terminales, con comportamiento especial en zona roja.
+- `Cancelar quedada`: permitido siempre en estados no terminales, con comportamiento especial en zona roja.
 
 ## B. Nuevo patron de accion de retraso (`LATE_NOTICE`)
 
@@ -521,11 +530,9 @@ API funcional esperada:
   - No cambia estado de meetup.
   - Muestra confirmacion local y dispara notificacion a contraparte.
 
-Copy recomendado:
-- Titulo de accion: `Llego tarde`.
-- Opciones:
-  - `Llego en 10 min`
-  - `Llego en 20 min`
+Estado actual:
+- El patron `LATE_NOTICE` no esta expuesto como CTA en la UI actual.
+- Si se retoma en una version futura, debe documentarse en un addendum nuevo.
 
 ## C. Modal de cancelacion en zona roja (`< 30 min`)
 
@@ -537,19 +544,17 @@ Props minimas:
 - `isRedZone: boolean`
 - `minutesToMeetup: number`
 - `onConfirmCancel`
-- `onChooseLateNotice` (opcional para desvio a `LATE_NOTICE`)
 
 Comportamiento:
 - Fuera de zona roja: confirmacion de cancelacion estandar.
 - En zona roja:
   - Mensaje de impacto en fiabilidad.
-  - Opcion alternativa de avisar retraso.
   - Confirmacion explicita para continuar con cancelacion.
 
 Copy base en zona roja:
 - Titulo: `Faltan menos de 30 min para la quedada`.
-- Cuerpo: `Cancelar ahora afectara a tu fiabilidad. Si puedes llegar, avisa con "Llego tarde".`
-- CTA primario: `Llego tarde`
+- Cuerpo: `Cancelar ahora afectara a tu fiabilidad.`
+- CTA primario: `Cerrar`
 - CTA critico: `Cancelar igualmente`
 
 ## D. Feedback visual de fiabilidad
@@ -585,10 +590,10 @@ Aunque esta iteracion es documental, se fija el contrato que debera soportar el 
 
 Los siguientes escenarios deben tener story de estado o caso de prueba visual:
 1. `MeetupCard` en `CONFIRMED` sin CTA de expirar.
-2. `MeetupCard` en `CONFIRMED` con `Llego tarde`.
+2. `MeetupCard` en `CONFIRMED` con `Anadir a Calendar` fuera de ventana.
 3. Modal de cancelacion fuera de zona roja.
 4. Modal de cancelacion en zona roja con warning de fiabilidad.
-5. Selector rapido de `LATE_NOTICE` (`10`/`20` min).
+5. `MeetupCard` con `Cancelar quedada` en estilo texto.
 6. `MeetupCard` en `ARRIVED` con `Confirmar venta` solo para `SELLER`.
 
 ---
@@ -603,16 +608,24 @@ Ajustes de props:
 - Añadido `counterpartName?: string` para titulado contextual tras confirmacion.
 
 Titulos:
-- Pre-confirmacion:
-  - `Solicitud de quedada` (`BUYER` + `PROPOSED`).
-  - `Propuesta de quedada` (resto de casos).
-- Post-confirmacion (`CONFIRMED`, `ARRIVED`, `COMPLETED`, `EXPIRED`, `CANCELLED`):
+- Todos los estados:
   - `Quedada con <counterpartName>`.
 
 Acciones en `CONFIRMED`:
-- Dentro de ventana `-30 min` a `+2 h`: `I'm here` + `Cancelar`.
-- Fuera de ventana: `Cancelar` + `Anadir a Calendar`.
+- Dentro de ventana `-30 min` a `+2 h`: `I'm here` + `Cancelar quedada`.
+- Fuera de ventana: `Anadir a Calendar` + `Cancelar quedada`.
 - `Anadir a Calendar` genera descarga local de archivo `.ics`.
+
+Tipologia de botones en `MeetupCard`:
+- `principal`: accion principal del estado.
+- `outline`: accion secundaria no destructiva.
+- `texto`: accion destructiva suave.
+- Tamano tipografico unificado en acciones: `16px`.
+
+Hora en card:
+- Hora de envio visible en esquina inferior derecha.
+- Debe quedar alineada con el ultimo elemento visible de la card.
+- No se reserva un bloque de altura adicional solo para la hora.
 
 Etiqueta de estado:
 - `COUNTER_PROPOSED` se muestra como `pendiente`.
@@ -650,7 +663,7 @@ Reglas de color:
 
 Casos que deben seguir cubiertos en story/test visual:
 1. `MeetupCard` en `CONFIRMED` dentro de ventana (mensaje de proximidad + `I'm here`).
-2. `MeetupCard` en `CONFIRMED` fuera de ventana (solo `Cancelar` + `Anadir a Calendar`).
+2. `MeetupCard` en `CONFIRMED` fuera de ventana (solo `Anadir a Calendar` + `Cancelar quedada`).
 3. `MeetupCard` con titulo post-confirmacion `Quedada con <nombre>`.
 4. `COUNTER_PROPOSED` renderizado como `pendiente`.
 5. `ChatCounterpartCard` asistencia alta (`>90`).
