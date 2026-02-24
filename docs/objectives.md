@@ -1,4 +1,4 @@
-ï»¿La funcionalidad se llama **Wallapop Meet**, un sistema para formalizar encuentros presenciales de compraventa dentro de Wallapop.
+La funcionalidad se llama **Wallapop Meet**, un sistema para formalizar encuentros presenciales de compraventa dentro de Wallapop.
 
 ### Resumen de la funcionalidad
 
@@ -24,7 +24,7 @@ Objetivos:
 - El evento sigue una maquina de estados clara:
   `PROPOSED -> COUNTER_PROPOSED -> CONFIRMED -> ARRIVED -> COMPLETED/EXPIRED/CANCELLED`.
 - Las notificaciones push deben ser interactivas y funcionar desde la pantalla bloqueada en iOS y Android.
-- La logica de llegada debe respetar una ventana temporal: 15 minutos antes y hasta 2 horas despues de la hora programada.
+- La logica de llegada debe respetar una ventana temporal: 30 minutos antes y hasta 2 horas despues de la hora programada.
 - La integracion con mapas debe sugerir puntos de encuentro seguros en lugares publicos (por ejemplo, estaciones, centros comerciales o comisarias), permitiendo tambien seleccion personalizada con advertencia de seguridad.
 - Debe existir seguimiento posterior para confirmar el estado de la venta entre 24 y 48 horas despues.
 
@@ -53,9 +53,9 @@ Objetivos:
   - El boton `Siguiente` no se deshabilita; al pulsar sin completar, muestra error global y marca en error los campos faltantes.
 - Reglas actuales del paso 3 (importe y pago):
   - El importe usa el componente `Input` del design system.
-  - El copy de moneda en UI usa simbolo `â‚¬` (no `EUR`).
-  - El importe admite formato decimal (`hasta 2 decimales`) y limita la entrada a un maximo de `99999 â‚¬`.
-  - Si el usuario supera `2000 â‚¬`, se muestra una alerta destacada de normativa DAC7 con enlace externo de ayuda (`Mas informacion`).
+  - El copy de moneda en UI usa simbolo `€` (no `EUR`).
+  - El importe admite formato decimal (`hasta 2 decimales`) y limita la entrada a un maximo de `99999 €`.
+  - Si el usuario supera `2000 €`, se muestra una alerta destacada de normativa DAC7 con enlace externo de ayuda (`Mas informacion`).
   - Los metodos de pago usan cards seleccionables con iconografia contextual (`CASH`, `BIZUM`, `WALLET`).
   - El CTA final usa el texto `Enviar propuesta`.
   - El CTA no se deshabilita; al pulsar sin completar, muestra error global y marca en error los campos faltantes.
@@ -148,7 +148,7 @@ Objetivos:
   - `Button.variant=critical` usa radio tipo pill consistente con el resto de botones de accion Wallapop.
 - Estado de entrega con icono `double_check` unificado en listado y burbujas (`sent` gris, `read` verde), con bubble enviada usando padding horizontal simetrico.
 - CTA de llegada en castellano:
-  - `I'm here` sustituido por `Estoy aqui` en `MeetupCard` y `MeetupDayBanner`.
+  - `Estoy aqui` sustituido por `Estoy aqui` en `MeetupCard` y `MeetupDayBanner`.
 - Buzon de conversaciones con escenario realista: multiples interesados por articulo, textos de chat plausibles e imagen de producto por conversacion.
 - El chat de `Bicicleta fixie Fuji` (`conv-002`) incluye una propuesta activa del vendedor para validar la variante inversa de `MeetupCard` desde el rol comprador.
 - Estados comerciales representados en el listado de conversaciones con los indicadores visuales del sistema de diseno:
@@ -224,7 +224,7 @@ No se introducen nuevos estados terminales en esta iteracion.
 
 #### 3) Reglas temporales y de evidencia
 
-- Ventana de llegada: `scheduledAt - 15 min` hasta `scheduledAt + 2 h`.
+- Ventana de llegada: `scheduledAt - 30 min` hasta `scheduledAt + 2 h`.
 - Zona roja de cancelacion: ultimos `30 min` antes de `scheduledAt`.
 - Cancelacion en zona roja:
   - Mostrar advertencia de impacto en fiabilidad.
@@ -257,9 +257,9 @@ No se introducen nuevos estados terminales en esta iteracion.
   - Tratar `EXPIRE` como evento de sistema (no disparable desde UI).
   - `LATE_NOTICE` se mantiene como capacidad de dominio no expuesta en UI por ahora.
 - `MeetupMachine`:
-  - AÃ±adir metadata de check-in por rol (timestamp y resultado de proximidad).
-  - AÃ±adir metadata de resolucion de no-show (reportante, ausente inferido, fuente de evidencia).
-  - AÃ±adir metadata de impacto de fiabilidad para cancelaciones en zona roja.
+  - Añadir metadata de check-in por rol (timestamp y resultado de proximidad).
+  - Añadir metadata de resolucion de no-show (reportante, ausente inferido, fuente de evidencia).
+  - Añadir metadata de impacto de fiabilidad para cancelaciones en zona roja.
 
 ---
 
@@ -282,7 +282,7 @@ Si hay conflicto con bloques anteriores, prevalece v3.
 - Mensaje de llegada en card dentro de ventana:
   - `Acercate a menos de 100 metros del punto de encuentro para indicar que has llegado.`
 - En `CONFIRMED`:
-  - Dentro de ventana: CTA `I'm here` + `Cancelar quedada`.
+  - Dentro de ventana: CTA `Estoy aqui` + `Cancelar quedada`.
   - Fuera de ventana: CTAs `Anadir a Calendar` + `Cancelar quedada`.
 - El boton `Anadir a Calendar` exporta un `.ics` local para calendario personal.
 
@@ -304,3 +304,10 @@ Si hay conflicto con bloques anteriores, prevalece v3.
   - `< 70`: color error del sistema y sin porcentaje.
 - Las estrellas muestran recuento de valoraciones al lado: `(N)`.
 - El tamano tipografico de `km de ti`, asistencia y `(N)` de valoraciones esta alineado en `14px`.
+
+---
+
+### Flujo visual de referencia
+
+- User flow Mermaid oficial: `docs/wallapop-meet-user-flow.md`.
+

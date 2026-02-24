@@ -5,8 +5,9 @@ import { resolveArrivalActionState } from "@/components/meetup/meetup-ui-rules"
 import L from "leaflet"
 import { Banknote, MapPin } from "lucide-react"
 import { MapContainer, Marker, TileLayer } from "react-leaflet"
+import { getArrivalWindow } from "@/meetup/arrival-window"
 import { transitionMeetup } from "@/meetup/state-machine"
-import type { ActorRole, MeetupMachine, MeetupPaymentMethod, MeetupStatus } from "@/meetup/types"
+import type { ActorRole, MeetupMachine, MeetupPaymentMethod } from "@/meetup/types"
 
 type MeetupCardProps = {
     meetup: MeetupMachine
@@ -37,7 +38,8 @@ type StatusPill = {
     className: string
 }
 
-function statusPill(status: MeetupStatus | null): StatusPill {
+function statusPill(meetup: MeetupMachine): StatusPill {
+    const { status } = meetup
     switch (status) {
         case "PROPOSED":
             return {
@@ -68,7 +70,10 @@ function statusPill(status: MeetupStatus | null): StatusPill {
             }
         case "EXPIRED":
             return {
-                label: "expirada",
+                label:
+                    meetup.expiredByTrigger === "SELLER_NO_RESPONSE_48H"
+                        ? "cierre neutral"
+                        : "expirada",
                 className: "border-[#A8B2B8] bg-[#F5F7F8] text-[#4A5A63]",
             }
         case "CANCELLED":
@@ -191,9 +196,17 @@ function MeetupCard({
     )
     const isRedZoneCancellation =
         minutesToMeetup >= 0 && minutesToMeetup <= RED_ZONE_CANCELLATION_MINUTES
+    const arrivalWindow = getArrivalWindow(meetup.scheduledAt)
     const isCalendarFallbackWindow =
-        currentTime.getTime() >= meetup.scheduledAt.getTime() - 30 * 60 * 1000 &&
-        currentTime.getTime() <= meetup.scheduledAt.getTime() + 2 * 60 * 60 * 1000
+        currentTime.getTime() >= arrivalWindow.opensAt.getTime() &&
+        currentTime.getTime() <= arrivalWindow.closesAt.getTime()
+    const areBothActorsArrived =
+        Boolean(meetup.arrivalCheckins?.SELLER) && Boolean(meetup.arrivalCheckins?.BUYER)
+    const canApplyNeutralClosureBySellerInaction =
+        actorRole === "SELLER" &&
+        !areBothActorsArrived &&
+        (meetup.status === "CONFIRMED" || meetup.status === "ARRIVED") &&
+        currentTime.getTime() > arrivalWindow.closesAt.getTime()
     const [isCancelModalOpen, setIsCancelModalOpen] = React.useState(false)
 
     const applyEvent = (
@@ -204,6 +217,7 @@ function MeetupCard({
             | { type: "MARK_ARRIVED"; actorRole: ActorRole; occurredAt: Date }
             | { type: "COMPLETE"; actorRole: ActorRole; occurredAt: Date }
             | { type: "CANCEL"; actorRole: ActorRole; occurredAt: Date }
+            | { type: "EXPIRE"; trigger: "SYSTEM" | "SELLER_NO_RESPONSE_48H"; occurredAt: Date }
     ) => {
         const result = transitionMeetup(meetup, event)
         if (!result.ok) {
@@ -411,6 +425,22 @@ function MeetupCard({
         }
     }
 
+    if (canApplyNeutralClosureBySellerInaction) {
+        actions.push({
+            id: "neutral-close",
+            label: "Ignorar notificacion (48h)",
+            variant: "secondary",
+            run: () =>
+                applyEvent({
+                    type: "EXPIRE",
+                    trigger: "SELLER_NO_RESPONSE_48H",
+                    occurredAt: currentTime,
+                }),
+            className: OUTLINE_ACTION_CLASS,
+            fullWidth: true,
+        })
+    }
+
     if (
         meetup.status !== "COMPLETED" &&
         meetup.status !== "EXPIRED" &&
@@ -433,7 +463,7 @@ function MeetupCard({
         : "Sin metodo"
     const formattedPrice =
         meetup.finalPrice !== undefined ? `${meetup.finalPrice.toFixed(2)} \u20AC` : "sin precio"
-    const currentStatusPill = statusPill(meetup.status)
+    const currentStatusPill = statusPill(meetup)
     const title = `Quedada con ${counterpartName ?? "usuario"}`
     const canEditProposal =
         actorRole === "SELLER" &&

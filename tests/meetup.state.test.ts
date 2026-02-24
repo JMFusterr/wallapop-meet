@@ -276,4 +276,35 @@ describe("meetup state machine", () => {
 
         expect(retry.ok).toBe(false)
     })
+
+    it("permite cierre neutral por inaccion del vendedor (opcion D)", () => {
+        const initial = createMeetupMachine({ scheduledAt, chatContext })
+        const proposed = transitionMeetup(initial, {
+            type: "PROPOSE",
+            actorRole: "SELLER",
+        })
+        if (!proposed.ok) {
+            throw new Error("Se esperaba PROPOSE valido para el escenario.")
+        }
+
+        const confirmed = transitionMeetup(proposed.meetup, {
+            type: "ACCEPT",
+            actorRole: "BUYER",
+        })
+        if (!confirmed.ok) {
+            throw new Error("Se esperaba ACCEPT valido para el escenario.")
+        }
+
+        const expiredNeutral = transitionMeetup(confirmed.meetup, {
+            type: "EXPIRE",
+            trigger: "SELLER_NO_RESPONSE_48H",
+            occurredAt: new Date("2026-02-22T18:00:00.000Z"),
+        })
+
+        expect(expiredNeutral.ok).toBe(true)
+        if (expiredNeutral.ok) {
+            expect(expiredNeutral.meetup.status).toBe("EXPIRED")
+            expect(expiredNeutral.meetup.expiredByTrigger).toBe("SELLER_NO_RESPONSE_48H")
+        }
+    })
 })

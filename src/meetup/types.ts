@@ -13,6 +13,7 @@ export type MeetupStatus = (typeof MEETUP_STATUSES)[number]
 export type ActorRole = "SELLER" | "BUYER"
 export type MeetupPaymentMethod = "CASH" | "BIZUM" | "WALLET"
 export type MeetupLateNoticeEtaMinutes = 10 | 20
+export type MeetupExpireTrigger = "SYSTEM" | "SELLER_NO_RESPONSE_48H"
 
 export type MeetupArrivalCheckin = {
     occurredAt: Date
@@ -66,6 +67,7 @@ export type MeetupMachine = {
     arrivedAt?: Date
     completedAt?: Date
     expiredAt?: Date
+    expiredByTrigger?: MeetupExpireTrigger
     cancelledAt?: Date
     arrivalCheckins?: Partial<Record<ActorRole, MeetupArrivalCheckin>>
     noShowResolution?: MeetupNoShowResolution
@@ -92,7 +94,7 @@ export type MeetupEvent =
       }
     | { type: "COMPLETE"; actorRole: ActorRole; occurredAt?: Date }
     | { type: "CANCEL"; actorRole: ActorRole; occurredAt?: Date }
-    | { type: "EXPIRE"; trigger: "SYSTEM"; occurredAt?: Date }
+    | { type: "EXPIRE"; trigger: MeetupExpireTrigger; occurredAt?: Date }
 
 export type TransitionSuccess = {
     ok: true

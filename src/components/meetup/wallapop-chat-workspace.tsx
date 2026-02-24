@@ -19,7 +19,8 @@ import { ChatListItem } from "@/components/ui/chat-list-item"
 import { ChatMessageBubble } from "@/components/ui/chat-message-bubble"
 import { ChatProductCard, type ChatProductCardViewerRole } from "@/components/ui/chat-product-card"
 import { ChatSecurityBanner } from "@/components/ui/chat-security-banner"
-import { CalendarPicker, toLocalDateValue } from "@/components/ui/calendar-picker"
+import { CalendarPicker } from "@/components/ui/calendar-picker"
+import { toLocalDateValue } from "@/components/ui/calendar-picker.utils"
 import { InboxBottomNav } from "@/components/ui/inbox-bottom-nav"
 import { Input } from "@/components/ui/input"
 import { getOrCreateLocalChatUserId } from "@/lib/local-chat-user-id"
@@ -667,7 +668,9 @@ function resolveMeetupTimelinePreview(meetup: MeetupMachine): string {
         case "COMPLETED":
             return "Quedada cerrada. Venta completada."
         case "EXPIRED":
-            return "La solicitud de quedada ha expirado."
+            return meetup.expiredByTrigger === "SELLER_NO_RESPONSE_48H"
+                ? "Cierre neutral por inaccion del vendedor (48h)."
+                : "La solicitud de quedada ha expirado."
         case "CANCELLED":
             return "La quedada fue cancelada."
         default:
@@ -2221,7 +2224,7 @@ function WallapopChatWorkspace() {
 
         try {
             const persistedMessages = (await convexClient.query(
-                (api as any).messages.listByConversation,
+                api.messages.listByConversation,
                 { conversationId }
             )) as ConvexChatMessage[]
 
@@ -2371,7 +2374,7 @@ function WallapopChatWorkspace() {
         }
 
         void convexClient
-            .mutation((api as any).messages.saveUserTextMessage, {
+            .mutation(api.messages.saveUserTextMessage, {
                 conversationId: selectedConversation.id,
                 clientMessageId: nextMessage.id,
                 senderUserId: localChatUserId,
@@ -2382,7 +2385,7 @@ function WallapopChatWorkspace() {
             })
             .catch(async () => {
                 try {
-                    await convexClient.mutation((api as any).messages.saveUserTextMessage, {
+                    await convexClient.mutation(api.messages.saveUserTextMessage, {
                         conversationId: selectedConversation.id,
                         clientMessageId: nextMessage.id,
                         text: nextMessage.text,
@@ -2465,6 +2468,12 @@ function WallapopChatWorkspace() {
                         listingStatusLabel: "Reservado",
                     }
                 })
+            )
+        }
+
+        if (next.status === "EXPIRED" && next.expiredByTrigger === "SELLER_NO_RESPONSE_48H") {
+            appendSystemMessage(
+                "Se cerro la quedada en estado neutral por inaccion del vendedor durante 48h."
             )
         }
     }

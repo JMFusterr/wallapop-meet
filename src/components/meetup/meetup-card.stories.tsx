@@ -151,3 +151,20 @@ export const IncomingProposalBuyerView: Story = {
         />
     ),
 }
+
+export const SellerNeutralClosureOption: Story = {
+    args: {
+        meetup: buildConfirmedMachine(),
+        actorRole: "SELLER",
+        currentTime: new Date("2026-02-20T21:30:00.000Z"),
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
+    render: () => (
+        <CardHarness
+            initialMeetup={buildConfirmedMachine()}
+            actorRole="SELLER"
+            currentTime={new Date("2026-02-20T21:30:00.000Z")}
+        />
+    ),
+}

@@ -160,7 +160,7 @@ export function transitionMeetup(
 
             if (!isWithinArrivalWindow(meetup.scheduledAt, event.occurredAt)) {
                 return fail(
-                    "La accion de llegada solo es valida entre 15 minutos antes y 2 horas despues."
+                    "La accion de llegada solo es valida entre 30 minutos antes y 2 horas despues."
                 )
             }
 
@@ -260,6 +260,7 @@ export function transitionMeetup(
                 ...meetup,
                 status: "EXPIRED",
                 expiredAt: nowFallback(event.occurredAt),
+                expiredByTrigger: event.trigger,
             })
         }
 
