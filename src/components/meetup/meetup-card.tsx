@@ -5,6 +5,7 @@ import { resolveArrivalActionState } from "@/components/meetup/meetup-ui-rules"
 import L from "leaflet"
 import { Banknote, MapPin } from "lucide-react"
 import { MapContainer, Marker, TileLayer } from "react-leaflet"
+import styles from "../../../styles.json"
 import { getArrivalWindow } from "@/meetup/arrival-window"
 import { transitionMeetup } from "@/meetup/state-machine"
 import type { ActorRole, MeetupMachine, MeetupPaymentMethod } from "@/meetup/types"
@@ -35,7 +36,39 @@ const RED_ZONE_CANCELLATION_MINUTES = 30
 
 type StatusPill = {
     label: string
-    className: string
+    style: React.CSSProperties
+}
+
+type TokenLeaf = { value?: string | number }
+
+function resolveColorToken(path: string): string {
+    const keys = path.split(".")
+    let cursor: unknown = styles
+    for (const key of keys) {
+        if (!cursor || typeof cursor !== "object" || !(key in (cursor as Record<string, unknown>))) {
+            return "#253238"
+        }
+        cursor = (cursor as Record<string, unknown>)[key]
+    }
+    if (cursor && typeof cursor === "object" && "value" in (cursor as TokenLeaf)) {
+        const raw = (cursor as TokenLeaf).value
+        if (typeof raw === "string" && raw.startsWith("{") && raw.endsWith("}")) {
+            return resolveColorToken(raw.slice(1, -1))
+        }
+        return String(raw ?? "#253238")
+    }
+    if (typeof cursor === "string") {
+        return cursor
+    }
+    return "#253238"
+}
+
+function meetupStatusColors(name: "pending" | "confirmed" | "arrived" | "completed" | "expired" | "cancelled"): React.CSSProperties {
+    return {
+        backgroundColor: resolveColorToken(`tokens.color.meetup_status.${name}.background`),
+        borderColor: resolveColorToken(`tokens.color.meetup_status.${name}.border`),
+        color: resolveColorToken(`tokens.color.meetup_status.${name}.text`),
+    }
 }
 
 function statusPill(meetup: MeetupMachine): StatusPill {
@@ -44,29 +77,27 @@ function statusPill(meetup: MeetupMachine): StatusPill {
         case "PROPOSED":
             return {
                 label: "pendiente",
-                className:
-                    "border-[var(--wm-color-border-default)] bg-[var(--wm-color-background-base)] text-[var(--wm-color-text-secondary)]",
+                style: meetupStatusColors("pending"),
             }
         case "COUNTER_PROPOSED":
             return {
                 label: "pendiente",
-                className:
-                    "border-[var(--wm-color-border-default)] bg-[var(--wm-color-background-base)] text-[var(--wm-color-text-secondary)]",
+                style: meetupStatusColors("pending"),
             }
         case "CONFIRMED":
             return {
                 label: "confirmada",
-                className: "border-[#19A05D] bg-[#E6F7EF] text-[#177A4B]",
+                style: meetupStatusColors("confirmed"),
             }
         case "ARRIVED":
             return {
                 label: "llegada",
-                className: "border-[#0D84FF] bg-[#E8F2FF] text-[#0A5EB5]",
+                style: meetupStatusColors("arrived"),
             }
         case "COMPLETED":
             return {
                 label: "completada",
-                className: "border-[#0D84FF] bg-[#E8F2FF] text-[#0A5EB5]",
+                style: meetupStatusColors("completed"),
             }
         case "EXPIRED":
             return {
@@ -74,17 +105,17 @@ function statusPill(meetup: MeetupMachine): StatusPill {
                     meetup.expiredByTrigger === "SELLER_NO_RESPONSE_48H"
                         ? "cierre neutral"
                         : "expirada",
-                className: "border-[#A8B2B8] bg-[#F5F7F8] text-[#4A5A63]",
+                style: meetupStatusColors("expired"),
             }
         case "CANCELLED":
             return {
                 label: "cancelada",
-                className: "border-[#FF5A5F] bg-[#FDEBEC] text-[#A81F2D]",
+                style: meetupStatusColors("cancelled"),
             }
         default:
             return {
                 label: "sin propuesta",
-                className: "border-[#D3DEE2] bg-white text-[#4A5A63]",
+                style: meetupStatusColors("pending"),
             }
     }
 }
@@ -526,11 +557,12 @@ function MeetupCard({
                     {title}
                 </p>
                 <span
-                    className={`inline-flex rounded-full border px-2.5 py-1 font-wallie-fit text-[11px] leading-[1] ${
+                    className="inline-flex rounded-full border px-2.5 py-1 font-wallie-fit text-[11px] leading-[1]"
+                    style={
                         isPendingActionStatus
-                            ? "border-[#D7DEE2] bg-[#EEF2F4] text-[#75838A]"
-                            : currentStatusPill.className
-                    }`}
+                            ? meetupStatusColors("pending")
+                            : currentStatusPill.style
+                    }
                 >
                     {currentStatusPill.label}
                 </span>

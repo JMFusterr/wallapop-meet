@@ -59,6 +59,30 @@
                     "700": { "value": "#911448", "type": "color" },
                     "800": { "value": "#6F0F36", "type": "color" },
                     "900": { "value": "#560B2A", "type": "color" }
+                },
+                "warning": {
+                    "50": { "value": "#FFF6E8", "type": "color" },
+                    "100": { "value": "#FDEACC", "type": "color" },
+                    "200": { "value": "#FAD79E", "type": "color" },
+                    "300": { "value": "#F6BF67", "type": "color" },
+                    "400": { "value": "#F4A92F", "type": "color" },
+                    "500": { "value": "#F4A000", "type": "color" },
+                    "600": { "value": "#D18800", "type": "color" },
+                    "700": { "value": "#AA6F00", "type": "color" },
+                    "800": { "value": "#835600", "type": "color" },
+                    "900": { "value": "#664200", "type": "color" }
+                },
+                "error": {
+                    "50": { "value": "#FDEBEC", "type": "color" },
+                    "100": { "value": "#FBD6D9", "type": "color" },
+                    "200": { "value": "#F7B0B4", "type": "color" },
+                    "300": { "value": "#F18389", "type": "color" },
+                    "400": { "value": "#EA5760", "type": "color" },
+                    "500": { "value": "#FF5A5F", "type": "color" },
+                    "600": { "value": "#D94B50", "type": "color" },
+                    "700": { "value": "#B23D41", "type": "color" },
+                    "800": { "value": "#8A2F32", "type": "color" },
+                    "900": { "value": "#6B2426", "type": "color" }
                 }
             },
             "brand": {
@@ -102,27 +126,15 @@
                 }
             },
             "semantic": {
-                "success": {
-                    "base": {
-                        "value": "#19A05D",
-                        "type": "color"
-                    }
-                },
                 "warning": {
                     "base": {
-                        "value": "#F4A000",
+                        "value": "{tokens.color.palette.warning.500}",
                         "type": "color"
                     }
                 },
                 "error": {
                     "base": {
-                        "value": "#FF5A5F",
-                        "type": "color"
-                    }
-                },
-                "info": {
-                    "base": {
-                        "value": "#0D84FF",
+                        "value": "{tokens.color.palette.error.500}",
                         "type": "color"
                     }
                 }
@@ -200,7 +212,7 @@
                         "type": "color"
                     },
                     "success": {
-                        "value": "#228618",
+                        "value": "{tokens.color.brand.primary}",
                         "type": "color"
                     }
                 }
@@ -261,6 +273,92 @@
                     },
                     "sold": {
                         "value": "{tokens.color.palette.sold.500}",
+                        "type": "color"
+                    }
+                }
+            },
+            "meetup_status": {
+                "pending": {
+                    "background": {
+                        "value": "{tokens.color.palette.neutral.100}",
+                        "type": "color"
+                    },
+                    "border": {
+                        "value": "{tokens.color.palette.neutral.300}",
+                        "type": "color"
+                    },
+                    "text": {
+                        "value": "{tokens.color.palette.neutral.700}",
+                        "type": "color"
+                    }
+                },
+                "confirmed": {
+                    "background": {
+                        "value": "{tokens.color.palette.brand.100}",
+                        "type": "color"
+                    },
+                    "border": {
+                        "value": "{tokens.color.palette.brand.400}",
+                        "type": "color"
+                    },
+                    "text": {
+                        "value": "{tokens.color.palette.brand.700}",
+                        "type": "color"
+                    }
+                },
+                "arrived": {
+                    "background": {
+                        "value": "{tokens.color.palette.warning.100}",
+                        "type": "color"
+                    },
+                    "border": {
+                        "value": "{tokens.color.palette.warning.400}",
+                        "type": "color"
+                    },
+                    "text": {
+                        "value": "{tokens.color.palette.warning.700}",
+                        "type": "color"
+                    }
+                },
+                "completed": {
+                    "background": {
+                        "value": "{tokens.color.palette.sold.100}",
+                        "type": "color"
+                    },
+                    "border": {
+                        "value": "{tokens.color.palette.sold.400}",
+                        "type": "color"
+                    },
+                    "text": {
+                        "value": "{tokens.color.palette.sold.700}",
+                        "type": "color"
+                    }
+                },
+                "expired": {
+                    "background": {
+                        "value": "{tokens.color.palette.neutral.100}",
+                        "type": "color"
+                    },
+                    "border": {
+                        "value": "{tokens.color.palette.neutral.400}",
+                        "type": "color"
+                    },
+                    "text": {
+                        "value": "{tokens.color.palette.neutral.700}",
+                        "type": "color"
+                    }
+                },
+                "cancelled": {
+                    "background": {
+                        "value": "{tokens.color.palette.error.100}",
+                        "type": "color"
+                    },
+                    "border": {
+                        "value": "{tokens.color.palette.error.400}",
+                        "type": "color"
+                    },
+                    "text": {
+                        "value": "{tokens.color.palette.error.700}",
                         "type": "color"
                     }
                 }
@@ -567,7 +665,7 @@
         },
         "badge": {
             "success": {
-                "background": "{tokens.color.semantic.success.base}",
+                "background": "{tokens.color.brand.primary}",
                 "text_color": "{tokens.color.text.inverse}",
                 "radius": "{tokens.radius.pill}"
             },

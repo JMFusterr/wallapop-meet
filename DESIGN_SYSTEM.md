@@ -37,15 +37,18 @@ Namespaces oficiales:
 - `tokens.color.palette.neutral`: `50..900`
 - `tokens.color.palette.reserve`: `50..900`
 - `tokens.color.palette.sold`: `50..900`
+- `tokens.color.palette.warning`: `50..900`
+- `tokens.color.palette.error`: `50..900`
 - `tokens.color.brand`: `primary`, `primary_hover`, `on_primary`
 - `tokens.color.neutral`: `0`, `100`, `200`, `400`, `700`, `900`
-- `tokens.color.semantic`: `success.base`, `warning.base`, `error.base`, `info.base`
+- `tokens.color.semantic`: `warning.base`, `error.base`
 - `tokens.color.text`: `primary`, `secondary`, `inverse`, `disabled`
 - `tokens.color.background`: `base`, `surface`, `accent`
 - `tokens.color.border`: `default`, `focus`, `error`
 - `tokens.color.input`: `text`, `label`, `placeholder_focus`, `ring.default`, `ring.hover`, `ring.error`, `ring.success`
 - `tokens.color.overlay`: `scrim`
 - Extensiones de dominio UI: `tokens.color.bottom_nav.*`, `tokens.color.list_item.*`, `tokens.color.card.action.*`
+- Estados de labels en meetup card: `tokens.color.meetup_status.*` (`pending`, `confirmed`, `arrived`, `completed`, `expired`, `cancelled`) con `background`, `border`, `text`.
 
 ### 3.2 Tipografia
 
@@ -85,8 +88,7 @@ Regla:
 
 - `semantic.error`: fallos bloqueantes, acciones destructivas, invalidaciones.
 - `semantic.warning`: riesgo o atencion requerida sin bloqueo.
-- `semantic.success`: confirmaciones o estados completados.
-- `semantic.info`: contexto informativo o progreso neutral.
+- `success`: usar `brand` (Wallapop no usa familia de success separada).
 
 ### 4.2 Fondos y superficies
 

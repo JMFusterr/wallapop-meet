@@ -41,6 +41,20 @@ type ShadowItem = {
     value: string
 }
 
+type RadiusItem = {
+    tokenPath: string
+    value: string
+    pixels: number
+}
+
+type StatusLabelItem = {
+    name: string
+    label: string
+    background: string
+    border: string
+    text: string
+}
+
 type ButtonShowcaseVariant = "primary" | "secondary" | "ghost" | "critical" | "tab" | "link"
 
 const buttonShowcaseVariants: Array<{ variant: ButtonShowcaseVariant; label: string }> = [
@@ -56,6 +70,7 @@ const sectionEntries = [
     { id: "foundations-color", label: "Color" },
     { id: "foundations-typography", label: "Typography" },
     { id: "foundations-spacing", label: "Spacing & Layout" },
+    { id: "foundations-radius", label: "Corner Radius" },
     { id: "foundations-elevation", label: "Elevation" },
     { id: "components-playground", label: "Components" },
     { id: "patterns", label: "Patterns" },
@@ -244,28 +259,72 @@ function normalizeShadowTokens(input: unknown): ShadowItem[] {
         .filter((item): item is ShadowItem => item !== null)
 }
 
+function normalizeRadiusTokens(input: unknown): RadiusItem[] {
+    if (!isRecord(input)) {
+        return []
+    }
+
+    return Object.entries(input)
+        .map(([key, token]) => {
+            if (!isTokenLeaf(token)) {
+                return null
+            }
+            const resolved = String(resolveReference(token.value, styles))
+            const parsed = Number.parseFloat(resolved.replace("px", ""))
+            return {
+                tokenPath: `tokens.radius.${key}`,
+                value: resolved,
+                pixels: Number.isFinite(parsed) ? parsed : 999,
+            }
+        })
+        .filter((item): item is RadiusItem => item !== null)
+        .sort((a, b) => a.pixels - b.pixels)
+}
+
+function buildStatusLabelItems(): StatusLabelItem[] {
+    const statuses = [
+        { name: "pending", label: "pendiente" },
+        { name: "confirmed", label: "confirmada" },
+        { name: "arrived", label: "llegada" },
+        { name: "completed", label: "completada" },
+        { name: "expired", label: "expirada" },
+        { name: "cancelled", label: "cancelada" },
+    ] as const
+
+    return statuses.map((status) => ({
+        name: status.name,
+        label: status.label,
+        background: String(resolveReference(`{tokens.color.meetup_status.${status.name}.background}`, styles)),
+        border: String(resolveReference(`{tokens.color.meetup_status.${status.name}.border}`, styles)),
+        text: String(resolveReference(`{tokens.color.meetup_status.${status.name}.text}`, styles)),
+    }))
+}
+
 function DesignSystemPage() {
     const colorTokens = (styles as Record<string, unknown>)["tokens"]
     const foundations = isRecord(colorTokens) ? colorTokens : {}
     const colorRoot = isRecord(foundations.color) ? foundations.color : {}
-    const brandColors = normalizeColorTokenGroup("tokens.color.brand", colorRoot.brand)
-    const neutralColors = normalizeColorTokenGroup("tokens.color.neutral", colorRoot.neutral)
-    const semanticColors = normalizeColorTokenGroup("tokens.color.semantic", colorRoot.semantic)
     const paletteRoot = isRecord(colorRoot.palette) ? colorRoot.palette : {}
     const brandScale = normalizeColorTokenGroup("tokens.color.palette.brand", paletteRoot.brand)
     const reserveScale = normalizeColorTokenGroup("tokens.color.palette.reserve", paletteRoot.reserve)
     const soldScale = normalizeColorTokenGroup("tokens.color.palette.sold", paletteRoot.sold)
     const neutralScale = normalizeColorTokenGroup("tokens.color.palette.neutral", paletteRoot.neutral)
+    const warningScale = normalizeColorTokenGroup("tokens.color.palette.warning", paletteRoot.warning)
+    const errorScale = normalizeColorTokenGroup("tokens.color.palette.error", paletteRoot.error)
     const typographyTokens = normalizeTypographyTokens(foundations.typography)
     const spacingTokens = normalizeSpacingTokens(foundations.spacing)
+    const radiusTokens = normalizeRadiusTokens(foundations.radius)
     const shadowTokens = normalizeShadowTokens(foundations.shadow)
+    const statusLabelItems = buildStatusLabelItems()
 
     const fontPrimary = typographyTokens.find((item) => item.tokenPath.includes("family.primary"))?.value ?? "Wallie"
+    const size100 = typographyTokens.find((item) => item.tokenPath.endsWith("size.100"))?.value ?? "12px"
     const size300 = typographyTokens.find((item) => item.tokenPath.endsWith("size.300"))?.value ?? "16px"
     const size500 = typographyTokens.find((item) => item.tokenPath.endsWith("size.500"))?.value ?? "20px"
     const lineHeight200 = typographyTokens.find((item) => item.tokenPath.endsWith("line_height.200"))?.value ?? "1.4"
     const lineHeight300 = typographyTokens.find((item) => item.tokenPath.endsWith("line_height.300"))?.value ?? "1.5"
     const weightRegular = typographyTokens.find((item) => item.tokenPath.endsWith("weight.regular"))?.value ?? "400"
+    const weightMedium = typographyTokens.find((item) => item.tokenPath.endsWith("weight.medium"))?.value ?? "500"
     const weightBold = typographyTokens.find((item) => item.tokenPath.endsWith("weight.bold"))?.value ?? "700"
     const proposedPatternMeetup = createPatternMeetupMachine("PROPOSED")
     const confirmedPatternMeetup = createPatternMeetupMachine("CONFIRMED")
@@ -314,41 +373,15 @@ function DesignSystemPage() {
                     <section id="foundations-color" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
                         <h2 className="font-wallie-chunky text-[24px]">Foundations - Color</h2>
                         <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
-                            Tokens de color con valor resuelto, variable CSS y utilidad Tailwind sugerida.
+                            Paletas oficiales en escala 50-900.
                         </p>
-                        <div className="mt-5 space-y-6">
-                            {[
-                                { title: "Brand", items: brandColors },
-                                { title: "Neutral", items: neutralColors },
-                                { title: "Semantic", items: semanticColors },
-                            ].map((group) => (
-                                <div key={group.title}>
-                                    <h3 className="mb-3 font-wallie-chunky text-[18px]">{group.title}</h3>
-                                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                                        {group.items.map((item) => (
-                                            <article
-                                                key={item.tokenPath}
-                                                className="overflow-hidden rounded-[12px] border border-[#E8ECEF]"
-                                            >
-                                                <div className="h-16 w-full" style={{ background: item.value }} />
-                                                <div className="space-y-1 p-3">
-                                                    <p className="font-wallie-fit text-[12px] text-[#253238]">{item.tokenPath}</p>
-                                                    <p className="font-wallie-fit text-[12px] text-[#4A5A63]">{item.value}</p>
-                                                    <p className="font-wallie-fit text-[11px] text-[#4A5A63]/90">{item.cssVar}</p>
-                                                    <p className="font-wallie-fit text-[11px] text-[#4A5A63]/90">{item.tailwindClass}</p>
-                                                </div>
-                                            </article>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="mt-8 space-y-6 border-t border-[#E8ECEF] pt-6">
-                            <h3 className="font-wallie-chunky text-[20px]">Official Palette Scales (50-900)</h3>
+                        <div className="mt-6 space-y-6">
                             {[
                                 { title: "Brand Scale", items: brandScale },
                                 { title: "Reserve Purple Scale", items: reserveScale },
                                 { title: "Sold Pink Scale", items: soldScale },
+                                { title: "Warning Scale", items: warningScale },
+                                { title: "Error Scale", items: errorScale },
                                 { title: "Neutral Scale", items: neutralScale },
                             ].map((group) => (
                                 <div key={group.title}>
@@ -373,25 +406,109 @@ function DesignSystemPage() {
 
                     <section id="foundations-typography" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
                         <h2 className="font-wallie-chunky text-[24px]">Foundations - Typography</h2>
-                        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+                        <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                            Guia tipografica propuesta para Wallapop Meet basada en proporciones reales del producto.
+                        </p>
+                        <div className="mt-5 space-y-4">
                             <article className="rounded-[12px] border border-[#E8ECEF] p-4">
-                                <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Familia primaria</p>
-                                <p style={{ fontFamily: fontPrimary }} className="mt-2 text-[28px] leading-tight">
-                                    Wallie / Wallapop Meet
-                                </p>
-                                <p className="mt-2 font-wallie-fit text-[12px] text-[#4A5A63]">{fontPrimary}</p>
+                                <div className="grid gap-4 md:grid-cols-[190px_1fr] md:items-start">
+                                    <div>
+                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Display / Hero</p>
+                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">20px · LH 1.4</p>
+                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Peso 700</p>
+                                    </div>
+                                    <div>
+                                        <p
+                                            className="text-[#253238]"
+                                            style={{
+                                                fontFamily: fontPrimary,
+                                                fontSize: size500,
+                                                lineHeight: lineHeight200,
+                                                fontWeight: Number(weightBold),
+                                            }}
+                                        >
+                                            Quedada confirmada con Laura M.
+                                        </p>
+                                        <p className="mt-2 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                            Para encabezados de bloque, títulos de card y puntos de entrada principales.
+                                        </p>
+                                    </div>
+                                </div>
                             </article>
                             <article className="rounded-[12px] border border-[#E8ECEF] p-4">
-                                <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Escalas tipograficas</p>
-                                <p className="mt-2 font-wallie-chunky" style={{ fontSize: size500, lineHeight: lineHeight200 }}>
-                                    Heading (H1/H2)
-                                </p>
-                                <p className="mt-2 font-wallie-fit" style={{ fontSize: size300, lineHeight: lineHeight300 }}>
-                                    Body de referencia para copy y contenido de interfaz.
-                                </p>
-                                <p className="mt-3 font-wallie-fit text-[12px] text-[#4A5A63]">
-                                    Pesos: regular {weightRegular} - bold {weightBold}
-                                </p>
+                                <div className="grid gap-4 md:grid-cols-[190px_1fr] md:items-start">
+                                    <div>
+                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Section / Heading</p>
+                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">16px · LH 1.5</p>
+                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Peso 600</p>
+                                    </div>
+                                    <div>
+                                        <p
+                                            className="text-[#253238]"
+                                            style={{
+                                                fontFamily: fontPrimary,
+                                                fontSize: size300,
+                                                lineHeight: lineHeight300,
+                                                fontWeight: 600,
+                                            }}
+                                        >
+                                            Punto de encuentro y metodo de pago
+                                        </p>
+                                        <p className="mt-2 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                            Para subtitulos, grupos de formulario y jerarquias internas de pantalla.
+                                        </p>
+                                    </div>
+                                </div>
+                            </article>
+                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
+                                <div className="grid gap-4 md:grid-cols-[190px_1fr] md:items-start">
+                                    <div>
+                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Body / Reading</p>
+                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">14px · LH 1.5</p>
+                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Peso 400</p>
+                                    </div>
+                                    <div>
+                                        <p
+                                            className="text-[#253238]"
+                                            style={{
+                                                fontFamily: fontPrimary,
+                                                fontSize: "14px",
+                                                lineHeight: lineHeight300,
+                                                fontWeight: Number(weightRegular),
+                                            }}
+                                        >
+                                            Nos vemos a las 18:30 en la entrada principal. Lleva efectivo o Bizum.
+                                        </p>
+                                        <p className="mt-2 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                            Tamaño base para contenido de conversación, mensajes y descripción funcional.
+                                        </p>
+                                    </div>
+                                </div>
+                            </article>
+                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
+                                <div className="grid gap-4 md:grid-cols-[190px_1fr] md:items-start">
+                                    <div>
+                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Caption / Label</p>
+                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">12px · LH 1.2</p>
+                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Peso 500-700</p>
+                                    </div>
+                                    <div>
+                                        <p
+                                            className="text-[#253238]"
+                                            style={{
+                                                fontFamily: fontPrimary,
+                                                fontSize: size100,
+                                                lineHeight: "1.2",
+                                                fontWeight: Number(weightMedium),
+                                            }}
+                                        >
+                                            Estado: pendiente · actualizado hace 2 min
+                                        </p>
+                                        <p className="mt-2 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                            Para metadatos, etiquetas de estado y ayudas breves sin perder legibilidad.
+                                        </p>
+                                    </div>
+                                </div>
                             </article>
                         </div>
                     </section>
@@ -408,6 +525,22 @@ function DesignSystemPage() {
                                     <p className="w-[190px] font-wallie-fit text-[12px]">{item.tokenPath}</p>
                                     <p className="font-wallie-fit text-[12px] text-[#4A5A63]">{item.value}</p>
                                 </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section id="foundations-radius" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
+                        <h2 className="font-wallie-chunky text-[24px]">Foundations - Corner Radius</h2>
+                        <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                            Escala de radios para esquinas y pills.
+                        </p>
+                        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                            {radiusTokens.map((item) => (
+                                <article key={item.tokenPath} className="rounded-[12px] border border-[#E8ECEF] p-3">
+                                    <div className="h-14 w-full border border-[#D3DEE2] bg-[#F5F7F8]" style={{ borderRadius: item.value }} />
+                                    <p className="mt-2 font-wallie-fit text-[12px] text-[#253238]">{item.tokenPath}</p>
+                                    <p className="font-wallie-fit text-[12px] text-[#4A5A63]">{item.value}</p>
+                                </article>
                             ))}
                         </div>
                     </section>
@@ -440,7 +573,7 @@ function DesignSystemPage() {
                                         </div>
                                         <div className="border-b border-r border-[#E8ECEF] bg-[#F5F7F8] px-3 py-2 text-center font-wallie-fit text-[12px] text-[#4A5A63]">Default</div>
                                         <div className="border-b border-r border-[#E8ECEF] bg-[#F5F7F8] px-3 py-2 text-center font-wallie-fit text-[12px] text-[#4A5A63]">Hover</div>
-                                        <div className="border-b border-r border-[#E8ECEF] bg-[#F5F7F8] px-3 py-2 text-center font-wallie-fit text-[12px] text-[#4A5A63]">Active</div>
+                                        <div className="border-b border-r border-[#E8ECEF] bg-[#F5F7F8] px-3 py-2 text-center font-wallie-fit text-[12px] text-[#4A5A63]">Pressed</div>
                                         <div className="border-b border-[#E8ECEF] bg-[#F5F7F8] px-3 py-2 text-center font-wallie-fit text-[12px] text-[#4A5A63]">Disabled</div>
                                         {buttonShowcaseVariants.map((entry) => {
                                             const hoverClass =
@@ -499,21 +632,6 @@ function DesignSystemPage() {
                             </article>
 
                             <article className="rounded-[12px] border border-[#E8ECEF] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[18px]">Link Text</p>
-                                <div className="flex flex-wrap items-center gap-4">
-                                    <Button variant="link" size="sm">
-                                        Mas informacion
-                                    </Button>
-                                    <Button variant="link" size="sm">
-                                        Ver condiciones
-                                    </Button>
-                                    <Button variant="link" size="sm" disabled>
-                                        Enlace deshabilitado
-                                    </Button>
-                                </div>
-                            </article>
-
-                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
                                 <p className="mb-3 font-wallie-chunky text-[18px]">Input</p>
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <Input label="Default" placeholder="Escribe algo" hint="Helper text" maxLength={80} defaultValue="" />
@@ -524,7 +642,34 @@ function DesignSystemPage() {
                             </article>
 
                             <article className="rounded-[12px] border border-[#E8ECEF] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[18px]">Select + Badge</p>
+                                <p className="mb-3 font-wallie-chunky text-[18px]">Labels</p>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Labels de estado usados en cards de meetup (fuente: tokens `tokens.color.meetup_status.*`).
+                                </p>
+                                <div className="grid gap-3 md:grid-cols-2">
+                                    {statusLabelItems.map((item) => (
+                                        <article key={item.name} className="rounded-[10px] border border-[#E8ECEF] p-3">
+                                            <p className="font-wallie-fit text-[12px] text-[#4A5A63]">{item.name}</p>
+                                            <span
+                                                className="mt-2 inline-flex rounded-full border px-2.5 py-1 font-wallie-fit text-[11px] leading-[1]"
+                                                style={{
+                                                    backgroundColor: item.background,
+                                                    borderColor: item.border,
+                                                    color: item.text,
+                                                }}
+                                            >
+                                                {item.label}
+                                            </span>
+                                            <p className="mt-2 font-wallie-fit text-[11px] text-[#4A5A63]">{`bg ${item.background}`}</p>
+                                            <p className="font-wallie-fit text-[11px] text-[#4A5A63]">{`border ${item.border}`}</p>
+                                            <p className="font-wallie-fit text-[11px] text-[#4A5A63]">{`text ${item.text}`}</p>
+                                        </article>
+                                    ))}
+                                </div>
+                            </article>
+
+                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
+                                <p className="mb-3 font-wallie-chunky text-[18px]">Select</p>
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <Select
                                         label="Categoria"
@@ -545,6 +690,10 @@ function DesignSystemPage() {
                                         ]}
                                     />
                                 </div>
+                            </article>
+
+                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
+                                <p className="mb-3 font-wallie-chunky text-[18px]">Badge</p>
                                 <div className="mt-4 flex items-center gap-2">
                                     <Badge variant="unread" value={8} />
                                     <Badge variant="success" value="OK" />
