@@ -1,6 +1,5 @@
 import * as React from "react"
 
-import { ChatMeetupEntry } from "@/components/meetup/chat-meetup-entry"
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { Button } from "@/components/ui/button"
 import { createMeetupMachine } from "@/meetup/state-machine"
@@ -106,16 +105,6 @@ function MeetupSimulator() {
             <p className="mt-3 font-wallie-fit text-[13px] text-[#4A5A63]">
                 Hora simulada: {currentTime.toLocaleString()}
             </p>
-
-            <div className="mt-4">
-                <ChatMeetupEntry
-                    meetup={machine}
-                    actorRole={actorRole}
-                    currentTime={currentTime}
-                    onMeetupChange={setMachine}
-                    onError={setLastError}
-                />
-            </div>
 
             <div className="mt-4">
                 <MeetupCard

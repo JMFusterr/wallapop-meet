@@ -142,7 +142,6 @@ Patrones mínimos:
 ## Referencias implementadas (2026-02-21)
 - Workspace de chat con entrada de propuesta desde composer + overlay: `src/components/meetup/wallapop-chat-workspace.tsx`.
 - Mapa interactivo de seleccion de ubicacion: `src/components/meetup/meetup-location-map.tsx`.
-- Reglas de elegibilidad de entrada desde chat: `src/components/meetup/chat-meetup-entry-rules.ts`.
 - Simulador interactivo de flujo: `src/components/meetup/meetup-simulator.tsx`.
 - Timeline reusable de estados: `src/components/meetup/meetup-timeline.tsx`.
 - Tarjeta contextual de acciones: `src/components/meetup/meetup-card.tsx`.
@@ -151,7 +150,6 @@ Patrones mínimos:
   - `src/components/ui/chat-product-card.tsx`
   - `src/components/meetup/wallapop-chat-workspace.tsx`
 - Stories de validacion visual:
-  - `src/components/meetup/chat-meetup-entry.stories.tsx`
   - `src/components/meetup/meetup-simulator.stories.tsx`
   - `src/components/meetup/meetup-timeline.stories.tsx`
   - `src/components/meetup/meetup-card.stories.tsx`
@@ -334,5 +332,6 @@ Reglas:
   - Bloque `N ventas completadas` en punto seguro con mismo patron visual del aviso de no verificado, en variante verde Wallapop.
 - Mini mapa de `MeetupCard`:
   - Reutiliza pin tipo capsula con mini triangulo unido.
+
 
 

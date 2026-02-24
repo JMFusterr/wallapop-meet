@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { ChatProductCard } from "@/components/ui/chat-product-card"
-import { ChatMeetupEntry } from "@/components/meetup/chat-meetup-entry"
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { ChatComposer } from "@/components/ui/chat-composer"
 import { ChatMessageBubble } from "@/components/ui/chat-message-bubble"
@@ -786,48 +785,75 @@ function DesignSystemPage() {
                             Ensamblado de componentes complejos para casos de negocio reales.
                         </p>
                         <div className="mt-5 grid gap-4 xl:grid-cols-2">
-                            <ChatProductCard
-                                imageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=640&h=460"
-                                imageAlt="Consola de ejemplo"
-                                title="Nintendo Switch OLED + dock"
-                                price="240 EUR"
-                                stats="Publicado hace 2 horas"
-                                viewsCount={28}
-                                likesCount={7}
-                                onReserve={() => {}}
-                                onSold={() => {}}
-                                onEdit={() => {}}
-                                statusLabel="Reservado"
-                            />
                             <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Chat to Entry Pattern</h3>
+                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Chat Product Card Pattern</h3>
                                 <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
-                                    Entrada desde chat para disparar una propuesta de meetup en contexto.
+                                    Versiones clave por rol: vendedor (acciones comerciales) y comprador (estado del anuncio).
                                 </p>
-                                <ChatMeetupEntry
-                                    meetup={proposedPatternMeetup}
-                                    actorRole="SELLER"
-                                    currentTime={now}
-                                    onMeetupChange={() => {}}
-                                    onError={() => {}}
-                                />
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <div>
+                                        <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">Seller / available</p>
+                                        <ChatProductCard
+                                            imageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=640&h=460"
+                                            imageAlt="Consola de ejemplo"
+                                            title="Nintendo Switch OLED + dock"
+                                            price="240 EUR"
+                                            stats="Publicado hace 2 horas"
+                                            viewsCount={28}
+                                            likesCount={7}
+                                            onReserve={() => {}}
+                                            onSold={() => {}}
+                                            onEdit={() => {}}
+                                        />
+                                    </div>
+                                    <div>
+                                        <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">Buyer / reserved</p>
+                                        <ChatProductCard
+                                            imageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=640&h=460"
+                                            imageAlt="Consola de ejemplo"
+                                            title="Nintendo Switch OLED + dock"
+                                            price="240 EUR"
+                                            viewerRole="buyer"
+                                            statusLabel="Reservado"
+                                        />
+                                    </div>
+                                </div>
                             </article>
                             <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
                                 <h3 className="mb-3 font-wallie-chunky text-[18px]">Meetup Card Pattern</h3>
                                 <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
-                                    Tarjeta transaccional con estado, datos de quedada y acciones por rol.
+                                    Tarjeta transaccional con variantes por estado para validar jerarquia y acciones.
                                 </p>
-                                <MeetupCard
-                                    meetup={confirmedPatternMeetup}
-                                    actorRole="SELLER"
-                                    currentTime={now}
-                                    onMeetupChange={() => {}}
-                                    onError={() => {}}
-                                    counterpartName="Laura M."
-                                    onEditProposal={() => {}}
-                                    onOpenMapPreview={() => {}}
-                                    onRedZoneCancelConfirmed={() => {}}
-                                />
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">PROPOSED / buyer</p>
+                                        <MeetupCard
+                                            meetup={proposedPatternMeetup}
+                                            actorRole="BUYER"
+                                            currentTime={now}
+                                            onMeetupChange={() => {}}
+                                            onError={() => {}}
+                                            counterpartName="Laura M."
+                                            onEditProposal={() => {}}
+                                            onOpenMapPreview={() => {}}
+                                            onRedZoneCancelConfirmed={() => {}}
+                                        />
+                                    </div>
+                                    <div>
+                                        <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">CONFIRMED / seller</p>
+                                        <MeetupCard
+                                            meetup={confirmedPatternMeetup}
+                                            actorRole="SELLER"
+                                            currentTime={now}
+                                            onMeetupChange={() => {}}
+                                            onError={() => {}}
+                                            counterpartName="Laura M."
+                                            onEditProposal={() => {}}
+                                            onOpenMapPreview={() => {}}
+                                            onRedZoneCancelConfirmed={() => {}}
+                                        />
+                                    </div>
+                                </div>
                             </article>
                             <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
                                 <h3 className="mb-3 font-wallie-chunky text-[18px]">Conversation Block Pattern</h3>

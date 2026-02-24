@@ -3,7 +3,6 @@ import L from "leaflet"
 import { Banknote, MapPin, QrCode, Search, Smartphone } from "lucide-react"
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet"
 
-import { resolveChatMeetupEntryActionState } from "@/components/meetup/chat-meetup-entry-rules"
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { MeetupProposalFooter } from "@/components/meetup/meetup-proposal-footer"
 import { MeetupProposalHeader } from "@/components/meetup/meetup-proposal-header"
@@ -142,9 +141,42 @@ type ProposalDraftState = {
     error: string
 }
 
+type ProposalEntryActionState = {
+    visible: boolean
+    enabled: boolean
+    message: string
+}
+
 const DAC7_ALERT_THRESHOLD_EUR = 2000
 const MAX_FINAL_PRICE_EUR = 99999
 const DAY_MS = 24 * 60 * 60 * 1000
+
+function resolveProposalEntryActionState(
+    meetup: MeetupMachine,
+    actorRole: ActorRole
+): ProposalEntryActionState {
+    if (actorRole !== "SELLER") {
+        return {
+            visible: false,
+            enabled: false,
+            message: "Solo el vendedor puede iniciar una propuesta de meetup.",
+        }
+    }
+
+    if (meetup.status === null || meetup.status === "CANCELLED") {
+        return {
+            visible: true,
+            enabled: true,
+            message: "Inicia la propuesta desde esta conversacion con el comprador.",
+        }
+    }
+
+    return {
+        visible: false,
+        enabled: false,
+        message: "Ya existe una propuesta activa en este chat.",
+    }
+}
 
 function parseFinalPrice(rawValue: string): number | null {
     const normalizedValue = rawValue.trim().replace(",", ".")
@@ -1849,7 +1881,7 @@ function ConversationPane({
 }: ConversationPaneProps) {
     const currentTime = new Date()
     const proposalActionState = meetup
-        ? resolveChatMeetupEntryActionState(meetup, actorRole)
+        ? resolveProposalEntryActionState(meetup, actorRole)
         : null
     const canShowProposalAction = proposalActionState?.visible === true
 
@@ -2822,7 +2854,7 @@ function WallapopChatWorkspace() {
         }
 
         if (selectedMeetup.status === null) {
-            const eligibility = resolveChatMeetupEntryActionState(selectedMeetup, selectedActorRole)
+            const eligibility = resolveProposalEntryActionState(selectedMeetup, selectedActorRole)
             if (!eligibility.enabled) {
                 setProposalError(eligibility.message)
                 return
