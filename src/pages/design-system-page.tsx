@@ -1,12 +1,21 @@
 import styles from "../../styles.json"
+import { Banknote, MapPin, QrCode, Smartphone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { ChatProductCard } from "@/components/ui/chat-product-card"
+import { ChatCounterpartCard } from "@/components/ui/chat-counterpart-card"
+import { ChatListItem } from "@/components/ui/chat-list-item"
 import { MeetupCard } from "@/components/meetup/meetup-card"
+import { MeetupProposalHeader } from "@/components/meetup/meetup-proposal-header"
+import { MeetupWizardStepHeading } from "@/components/meetup/meetup-wizard-step-heading"
+import { MeetupProposalFooter } from "@/components/meetup/meetup-proposal-footer"
+import { MeetupLocationMap } from "@/components/meetup/meetup-location-map"
 import { ChatComposer } from "@/components/ui/chat-composer"
 import { ChatMessageBubble } from "@/components/ui/chat-message-bubble"
+import { ChatSecurityBanner } from "@/components/ui/chat-security-banner"
+import { CalendarPicker } from "@/components/ui/calendar-picker"
 import { WallapopIcon, type WallapopIconName } from "@/components/ui/wallapop-icon"
 import { navigateTo } from "@/lib/navigation"
 import { createMeetupMachine, transitionMeetup } from "@/meetup"
@@ -104,6 +113,18 @@ const sectionEntries = [
     { id: "patterns", label: "Patterns" },
 ] as const
 
+const proposalHeaderSteps = [
+    { id: 1, label: "Punto de encuentro" },
+    { id: 2, label: "Dia y hora" },
+    { id: 3, label: "Preferencia de pago", disabled: true },
+]
+
+const patternSafePoints = [
+    { id: "station", name: "Estacion de Sants", lat: 41.37906, lng: 2.14006 },
+    { id: "mall", name: "Centro comercial Arenas", lat: 41.37617, lng: 2.14918 },
+    { id: "police", name: "Comisaria Mossos - Les Corts", lat: 41.38762, lng: 2.13441 },
+]
+
 function createPatternMeetupMachine(status: "PROPOSED" | "CONFIRMED"): MeetupMachine {
     const base = createMeetupMachine({
         scheduledAt: new Date(Date.now() + 45 * 60 * 1000),
@@ -145,6 +166,36 @@ function createPatternMeetupMachine(status: "PROPOSED" | "CONFIRMED"): MeetupMac
     })
 
     return confirmedResult.ok ? confirmedResult.meetup : proposedResult.meetup
+}
+
+function SafeShieldGlyph({ className = "" }: { className?: string }) {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+            aria-hidden
+        >
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+        </svg>
+    )
+}
+
+function ProposalSelectionIndicator({ selected }: { selected: boolean }) {
+    return (
+        <span
+            className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white ${
+                selected ? "border-[8px] border-[#253238]" : "border-2 border-[#6E8792]"
+            }`}
+            aria-hidden
+        />
+    )
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -784,38 +835,40 @@ function DesignSystemPage() {
                         <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
                             Ensamblado de componentes complejos para casos de negocio reales.
                         </p>
-                        <div className="mt-5 grid gap-4 xl:grid-cols-2">
+                        <div className="mt-5 space-y-4">
                             <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
                                 <h3 className="mb-3 font-wallie-chunky text-[18px]">Chat Product Card Pattern</h3>
                                 <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
                                     Versiones clave por rol: vendedor (acciones comerciales) y comprador (estado del anuncio).
                                 </p>
-                                <div className="grid gap-4 md:grid-cols-2">
-                                    <div>
-                                        <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">Seller / available</p>
-                                        <ChatProductCard
-                                            imageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=640&h=460"
-                                            imageAlt="Consola de ejemplo"
-                                            title="Nintendo Switch OLED + dock"
-                                            price="240 EUR"
-                                            stats="Publicado hace 2 horas"
-                                            viewsCount={28}
-                                            likesCount={7}
-                                            onReserve={() => {}}
-                                            onSold={() => {}}
-                                            onEdit={() => {}}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">Buyer / reserved</p>
-                                        <ChatProductCard
-                                            imageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=640&h=460"
-                                            imageAlt="Consola de ejemplo"
-                                            title="Nintendo Switch OLED + dock"
-                                            price="240 EUR"
-                                            viewerRole="buyer"
-                                            statusLabel="Reservado"
-                                        />
+                                <div className="overflow-x-auto">
+                                    <div className="flex min-w-max gap-4">
+                                        <div className="w-[360px] shrink-0">
+                                            <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">Seller / available</p>
+                                            <ChatProductCard
+                                                imageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=640&h=460"
+                                                imageAlt="Consola de ejemplo"
+                                                title="Nintendo Switch OLED + dock"
+                                                price="240 EUR"
+                                                stats="Publicado hace 2 horas"
+                                                viewsCount={28}
+                                                likesCount={7}
+                                                onReserve={() => {}}
+                                                onSold={() => {}}
+                                                onEdit={() => {}}
+                                            />
+                                        </div>
+                                        <div className="w-[360px] shrink-0">
+                                            <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">Buyer / reserved</p>
+                                            <ChatProductCard
+                                                imageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=640&h=460"
+                                                imageAlt="Consola de ejemplo"
+                                                title="Nintendo Switch OLED + dock"
+                                                price="240 EUR"
+                                                viewerRole="buyer"
+                                                statusLabel="Reservado"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </article>
@@ -824,41 +877,43 @@ function DesignSystemPage() {
                                 <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
                                     Tarjeta transaccional con variantes por estado para validar jerarquia y acciones.
                                 </p>
-                                <div className="space-y-4">
-                                    <div>
-                                        <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">PROPOSED / buyer</p>
-                                        <MeetupCard
-                                            meetup={proposedPatternMeetup}
-                                            actorRole="BUYER"
-                                            currentTime={now}
-                                            onMeetupChange={() => {}}
-                                            onError={() => {}}
-                                            counterpartName="Laura M."
-                                            onEditProposal={() => {}}
-                                            onOpenMapPreview={() => {}}
-                                            onRedZoneCancelConfirmed={() => {}}
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">CONFIRMED / seller</p>
-                                        <MeetupCard
-                                            meetup={confirmedPatternMeetup}
-                                            actorRole="SELLER"
-                                            currentTime={now}
-                                            onMeetupChange={() => {}}
-                                            onError={() => {}}
-                                            counterpartName="Laura M."
-                                            onEditProposal={() => {}}
-                                            onOpenMapPreview={() => {}}
-                                            onRedZoneCancelConfirmed={() => {}}
-                                        />
+                                <div className="overflow-x-auto">
+                                    <div className="flex min-w-max gap-4">
+                                        <div className="w-[460px] shrink-0">
+                                            <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">PROPOSED / buyer</p>
+                                            <MeetupCard
+                                                meetup={proposedPatternMeetup}
+                                                actorRole="BUYER"
+                                                currentTime={now}
+                                                onMeetupChange={() => {}}
+                                                onError={() => {}}
+                                                counterpartName="Laura M."
+                                                onEditProposal={() => {}}
+                                                onOpenMapPreview={() => {}}
+                                                onRedZoneCancelConfirmed={() => {}}
+                                            />
+                                        </div>
+                                        <div className="w-[460px] shrink-0">
+                                            <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">CONFIRMED / seller</p>
+                                            <MeetupCard
+                                                meetup={confirmedPatternMeetup}
+                                                actorRole="SELLER"
+                                                currentTime={now}
+                                                onMeetupChange={() => {}}
+                                                onError={() => {}}
+                                                counterpartName="Laura M."
+                                                onEditProposal={() => {}}
+                                                onOpenMapPreview={() => {}}
+                                                onRedZoneCancelConfirmed={() => {}}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </article>
                             <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
                                 <h3 className="mb-3 font-wallie-chunky text-[18px]">Conversation Block Pattern</h3>
                                 <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
-                                    Bloque base de conversacion con burbujas y composer de acciones.
+                                    Bloque base de conversacion del proyecto: burbujas, banner de seguridad y composer con CTA secundaria por rol.
                                 </p>
                                 <div className="space-y-2">
                                     <ChatMessageBubble variant="received" time="18:02">
@@ -870,13 +925,334 @@ function DesignSystemPage() {
                                         </ChatMessageBubble>
                                     </div>
                                 </div>
+                                <div className="mt-3 border-y border-[#E8ECEF] px-1 py-1">
+                                    <ChatSecurityBanner
+                                        message="Quedate en Wallapop. Mas facil, mas seguro."
+                                        linkText="Mas informacion"
+                                    />
+                                </div>
                                 <div className="mt-3">
                                     <ChatComposer
                                         defaultValue=""
                                         onSubmit={() => {}}
                                         onSecondaryAction={() => {}}
-                                        secondaryActionLabel="Adjuntar"
+                                        secondaryActionLabel="Proponer quedar"
+                                        secondaryActionAriaLabel="Proponer quedar"
+                                        secondaryActionIconName="calendar"
                                     />
+                                </div>
+                            </article>
+                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Counterpart Context Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Card de contexto del interlocutor para sidebar de conversacion (rating, distancia y asistencia).
+                                </p>
+                                <div className="w-full max-w-[380px] rounded-[12px] border border-[#E8ECEF] bg-white p-3">
+                                    <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">ChatCounterpartCard</p>
+                                    <ChatCounterpartCard
+                                        name="Lorena"
+                                        rating={4.5}
+                                        ratingCount={110}
+                                        distanceLabel="42km de ti"
+                                        attendanceRate={94}
+                                        attendanceMeetups={26}
+                                        profileImageSrc="https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320"
+                                    />
+                                </div>
+                            </article>
+                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Inbox Conversation Preview Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Vista previa de conversacion en buzon con miniatura de articulo y estado comercial.
+                                </p>
+                                <div className="overflow-x-auto">
+                                    <div className="flex min-w-max gap-4">
+                                        <div className="w-[360px] shrink-0 overflow-hidden rounded-[12px] border border-[#E8ECEF] bg-white">
+                                            <p className="border-b border-[#E8ECEF] px-3 py-2 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                                ChatListItem - reservado
+                                            </p>
+                                            <ChatListItem
+                                                userName="Marta"
+                                                messageDate="Ayer"
+                                                itemTitle="iPhone 13 128GB"
+                                                messagePreview="Perfecto, me va bien en el metro."
+                                                unreadCount={2}
+                                                leadingIndicator="bookmark"
+                                                lastMessageDeliveryState="read"
+                                                avatarSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400"
+                                            />
+                                        </div>
+                                        <div className="w-[360px] shrink-0 overflow-hidden rounded-[12px] border border-[#E8ECEF] bg-white">
+                                            <p className="border-b border-[#E8ECEF] px-3 py-2 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                                ChatListItem - vendido
+                                            </p>
+                                            <ChatListItem
+                                                userName="Pau"
+                                                messageDate="Hoy"
+                                                itemTitle="MacBook Air M2"
+                                                messagePreview="Gracias! Queda vendido."
+                                                leadingIndicator="deal"
+                                                lastMessageDeliveryState="sent"
+                                                avatarSrc="https://images.pexels.com/photos/18105/pexels-photo.jpg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Proposal Overlay Building Blocks</h3>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Componentes base del overlay al configurar una quedada (header, step heading y footer).
+                                </p>
+                                <div className="space-y-3 overflow-hidden rounded-[12px] border border-[#E8ECEF] bg-white p-3">
+                                    <MeetupProposalHeader
+                                        currentStep={2}
+                                        totalSteps={3}
+                                        steps={proposalHeaderSteps}
+                                        onClose={() => {}}
+                                        onStepChange={() => {}}
+                                    />
+                                    <div className="px-2">
+                                        <MeetupWizardStepHeading
+                                            caption="Paso anterior"
+                                            title="Seleccionar dia y hora"
+                                            onBack={() => {}}
+                                        />
+                                    </div>
+                                    <MeetupProposalFooter
+                                        listingImageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400"
+                                        itemTitle="Nintendo Switch OLED + dock"
+                                        userName="Laura M."
+                                        attendanceRate={94}
+                                        attendanceMeetups={26}
+                                        actionLabel="Siguiente"
+                                        onAction={() => {}}
+                                    />
+                                </div>
+                            </article>
+                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Proposal Step 1 Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Seleccion de punto de encuentro con mapa y cards de opciones visibles.
+                                </p>
+                                <div className="space-y-4">
+                                    <div className="overflow-x-auto rounded-[12px] border border-[#E8ECEF] p-3">
+                                        <div className="flex min-w-max gap-4">
+                                            <div className="w-[360px] shrink-0 rounded-[12px] border border-[#E8ECEF] p-3">
+                                                <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                                    Seleccionar punto de encuentro - mapa
+                                                </p>
+                                                <MeetupLocationMap
+                                                    center={{ lat: patternSafePoints[0].lat, lng: patternSafePoints[0].lng }}
+                                                    safePoints={patternSafePoints}
+                                                    selectedPointId="station"
+                                                    selectedCustomPoint={null}
+                                                    onMapClick={() => {}}
+                                                    onSafePointClick={() => {}}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="rounded-[12px] border border-[#E8ECEF] p-3">
+                                        <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                            Seleccionar punto de encuentro - opciones
+                                        </p>
+                                        <div className="overflow-x-auto">
+                                            <div className="flex min-w-max gap-3">
+                                                <button
+                                                    type="button"
+                                                    className="w-[300px] rounded-[18px] border border-[#253238] px-4 py-4 text-left shadow-[inset_0_0_0_1px_#253238]"
+                                                >
+                                                    <div className="flex items-start gap-3">
+                                                        <span className="mt-0.5 inline-flex text-[#253238]">
+                                                            <SafeShieldGlyph />
+                                                        </span>
+                                                        <div className="min-w-0 flex-1">
+                                                            <p className="font-wallie-chunky text-[18px] leading-tight text-[#253238]">
+                                                                Estacion de Sants
+                                                            </p>
+                                                            <p className="mt-1 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                                                Barcelona, acceso principal
+                                                            </p>
+                                                            <div className="mt-1 flex items-center gap-2">
+                                                                <span className="rounded-full bg-[#E6FAF6] px-2 py-0.5 font-wallie-fit text-[12px] text-[#038673]">
+                                                                    Punto seguro
+                                                                </span>
+                                                                <span className="rounded-full bg-[#EEF3F5] px-2 py-0.5 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                                                    824 ventas
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <span className="mt-0.5">
+                                                            <ProposalSelectionIndicator selected={true} />
+                                                        </span>
+                                                    </div>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="w-[300px] rounded-[18px] border border-[#B8C9CF] px-4 py-4 text-left"
+                                                >
+                                                    <div className="flex items-start gap-3">
+                                                        <span className="mt-0.5 inline-flex text-[#253238]">
+                                                            <MapPin size={16} />
+                                                        </span>
+                                                        <div className="min-w-0 flex-1">
+                                                            <p className="font-wallie-chunky text-[18px] leading-tight text-[#253238]">
+                                                                Carrer de Tarragona, 95
+                                                            </p>
+                                                            <p className="mt-1 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                                                Punto personalizado
+                                                            </p>
+                                                        </div>
+                                                        <span className="mt-0.5">
+                                                            <ProposalSelectionIndicator selected={false} />
+                                                        </span>
+                                                    </div>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="w-[300px] rounded-[18px] border border-[#B8C9CF] px-4 py-4 text-left"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
+                                                            <WallapopIcon name="plus" size={16} />
+                                                        </span>
+                                                        <div className="min-w-0 flex-1">
+                                                            <p className="font-wallie-chunky text-[18px] text-[#253238]">
+                                                                Elige un punto
+                                                            </p>
+                                                            <p className="font-wallie-fit text-[13px] text-[#6E8792]">
+                                                                Puede ser un punto personalizado u otro punto seguro.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Proposal Step 2 Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Seleccion de dia y hora con estados de validacion para cada campo.
+                                </p>
+                                <div className="overflow-x-auto rounded-[12px] border border-[#E8ECEF] p-3">
+                                    <div className="flex min-w-max gap-4">
+                                        <div className="w-[360px] shrink-0 space-y-3 rounded-[12px] border border-[#E8ECEF] p-3">
+                                            <p className="font-wallie-fit text-[12px] text-[#4A5A63]">
+                                                Seleccionar dia y hora - estado default
+                                            </p>
+                                            <CalendarPicker
+                                                label="Dia"
+                                                monthDate={new Date()}
+                                                selectedDateValue={new Date().toISOString().slice(0, 10)}
+                                                minDateValue={new Date().toISOString().slice(0, 10)}
+                                                onMonthChange={() => {}}
+                                                onSelectDate={() => {}}
+                                            />
+                                            <Select
+                                                label="Hora"
+                                                defaultValue="18:30"
+                                                options={[
+                                                    { value: "17:30", label: "17:30" },
+                                                    { value: "18:00", label: "18:00" },
+                                                    { value: "18:30", label: "18:30" },
+                                                    { value: "19:00", label: "19:00" },
+                                                ]}
+                                                dropdownDirection="up"
+                                            />
+                                        </div>
+                                        <div className="w-[360px] shrink-0 space-y-3 rounded-[12px] border border-[#E8ECEF] p-3">
+                                            <p className="font-wallie-fit text-[12px] text-[#4A5A63]">
+                                                Seleccionar dia y hora - estado error
+                                            </p>
+                                            <CalendarPicker
+                                                label="Dia"
+                                                monthDate={new Date()}
+                                                selectedDateValue=""
+                                                minDateValue={new Date().toISOString().slice(0, 10)}
+                                                onMonthChange={() => {}}
+                                                onSelectDate={() => {}}
+                                                state="error"
+                                                error="Selecciona un dia para continuar."
+                                            />
+                                            <Select
+                                                label="Hora"
+                                                placeholder="Selecciona hora"
+                                                state="error"
+                                                error="Selecciona una hora para continuar."
+                                                options={[
+                                                    { value: "", label: "Selecciona hora", disabled: true },
+                                                    { value: "17:30", label: "17:30" },
+                                                    { value: "18:00", label: "18:00" },
+                                                    { value: "18:30", label: "18:30" },
+                                                ]}
+                                                dropdownDirection="up"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Proposal Step 3 Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Importe final y preferencia de pago con tres metodos como en el flujo real.
+                                </p>
+                                <div className="space-y-3 rounded-[12px] border border-[#E8ECEF] p-3">
+                                    <Input
+                                        label="Importe final acordado (€)"
+                                        value="220"
+                                        onChange={() => {}}
+                                        placeholder="Ej: 220"
+                                    />
+                                    <p className="font-wallie-fit text-[13px] text-[#253238]">Preferencia de pago</p>
+                                    <div className="overflow-x-auto">
+                                        <div className="flex min-w-max gap-3">
+                                            <button
+                                                type="button"
+                                                className="w-[180px] rounded-[18px] border border-[#B8C9CF] px-4 py-3 text-left"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
+                                                        <Banknote size={16} />
+                                                    </span>
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="font-wallie-fit text-[14px] leading-[1.2] text-[#253238]">Efectivo</p>
+                                                    </div>
+                                                    <ProposalSelectionIndicator selected={false} />
+                                                </div>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="w-[180px] rounded-[18px] border border-[#253238] px-4 py-3 text-left shadow-[inset_0_0_0_1px_#253238]"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
+                                                        <Smartphone size={16} />
+                                                    </span>
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="font-wallie-fit text-[14px] leading-[1.2] text-[#253238]">Bizum</p>
+                                                    </div>
+                                                    <ProposalSelectionIndicator selected={true} />
+                                                </div>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="w-[180px] rounded-[18px] border border-[#B8C9CF] px-4 py-3 text-left"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
+                                                        <QrCode size={16} />
+                                                    </span>
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="font-wallie-fit text-[14px] leading-[1.2] text-[#253238]">Wallapop Wallet</p>
+                                                    </div>
+                                                    <ProposalSelectionIndicator selected={false} />
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </article>
                         </div>
