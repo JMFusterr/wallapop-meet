@@ -216,6 +216,7 @@ const initialConversations: Conversation[] = [
         counterpartAttendanceMeetups: 41,
         listingViewerRole: "seller",
         leadingIndicator: "bookmark",
+        listingStatusLabel: "Reservado",
     },
     {
         id: "conv-c-buyer-incoming",
@@ -283,7 +284,13 @@ const initialConversations: Conversation[] = [
             "https://images.pexels.com/photos/1038916/pexels-photo-1038916.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
             "https://images.pexels.com/photos/301599/pexels-photo-301599.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
-        unreadCount: 1,
+        unreadCount: 0,
+        meetupContext: {
+            conversationId: "conv-e-low-attendance",
+            listingId: "listing-monitor-005",
+            sellerUserId: "user-seller-me-001",
+            buyerUserId: "user-buyer-iker-005",
+        },
         counterpartRating: 4,
         counterpartRatingCount: 21,
         counterpartDistanceLabel: "6,5km de ti",
@@ -299,52 +306,52 @@ const initialMessagesByConversation: Record<string, Message[]> = {
     "conv-a-arrival": [
         {
             id: "m-a-1",
-            text: "Genial, quedamos hoy. Llevo la Switch con caja y funda.",
-            variant: "sent",
-            time: formatTime(new Date(tsMinutesAgo(56))),
-            createdAt: tsMinutesAgo(56),
-            deliveryState: "read",
+            text: "Hola, te la compro hoy si te viene bien.",
+            variant: "received",
+            time: formatTime(new Date(tsMinutesAgo(60))),
+            createdAt: tsMinutesAgo(60),
         },
         {
             id: "m-a-2",
-            text: "Perfecto. Estoy saliendo ahora y llego en unos 10 minutos.",
-            variant: "received",
+            text: "Genial, quedamos hoy. Llevo la Switch con caja y funda.",
+            variant: "sent",
             time: formatTime(new Date(tsMinutesAgo(12))),
             createdAt: tsMinutesAgo(12),
+            deliveryState: "read",
         },
     ],
     "conv-b-seller-propose": [
         {
             id: "m-b-1",
-            text: "La bici esta revisada, frenos y ruedas al dia.",
-            variant: "sent",
-            time: formatTime(new Date(tsMinutesAgo(85))),
-            createdAt: tsMinutesAgo(85),
-            deliveryState: "read",
+            text: "Sigue disponible la bici? Podria verla esta tarde.",
+            variant: "received",
+            time: formatTime(new Date(tsMinutesAgo(90))),
+            createdAt: tsMinutesAgo(90),
         },
         {
             id: "m-b-2",
-            text: "Perfecto, me cuadra. Cuando puedas mandame propuesta.",
-            variant: "received",
+            text: "Si, la bici esta revisada, frenos y ruedas al dia.",
+            variant: "sent",
             time: formatTime(new Date(tsMinutesAgo(72))),
             createdAt: tsMinutesAgo(72),
+            deliveryState: "read",
         },
         {
             id: "m-b-3",
-            text: "Si te encaja, te envio propuesta de quedada ahora.",
-            variant: "sent",
+            text: "Perfecto, me cuadra. Cuando puedas mandame propuesta.",
+            variant: "received",
             time: formatTime(new Date(tsMinutesAgo(14))),
             createdAt: tsMinutesAgo(14),
-            deliveryState: "sent",
         },
     ],
     "conv-c-buyer-incoming": [
         {
             id: "m-c-1",
-            text: "La camara esta impecable. Si quieres te mando propuesta ahora.",
-            variant: "received",
+            text: "Hola, me interesa la camara. Te viene bien quedar manana?",
+            variant: "sent",
             time: formatTime(new Date(tsMinutesAgo(26))),
             createdAt: tsMinutesAgo(26),
+            deliveryState: "read",
         },
         {
             id: "m-c-2",
@@ -371,6 +378,13 @@ const initialMessagesByConversation: Record<string, Message[]> = {
         },
     ],
     "conv-e-low-attendance": [
+        {
+            id: "m-e-0",
+            text: "Me interesa el monitor, podemos cerrar hoy?",
+            variant: "received",
+            time: formatTime(new Date(tsMinutesAgo(2 * 24 * 60 + 20))),
+            createdAt: tsMinutesAgo(2 * 24 * 60 + 20),
+        },
         {
             id: "m-e-1",
             text: "Veo que tu tasa de asistencia es baja y prefiero venderselo a otra persona, lo siento.",
@@ -585,6 +599,37 @@ function formatConversationDate(createdAt: number): string {
     return date.toLocaleDateString("es-ES", { day: "2-digit", month: "short" })
 }
 
+function isSameCalendarDay(leftTimestamp: number, rightTimestamp: number): boolean {
+    const left = new Date(leftTimestamp)
+    const right = new Date(rightTimestamp)
+    return (
+        left.getFullYear() === right.getFullYear() &&
+        left.getMonth() === right.getMonth() &&
+        left.getDate() === right.getDate()
+    )
+}
+
+function formatTimelineDayLabel(createdAt: number): string {
+    const date = new Date(createdAt)
+    const now = new Date()
+    const startOfDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+    const startOfNow = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+    const dayDelta = Math.floor((startOfNow - startOfDate) / DAY_MS)
+
+    if (dayDelta === 0) {
+        return "Hoy"
+    }
+    if (dayDelta === 1) {
+        return "Ayer"
+    }
+
+    return date.toLocaleDateString("es-ES", {
+        weekday: "long",
+        day: "numeric",
+        month: "short",
+    })
+}
+
 function resolveMeetupTimelineTimestamp(meetup: MeetupMachine): number | null {
     if (meetup.status === null) {
         return null
@@ -678,6 +723,19 @@ function resolveConversationSummary(
                 ? (latestEntry.message.deliveryState ?? "sent")
                 : undefined,
     }
+}
+
+function resolveConversationUnreadCount(
+    unreadCount: number | undefined,
+    messages: Message[],
+    meetup: MeetupMachine | undefined
+): number {
+    const timeline = buildConversationTimelineEntries(messages, meetup)
+    const latestEntry = timeline[timeline.length - 1]
+    if (!latestEntry || latestEntry.type !== "message" || latestEntry.message.variant !== "received") {
+        return 0
+    }
+    return unreadCount ?? 0
 }
 
 function buildInitialMeetupState(): Record<string, MeetupMachine> {
@@ -1713,31 +1771,51 @@ function ConversationPane({
 
             <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5">
                 <div className="space-y-3">
-                    {timelineEntries.map((entry) => {
+                    {timelineEntries.map((entry, entryIndex) => {
+                        const previousEntry = entryIndex > 0 ? timelineEntries[entryIndex - 1] : null
+                        const showDateSeparator =
+                            previousEntry === null ||
+                            !isSameCalendarDay(previousEntry.createdAt, entry.createdAt)
+
                         if (entry.type === "message") {
                             const message = entry.message
                             return (
-                                <div
-                                    key={entry.id}
-                                    className={
-                                        message.variant === "sent"
-                                            ? "flex justify-end"
-                                            : "flex justify-start"
-                                    }
-                                >
-                                    <ChatMessageBubble
-                                        variant={message.variant}
-                                        time={message.time}
-                                        deliveryState={message.deliveryState}
+                                <div key={entry.id} className="space-y-2">
+                                    {showDateSeparator ? (
+                                        <div className="flex justify-center">
+                                            <span className="inline-flex rounded-full bg-[#D7E1E6] px-4 py-1 font-wallie-fit text-[13px] text-[#6E8792]">
+                                                {formatTimelineDayLabel(entry.createdAt)}
+                                            </span>
+                                        </div>
+                                    ) : null}
+                                    <div
+                                        className={
+                                            message.variant === "sent"
+                                                ? "flex justify-end"
+                                                : "flex justify-start"
+                                        }
                                     >
-                                        {message.text}
-                                    </ChatMessageBubble>
+                                        <ChatMessageBubble
+                                            variant={message.variant}
+                                            time={message.time}
+                                            deliveryState={message.deliveryState}
+                                        >
+                                            {message.text}
+                                        </ChatMessageBubble>
+                                    </div>
                                 </div>
                             )
                         }
 
                         return (
-                            <div key={entry.id} className="pt-2">
+                            <div key={entry.id} className="space-y-2 pt-2">
+                                {showDateSeparator ? (
+                                    <div className="flex justify-center">
+                                        <span className="inline-flex rounded-full bg-[#D7E1E6] px-4 py-1 font-wallie-fit text-[13px] text-[#6E8792]">
+                                            {formatTimelineDayLabel(entry.createdAt)}
+                                        </span>
+                                    </div>
+                                ) : null}
                                 <div className={actorRole === "SELLER" ? "flex justify-end" : "flex justify-start"}>
                                     <MeetupCard
                                         meetup={entry.meetup}
@@ -1820,6 +1898,14 @@ function ConversationPane({
 }
 
 function DesktopConversationSidebar({ conversation }: { conversation: Conversation }) {
+    const sidebarStatusLabel =
+        conversation.listingStatusLabel ??
+        (conversation.leadingIndicator === "bookmark"
+            ? "Reservado"
+            : conversation.leadingIndicator === "deal"
+              ? "Vendido"
+              : undefined)
+
     return (
         <aside className="hidden h-full min-h-0 flex-col gap-4 overflow-y-auto bg-[#F3F6F8] p-4 lg:flex">
             <ChatCounterpartCard
@@ -1837,7 +1923,7 @@ function DesktopConversationSidebar({ conversation }: { conversation: Conversati
                 title={conversation.itemTitle}
                 price={conversation.itemPrice}
                 viewerRole={conversation.listingViewerRole}
-                statusLabel={conversation.listingStatusLabel}
+                statusLabel={sidebarStatusLabel}
                 viewsCount={conversation.listingViews}
                 likesCount={conversation.listingLikes}
                 onEdit={
@@ -1948,9 +2034,15 @@ function WallapopChatWorkspace() {
                 const conversationMessages = messagesByConversation[conversation.id] ?? []
                 const conversationMeetup = meetupByConversation[conversation.id]
                 const summary = resolveConversationSummary(conversationMessages, conversationMeetup)
+                const unreadCount = resolveConversationUnreadCount(
+                    conversation.unreadCount,
+                    conversationMessages,
+                    conversationMeetup
+                )
                 return {
                     ...conversation,
                     ...summary,
+                    unreadCount,
                 }
             })
         )

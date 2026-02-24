@@ -14,7 +14,7 @@ const meta = {
     imageSrc: sampleImage,
     imageAlt: "Producto en venta",
     title: "Nintendo Switch OLED",
-    price: "250 €",
+    price: "250 EUR",
     viewerRole: "seller",
     viewsCount: 320,
     likesCount: 24,

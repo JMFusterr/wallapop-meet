@@ -24,6 +24,19 @@ type ChatProductCardProps = React.ComponentProps<"article"> & {
     statusLabel?: string
 }
 
+type ListingStatus = "available" | "reserved" | "sold"
+
+function resolveListingStatus(statusLabel?: string): ListingStatus {
+    const normalized = statusLabel?.trim().toLowerCase() ?? ""
+    if (normalized.includes("vendid")) {
+        return "sold"
+    }
+    if (normalized.includes("reservad")) {
+        return "reserved"
+    }
+    return "available"
+}
+
 function resolveStatusBadgeConfig(statusLabel?: string): { color: string; iconName: "bookmark" | "deal" } {
     const normalized = statusLabel?.trim().toLowerCase() ?? ""
     if (normalized.includes("reservad")) {
@@ -55,6 +68,9 @@ function ChatProductCard({
 }: ChatProductCardProps) {
     const isSeller = viewerRole === "seller"
     const showStats = isSeller && typeof viewsCount === "number" && typeof likesCount === "number"
+    const listingStatus = resolveListingStatus(statusLabel)
+    const isSoldListing = listingStatus === "sold"
+    const isReservedListing = listingStatus === "reserved"
     const statusBadgeConfig = resolveStatusBadgeConfig(statusLabel)
 
     return (
@@ -78,7 +94,7 @@ function ChatProductCard({
                         <WallapopIcon name="edit" size={20} />
                     </button>
                 ) : null}
-                {!isSeller && statusLabel ? (
+                {statusLabel ? (
                     <span
                         className="absolute right-4 bottom-4 inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 font-wallie-chunky text-[14px]"
                         style={{ color: statusBadgeConfig.color }}
@@ -93,7 +109,7 @@ function ChatProductCard({
                 ) : null}
             </div>
 
-            {isSeller ? (
+            {isSeller && !isSoldListing ? (
                 <div className="px-4 pt-3">
                     <div className="flex items-center gap-3">
                         <Button
@@ -101,9 +117,14 @@ function ChatProductCard({
                             variant="inline_action"
                             size="md"
                             onClick={onReserve}
-                            className="h-8 flex-1 rounded-full bg-[#86418A] px-4 font-wallie-chunky text-[13px] text-white"
+                            className={cn(
+                                "h-8 flex-1 rounded-full px-4 font-wallie-chunky text-[13px]",
+                                isReservedListing
+                                    ? "border-[#86418A] bg-white text-[#86418A]"
+                                    : "border-[#86418A] bg-[#86418A] text-white"
+                            )}
                         >
-                            {reserveLabel}
+                            {isReservedListing ? "Anular reserva" : reserveLabel}
                         </Button>
                         <Button
                             type="button"

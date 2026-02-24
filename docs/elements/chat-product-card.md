@@ -46,6 +46,11 @@ Botones embebidos:
   - Radio: `25px`
   - Tipografia: `12px/18px`, `400`, `Wallie, Helvetica`
 
+Reglas de estado en implementacion (`src/components/ui/chat-product-card.tsx`):
+- Si el anuncio esta `Vendido`, se ocultan las acciones de seller (`Reservar` y `Vendido`).
+- Si el anuncio esta `Reservado`, el boton izquierdo pasa a modo outline y texto `Anular reserva`.
+- Si no hay estado comercial, se mantiene la variante original (`Reservar` relleno + `Vendido` relleno).
+
 ### 4) Boton de editar superpuesto (solo seller)
 - Nodo: `a.btn.btn-edit`
 - Dimensiones: `40x40px`
