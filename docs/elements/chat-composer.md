@@ -95,3 +95,5 @@ Estados observados:
   - `secondaryActionIconName`
   - `onSecondaryAction`
   - `secondaryActionDisabled`
+- Referencia Living DS:
+  - En `Conversation Block Pattern` la accion secundaria se documenta como `Proponer quedar` con icono `calendar`.
