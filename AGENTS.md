@@ -28,6 +28,10 @@ Scripts disponibles:
 - `npm test`: ejecutar pruebas con Vitest.
 - `npm run storybook`: ejecutar Storybook local.
 - `npm run build-storybook`: compilar Storybook estático.
+- `npx convex dev`: validar y regenerar artefactos de Convex durante el desarrollo.
+
+Regla operativa obligatoria:
+- Siempre que se realicen cambios en el proyecto, comprobar que `npx convex dev` funciona correctamente antes de cerrar la tarea.
 
 ## Estilo de código y nomenclatura
 

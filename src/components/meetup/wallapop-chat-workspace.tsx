@@ -670,7 +670,10 @@ const safePointMarkerIcon = L.divIcon({
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
                 </svg>
             </span>
-            <span style="margin-top:-1px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #13C1AC;"></span>
+            <svg viewBox="0 0 14 8" width="14" height="8" style="display:block;margin-top:-2px;" aria-hidden="true">
+                <path d="M1 0H13L7 7Z" fill="#13C1AC"></path>
+                <path d="M1 0L7 7L13 0" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
         </span>
     `,
     iconSize: [40, 37],
@@ -686,7 +689,10 @@ const selectedSafePointMarkerIcon = L.divIcon({
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
                 </svg>
             </span>
-            <span style="margin-top:-1px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #038673;"></span>
+            <svg viewBox="0 0 14 8" width="14" height="8" style="display:block;margin-top:-2px;" aria-hidden="true">
+                <path d="M1 0H13L7 7Z" fill="#038673"></path>
+                <path d="M1 0L7 7L13 0" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
         </span>
     `,
     iconSize: [40, 37],
@@ -715,7 +721,10 @@ const customPointIcon = L.divIcon({
                     <path d="M3 4h8"></path>
                 </svg>
             </span>
-            <span style="margin-top:-1px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #0D907A;"></span>
+            <svg viewBox="0 0 14 8" width="14" height="8" style="display:block;margin-top:-2px;" aria-hidden="true">
+                <path d="M1 0H13L7 7Z" fill="#0D907A"></path>
+                <path d="M1 0L7 7L13 0" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
         </span>
     `,
     iconSize: [40, 37],
