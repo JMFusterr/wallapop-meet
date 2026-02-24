@@ -13,6 +13,10 @@ brand
 
 tokens
   color
+    palette.brand (50..900)
+    palette.neutral (50..900)
+    palette.reserve (50..900)
+    palette.sold (50..900)
     brand
     neutral
     semantic
@@ -59,6 +63,12 @@ components
 - `motion` define duración + easing reutilizable para transiciones y feedback.
 
 ## Mapeo base de botones extraidos de web (2026-02-18)
+
+### Paletas oficiales (50-900)
+- `tokens.color.palette.brand`: escala principal Wallapop (`500 = #13C1AC`).
+- `tokens.color.palette.neutral`: escala de neutros de interfaz (`50..900`).
+- `tokens.color.palette.reserve`: morado comercial de reservado (`500 = #86418A`).
+- `tokens.color.palette.sold`: rosa comercial de vendido (`500 = #D32069`).
 
 ### Color (`tokens.color.button`)
 - `primary.background`: `#3DD2BA`
@@ -130,9 +140,6 @@ components
   - Estado activo: `color.brand.primary`
   - Estado completado: `color.semantic.success.base`
   - Estado expirado/cancelado: `color.semantic.error.base`
-- Banner del día del meetup:
-  - Fondo: `color.background.accent`
-  - Texto: `color.text.primary`
 - Acción "Estoy aqui":
   - Botón principal: `components.button.primary`
   - Estado deshabilitado fuera de ventana: `components.button.primary.disabled`
@@ -187,4 +194,6 @@ components
 2. Escala final de grises neutros.
 3. Duraciones finales de motion en iOS y Android.
 4. Reglas de elevación por plataforma (si divergen).
+
+
 

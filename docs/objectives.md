@@ -148,7 +148,7 @@ Objetivos:
   - `Button.variant=critical` usa radio tipo pill consistente con el resto de botones de accion Wallapop.
 - Estado de entrega con icono `double_check` unificado en listado y burbujas (`sent` gris, `read` verde), con bubble enviada usando padding horizontal simetrico.
 - CTA de llegada en castellano:
-  - `Estoy aqui` sustituido por `Estoy aqui` en `MeetupCard` y `MeetupDayBanner`.
+  - `Estoy aqui` gestionado unicamente desde `MeetupCard`.
 - Buzon de conversaciones con escenario realista: multiples interesados por articulo, textos de chat plausibles e imagen de producto por conversacion.
 - El chat de `Bicicleta fixie Fuji` (`conv-002`) incluye una propuesta activa del vendedor para validar la variante inversa de `MeetupCard` desde el rol comprador.
 - Estados comerciales representados en el listado de conversaciones con los indicadores visuales del sistema de diseno:
@@ -310,4 +310,5 @@ Si hay conflicto con bloques anteriores, prevalece v3.
 ### Flujo visual de referencia
 
 - User flow Mermaid oficial: `docs/wallapop-meet-user-flow.md`.
+
 

@@ -2,10 +2,8 @@ import * as React from "react"
 
 import { ChatMeetupEntry } from "@/components/meetup/chat-meetup-entry"
 import { MeetupCard } from "@/components/meetup/meetup-card"
-import { MeetupDayBanner } from "@/components/meetup/meetup-day-banner"
 import { Button } from "@/components/ui/button"
 import { createMeetupMachine } from "@/meetup/state-machine"
-import { transitionMeetup } from "@/meetup/state-machine"
 import type { ActorRole, MeetupChatContext, MeetupMachine } from "@/meetup/types"
 
 const HALF_HOUR_MS = 30 * 60 * 1000
@@ -32,22 +30,6 @@ function MeetupSimulator() {
     const [actorRole, setActorRole] = React.useState<ActorRole>("SELLER")
     const [currentTime, setCurrentTime] = React.useState<Date>(() => new Date())
     const [lastError, setLastError] = React.useState<string>("")
-
-    const markArrivedFromBanner = () => {
-        const result = transitionMeetup(machine, {
-            type: "MARK_ARRIVED",
-            actorRole,
-            occurredAt: currentTime,
-        })
-
-        if (!result.ok) {
-            setLastError(result.reason)
-            return
-        }
-
-        setLastError("")
-        setMachine(result.meetup)
-    }
 
     return (
         <section className="w-full rounded-[16px] border border-[var(--wm-color-border-default)] bg-white p-5 shadow-[0_1px_2px_rgba(37,50,56,0.1)]">
@@ -80,15 +62,6 @@ function MeetupSimulator() {
                         Buyer
                     </Button>
                 </div>
-            </div>
-
-            <div className="mt-4">
-                <MeetupDayBanner
-                    meetup={machine}
-                    currentTime={currentTime}
-                    onNavigate={() => setLastError("")}
-                    onMarkArrived={markArrivedFromBanner}
-                />
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">

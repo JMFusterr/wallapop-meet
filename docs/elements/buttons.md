@@ -183,7 +183,9 @@ Esta seccion traduce el inventario real de la web a componentes reutilizables de
 - `state`: `default | hover | pressed | focused | disabled | loading`
 
 ### Reglas de mapeo
-- No introducir `secondary`, `ghost` ni `critical` como variantes base de `Button` hasta tener evidencia en captura oficial de Wallapop para esos casos.
+- Mantener `secondary` como variante `outline` para acciones de continuidad (ejemplo: `Anadir a Calendar`).
+- Mantener `ghost` como boton de texto sin borde ni fondo.
+- Mantener `link` para acciones inline con texto subrayado.
 - Para acciones destructivas de Meetup (por ejemplo cancelacion), usar patron de confirmacion (`Modal`) + semantica `error` en texto/badge, sin forzar una nueva variante de boton.
 - `button.icon` y `button.menu.close` son controles `icon-only`: requieren `aria-label` obligatorio y area tactil minima de `44x44` en contextos moviles.
 

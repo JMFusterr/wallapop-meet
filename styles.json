@@ -11,13 +11,63 @@
     },
     "tokens": {
         "color": {
+            "palette": {
+                "brand": {
+                    "50": { "value": "#E9FAF7", "type": "color" },
+                    "100": { "value": "#D2F4EE", "type": "color" },
+                    "200": { "value": "#B5ECE3", "type": "color" },
+                    "300": { "value": "#8FE2D5", "type": "color" },
+                    "400": { "value": "#59D4C1", "type": "color" },
+                    "500": { "value": "#13C1AC", "type": "color" },
+                    "600": { "value": "#0FA896", "type": "color" },
+                    "700": { "value": "#0D907F", "type": "color" },
+                    "800": { "value": "#0A7467", "type": "color" },
+                    "900": { "value": "#075B51", "type": "color" }
+                },
+                "neutral": {
+                    "50": { "value": "#F8FAFB", "type": "color" },
+                    "100": { "value": "#F5F7F8", "type": "color" },
+                    "200": { "value": "#E8ECEF", "type": "color" },
+                    "300": { "value": "#D3DEE2", "type": "color" },
+                    "400": { "value": "#A8B2B8", "type": "color" },
+                    "500": { "value": "#8A979F", "type": "color" },
+                    "600": { "value": "#6E7D86", "type": "color" },
+                    "700": { "value": "#4A5A63", "type": "color" },
+                    "800": { "value": "#34444D", "type": "color" },
+                    "900": { "value": "#253238", "type": "color" }
+                },
+                "reserve": {
+                    "50": { "value": "#F6EDF7", "type": "color" },
+                    "100": { "value": "#EEDDF0", "type": "color" },
+                    "200": { "value": "#DFBFDF", "type": "color" },
+                    "300": { "value": "#CB99CE", "type": "color" },
+                    "400": { "value": "#B169B4", "type": "color" },
+                    "500": { "value": "#86418A", "type": "color" },
+                    "600": { "value": "#703474", "type": "color" },
+                    "700": { "value": "#5A295E", "type": "color" },
+                    "800": { "value": "#451F48", "type": "color" },
+                    "900": { "value": "#341735", "type": "color" }
+                },
+                "sold": {
+                    "50": { "value": "#FDEAF2", "type": "color" },
+                    "100": { "value": "#FAD7E8", "type": "color" },
+                    "200": { "value": "#F5B2D1", "type": "color" },
+                    "300": { "value": "#EE83B6", "type": "color" },
+                    "400": { "value": "#E15092", "type": "color" },
+                    "500": { "value": "#D32069", "type": "color" },
+                    "600": { "value": "#B31A57", "type": "color" },
+                    "700": { "value": "#911448", "type": "color" },
+                    "800": { "value": "#6F0F36", "type": "color" },
+                    "900": { "value": "#560B2A", "type": "color" }
+                }
+            },
             "brand": {
                 "primary": {
-                    "value": "#13C1AC",
+                    "value": "{tokens.color.palette.brand.500}",
                     "type": "color"
                 },
                 "primary_hover": {
-                    "value": "#0FA896",
+                    "value": "{tokens.color.palette.brand.600}",
                     "type": "color"
                 },
                 "on_primary": {
@@ -31,23 +81,23 @@
                     "type": "color"
                 },
                 "100": {
-                    "value": "#F5F7F8",
+                    "value": "{tokens.color.palette.neutral.100}",
                     "type": "color"
                 },
                 "200": {
-                    "value": "#E8ECEF",
+                    "value": "{tokens.color.palette.neutral.200}",
                     "type": "color"
                 },
                 "400": {
-                    "value": "#A8B2B8",
+                    "value": "{tokens.color.palette.neutral.400}",
                     "type": "color"
                 },
                 "700": {
-                    "value": "#4A5A63",
+                    "value": "{tokens.color.palette.neutral.700}",
                     "type": "color"
                 },
                 "900": {
-                    "value": "#253238",
+                    "value": "{tokens.color.palette.neutral.900}",
                     "type": "color"
                 }
             },
@@ -105,7 +155,7 @@
                     "type": "color"
                 },
                 "accent": {
-                    "value": "#E9FAF7",
+                    "value": "{tokens.color.palette.brand.50}",
                     "type": "color"
                 }
             },
@@ -184,11 +234,11 @@
             "list_item": {
                 "leading_indicator": {
                     "reserved": {
-                        "value": "#86418A",
+                        "value": "{tokens.color.palette.reserve.500}",
                         "type": "color"
                     },
                     "sold": {
-                        "value": "#D32069",
+                        "value": "{tokens.color.palette.sold.500}",
                         "type": "color"
                     }
                 },
@@ -206,11 +256,11 @@
             "card": {
                 "action": {
                     "reserve": {
-                        "value": "#86418A",
+                        "value": "{tokens.color.palette.reserve.500}",
                         "type": "color"
                     },
                     "sold": {
-                        "value": "#D32069",
+                        "value": "{tokens.color.palette.sold.500}",
                         "type": "color"
                     }
                 }
@@ -444,6 +494,29 @@
                 "padding_x": "{tokens.spacing.400}",
                 "font_size": "{tokens.typography.size.300}",
                 "font_weight": "{tokens.typography.weight.bold}"
+            },
+            "secondary": {
+                "background": "{tokens.color.background.base}",
+                "background_hover": "{tokens.color.palette.brand.50}",
+                "border_color": "{tokens.color.brand.primary_hover}",
+                "text_color": "{tokens.color.brand.primary_hover}",
+                "radius": "{tokens.radius.pill}",
+                "font_size": "{tokens.typography.size.300}",
+                "font_weight": "{tokens.typography.weight.bold}"
+            },
+            "ghost": {
+                "background": "transparent",
+                "text_color": "{tokens.color.text.secondary}",
+                "text_decoration": "underline",
+                "font_size": "{tokens.typography.size.300}",
+                "font_weight": "{tokens.typography.weight.bold}"
+            },
+            "link": {
+                "background": "transparent",
+                "text_color": "#038673",
+                "text_decoration": "underline",
+                "font_size": "{tokens.typography.size.200}",
+                "font_weight": "{tokens.typography.weight.medium}"
             },
             "disabled": {
                 "background": "{tokens.color.neutral.200}",

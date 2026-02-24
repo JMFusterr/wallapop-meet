@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "relative inline-flex min-w-0 items-center justify-center whitespace-nowrap border font-normal transition-[color,background-color,box-shadow,opacity] duration-150 ease-out outline-none focus-visible:ring-2 focus-visible:ring-[var(--wm-color-border-focus)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "relative inline-flex min-w-0 items-center justify-center whitespace-nowrap font-normal transition-[color,background-color,box-shadow,opacity] duration-150 ease-out outline-none focus-visible:ring-2 focus-visible:ring-[var(--wm-color-border-focus)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -22,11 +22,13 @@ const buttonVariants = cva(
 
         // Legacy aliases: mantener temporalmente para no romper usos existentes.
         secondary:
-          "border border-[var(--wm-color-border-default)] bg-[var(--wm-color-background-base)] text-[var(--wm-color-text-primary)] hover:bg-[var(--wm-color-background-surface)]",
+          "rounded-[999px] border border-[#0FA58A] bg-white font-wallie-chunky text-[16px] text-[#0D907A] hover:bg-[#F5FFFD] active:bg-[#E9FAF7]",
         ghost:
-          "bg-transparent text-[var(--wm-color-text-primary)] hover:bg-[var(--wm-color-background-surface)]",
+          "border-none bg-transparent font-wallie-chunky text-[16px] text-[#6F7C83] underline underline-offset-2 hover:bg-transparent hover:text-[#4A5A63] active:bg-transparent",
         critical:
           "rounded-[25px] border-transparent bg-[var(--wm-color-semantic-error)] text-[var(--wm-color-brand-on-primary)] hover:brightness-95",
+        link:
+          "border-none bg-transparent px-0 font-wallie-fit text-[14px] text-[#038673] underline underline-offset-2 hover:text-[#0FA896] active:text-[#0C8E7E]",
       },
       size: {
         sm: "h-9 px-3 text-[14px]",

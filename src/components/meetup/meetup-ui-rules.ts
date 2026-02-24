@@ -39,21 +39,3 @@ export function resolveArrivalActionState(
             "Acercate a menos de 100 metros del punto de encuentro para indicar que has llegado.",
     }
 }
-
-export function resolveMeetupDayBannerVariant(
-    meetup: MeetupMachine,
-    currentTime: Date
-): "default" | "arrival_window" | "expired" {
-    if (meetup.status === "EXPIRED") {
-        return "expired"
-    }
-
-    if (
-        meetup.status === "CONFIRMED" &&
-        isWithinArrivalWindow(meetup.scheduledAt, currentTime)
-    ) {
-        return "arrival_window"
-    }
-
-    return "default"
-}

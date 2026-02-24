@@ -33,6 +33,10 @@ Fuente canonica: `styles.json`.
 ### 3.1 Color
 
 Namespaces oficiales:
+- `tokens.color.palette.brand`: `50..900`
+- `tokens.color.palette.neutral`: `50..900`
+- `tokens.color.palette.reserve`: `50..900`
+- `tokens.color.palette.sold`: `50..900`
 - `tokens.color.brand`: `primary`, `primary_hover`, `on_primary`
 - `tokens.color.neutral`: `0`, `100`, `200`, `400`, `700`, `900`
 - `tokens.color.semantic`: `success.base`, `warning.base`, `error.base`, `info.base`
@@ -121,6 +125,11 @@ Anatomia minima:
 
 Regla:
 - Si un flujo necesita CTA, se reutiliza `<Button />` base.
+- Variantes de uso operativo:
+  - `primary`: accion principal.
+  - `secondary`: outline (ejemplo: `Anadir a Calendar`).
+  - `ghost`: texto sin borde/fondo.
+  - `link`: enlace textual contextual.
 
 ### 5.2 Card (incluye MeetupCard)
 
