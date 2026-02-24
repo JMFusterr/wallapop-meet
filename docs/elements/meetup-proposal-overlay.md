@@ -2,7 +2,7 @@
 
 ## Fuente de analisis
 - Implementacion de referencia: `src/components/meetup/wallapop-chat-workspace.tsx`
-- Fecha de actualizacion: 2026-02-23
+- Fecha de actualizacion: 2026-02-24
 - Contexto: flujo `Proponer quedada` iniciado desde `ChatComposer`.
 
 ## Estructura funcional
@@ -43,9 +43,9 @@
   - Nombre + direccion.
   - Labels: `Punto seguro` y `<N> ventas`.
 - Punto personalizado:
-  - Icono `deal` (manos) dentro del pin.
+  - Icono de puntero en la card de opcion (negro, sin contenedor circular).
   - Direccion seleccionada.
-  - Label: `Personalizado`.
+  - Sin label `Personalizado` en la card.
 
 ## Vista de mapa (selector)
 
@@ -56,9 +56,10 @@
 - Estilo de marcador en mapa (seguro/custom):
   - Forma capsula Wallapop con mini triangulo unido al cuerpo.
   - Punto seguro: icono escudo.
-  - Punto personalizado: icono `deal` (manos).
+  - Punto personalizado: icono de puntero.
+  - Los iconos dentro del pin se muestran en blanco.
 - Al seleccionar personalizado:
-  - Se genera direccion (reverse geocoding con fallback a coordenadas).
+  - Se genera direccion (reverse geocoding con fallback textual `Calle seleccionada`).
   - Se calcula distancia desde posicion de referencia.
   - Se muestra aviso de punto no verificado.
 
@@ -68,12 +69,14 @@
   - Direccion.
   - Chip de distancia en `m/km`.
   - Mensaje contextual:
-    - Punto seguro: `<N> ventas completadas` en patron visual de banner verde Wallapop.
-    - Punto personalizado: mensaje de punto no verificado.
+    - Punto seguro: `<N> ventas completadas en este punto seguro.` (con `<N> ventas completadas` en negrita).
+    - Punto personalizado: `Este punto no es un punto seguro verificado.`.
   - CTA `Seleccionar`.
 - Reglas:
   - Debe renderizarse por encima del mapa (`z-index` superior).
   - Distancia debe permanecer en una sola linea (`no-wrap`).
+  - Los mensajes contextuales de seguro/no seguro ajustan ancho horizontal al contenido (`w-fit`).
+  - En punto personalizado, el titulo usa direccion abreviada priorizando `calle + numero` y evita valores numericos aislados.
 
 ### Movil
 - Controles de zoom `+/-` ocultos.
@@ -84,6 +87,15 @@
   - Izquierda: contexto de articulo/comprador.
   - Derecha: CTA principal del paso.
 - Texto de articulo truncado con elipsis para no desplazar boton.
+- Se elimina el texto `Proponer quedada`.
+- Orden del bloque contextual:
+  - 1) `userName`
+  - 2) indicador de asistencia
+  - 3) `itemTitle`
+- Asistencia:
+  - `>90%`: verde
+  - `70-90%`: ambar
+  - `<70%`: `Baja asistencia a quedadas` en rojo
 - CTA por paso:
   - Paso 1 y 2: `Siguiente`
   - Paso 3: `Enviar propuesta`

@@ -67,10 +67,14 @@ function ChatProductCard({
     ...props
 }: ChatProductCardProps) {
     const isSeller = viewerRole === "seller"
-    const showStats = isSeller && typeof viewsCount === "number" && typeof likesCount === "number"
     const listingStatus = resolveListingStatus(statusLabel)
     const isSoldListing = listingStatus === "sold"
     const isReservedListing = listingStatus === "reserved"
+    const showStats =
+        isSeller &&
+        !isSoldListing &&
+        typeof viewsCount === "number" &&
+        typeof likesCount === "number"
     const statusBadgeConfig = resolveStatusBadgeConfig(statusLabel)
 
     return (
@@ -84,7 +88,7 @@ function ChatProductCard({
         >
             <div className="relative">
                 <img src={imageSrc} alt={imageAlt} className="h-[200px] w-full object-cover" />
-                {isSeller && onEdit ? (
+                {isSeller && !isSoldListing && onEdit ? (
                     <button
                         type="button"
                         onClick={onEdit}

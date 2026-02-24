@@ -78,11 +78,20 @@ Objetivos:
     - `unselected`: aro fino con centro blanco.
     - `selected`: aro oscuro grueso con centro blanco reducido.
   - Los puntos seguros muestran labels `Punto seguro` + `N ventas`.
-  - Los puntos personalizados se muestran con icono `deal` (manos) dentro del pin.
+  - Los puntos personalizados no muestran label `Personalizado` en la card de opcion.
 - Mapa en selector de punto:
   - Implementado sobre OpenStreetMap (`react-leaflet`).
   - Permite seleccionar puntos seguros y tambien cualquier punto personalizado pulsando sobre el mapa.
   - Al seleccionar punto personalizado se muestra direccion (reverse geocoding con fallback), distancia y aviso de que no es un punto seguro verificado.
+  - El titulo del punto personalizado usa direccion abreviada (priorizando `calle + numero`) y evita mostrar valores numericos aislados.
+  - Fallback de direccion en UI: `Calle seleccionada` (sin coordenadas).
+  - La card inferior del mapa usa icono delante del titulo:
+    - Seguro: escudo negro.
+    - Personalizado: puntero negro.
+  - Los iconos de los pines del mapa (capsula/marker) se mantienen en blanco.
+  - Mensajes de la card inferior:
+    - Seguro: `<N> ventas completadas en este punto seguro.` con `<N> ventas completadas` en negrita y ancho ajustado al texto (`w-fit`).
+    - Personalizado: `Este punto no es un punto seguro verificado.` con color original y ancho ajustado al texto (`w-fit`).
   - El panel inferior de seleccion en mapa se superpone por encima del mapa con prioridad visual.
   - En flujo movil no se muestran controles de zoom `+/-` (zoom por gesto tactil).
 - `ChatSecurityBanner` fijado sobre el composer en formato compacto.
@@ -94,6 +103,7 @@ Objetivos:
     - Acciones visibles: `Aceptar` (principal), `Proponer cambios` (outline), `Rechazar quedada` (texto).
     - La card se renderiza en el lado izquierdo de la conversacion.
   - Estado visible en label traducida y en minusculas (`pendiente`, `confirmada`, `llegada`, `completada`, `expirada`, `cancelada`).
+  - `COMPLETED` usa semantica visual azul Wallapop.
   - `COUNTER_PROPOSED` se representa como `pendiente` (no `contraoferta`).
   - Fondo de card en blanco y sin sombra, tanto en envio propio como en recepcion.
   - Resumen de datos en 3 filas con icono a la izquierda:
@@ -128,9 +138,17 @@ Objetivos:
   - Bloque contextual (articulo/comprador) a la izquierda.
   - CTA principal (`Siguiente`/`Enviar propuesta`) a la derecha sin desplazamiento vertical.
   - Titulo de articulo truncado con elipsis para evitar salto de layout.
+  - Se elimina la linea `Proponer quedada` del bloque contextual.
+  - Se muestra `userName` en primera linea y la asistencia en segunda.
+  - La asistencia replica reglas de `ChatCounterpartCard`:
+    - `>90%`: verde.
+    - `70% - 90%`: ambar.
+    - `<70%`: `Baja asistencia a quedadas` en rojo.
 - Ajuste de botones:
   - `Button.variant=critical` usa radio tipo pill consistente con el resto de botones de accion Wallapop.
 - Estado de entrega con icono `double_check` unificado en listado y burbujas (`sent` gris, `read` verde), con bubble enviada usando padding horizontal simetrico.
+- CTA de llegada en castellano:
+  - `I'm here` sustituido por `Estoy aqui` en `MeetupCard` y `MeetupDayBanner`.
 - Buzon de conversaciones con escenario realista: multiples interesados por articulo, textos de chat plausibles e imagen de producto por conversacion.
 - El chat de `Bicicleta fixie Fuji` (`conv-002`) incluye una propuesta activa del vendedor para validar la variante inversa de `MeetupCard` desde el rol comprador.
 - Estados comerciales representados en el listado de conversaciones con los indicadores visuales del sistema de diseno:

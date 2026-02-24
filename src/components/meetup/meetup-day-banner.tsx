@@ -52,7 +52,7 @@ function MeetupDayBanner({
                         onClick={onMarkArrived}
                         disabled={!arrivalAction.enabled}
                     >
-                        I'm here
+                        Estoy aqui
                     </Button>
                 ) : null}
             </div>

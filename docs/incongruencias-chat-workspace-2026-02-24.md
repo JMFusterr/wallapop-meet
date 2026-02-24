@@ -21,3 +21,23 @@
 ## Riesgos residuales
 - La deteccion de estado comercial depende de texto (`statusLabel` contiene `reservad` o `vendid`).
 - Recomendacion tecnica pendiente: introducir un enum explicito (`listingStatus: RESERVED | SOLD | AVAILABLE`) para evitar ambiguedades por copy o localizacion.
+
+## Addendum (2026-02-24 tarde)
+- Ajustes de localizacion/copy en acciones:
+  - `I'm here` sustituido por `Estoy aqui` en card y banner.
+
+- Alineacion visual de estados:
+  - Label `COMPLETED` migrada a paleta azul Wallapop.
+
+- Overlay de propuesta:
+  - Footer contextual sin texto `Proponer quedada`.
+  - Indicador de asistencia alineado con la misma logica cromatica de `ChatCounterpartCard`.
+  - Para asistencia `<70%`, el copy es `Baja asistencia a quedadas`.
+
+- Selector de mapa:
+  - Iconos de titulo en card inferior (escudo/puntero) en negro.
+  - Iconos de pines del mapa mantenidos en blanco.
+  - Punto personalizado:
+    - Titulo por direccion abreviada (prioriza `calle + numero`).
+    - Fallback textual sin coordenadas (`Calle seleccionada`).
+  - Mensajes contextuales de punto seguro/no seguro ajustados a contenido (`w-fit`).

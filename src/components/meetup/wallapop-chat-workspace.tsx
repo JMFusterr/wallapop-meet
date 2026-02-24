@@ -478,10 +478,11 @@ function toSafeOption(point: SafeMeetingPoint): ProposalSelectableOption {
 }
 
 function toCustomOption(lat: number, lng: number, address: string): ProposalSelectableOption {
+    const normalizedLabel = formatStreetAndNumberLabel(address)
     return {
         id: `custom:${lat.toFixed(5)}:${lng.toFixed(5)}:${Date.now()}`,
         kind: "custom",
-        label: address,
+        label: normalizedLabel,
         address,
         lat,
         lng,
@@ -949,7 +950,65 @@ function distanceBetweenPointsMeters(from: MapPoint, to: MapPoint): number {
 }
 
 function customLocationLabelFromPoint(lat: number, lng: number): string {
-    return `Punto personalizado (${lat.toFixed(4)}, ${lng.toFixed(4)})`
+    void lat
+    void lng
+    return "Calle seleccionada"
+}
+
+function formatStreetAndNumberLabel(label: string): string {
+    const trimmed = label.trim()
+    if (!trimmed) {
+        return "Calle seleccionada"
+    }
+
+    const segments = trimmed
+        .split(",")
+        .map((segment) => segment.trim())
+        .filter((segment) => segment.length > 0)
+
+    if (segments.length === 0) {
+        return "Calle seleccionada"
+    }
+
+    const hasLetters = (value: string) => /[A-Za-zÀ-ÿ]/.test(value)
+    const hasDigits = (value: string) => /\d/.test(value)
+    const isOnlyDigits = (value: string) => /^\d+$/.test(value)
+
+    const first = segments[0]
+    const second = segments[1]
+
+    if (isOnlyDigits(first) && second && hasLetters(second)) {
+        return `${second} ${first}`
+    }
+
+    if (hasLetters(first) && second && isOnlyDigits(second)) {
+        return `${first} ${second}`
+    }
+
+    const streetSegment = segments.find((segment) => hasLetters(segment) && hasDigits(segment))
+    if (streetSegment) {
+        return streetSegment
+    }
+
+    const firstTextSegment = segments.find((segment) => hasLetters(segment))
+    if (firstTextSegment) {
+        return firstTextSegment
+    }
+
+    return "Calle seleccionada"
+}
+
+function shortenLocationLabel(label: string): string {
+    const trimmed = formatStreetAndNumberLabel(label)
+    if (!trimmed) {
+        return "Calle seleccionada"
+    }
+    const [firstSegment = trimmed] = trimmed.split(",")
+    const candidate = firstSegment.trim() || trimmed
+    if (candidate.length <= 42) {
+        return candidate
+    }
+    return `${candidate.slice(0, 39).trimEnd()}...`
 }
 
 function paymentMethodLabel(method: MeetupPaymentMethod): string {
@@ -1374,27 +1433,45 @@ function MeetupProposalOverlay({
                                 <div className="absolute inset-x-3 bottom-3 z-1200 rounded-[16px] bg-white p-4 shadow-[0_10px_28px_rgba(37,50,56,0.2)]">
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="min-w-0">
-                                            <p className="font-wallie-chunky text-[20px] text-[#253238] md:text-[22px]">
-                                                {mapSelectedPoint ? mapSelectedPoint.name : "Punto personalizado"}
-                                            </p>
+                                            <div className="flex items-center gap-2">
+                                                {mapSelectedPoint ? (
+                                                    <span className="inline-flex text-[#253238]">
+                                                        <SafeShieldGlyph className="h-4 w-4" />
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex text-[#253238]">
+                                                        <MapPin size={14} />
+                                                    </span>
+                                                )}
+                                                <p className="font-wallie-chunky text-[20px] text-[#253238] md:text-[22px]">
+                                                    {mapSelectedPoint
+                                                        ? mapSelectedPoint.name
+                                                        : shortenLocationLabel(customLocationLabel || "Calle seleccionada")}
+                                                </p>
+                                            </div>
                                             <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
-                                                {mapSelectedPoint ? mapSelectedPoint.address : customLocationLabel}
+                                                {mapSelectedPoint ? mapSelectedPoint.address : (customLocationLabel || "Calle seleccionada")}
                                             </p>
                                         </div>
-                                        <div className="shrink-0 whitespace-nowrap rounded-full bg-[#E6FAF6] px-3 py-1">
+                                        <div className="shrink-0">
                                             <p className="whitespace-nowrap font-wallie-chunky text-[15px] text-[#038673]">
-                                                {mapSelectedPoint
-                                                    ? formatDistance(mapSelectedPoint.distanceMeters)
-                                                    : formatDistance(customDistanceMeters ?? 0)}
+                                                <span className="inline-flex w-fit rounded-full bg-[#E6FAF6] px-3 py-1">
+                                                    {mapSelectedPoint
+                                                        ? formatDistance(mapSelectedPoint.distanceMeters)
+                                                        : formatDistance(customDistanceMeters ?? 0)}
+                                                </span>
                                             </p>
                                         </div>
                                     </div>
                                     {mapSelectedPoint ? (
-                                        <p className="mt-2 rounded-[8px] bg-[#E6FAF6] px-2 py-1 font-wallie-fit text-[13px] text-[#038673]">
-                                            {mapSelectedPoint.completedSales} ventas completadas en este punto seguro.
+                                        <p className="mt-2 inline-flex w-fit rounded-[8px] bg-[#E6FAF6] px-2 py-1 font-wallie-fit text-[13px] text-[#038673]">
+                                            <span className="font-wallie-chunky">
+                                                {mapSelectedPoint.completedSales} ventas completadas
+                                            </span>
+                                            <span className="ml-1">en este punto seguro.</span>
                                         </p>
                                     ) : (
-                                        <p className="mt-2 rounded-[8px] bg-[#FFF4E8] px-2 py-1 font-wallie-fit text-[13px] text-[#8A4A00]">
+                                        <p className="mt-2 inline-flex w-fit rounded-[8px] bg-[#FFF4E8] px-2 py-1 font-wallie-fit text-[13px] text-[#8A4A00]">
                                             Este punto no es un punto seguro verificado.
                                         </p>
                                     )}
@@ -1450,11 +1527,11 @@ function MeetupProposalOverlay({
                                             >
                                                 <div className="flex items-start gap-3">
                                                     {option.kind === "safe" ? (
-                                                        <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#E6FAF6] text-[#038673]">
+                                                        <span className="mt-0.5 inline-flex text-[#253238]">
                                                             <SafeShieldGlyph />
                                                         </span>
                                                     ) : (
-                                                        <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#E8F0FF] text-[#2F6DF6]">
+                                                        <span className="mt-0.5 inline-flex text-[#253238]">
                                                             <MapPin size={16} />
                                                         </span>
                                                     )}
@@ -1475,11 +1552,7 @@ function MeetupProposalOverlay({
                                                                         {option.completedSales ?? 0} ventas
                                                                     </span>
                                                                 </>
-                                                            ) : (
-                                                                <span className="rounded-full bg-[#EEF3F5] px-2 py-0.5 font-wallie-fit text-[12px] text-[#4A5A63]">
-                                                                    Personalizado
-                                                                </span>
-                                                            )}
+                                                            ) : null}
                                                         </div>
                                                     </div>
                                                     <span className="mt-0.5">
@@ -1656,6 +1729,8 @@ function MeetupProposalOverlay({
                             listingImageSrc={conversation.listingImageSrc}
                             itemTitle={conversation.itemTitle}
                             userName={conversation.userName}
+                            attendanceRate={conversation.counterpartAttendanceRate}
+                            attendanceMeetups={conversation.counterpartAttendanceMeetups}
                             actionLabel={step < 3 ? "Siguiente" : "Enviar propuesta"}
                             actionTextTone="dark"
                             actionDisabled={false}

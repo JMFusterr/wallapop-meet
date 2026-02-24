@@ -64,7 +64,7 @@ function statusPill(status: MeetupStatus | null): StatusPill {
         case "COMPLETED":
             return {
                 label: "completada",
-                className: "border-[#D32069] bg-[#FDEAF2] text-[#9F1A53]",
+                className: "border-[#0D84FF] bg-[#E8F2FF] text-[#0A5EB5]",
             }
         case "EXPIRED":
             return {
@@ -352,7 +352,7 @@ function MeetupCard({
         if (isCalendarFallbackWindow) {
             actions.push({
                 id: "arrived",
-                label: "I'm here",
+                label: "Estoy aqui",
                 variant: "primary",
                 run: () =>
                     applyEvent({
@@ -380,7 +380,7 @@ function MeetupCard({
         if (arrivalAction.enabled) {
             actions.push({
                 id: "arrived",
-                label: "I'm here",
+                label: "Estoy aqui",
                 variant: "primary",
                 run: () =>
                     applyEvent({

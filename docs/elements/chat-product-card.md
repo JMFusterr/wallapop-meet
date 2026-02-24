@@ -48,6 +48,7 @@ Botones embebidos:
 
 Reglas de estado en implementacion (`src/components/ui/chat-product-card.tsx`):
 - Si el anuncio esta `Vendido`, se ocultan las acciones de seller (`Reservar` y `Vendido`).
+- Si el anuncio esta `Vendido`, tambien se oculta el boton `Editar` superpuesto y las metricas de visitas/likes.
 - Si el anuncio esta `Reservado`, el boton izquierdo pasa a modo outline y texto `Anular reserva`.
 - Si no hay estado comercial, se mantiene la variante original (`Reservar` relleno + `Vendido` relleno).
 - El toggle de `Reservar`/`Anular reserva` actualiza de forma consistente:
