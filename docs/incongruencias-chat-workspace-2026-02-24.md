@@ -1,4 +1,4 @@
-# Incongruencias y desactualizaciones detectadas (2026-02-24)
+﻿# Incongruencias y desactualizaciones detectadas (2026-02-24)
 
 ## Alcance
 - Modulos revisados: `wallapop-chat-workspace`, `chat-product-card`, stories y docs de componente.
@@ -15,7 +15,7 @@
   - Correccion aplicada: se anadio `meetupContext` completo para habilitar la entrada de propuesta desde composer.
 
 - Inconsistencia de codificacion en Storybook:
-  - `src/components/ui/chat-product-card.stories.tsx` mostraba `250 â‚¬` (mojibake).
+  - `src/components/ui/chat-product-card.stories.tsx` mostraba el simbolo de euro corrupto (mojibake).
   - Correccion aplicada: normalizado a `250 EUR` para evitar errores de encoding.
 
 ## Riesgos residuales
