@@ -1,0 +1,283 @@
+﻿# DESIGN SYSTEM - Wallapop Meet
+
+## 1. Proposito y alcance
+
+Este documento define la **Fuente de la Verdad** del sistema de diseno de Wallapop Meet para asegurar consistencia visual, escalabilidad y gobernanza tecnica.
+
+Alcance v1:
+- Canon de tokens y reglas de consumo.
+- Precedencia de fuentes cuando hay conflictos.
+- Reglas estrictas para codigo nuevo.
+- Patrones base de UI (sin duplicar documentacion detallada ya existente).
+- Reglas minimas de accesibilidad.
+
+Fuera de alcance v1:
+- Redefinir componentes ya especificados en detalle en `docs/elements/*` y `plans/design-system/*`.
+- Introducir nuevos tokens sin proceso de aprobacion.
+
+## 2. Fuente de verdad y precedencia
+
+Orden oficial de precedencia:
+1. `styles.json` (canon de tokens y contratos base de componentes).
+2. `src/index.css` (capa runtime de variables CSS y aliases de tema).
+3. Implementacion de componentes en `src/components/*` (referencia de estado actual, no canon si contradice tokens).
+
+Regla de conflicto:
+- Si existe diferencia entre implementacion y token, **prevalece el token**.
+- Cualquier hardcode actual se registra como deuda de migracion (seccion 9).
+
+## 3. Design Tokens (catalogo normativo)
+
+Fuente canonica: `styles.json`.
+
+### 3.1 Color
+
+Namespaces oficiales:
+- `tokens.color.brand`: `primary`, `primary_hover`, `on_primary`
+- `tokens.color.neutral`: `0`, `100`, `200`, `400`, `700`, `900`
+- `tokens.color.semantic`: `success.base`, `warning.base`, `error.base`, `info.base`
+- `tokens.color.text`: `primary`, `secondary`, `inverse`, `disabled`
+- `tokens.color.background`: `base`, `surface`, `accent`
+- `tokens.color.border`: `default`, `focus`, `error`
+- `tokens.color.input`: `text`, `label`, `placeholder_focus`, `ring.default`, `ring.hover`, `ring.error`, `ring.success`
+- `tokens.color.overlay`: `scrim`
+- Extensiones de dominio UI: `tokens.color.bottom_nav.*`, `tokens.color.list_item.*`, `tokens.color.card.action.*`
+
+### 3.2 Tipografia
+
+Namespaces oficiales:
+- `tokens.typography.family.primary`
+- `tokens.typography.weight`: `regular`, `medium`, `semibold`, `bold`
+- `tokens.typography.size`: `100`, `200`, `300`, `400`, `500`
+- `tokens.typography.line_height`: `100`, `200`, `300`
+- `tokens.typography.letter_spacing.normal`
+
+Runtime en `src/index.css`:
+- `--font-wallie`, `--font-wallie-fit`, `--font-wallie-chunky`
+
+### 3.3 Spacing
+
+Escala oficial:
+- `tokens.spacing.0`, `100`, `200`, `300`, `400`, `500`, `600`
+- Correspondencia actual: `0, 4, 8, 12, 16, 24, 32 px`
+
+Regla:
+- Solo valores en multiplo de 4px.
+- Priorizar spacing tokens por encima de valores ad-hoc.
+
+### 3.4 Radius, border, shadow, opacity, motion
+
+- Radius: `tokens.radius.100`, `200`, `300`, `pill`
+- Border width: `tokens.border.width.none`, `thin`, `thick`
+- Shadow: `tokens.shadow.100`, `200`
+- Opacity: `tokens.opacity.disabled`, `input_disabled`, `overlay`
+- Motion:
+  - Duration: `fast`, `base`, `slow`
+  - Easing: `standard`, `emphasized`
+
+## 4. Reglas de arquitectura UI
+
+### 4.1 Semantica de color
+
+- `semantic.error`: fallos bloqueantes, acciones destructivas, invalidaciones.
+- `semantic.warning`: riesgo o atencion requerida sin bloqueo.
+- `semantic.success`: confirmaciones o estados completados.
+- `semantic.info`: contexto informativo o progreso neutral.
+
+### 4.2 Fondos y superficies
+
+- `background.base`: lienzo principal y cards primarias.
+- `background.surface`: planos secundarios, estados de apoyo, agrupaciones.
+- `background.accent`: highlights de baja intensidad.
+
+### 4.3 Estados obligatorios
+
+Todo componente interactivo nuevo debe cubrir explicitamente:
+- `disabled`
+- `loading` (si aplica accion asincrona)
+- `error` (si maneja validacion o fallo)
+
+### 4.4 Regla absoluta de hardcoding
+
+En codigo nuevo esta prohibido:
+- Colores hex directos (`#xxxxxx`)
+- Espaciados/radios/tamanos no tokenizados (ej. `13px`, `22px`)
+- Sombras y opacidades fuera del sistema
+
+Excepciones:
+- Ninguna en componentes de producto. Solo permitido en prototipos aislados no productivos.
+
+## 5. Patrones de componentes (resumen operacional)
+
+Nota: la especificacion detallada vive en `docs/elements/*` y `plans/design-system/*`.
+
+### 5.1 Button
+
+Anatomia minima:
+- Contenedor interactivo
+- Label
+- Slot de icono (leading/trailing/only)
+- Estado `loading` con ancho estable
+
+Regla:
+- Si un flujo necesita CTA, se reutiliza `<Button />` base.
+
+### 5.2 Card (incluye MeetupCard)
+
+Anatomia recomendada:
+- Header (titulo + estado)
+- Bloque de contenido estructurado
+- Stack de acciones (primaria/secundaria/destructiva)
+- Metadata secundaria (ej. hora)
+
+Regla:
+- Mantener jerarquia de lectura y consistencia de spacing por escala.
+
+### 5.3 Modal
+
+Anatomia minima:
+- Scrim/overlay
+- Contenedor
+- Titulo + cuerpo
+- Footer de acciones
+
+Regla:
+- Confirmaciones destructivas deben usar variante y copy explicito.
+
+### 5.4 Formularios
+
+Componentes base:
+- `<Input />`
+- `<Select />`
+- `CalendarPicker`
+
+Reglas:
+- Label persistente (no depender de placeholder)
+- Helper/error bajo campo
+- `error` prevalece sobre `hint`
+
+## 6. Accesibilidad minima (a11y)
+
+- Contraste minimo AA para texto y CTAs.
+- Focus visible en cualquier elemento interactivo.
+- Area tactil minima de `44x44` en controles accionables en movil.
+- Inputs con `aria-invalid` y `aria-describedby` cuando aplique.
+- Contadores y feedback dinamico con `aria-live` cuando aplique.
+- Estados no comunicados unicamente por color.
+- Botones icon-only con nombre accesible (`aria-label` o `aria-labelledby`).
+
+## 7. System Guidelines (reglas estrictas) + ejemplos Tailwind
+
+### 7.1 Reglas obligatorias para codigo nuevo
+
+- No hardcodear tokens visuales.
+- Reusar componentes base antes de crear equivalentes nativos.
+- Alinear layout y spacing a grid de 4px/8px.
+- Mantener variantes y estados del DS en lugar de inventar variantes locales.
+
+### 7.2 Ejemplos permitidos (stack actual)
+
+Uso de componente base:
+
+```tsx
+<Button variant="primary" size="sm">Aceptar</Button>
+```
+
+Consumo tokenizado de color/radius:
+
+```tsx
+<div className="bg-[var(--wm-color-background-surface)] text-[var(--wm-color-text-primary)] rounded-[var(--wm-radius-300)]" />
+```
+
+Consumo tokenizado en input:
+
+```tsx
+<input className="px-[var(--wm-input-padding-x)] text-[var(--wm-color-input-text)]" />
+```
+
+Consumo tokenizado de borde y ring:
+
+```tsx
+<div className="border border-[var(--wm-color-border-default)] focus-within:ring-2 focus-within:ring-[var(--wm-color-border-focus)]" />
+```
+
+### 7.3 No permitido vs permitido
+
+No permitido:
+
+```tsx
+<div className="bg-[#4CAF50] px-[13px] rounded-[7px]" />
+```
+
+Permitido:
+
+```tsx
+<div className="bg-[var(--wm-color-brand-primary)] px-[var(--wm-input-padding-x)] rounded-[var(--wm-radius-300)]" />
+```
+
+No permitido:
+
+```tsx
+<button className="h-[39px]">Aceptar</button>
+```
+
+Permitido:
+
+```tsx
+<Button variant="primary" size="sm">Aceptar</Button>
+```
+
+## 8. Mapa de documentacion existente (enlaces, sin duplicacion)
+
+### 8.1 Especificaciones de sistema
+
+- `plans/design-system/design-system-wallapop-meet-plan.md`
+- `plans/design-system/design-tokens-v1.md`
+- `plans/design-system/components-spec-v1.md`
+- `plans/design-system/meetup-ui-patterns-v1.md`
+- `plans/design-system/accessibility-qa-checklist.md`
+
+### 8.2 Inventario de componentes y elementos
+
+- `docs/elements/buttons.md`
+- `docs/elements/Input.md`
+- `docs/elements/badge.md`
+- `docs/elements/chat-product-card.md`
+- `docs/elements/chat-counterpart-card.md`
+- `docs/elements/chat-composer.md`
+- `docs/elements/chat-list-item.md`
+- `docs/elements/chat-message-bubble.md`
+- `docs/elements/chat-security-banner.md`
+- `docs/elements/icons.md`
+- `docs/elements/inbox-bottom-nav.md`
+- `docs/elements/meetup-proposal-overlay.md`
+
+## 9. Deuda de migracion y checklist
+
+### 9.1 Deuda de migracion detectada (inicial)
+
+| Archivo | Situacion actual | Token/contrato objetivo | Prioridad |
+| --- | --- | --- | --- |
+| `src/components/ui/button.tsx` | Varias variantes con hex/radius/tamanos hardcodeados | Migrar a variables/tokens de `styles.json` y runtime CSS | Alta |
+| `src/components/meetup/meetup-card.tsx` | Colores, sombras y radios hardcodeados en multiples bloques | Sustituir por tokens semanticos y de componente | Alta |
+| `src/components/ui/input.tsx` | Usa tokens para color/ring, pero mezcla tamanos tipograficos y espaciados literales | Completar tokenizacion de tamanos/spacing tipografico | Media |
+| `src/index.css` | Alias de tokens parcial; no todos los tokens de `styles.json` tienen variable runtime dedicada | Completar capa de aliases CSS para consumo uniforme | Media |
+
+### 9.2 Checklist obligatorio para PRs UI
+
+- [ ] No hay hex/px/ms hardcodeados para estilos de producto.
+- [ ] Se reutilizan componentes base (`Button`, `Input`, etc.).
+- [ ] Se cubren estados `disabled`, `loading`, `error`.
+- [ ] Contraste y foco cumplen reglas minimas de a11y.
+- [ ] Area tactil minima `44x44` en acciones moviles.
+- [ ] Layout alineado a grid 4px/8px.
+- [ ] Stories ubicadas en `Design System/*` cuando aplique.
+- [ ] Se verifica `npx convex dev` antes de cerrar la tarea.
+
+---
+
+## Contratos operativos (vigentes desde este documento)
+
+- `styles.json` queda fijado como canon del DS.
+- `DESIGN_SYSTEM.md` es documento maestro de gobernanza.
+- La especificacion detallada por componente permanece en su documentacion actual enlazada en la seccion 8.
