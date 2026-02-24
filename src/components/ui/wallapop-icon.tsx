@@ -5,6 +5,7 @@ import {
   CheckCheck,
   ChevronRight,
   CirclePlus,
+  Eye,
   EllipsisVertical,
   Handshake,
   Heart,
@@ -38,6 +39,7 @@ type WallapopIconName =
   | "deal"
   | "calendar"
   | "double_check"
+  | "eye"
 
 type WallapopIconSize = "small" | "medium" | "large" | number
 
@@ -64,6 +66,7 @@ const wallapopIconMap: Record<WallapopIconName, LucideIcon> = {
   deal: Handshake,
   calendar: CalendarDays,
   double_check: CheckCheck,
+  eye: Eye,
 }
 
 const iconSizeMap: Record<Exclude<WallapopIconSize, number>, number> = {

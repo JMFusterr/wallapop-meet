@@ -1,5 +1,4 @@
 import * as React from "react"
-import { Eye } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
@@ -154,7 +153,7 @@ function ChatProductCard({
                     {showStats ? (
                         <div className="flex items-center gap-3 font-wallie-fit text-[14px] text-[#546E7A]">
                             <span className="inline-flex items-center gap-1">
-                                <Eye size={15} />
+                                <WallapopIcon name="eye" size={15} />
                                 {viewsCount}
                             </span>
                             <span className="inline-flex items-center gap-1">

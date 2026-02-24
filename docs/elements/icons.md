@@ -38,11 +38,42 @@
 - `wrench`
 
 ## Nombres de icono usados en implementacion Wallapop Meet
+- `arrow_left` (volver en wizard y cabeceras)
+- `burguer_menu` (menu principal en header de inbox, contrato disponible)
+- `chevron_right` (navegacion de calendario)
+- `cross` (cierre de overlays y cabeceras)
+- `ellipsis_horizontal` (acciones contextuales en cabecera de conversacion)
 - `paper_plane` (boton de envio del `ChatComposer`)
-- `calendar` (boton de propuesta de quedada en `ChatComposer`)
+- `shield` (banner de seguridad y punto seguro en mapa)
+- `edit` (edicion en `ChatProductCard`)
+- `eye` (metricas de visualizaciones en `ChatProductCard`)
 - `home`, `heart`, `plus`, `mail`, `user` (navegacion inferior de inbox)
-- `bookmark`, `deal` (indicadores en miniatura de `ChatListItem`)
+- `bookmark`, `deal` (indicadores de estado en listado y card de producto)
+- `calendar` (accion de propuesta de quedada)
 - `double_check` (estado de entrega en listado y mensajes)
+
+## Matriz de accion principal (Design System)
+
+| Icono | Accion principal | Referencia de uso |
+| --- | --- | --- |
+| `arrow_left` | Volver a la pantalla anterior | `MeetupWizardStepHeading`, cabeceras |
+| `burguer_menu` | Abrir menu principal | Header de inbox (contrato) |
+| `chevron_right` | Navegar pasos/meses | `CalendarPicker` |
+| `cross` | Cerrar modal o drawer | `MeetupProposalHeader`, overlays |
+| `edit` | Editar anuncio o propuesta | `ChatProductCard` |
+| `eye` | Mostrar visualizaciones | `ChatProductCard` |
+| `heart` | Gestionar favoritos | `ChatProductCard`, `InboxBottomNav` |
+| `home` | Ir a inicio | `InboxBottomNav` |
+| `mail` | Ir a buzon | `InboxBottomNav` |
+| `user` | Ir a perfil | `InboxBottomNav` |
+| `plus` | Iniciar alta/publicacion | `InboxBottomNav` |
+| `calendar` | Iniciar propuesta de quedada | `ChatComposer` |
+| `paper_plane` | Enviar mensaje | `ChatComposer` |
+| `ellipsis_horizontal` | Abrir acciones contextuales | Header de conversacion |
+| `shield` | Señalar punto seguro | `ChatSecurityBanner`, mapas |
+| `deal` | Señalar trato/punto personalizado | `ChatListItem`, mapas |
+| `bookmark` | Señalar estado reservado | `ChatListItem`, `ChatProductCard` |
+| `double_check` | Mostrar estado de entrega | `ChatMessageBubble`, `ChatListItem` |
 
 Notas de uso en workspace (2026-02-20):
 - `burguer_menu` no se usa en el header del buzon de la implementacion actual.

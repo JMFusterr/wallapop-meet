@@ -8,6 +8,7 @@ import { ChatMeetupEntry } from "@/components/meetup/chat-meetup-entry"
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { ChatComposer } from "@/components/ui/chat-composer"
 import { ChatMessageBubble } from "@/components/ui/chat-message-bubble"
+import { WallapopIcon, type WallapopIconName } from "@/components/ui/wallapop-icon"
 import { navigateTo } from "@/lib/navigation"
 import { createMeetupMachine, transitionMeetup } from "@/meetup"
 import type { MeetupMachine } from "@/meetup/types"
@@ -55,6 +56,11 @@ type StatusLabelItem = {
     text: string
 }
 
+type IconShowcaseItem = {
+    name: WallapopIconName
+    mainAction: string
+}
+
 type ButtonShowcaseVariant = "primary" | "secondary" | "ghost" | "critical" | "tab" | "link"
 
 const buttonShowcaseVariants: Array<{ variant: ButtonShowcaseVariant; label: string }> = [
@@ -65,6 +71,29 @@ const buttonShowcaseVariants: Array<{ variant: ButtonShowcaseVariant; label: str
     { variant: "tab", label: "Tab" },
     { variant: "link", label: "Link" },
 ]
+
+const iconShowcaseItems: IconShowcaseItem[] = [
+    { name: "arrow_left", mainAction: "Volver a la pantalla anterior" },
+    { name: "burguer_menu", mainAction: "Abrir menu principal en cabecera" },
+    { name: "chevron_right", mainAction: "Navegar entre pasos o meses" },
+    { name: "cross", mainAction: "Cerrar modal o drawer" },
+    { name: "edit", mainAction: "Editar anuncio o propuesta" },
+    { name: "eye", mainAction: "Mostrar metricas de visualizaciones" },
+    { name: "home", mainAction: "Ir a inicio desde navegacion inferior" },
+    { name: "mail", mainAction: "Entrar en buzon de conversaciones" },
+    { name: "user", mainAction: "Abrir perfil del usuario" },
+    { name: "plus", mainAction: "Iniciar publicacion o accion de alta" },
+    { name: "calendar", mainAction: "Iniciar propuesta de quedada" },
+    { name: "paper_plane", mainAction: "Enviar mensaje en chat" },
+    { name: "deal", mainAction: "Marcar trato o punto personalizado" },
+    { name: "shield", mainAction: "Resaltar zona o punto seguro" },
+    { name: "double_check", mainAction: "Indicar estado de entrega" },
+    { name: "ellipsis_horizontal", mainAction: "Abrir acciones contextuales" },
+    { name: "heart", mainAction: "Gestionar favoritos" },
+    { name: "bookmark", mainAction: "Marcar reservado" },
+]
+
+const wallapopLogoUrl = "https://es.wallapop.com/favicon.ico"
 
 const sectionEntries = [
     { id: "foundations-color", label: "Color" },
@@ -335,8 +364,18 @@ function DesignSystemPage() {
             <div className="mx-auto flex w-full max-w-[1400px] gap-8 px-6 py-8">
                 <aside className="sticky top-6 hidden h-[calc(100dvh-48px)] w-72 flex-col rounded-[12px] border border-[#D3DEE2] bg-white p-4 lg:flex">
                     <div className="mb-4 border-b border-[#E8ECEF] pb-3">
-                        <p className="font-wallie-chunky text-[18px] leading-6">Wallapop Meet</p>
-                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Living Design System</p>
+                        <div className="flex items-center gap-3">
+                            <img
+                                src={wallapopLogoUrl}
+                                alt="Logo de Wallapop"
+                                className="h-10 w-auto"
+                                loading="lazy"
+                            />
+                            <div>
+                                <p className="font-wallie-chunky text-[18px] leading-6">Wallapop Meet</p>
+                                <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Living Design System</p>
+                            </div>
+                        </div>
                     </div>
                     <nav className="space-y-1">
                         {sectionEntries.map((entry) => (
@@ -371,7 +410,7 @@ function DesignSystemPage() {
                     </header>
 
                     <section id="foundations-color" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[24px]">Foundations - Color</h2>
+                        <h2 className="font-wallie-chunky text-[24px]">Color</h2>
                         <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
                             Paletas oficiales en escala 50-900.
                         </p>
@@ -386,18 +425,20 @@ function DesignSystemPage() {
                             ].map((group) => (
                                 <div key={group.title}>
                                     <h4 className="mb-3 font-wallie-chunky text-[17px]">{group.title}</h4>
-                                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                                    <div className="overflow-x-auto rounded-[10px] border border-[#E8ECEF] p-2">
+                                        <div className="flex min-w-max gap-2">
                                         {group.items.map((item) => (
-                                            <article key={item.tokenPath} className="overflow-hidden rounded-[12px] border border-[#E8ECEF]">
+                                            <article key={item.tokenPath} className="w-[110px] shrink-0 overflow-hidden rounded-[8px] border border-[#E8ECEF]">
                                                 <div className="h-14 w-full" style={{ background: item.value }} />
-                                                <div className="space-y-1 p-3">
-                                                    <p className="font-wallie-fit text-[12px] text-[#253238]">{item.tokenPath}</p>
-                                                    <p className="font-wallie-fit text-[12px] text-[#4A5A63]">{item.value}</p>
-                                                    <p className="font-wallie-fit text-[11px] text-[#4A5A63]/90">{item.cssVar}</p>
-                                                    <p className="font-wallie-fit text-[11px] text-[#4A5A63]/90">{item.tailwindClass}</p>
+                                                <div className="px-2 py-1.5">
+                                                    <p className="font-wallie-fit text-[11px] text-[#253238]">
+                                                        {item.tokenPath.split(".").pop()}
+                                                    </p>
+                                                    <p className="font-wallie-fit text-[11px] text-[#4A5A63]">{item.value}</p>
                                                 </div>
                                             </article>
                                         ))}
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -405,7 +446,7 @@ function DesignSystemPage() {
                     </section>
 
                     <section id="foundations-typography" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[24px]">Foundations - Typography</h2>
+                        <h2 className="font-wallie-chunky text-[24px]">Typography</h2>
                         <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
                             Guia tipografica propuesta para Wallapop Meet basada en proporciones reales del producto.
                         </p>
@@ -514,7 +555,7 @@ function DesignSystemPage() {
                     </section>
 
                     <section id="foundations-spacing" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[24px]">Foundations - Spacing & Layout</h2>
+                        <h2 className="font-wallie-chunky text-[24px]">Spacing & Layout</h2>
                         <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
                             Escala basada en incrementos de 4px y 8px, consumida desde tokens.
                         </p>
@@ -530,7 +571,7 @@ function DesignSystemPage() {
                     </section>
 
                     <section id="foundations-radius" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[24px]">Foundations - Corner Radius</h2>
+                        <h2 className="font-wallie-chunky text-[24px]">Corner Radius</h2>
                         <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
                             Escala de radios para esquinas y pills.
                         </p>
@@ -546,7 +587,10 @@ function DesignSystemPage() {
                     </section>
 
                     <section id="foundations-elevation" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[24px]">Foundations - Elevation</h2>
+                        <h2 className="font-wallie-chunky text-[24px]">Elevation</h2>
+                        <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                            Niveles de sombra para separar superficies y jerarquia visual.
+                        </p>
                         <div className="mt-5 grid gap-4 md:grid-cols-2">
                             {shadowTokens.map((item) => (
                                 <article key={item.tokenPath} className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
@@ -560,6 +604,9 @@ function DesignSystemPage() {
 
                     <section id="components-playground" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
                         <h2 className="font-wallie-chunky text-[24px]">Components - Playground</h2>
+                        <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                            Catalogo interactivo de componentes base y sus variantes clave.
+                        </p>
                         <div className="mt-5 space-y-6">
                             <article className="rounded-[12px] border border-[#E8ECEF] p-4">
                                 <p className="mb-3 font-wallie-chunky text-[18px]">Button</p>
@@ -633,6 +680,9 @@ function DesignSystemPage() {
 
                             <article className="rounded-[12px] border border-[#E8ECEF] p-4">
                                 <p className="mb-3 font-wallie-chunky text-[18px]">Input</p>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Campo de texto con estados de validacion y ayuda contextual.
+                                </p>
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <Input label="Default" placeholder="Escribe algo" hint="Helper text" maxLength={80} defaultValue="" />
                                     <Input label="Error" defaultValue="Valor invalido" error="Error de validacion" />
@@ -670,6 +720,9 @@ function DesignSystemPage() {
 
                             <article className="rounded-[12px] border border-[#E8ECEF] p-4">
                                 <p className="mb-3 font-wallie-chunky text-[18px]">Select</p>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Selector desplegable para decisiones de una opcion con soporte de error.
+                                </p>
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <Select
                                         label="Categoria"
@@ -694,10 +747,34 @@ function DesignSystemPage() {
 
                             <article className="rounded-[12px] border border-[#E8ECEF] p-4">
                                 <p className="mb-3 font-wallie-chunky text-[18px]">Badge</p>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Indicadores compactos para conteo y alertas de estado puntual.
+                                </p>
                                 <div className="mt-4 flex items-center gap-2">
                                     <Badge variant="unread" value={8} />
-                                    <Badge variant="success" value="OK" />
                                     <Badge variant="error" value="!" />
+                                </div>
+                            </article>
+
+                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
+                                <p className="mb-1 font-wallie-chunky text-[18px]">Iconografia</p>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Inventario base de iconos con su nombre tecnico y accion principal en producto.
+                                </p>
+                                <div className="grid gap-3 md:grid-cols-2">
+                                    {iconShowcaseItems.map((item) => (
+                                        <article key={item.name} className="rounded-[10px] border border-[#E8ECEF] p-3">
+                                            <div className="flex items-center gap-3">
+                                                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[#ECEFF1] text-[#253238]">
+                                                    <WallapopIcon name={item.name} size="small" />
+                                                </span>
+                                                <div className="min-w-0">
+                                                    <p className="font-mono text-[12px] text-[#253238]">{item.name}</p>
+                                                    <p className="font-wallie-fit text-[12px] text-[#4A5A63]">{item.mainAction}</p>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    ))}
                                 </div>
                             </article>
                         </div>
@@ -724,6 +801,9 @@ function DesignSystemPage() {
                             />
                             <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
                                 <h3 className="mb-3 font-wallie-chunky text-[18px]">Chat to Entry Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Entrada desde chat para disparar una propuesta de meetup en contexto.
+                                </p>
                                 <ChatMeetupEntry
                                     meetup={proposedPatternMeetup}
                                     actorRole="SELLER"
@@ -734,6 +814,9 @@ function DesignSystemPage() {
                             </article>
                             <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
                                 <h3 className="mb-3 font-wallie-chunky text-[18px]">Meetup Card Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Tarjeta transaccional con estado, datos de quedada y acciones por rol.
+                                </p>
                                 <MeetupCard
                                     meetup={confirmedPatternMeetup}
                                     actorRole="SELLER"
@@ -748,6 +831,9 @@ function DesignSystemPage() {
                             </article>
                             <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
                                 <h3 className="mb-3 font-wallie-chunky text-[18px]">Conversation Block Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Bloque base de conversacion con burbujas y composer de acciones.
+                                </p>
                                 <div className="space-y-2">
                                     <ChatMessageBubble variant="received" time="18:02">
                                         Te va bien quedar hoy en Sants?
