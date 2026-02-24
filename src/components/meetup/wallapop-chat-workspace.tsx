@@ -59,17 +59,17 @@ type ConvexChatMessage = {
 
 type ConversationTimelineEntry =
     | {
-          id: string
-          type: "message"
-          createdAt: number
-          message: Message
-      }
+        id: string
+        type: "message"
+        createdAt: number
+        message: Message
+    }
     | {
-          id: string
-          type: "meetup"
-          createdAt: number
-          meetup: MeetupMachine
-      }
+        id: string
+        type: "meetup"
+        createdAt: number
+        meetup: MeetupMachine
+    }
 
 type Conversation = {
     id: string
@@ -338,7 +338,7 @@ const initialMessagesByConversation: Record<string, Message[]> = {
         },
         {
             id: "m-b-3",
-            text: "Perfecto, me cuadra. Cuando puedas mandame propuesta.",
+            text: "Perfecto, me cuadra. Cuando puedas mándame propuesta de quedada.",
             variant: "received",
             time: formatTime(new Date(tsMinutesAgo(14))),
             createdAt: tsMinutesAgo(14),
@@ -347,7 +347,7 @@ const initialMessagesByConversation: Record<string, Message[]> = {
     "conv-c-buyer-incoming": [
         {
             id: "m-c-1",
-            text: "Hola, me interesa la camara. Te viene bien quedar manana?",
+            text: "Hola, me interesa la camara. Te viene bien quedar hoy?",
             variant: "sent",
             time: formatTime(new Date(tsMinutesAgo(26))),
             createdAt: tsMinutesAgo(26),
@@ -599,6 +599,14 @@ function formatConversationDate(createdAt: number): string {
     return date.toLocaleDateString("es-ES", { day: "2-digit", month: "short" })
 }
 
+function isReservedStatusLabel(statusLabel?: string): boolean {
+    return statusLabel?.trim().toLowerCase().includes("reservad") ?? false
+}
+
+function isSoldStatusLabel(statusLabel?: string): boolean {
+    return statusLabel?.trim().toLowerCase().includes("vendid") ?? false
+}
+
 function isSameCalendarDay(leftTimestamp: number, rightTimestamp: number): boolean {
     const left = new Date(leftTimestamp)
     const right = new Date(rightTimestamp)
@@ -736,6 +744,46 @@ function resolveConversationUnreadCount(
         return 0
     }
     return unreadCount ?? 0
+}
+
+function resolveConversationCommercialStatus(
+    conversation: Conversation,
+    meetup: MeetupMachine | undefined
+): Pick<Conversation, "leadingIndicator" | "listingStatusLabel"> {
+    const isSold =
+        conversation.leadingIndicator === "deal" ||
+        isSoldStatusLabel(conversation.listingStatusLabel)
+    if (isSold) {
+        return {
+            leadingIndicator: "deal",
+            listingStatusLabel: "Vendido",
+        }
+    }
+
+    const hasReservedState =
+        conversation.leadingIndicator === "bookmark" ||
+        isReservedStatusLabel(conversation.listingStatusLabel)
+    const shouldForceReserved = meetup?.status === "CONFIRMED" || meetup?.status === "ARRIVED"
+    const shouldClearReserved = meetup?.status === "CANCELLED" || meetup?.status === "EXPIRED"
+
+    if (shouldForceReserved) {
+        return {
+            leadingIndicator: "bookmark",
+            listingStatusLabel: "Reservado",
+        }
+    }
+
+    if (shouldClearReserved && hasReservedState) {
+        return {
+            leadingIndicator: undefined,
+            listingStatusLabel: undefined,
+        }
+    }
+
+    return {
+        leadingIndicator: conversation.leadingIndicator,
+        listingStatusLabel: conversation.listingStatusLabel,
+    }
 }
 
 function buildInitialMeetupState(): Record<string, MeetupMachine> {
@@ -920,9 +968,8 @@ function paymentMethodLabel(method: MeetupPaymentMethod): string {
 function ProposalSelectionIndicator({ selected }: { selected: boolean }) {
     return (
         <span
-            className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white ${
-                selected ? "border-[8px] border-[#253238]" : "border-2 border-[#6E8792]"
-            }`}
+            className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white ${selected ? "border-[8px] border-[#253238]" : "border-2 border-[#6E8792]"
+                }`}
             aria-hidden
         />
     )
@@ -1246,8 +1293,8 @@ function MeetupProposalOverlay({
         isStepThreePriceMissing
             ? "Introduce un importe de 0 € o superior."
             : isFinalPriceAboveMaximum
-            ? `El importe maximo permitido es ${MAX_FINAL_PRICE_EUR} €.`
-            : undefined
+                ? `El importe maximo permitido es ${MAX_FINAL_PRICE_EUR} €.`
+                : undefined
     const priceInputAlertText =
         "Has excedido el importe maximo anual y Wallapop debera informar a Hacienda bajo la normativa DAC7."
 
@@ -1573,13 +1620,12 @@ function MeetupProposalOverlay({
                                                         key={method}
                                                         type="button"
                                                         onClick={() => onPaymentMethodChange(method)}
-                                                        className={`rounded-[18px] border px-4 py-3 text-left ${
-                                                            isStepThreePaymentMissing
-                                                                ? "border-2 border-[var(--wm-color-input-ring-error)]"
-                                                                : isSelected
+                                                        className={`rounded-[18px] border px-4 py-3 text-left ${isStepThreePaymentMissing
+                                                            ? "border-2 border-[var(--wm-color-input-ring-error)]"
+                                                            : isSelected
                                                                 ? "border-[#253238] shadow-[inset_0_0_0_1px_#253238]"
                                                                 : "border-[var(--wm-color-input-ring-default)]"
-                                                        }`}
+                                                            }`}
                                                     >
                                                         <div className="flex items-center gap-3">
                                                             <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
@@ -1897,14 +1943,20 @@ function ConversationPane({
     )
 }
 
-function DesktopConversationSidebar({ conversation }: { conversation: Conversation }) {
+function DesktopConversationSidebar({
+    conversation,
+    onToggleReserve,
+}: {
+    conversation: Conversation
+    onToggleReserve: () => void
+}) {
     const sidebarStatusLabel =
         conversation.listingStatusLabel ??
         (conversation.leadingIndicator === "bookmark"
             ? "Reservado"
             : conversation.leadingIndicator === "deal"
-              ? "Vendido"
-              : undefined)
+                ? "Vendido"
+                : undefined)
 
     return (
         <aside className="hidden h-full min-h-0 flex-col gap-4 overflow-y-auto bg-[#F3F6F8] p-4 lg:flex">
@@ -1933,7 +1985,7 @@ function DesktopConversationSidebar({ conversation }: { conversation: Conversati
                 }
                 onReserve={
                     conversation.listingViewerRole === "seller"
-                        ? () => undefined
+                        ? onToggleReserve
                         : undefined
                 }
                 onSold={
@@ -2039,10 +2091,15 @@ function WallapopChatWorkspace() {
                     conversationMessages,
                     conversationMeetup
                 )
+                const commercialStatus = resolveConversationCommercialStatus(
+                    conversation,
+                    conversationMeetup
+                )
                 return {
                     ...conversation,
                     ...summary,
                     unreadCount,
+                    ...commercialStatus,
                 }
             })
         )
@@ -2314,6 +2371,62 @@ function WallapopChatWorkspace() {
             ...previous,
             [selectedConversation.id]: next,
         }))
+
+        if (next.status === "CONFIRMED") {
+            setConversationsState((previous) =>
+                previous.map((conversation) => {
+                    if (conversation.id !== selectedConversation.id) {
+                        return conversation
+                    }
+                    const isSold =
+                        conversation.leadingIndicator === "deal" ||
+                        isSoldStatusLabel(conversation.listingStatusLabel)
+                    if (isSold) {
+                        return conversation
+                    }
+                    return {
+                        ...conversation,
+                        leadingIndicator: "bookmark",
+                        listingStatusLabel: "Reservado",
+                    }
+                })
+            )
+        }
+    }
+
+    const toggleSelectedConversationReserve = () => {
+        setConversationsState((previous) =>
+            previous.map((conversation) => {
+                if (conversation.id !== selectedConversation.id) {
+                    return conversation
+                }
+
+                const isSold =
+                    conversation.leadingIndicator === "deal" ||
+                    isSoldStatusLabel(conversation.listingStatusLabel)
+                if (isSold) {
+                    return conversation
+                }
+
+                const isReserved =
+                    conversation.leadingIndicator === "bookmark" ||
+                    isReservedStatusLabel(conversation.listingStatusLabel)
+
+                if (isReserved) {
+                    return {
+                        ...conversation,
+                        leadingIndicator: undefined,
+                        listingStatusLabel: undefined,
+                    }
+                }
+
+                return {
+                    ...conversation,
+                    leadingIndicator: "bookmark",
+                    listingStatusLabel: "Reservado",
+                }
+            })
+        )
     }
 
     const openMeetupProposal = () => {
@@ -2665,21 +2778,24 @@ function WallapopChatWorkspace() {
                     />
                 </div>
                 <div className="min-h-0">
-                        <ConversationPane
-                            actorRole={selectedActorRole}
-                            conversation={selectedConversation}
-                            timelineEntries={selectedTimelineEntries}
-                            meetup={selectedMeetup}
-                            onSubmitMessage={appendOutgoingMessage}
-                            onMeetupChange={updateSelectedMeetup}
-                            onMeetupRedZoneCancel={handleMeetupRedZoneCancel}
+                    <ConversationPane
+                        actorRole={selectedActorRole}
+                        conversation={selectedConversation}
+                        timelineEntries={selectedTimelineEntries}
+                        meetup={selectedMeetup}
+                        onSubmitMessage={appendOutgoingMessage}
+                        onMeetupChange={updateSelectedMeetup}
+                        onMeetupRedZoneCancel={handleMeetupRedZoneCancel}
                         onOpenMeetupProposal={openMeetupProposal}
                         onOpenMeetupMapPreview={openMeetupMapPreview}
                         onError={setLastError}
                         errorMessage={lastError}
                     />
                 </div>
-                <DesktopConversationSidebar conversation={selectedConversation} />
+                <DesktopConversationSidebar
+                    conversation={selectedConversation}
+                    onToggleReserve={toggleSelectedConversationReserve}
+                />
             </section>
 
             <section className="h-full min-h-0 md:hidden">
@@ -2799,4 +2915,3 @@ function WallapopChatWorkspace() {
 }
 
 export { WallapopChatWorkspace }
-

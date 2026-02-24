@@ -139,6 +139,14 @@ Objetivos:
   - Color oficial de icono/acento:
     - `Reservado`: `#86418A`.
     - `Vendido`: `#D32069`.
+- Sincronizacion estado comercial <-> meetup:
+  - Al confirmar una propuesta (`CONFIRMED`) el articulo pasa automaticamente a `Reservado` en listado y card derecha.
+  - En `ARRIVED` se mantiene `Reservado`.
+  - Si la quedada termina en `CANCELLED` o `EXPIRED`, se elimina la reserva automaticamente.
+  - El estado `Vendido` prevalece y no se sobreescribe por sincronizacion de meetup.
+- Toggle manual en card de producto (seller):
+  - `Reservar` activa estado `Reservado` y muestra icono de reserva en listado + badge en card.
+  - `Anular reserva` revierte a estado sin reserva.
 
 ---
 

@@ -50,6 +50,13 @@ Reglas de estado en implementacion (`src/components/ui/chat-product-card.tsx`):
 - Si el anuncio esta `Vendido`, se ocultan las acciones de seller (`Reservar` y `Vendido`).
 - Si el anuncio esta `Reservado`, el boton izquierdo pasa a modo outline y texto `Anular reserva`.
 - Si no hay estado comercial, se mantiene la variante original (`Reservar` relleno + `Vendido` relleno).
+- El toggle de `Reservar`/`Anular reserva` actualiza de forma consistente:
+  - indicador visual del listado (`leadingIndicator=bookmark`);
+  - badge de estado en la card derecha (`Reservado`).
+- Integracion con meetup en `wallapop-chat-workspace`:
+  - `CONFIRMED` y `ARRIVED` fuerzan estado `Reservado`;
+  - `CANCELLED` y `EXPIRED` limpian estado de reserva;
+  - `Vendido` prevalece frente a cambios automaticos.
 
 ### 4) Boton de editar superpuesto (solo seller)
 - Nodo: `a.btn.btn-edit`
