@@ -42,6 +42,7 @@ type Message = {
     text: string
     variant: "sent" | "received"
     time: string
+    createdAt: number
     deliveryState?: "sent" | "read"
 }
 
@@ -52,8 +53,23 @@ type ConvexChatMessage = {
     text: string
     variant?: "sent" | "received"
     time: string
+    createdAt?: number
     deliveryState?: "sent" | "read"
 }
+
+type ConversationTimelineEntry =
+    | {
+          id: string
+          type: "message"
+          createdAt: number
+          message: Message
+      }
+    | {
+          id: string
+          type: "meetup"
+          createdAt: number
+          meetup: MeetupMachine
+      }
 
 type Conversation = {
     id: string
@@ -127,6 +143,7 @@ type ProposalDraftState = {
 
 const DAC7_ALERT_THRESHOLD_EUR = 2000
 const MAX_FINAL_PRICE_EUR = 99999
+const DAY_MS = 24 * 60 * 60 * 1000
 
 function parseFinalPrice(rawValue: string): number | null {
     const normalizedValue = rawValue.trim().replace(",", ".")
@@ -142,21 +159,26 @@ function parseFinalPrice(rawValue: string): number | null {
     return parsedValue
 }
 
-const conversations: Conversation[] = [
+const seedNow = Date.now()
+
+function tsMinutesAgo(minutes: number): number {
+    return seedNow - minutes * 60 * 1000
+}
+
+const initialConversations: Conversation[] = [
     {
-        id: "conv-meetup-001",
+        id: "conv-a-arrival",
         userName: "Laura M.",
-        itemPrice: "240 €",
+        itemPrice: "240 EUR",
         messageDate: "Hoy",
         itemTitle: "Nintendo Switch OLED + dock",
-        messagePreview: "Si te va bien, quedamos manana en Sants.",
+        messagePreview: "Estoy llegando al punto, en 10 min estoy alli.",
         listingImageSrc:
             "https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
             "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
-        lastMessageDeliveryState: "read",
         meetupContext: {
-            conversationId: "conv-meetup-001",
+            conversationId: "conv-a-arrival",
             listingId: "listing-switch-001",
             sellerUserId: "user-seller-001",
             buyerUserId: "user-buyer-laura-001",
@@ -171,57 +193,62 @@ const conversations: Conversation[] = [
         listingLikes: 4,
     },
     {
-        id: "conv-002",
+        id: "conv-b-seller-propose",
         userName: "Javi R.",
-        itemPrice: "520 €",
-        messageDate: "Ayer",
+        itemPrice: "520 EUR",
+        messageDate: "Hoy",
         itemTitle: "Bicicleta fixie Fuji",
-        messagePreview: "Te la reservo hasta las 20:00, ok?",
-        unreadCount: 2,
-        leadingIndicator: "bookmark",
+        messagePreview: "Si te encaja, te envio propuesta de quedada ahora.",
         listingImageSrc:
             "https://images.pexels.com/photos/100582/pexels-photo-100582.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
             "https://images.pexels.com/photos/1758144/pexels-photo-1758144.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
         meetupContext: {
-            conversationId: "conv-002",
+            conversationId: "conv-b-seller-propose",
             listingId: "listing-bike-002",
             sellerUserId: "user-seller-javi-002",
-            buyerUserId: "user-buyer-me-001",
+            buyerUserId: "user-buyer-javi-001",
         },
         counterpartRating: 5,
         counterpartRatingCount: 84,
         counterpartDistanceLabel: "8,2km de ti",
         counterpartAttendanceRate: 92,
         counterpartAttendanceMeetups: 41,
-        listingViewerRole: "buyer",
-        listingStatusLabel: "Vendido",
+        listingViewerRole: "seller",
+        leadingIndicator: "bookmark",
     },
     {
-        id: "conv-003",
+        id: "conv-c-buyer-incoming",
         userName: "Marta P.",
-        itemPrice: "640 €",
-        messageDate: "18 feb",
+        itemPrice: "640 EUR",
+        messageDate: "Hoy",
         itemTitle: "Camara Fujifilm X-T20",
-        messagePreview: "Si incluyes bateria extra, me la quedo.",
+        messagePreview: "Te acabo de enviar la propuesta con sitio y hora.",
         listingImageSrc:
             "https://images.pexels.com/photos/51383/photo-camera-subject-photographer-51383.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
             "https://images.pexels.com/photos/370799/pexels-photo-370799.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
+        unreadCount: 1,
+        meetupContext: {
+            conversationId: "conv-c-buyer-incoming",
+            listingId: "listing-camera-003",
+            sellerUserId: "user-seller-marta-003",
+            buyerUserId: "user-buyer-me-001",
+        },
         counterpartRating: 4,
         counterpartRatingCount: 57,
         counterpartDistanceLabel: "1,9km de ti",
         counterpartAttendanceRate: 88,
         counterpartAttendanceMeetups: 17,
-        listingViewerRole: "seller",
+        listingViewerRole: "buyer",
         listingViews: 56,
         listingLikes: 8,
     },
     {
-        id: "conv-004",
+        id: "conv-d-sold-closed",
         userName: "Carlos G.",
-        itemPrice: "310 €",
-        messageDate: "15 feb",
+        itemPrice: "310 EUR",
+        messageDate: "Ayer",
         itemTitle: "Silla gamer Secretlab",
         messagePreview: "Perfecto, gracias por todo. Venta cerrada.",
         leadingIndicator: "deal",
@@ -229,6 +256,12 @@ const conversations: Conversation[] = [
             "https://images.pexels.com/photos/13871156/pexels-photo-13871156.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
             "https://images.pexels.com/photos/1382731/pexels-photo-1382731.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
+        meetupContext: {
+            conversationId: "conv-d-sold-closed",
+            listingId: "listing-chair-004",
+            sellerUserId: "user-seller-me-001",
+            buyerUserId: "user-buyer-carlos-004",
+        },
         counterpartRating: 4.5,
         counterpartRatingCount: 132,
         counterpartDistanceLabel: "2,7km de ti",
@@ -237,43 +270,24 @@ const conversations: Conversation[] = [
         listingViewerRole: "seller",
         listingViews: 41,
         listingLikes: 3,
-    },
-    {
-        id: "conv-005",
-        userName: "Alba T.",
-        itemPrice: "175 €",
-        messageDate: "14 feb",
-        itemTitle: "AirPods Pro 2",
-        messagePreview: "Si funcionan perfectos, te pago en mano.",
-        leadingIndicator: "bookmark",
-        listingImageSrc:
-            "https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
-        profileImageSrc:
-            "https://images.pexels.com/photos/414171/pexels-photo-414171.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
-        counterpartRating: 5,
-        counterpartRatingCount: 76,
-        counterpartDistanceLabel: "4,1km de ti",
-        counterpartAttendanceRate: 93,
-        counterpartAttendanceMeetups: 31,
-        listingViewerRole: "buyer",
         listingStatusLabel: "Vendido",
     },
     {
-        id: "conv-006",
+        id: "conv-e-low-attendance",
         userName: "Iker S.",
-        itemPrice: "210 €",
+        itemPrice: "210 EUR",
         messageDate: "12 feb",
         itemTitle: "Monitor LG 27 pulgadas 144Hz",
-        messagePreview: "Me pasas foto del panel encendido?",
-        unreadCount: 1,
+        messagePreview: "Prefiero venderselo a otra persona por tranquilidad.",
         listingImageSrc:
             "https://images.pexels.com/photos/1038916/pexels-photo-1038916.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
             "https://images.pexels.com/photos/301599/pexels-photo-301599.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
+        unreadCount: 1,
         counterpartRating: 4,
         counterpartRatingCount: 21,
         counterpartDistanceLabel: "6,5km de ti",
-        counterpartAttendanceRate: 64,
+        counterpartAttendanceRate: 41,
         counterpartAttendanceMeetups: 11,
         listingViewerRole: "seller",
         listingViews: 19,
@@ -282,79 +296,91 @@ const conversations: Conversation[] = [
 ]
 
 const initialMessagesByConversation: Record<string, Message[]> = {
-    "conv-meetup-001": [
+    "conv-a-arrival": [
         {
-            id: "m-1",
-            text: "Hola Laura! La Switch sigue disponible y esta muy cuidada.",
+            id: "m-a-1",
+            text: "Genial, quedamos hoy. Llevo la Switch con caja y funda.",
             variant: "sent",
-            time: "18:11",
+            time: formatTime(new Date(tsMinutesAgo(56))),
+            createdAt: tsMinutesAgo(56),
             deliveryState: "read",
         },
         {
-            id: "m-2",
-            text: "Genial, me interesa. Incluye mando y funda?",
+            id: "m-a-2",
+            text: "Perfecto. Estoy saliendo ahora y llego en unos 10 minutos.",
             variant: "received",
-            time: "18:17",
+            time: formatTime(new Date(tsMinutesAgo(12))),
+            createdAt: tsMinutesAgo(12),
+        },
+    ],
+    "conv-b-seller-propose": [
+        {
+            id: "m-b-1",
+            text: "La bici esta revisada, frenos y ruedas al dia.",
+            variant: "sent",
+            time: formatTime(new Date(tsMinutesAgo(85))),
+            createdAt: tsMinutesAgo(85),
+            deliveryState: "read",
         },
         {
-            id: "m-3",
-            text: "Si, incluye todo. Si te va bien, quedamos manana en Sants.",
+            id: "m-b-2",
+            text: "Perfecto, me cuadra. Cuando puedas mandame propuesta.",
+            variant: "received",
+            time: formatTime(new Date(tsMinutesAgo(72))),
+            createdAt: tsMinutesAgo(72),
+        },
+        {
+            id: "m-b-3",
+            text: "Si te encaja, te envio propuesta de quedada ahora.",
             variant: "sent",
-            time: "18:20",
+            time: formatTime(new Date(tsMinutesAgo(14))),
+            createdAt: tsMinutesAgo(14),
             deliveryState: "sent",
         },
     ],
-    "conv-002": [
+    "conv-c-buyer-incoming": [
         {
-            id: "m-4",
-            text: "Te la reservo hasta las 20:00 y te mando ubicacion exacta.",
-            variant: "sent",
-            time: "19:12",
-            deliveryState: "read",
+            id: "m-c-1",
+            text: "La camara esta impecable. Si quieres te mando propuesta ahora.",
+            variant: "received",
+            time: formatTime(new Date(tsMinutesAgo(26))),
+            createdAt: tsMinutesAgo(26),
         },
         {
-            id: "m-5",
-            text: "Perfecto, salgo del trabajo y te aviso cuando llegue.",
+            id: "m-c-2",
+            text: "Te acabo de enviar la solicitud de quedada con todos los datos.",
             variant: "received",
-            time: "19:16",
+            time: formatTime(new Date(tsMinutesAgo(4))),
+            createdAt: tsMinutesAgo(4),
         },
     ],
-    "conv-003": [
+    "conv-d-sold-closed": [
         {
-            id: "m-6",
-            text: "Si incluyes bateria extra, me la quedo esta semana.",
+            id: "m-d-1",
+            text: "Todo correcto, gracias por la silla.",
             variant: "received",
-            time: "11:08",
+            time: formatTime(new Date(tsMinutesAgo(9 * 60))),
+            createdAt: tsMinutesAgo(9 * 60),
         },
-    ],
-    "conv-004": [
         {
-            id: "m-7",
+            id: "m-d-2",
             text: "Silla entregada, todo perfecto. Gracias!",
             variant: "received",
-            time: "21:03",
+            time: formatTime(new Date(tsMinutesAgo(8 * 60 + 40))),
+            createdAt: tsMinutesAgo(8 * 60 + 40),
         },
     ],
-    "conv-005": [
+    "conv-e-low-attendance": [
         {
-            id: "m-8",
-            text: "Te los guardo hasta manana por la tarde.",
+            id: "m-e-1",
+            text: "Veo que tu tasa de asistencia es baja y prefiero venderselo a otra persona, lo siento.",
             variant: "sent",
-            time: "20:41",
-            deliveryState: "read",
-        },
-    ],
-    "conv-006": [
-        {
-            id: "m-9",
-            text: "Claro, en un rato te paso video con el test de pixeles.",
-            variant: "sent",
-            time: "18:54",
+            time: formatTime(new Date(tsMinutesAgo(2 * 24 * 60))),
+            createdAt: tsMinutesAgo(2 * 24 * 60),
             deliveryState: "sent",
         },
     ],
 }
-
 const safeMeetingPoints: SafeMeetingPoint[] = [
     {
         id: "station",
@@ -546,37 +572,220 @@ function formatTime(date: Date): string {
     })
 }
 
-function buildInitialMeetupState(): Record<string, MeetupMachine> {
-    const defaultScheduledAt = new Date(Date.now() + 30 * 60 * 1000)
-    const state: Record<string, MeetupMachine> = {}
+function formatConversationDate(createdAt: number): string {
+    const date = new Date(createdAt)
+    const now = new Date()
+    const delta = now.getTime() - createdAt
+    if (delta < DAY_MS && now.getDate() === date.getDate()) {
+        return formatTime(date)
+    }
+    if (delta < 2 * DAY_MS) {
+        return "Ayer"
+    }
+    return date.toLocaleDateString("es-ES", { day: "2-digit", month: "short" })
+}
 
-    for (const conversation of conversations) {
+function resolveMeetupTimelineTimestamp(meetup: MeetupMachine): number | null {
+    if (meetup.status === null) {
+        return null
+    }
+    const timestamp =
+        meetup.proposedAt ??
+        meetup.confirmedAt ??
+        meetup.arrivedAt ??
+        meetup.completedAt ??
+        meetup.cancelledAt ??
+        meetup.expiredAt ??
+        meetup.scheduledAt
+    return timestamp.getTime()
+}
+
+function resolveMeetupTimelinePreview(meetup: MeetupMachine): string {
+    switch (meetup.status) {
+        case "PROPOSED":
+            return "Propuesta de quedada enviada."
+        case "COUNTER_PROPOSED":
+            return "Se enviaron cambios en la propuesta de quedada."
+        case "CONFIRMED":
+            return "Quedada confirmada."
+        case "ARRIVED":
+            return "Una de las partes ya ha marcado llegada."
+        case "COMPLETED":
+            return "Quedada cerrada. Venta completada."
+        case "EXPIRED":
+            return "La solicitud de quedada ha expirado."
+        case "CANCELLED":
+            return "La quedada fue cancelada."
+        default:
+            return "Sin propuesta de quedada."
+    }
+}
+
+function buildConversationTimelineEntries(
+    messages: Message[],
+    meetup: MeetupMachine | undefined
+): ConversationTimelineEntry[] {
+    const entries: ConversationTimelineEntry[] = messages.map((message) => ({
+        id: `message:${message.id}`,
+        type: "message",
+        createdAt: message.createdAt,
+        message,
+    }))
+
+    if (meetup) {
+        const meetupTimestamp = resolveMeetupTimelineTimestamp(meetup)
+        if (meetupTimestamp !== null) {
+            entries.push({
+                id: `meetup:${meetup.chatContext.conversationId}`,
+                type: "meetup",
+                createdAt: meetupTimestamp,
+                meetup,
+            })
+        }
+    }
+
+    return entries.sort((a, b) => a.createdAt - b.createdAt)
+}
+
+function resolveConversationSummary(
+    messages: Message[],
+    meetup: MeetupMachine | undefined
+): Pick<Conversation, "messageDate" | "messagePreview" | "lastMessageDeliveryState"> {
+    const timeline = buildConversationTimelineEntries(messages, meetup)
+    const latestEntry = timeline[timeline.length - 1]
+
+    if (!latestEntry) {
+        return {
+            messageDate: "",
+            messagePreview: "",
+            lastMessageDeliveryState: undefined,
+        }
+    }
+
+    if (latestEntry.type === "meetup") {
+        return {
+            messageDate: formatConversationDate(latestEntry.createdAt),
+            messagePreview: resolveMeetupTimelinePreview(latestEntry.meetup),
+            lastMessageDeliveryState: undefined,
+        }
+    }
+
+    return {
+        messageDate: formatConversationDate(latestEntry.createdAt),
+        messagePreview: latestEntry.message.text,
+        lastMessageDeliveryState:
+            latestEntry.message.variant === "sent"
+                ? (latestEntry.message.deliveryState ?? "sent")
+                : undefined,
+    }
+}
+
+function buildInitialMeetupState(): Record<string, MeetupMachine> {
+    const state: Record<string, MeetupMachine> = {}
+    const now = new Date()
+
+    for (const conversation of initialConversations) {
         if (!conversation.meetupContext) {
             continue
         }
 
         const baseMeetup = createMeetupMachine({
-            scheduledAt: defaultScheduledAt,
+            scheduledAt: new Date(now.getTime() + 30 * 60 * 1000),
             chatContext: conversation.meetupContext,
         })
 
-        if (conversation.id === "conv-002") {
-            const incomingProposal: MeetupMachine = {
+        if (conversation.id === "conv-a-arrival") {
+            const proposedDraft: MeetupMachine = {
                 ...baseMeetup,
-                scheduledAt: new Date(Date.now() + 90 * 60 * 1000),
+                scheduledAt: new Date(now.getTime() + 20 * 60 * 1000),
                 proposedLocation: "Estacion de Sants - Acceso principal",
                 proposedLocationLat: 41.37906,
                 proposedLocationLng: 2.14006,
-                finalPrice: 500,
+                finalPrice: 240,
+                proposedPaymentMethod: "BIZUM",
+            }
+            const proposed = transitionMeetup(proposedDraft, {
+                type: "PROPOSE",
+                actorRole: "SELLER",
+                occurredAt: new Date(now.getTime() - 50 * 60 * 1000),
+            })
+            if (!proposed.ok) {
+                state[conversation.id] = proposedDraft
+                continue
+            }
+            const confirmed = transitionMeetup(proposed.meetup, {
+                type: "ACCEPT",
+                actorRole: "BUYER",
+                occurredAt: new Date(now.getTime() - 45 * 60 * 1000),
+            })
+            state[conversation.id] = confirmed.ok ? confirmed.meetup : proposed.meetup
+            continue
+        }
+
+        if (conversation.id === "conv-c-buyer-incoming") {
+            const incomingProposal: MeetupMachine = {
+                ...baseMeetup,
+                scheduledAt: new Date(now.getTime() + 90 * 60 * 1000),
+                proposedLocation: "Estacion de Sants - Acceso principal",
+                proposedLocationLat: 41.37906,
+                proposedLocationLng: 2.14006,
+                finalPrice: 640,
                 proposedPaymentMethod: "BIZUM",
             }
             const proposedResult = transitionMeetup(incomingProposal, {
                 type: "PROPOSE",
                 actorRole: "SELLER",
-                occurredAt: new Date(),
+                occurredAt: new Date(now.getTime() - 4 * 60 * 1000),
             })
-
             state[conversation.id] = proposedResult.ok ? proposedResult.meetup : incomingProposal
+            continue
+        }
+
+        if (conversation.id === "conv-d-sold-closed") {
+            const closedDraft: MeetupMachine = {
+                ...baseMeetup,
+                scheduledAt: new Date(now.getTime() - 9 * 60 * 60 * 1000),
+                proposedLocation: "Centro comercial Arenas",
+                proposedLocationLat: 41.37617,
+                proposedLocationLng: 2.14918,
+                finalPrice: 310,
+                proposedPaymentMethod: "CASH",
+            }
+            const proposed = transitionMeetup(closedDraft, {
+                type: "PROPOSE",
+                actorRole: "SELLER",
+                occurredAt: new Date(now.getTime() - 11 * 60 * 60 * 1000),
+            })
+            if (!proposed.ok) {
+                state[conversation.id] = closedDraft
+                continue
+            }
+            const confirmed = transitionMeetup(proposed.meetup, {
+                type: "ACCEPT",
+                actorRole: "BUYER",
+                occurredAt: new Date(now.getTime() - 10 * 60 * 60 * 1000),
+            })
+            if (!confirmed.ok) {
+                state[conversation.id] = proposed.meetup
+                continue
+            }
+            const arrived = transitionMeetup(confirmed.meetup, {
+                type: "MARK_ARRIVED",
+                actorRole: "SELLER",
+                occurredAt: new Date(now.getTime() - 9 * 60 * 60 * 1000 - 10 * 60 * 1000),
+                distanceMeters: 25,
+                withinSafeRadius: true,
+            })
+            if (!arrived.ok) {
+                state[conversation.id] = confirmed.meetup
+                continue
+            }
+            const completed = transitionMeetup(arrived.meetup, {
+                type: "COMPLETE",
+                actorRole: "SELLER",
+                occurredAt: new Date(now.getTime() - 9 * 60 * 60 * 1000 + 5 * 60 * 1000),
+            })
+            state[conversation.id] = completed.ok ? completed.meetup : arrived.meetup
             continue
         }
 
@@ -1356,6 +1565,7 @@ function MeetupProposalOverlay({
 }
 
 type InboxPaneProps = {
+    conversations: Conversation[]
     selectedConversationId: string
     onSelectConversation: (conversationId: string) => void
     showBottomNav: boolean
@@ -1363,6 +1573,7 @@ type InboxPaneProps = {
 }
 
 function InboxPane({
+    conversations,
     selectedConversationId,
     onSelectConversation,
     showBottomNav,
@@ -1428,7 +1639,7 @@ function InboxPane({
 type ConversationPaneProps = {
     actorRole: ActorRole
     conversation: Conversation
-    messages: Message[]
+    timelineEntries: ConversationTimelineEntry[]
     meetup: MeetupMachine | undefined
     onBackToInbox?: () => void
     onSubmitMessage: (value: string) => void
@@ -1443,7 +1654,7 @@ type ConversationPaneProps = {
 function ConversationPane({
     actorRole,
     conversation,
-    messages,
+    timelineEntries,
     meetup,
     onBackToInbox,
     onSubmitMessage,
@@ -1502,23 +1713,49 @@ function ConversationPane({
 
             <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5">
                 <div className="space-y-3">
-                    {messages.map((message) => (
-                        <div
-                            key={message.id}
-                            className={message.variant === "sent" ? "flex justify-end" : "flex justify-start"}
-                        >
-                            <ChatMessageBubble
-                                variant={message.variant}
-                                time={message.time}
-                                deliveryState={message.deliveryState}
-                            >
-                                {message.text}
-                            </ChatMessageBubble>
-                        </div>
-                    ))}
-                </div>
+                    {timelineEntries.map((entry) => {
+                        if (entry.type === "message") {
+                            const message = entry.message
+                            return (
+                                <div
+                                    key={entry.id}
+                                    className={
+                                        message.variant === "sent"
+                                            ? "flex justify-end"
+                                            : "flex justify-start"
+                                    }
+                                >
+                                    <ChatMessageBubble
+                                        variant={message.variant}
+                                        time={message.time}
+                                        deliveryState={message.deliveryState}
+                                    >
+                                        {message.text}
+                                    </ChatMessageBubble>
+                                </div>
+                            )
+                        }
 
-                {meetup && meetup.status !== null ? (
+                        return (
+                            <div key={entry.id} className="pt-2">
+                                <div className={actorRole === "SELLER" ? "flex justify-end" : "flex justify-start"}>
+                                    <MeetupCard
+                                        meetup={entry.meetup}
+                                        actorRole={actorRole}
+                                        currentTime={currentTime}
+                                        onMeetupChange={onMeetupChange}
+                                        counterpartName={conversation.userName}
+                                        onRedZoneCancelConfirmed={onMeetupRedZoneCancel}
+                                        onError={onError}
+                                        onEditProposal={onOpenMeetupProposal}
+                                        onOpenMapPreview={() => onOpenMeetupMapPreview(entry.meetup)}
+                                    />
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+                {timelineEntries.length === 0 && meetup && meetup.status !== null ? (
                     <div className="mt-5 space-y-4">
                         <div className={actorRole === "SELLER" ? "flex justify-end" : "flex justify-start"}>
                             <MeetupCard
@@ -1625,8 +1862,11 @@ function DesktopConversationSidebar({ conversation }: { conversation: Conversati
 
 function WallapopChatWorkspace() {
     const localChatUserId = React.useMemo(() => getOrCreateLocalChatUserId(), [])
+    const [conversationsState, setConversationsState] = React.useState<Conversation[]>(
+        initialConversations
+    )
     const [selectedConversationId, setSelectedConversationId] = React.useState<string>(
-        "conv-002"
+        "conv-a-arrival"
     )
     const [mobileView, setMobileView] = React.useState<"inbox" | "conversation">("inbox")
     const [messagesByConversation, setMessagesByConversation] = React.useState<
@@ -1681,22 +1921,40 @@ function WallapopChatWorkspace() {
     const convexHydrationRequestIdRef = React.useRef(0)
 
     const selectedConversation = React.useMemo(
-        () => conversations.find((conversation) => conversation.id === selectedConversationId),
-        [selectedConversationId]
+        () =>
+            conversationsState.find((conversation) => conversation.id === selectedConversationId),
+        [conversationsState, selectedConversationId]
     )
 
-    const selectedMessages = React.useMemo(() => {
+    const selectedMessages = React.useMemo<Message[]>(() => {
         if (!selectedConversation) {
             return []
         }
-        const conversationMessages = messagesByConversation[selectedConversation.id] ?? []
-        return conversationMessages.filter((message) => message.senderUserId === localChatUserId)
-    }, [localChatUserId, messagesByConversation, selectedConversation])
+        return messagesByConversation[selectedConversation.id] ?? []
+    }, [messagesByConversation, selectedConversation])
     const selectedMeetup = selectedConversation
         ? meetupByConversation[selectedConversation.id]
         : undefined
+    const selectedTimelineEntries = React.useMemo<ConversationTimelineEntry[]>(
+        () => buildConversationTimelineEntries(selectedMessages, selectedMeetup),
+        [selectedMeetup, selectedMessages]
+    )
     const selectedActorRole: ActorRole =
         selectedConversation?.listingViewerRole === "buyer" ? "BUYER" : "SELLER"
+
+    React.useEffect(() => {
+        setConversationsState((previous) =>
+            previous.map((conversation) => {
+                const conversationMessages = messagesByConversation[conversation.id] ?? []
+                const conversationMeetup = meetupByConversation[conversation.id]
+                const summary = resolveConversationSummary(conversationMessages, conversationMeetup)
+                return {
+                    ...conversation,
+                    ...summary,
+                }
+            })
+        )
+    }, [messagesByConversation, meetupByConversation])
 
     const applyProposalDraftState = React.useCallback((draft: ProposalDraftState) => {
         setProposalStep(draft.step)
@@ -1753,12 +2011,10 @@ function WallapopChatWorkspace() {
 
                 const nextMessages = [...existingMessages]
                 for (const persistedMessage of persistedMessages) {
-                    if (persistedMessage.senderUserId !== localChatUserId) {
-                        continue
-                    }
                     if (existingIds.has(persistedMessage.clientMessageId)) {
                         continue
                     }
+                    const createdAt = persistedMessage.createdAt ?? Date.now()
                     nextMessages.push({
                         id: persistedMessage.clientMessageId,
                         senderUserId: persistedMessage.senderUserId,
@@ -1768,6 +2024,7 @@ function WallapopChatWorkspace() {
                                 ? "sent"
                                 : persistedMessage.variant ?? "received",
                         time: persistedMessage.time,
+                        createdAt,
                         deliveryState: persistedMessage.deliveryState,
                     })
                     existingIds.add(persistedMessage.clientMessageId)
@@ -1824,6 +2081,34 @@ function WallapopChatWorkspace() {
         return distanceBetweenPointsMeters(mapUserPosition, proposalCustomPoint)
     }, [proposalCustomPoint])
 
+    const markConversationAsRead = React.useCallback((conversationId: string) => {
+        setConversationsState((previous) =>
+            previous.map((conversation) =>
+                conversation.id === conversationId ? { ...conversation, unreadCount: 0 } : conversation
+            )
+        )
+        setMessagesByConversation((previous) => {
+            const nextMessages = [...(previous[conversationId] ?? [])]
+            for (let index = nextMessages.length - 1; index >= 0; index -= 1) {
+                if (nextMessages[index].variant === "received") {
+                    nextMessages[index] = {
+                        ...nextMessages[index],
+                        deliveryState: "read",
+                    }
+                    break
+                }
+            }
+            return {
+                ...previous,
+                [conversationId]: nextMessages,
+            }
+        })
+    }, [])
+
+    React.useEffect(() => {
+        markConversationAsRead(selectedConversationId)
+    }, [markConversationAsRead, selectedConversationId])
+
     if (!selectedConversation) {
         return null
     }
@@ -1832,15 +2117,22 @@ function WallapopChatWorkspace() {
         setSelectedConversationId(conversationId)
         setLastError("")
         setMobileView("conversation")
+        markConversationAsRead(conversationId)
     }
 
     const appendOutgoingMessage = (text: string) => {
+        const trimmedText = text.trim()
+        if (!trimmedText) {
+            return
+        }
+        const nowMs = Date.now()
         const nextMessage: Message = {
-            id: `m-${Date.now()}`,
+            id: `m-${nowMs}`,
             senderUserId: localChatUserId,
-            text,
+            text: trimmedText,
             variant: "sent",
-            time: formatTime(new Date()),
+            time: formatTime(new Date(nowMs)),
+            createdAt: nowMs,
             deliveryState: "sent",
         }
 
@@ -1862,7 +2154,7 @@ function WallapopChatWorkspace() {
                 text: nextMessage.text,
                 time: nextMessage.time,
                 deliveryState: nextMessage.deliveryState,
-                createdAt: Date.now(),
+                createdAt: nextMessage.createdAt,
             })
             .catch(async () => {
                 try {
@@ -1873,7 +2165,7 @@ function WallapopChatWorkspace() {
                         variant: nextMessage.variant,
                         time: nextMessage.time,
                         deliveryState: nextMessage.deliveryState,
-                        createdAt: Date.now(),
+                        createdAt: nextMessage.createdAt,
                     })
                 } catch {
                     setLastError("No se pudo guardar el mensaje en Convex.")
@@ -1882,12 +2174,14 @@ function WallapopChatWorkspace() {
     }
 
     const appendSystemMessage = (text: string) => {
+        const nowMs = Date.now()
         const nextMessage: Message = {
-            id: `sys-${Date.now()}`,
+            id: `sys-${nowMs}`,
             senderUserId: localChatUserId,
             text,
             variant: "sent",
-            time: formatTime(new Date()),
+            time: formatTime(new Date(nowMs)),
+            createdAt: nowMs,
             deliveryState: "sent",
         }
 
@@ -1898,12 +2192,14 @@ function WallapopChatWorkspace() {
     }
 
     const appendCounterpartMessage = (text: string) => {
+        const nowMs = Date.now()
         const nextMessage: Message = {
-            id: `cp-${Date.now()}`,
+            id: `cp-${nowMs}`,
             senderUserId: `counterpart:${selectedConversation.id}`,
             text,
             variant: "received",
-            time: formatTime(new Date()),
+            time: formatTime(new Date(nowMs)),
+            createdAt: nowMs,
         }
 
         setMessagesByConversation((previous) => ({
@@ -2269,6 +2565,7 @@ function WallapopChatWorkspace() {
             <section className="hidden h-full overflow-hidden border-x border-[#D3DEE2] md:grid md:grid-cols-[360px_1fr] lg:grid-cols-[360px_1fr_320px]">
                 <div className="min-h-0 border-r border-[#E8ECEF]">
                     <InboxPane
+                        conversations={conversationsState}
                         selectedConversationId={selectedConversationId}
                         onSelectConversation={openConversation}
                         showBottomNav={false}
@@ -2276,14 +2573,14 @@ function WallapopChatWorkspace() {
                     />
                 </div>
                 <div className="min-h-0">
-                    <ConversationPane
-                        actorRole={selectedActorRole}
-                        conversation={selectedConversation}
-                        messages={selectedMessages}
-                        meetup={selectedMeetup}
-                        onSubmitMessage={appendOutgoingMessage}
-                        onMeetupChange={updateSelectedMeetup}
-                        onMeetupRedZoneCancel={handleMeetupRedZoneCancel}
+                        <ConversationPane
+                            actorRole={selectedActorRole}
+                            conversation={selectedConversation}
+                            timelineEntries={selectedTimelineEntries}
+                            meetup={selectedMeetup}
+                            onSubmitMessage={appendOutgoingMessage}
+                            onMeetupChange={updateSelectedMeetup}
+                            onMeetupRedZoneCancel={handleMeetupRedZoneCancel}
                         onOpenMeetupProposal={openMeetupProposal}
                         onOpenMeetupMapPreview={openMeetupMapPreview}
                         onError={setLastError}
@@ -2296,6 +2593,7 @@ function WallapopChatWorkspace() {
             <section className="h-full min-h-0 md:hidden">
                 {mobileView === "inbox" ? (
                     <InboxPane
+                        conversations={conversationsState}
                         selectedConversationId={selectedConversationId}
                         onSelectConversation={openConversation}
                         showBottomNav={true}
@@ -2305,7 +2603,7 @@ function WallapopChatWorkspace() {
                     <ConversationPane
                         actorRole={selectedActorRole}
                         conversation={selectedConversation}
-                        messages={selectedMessages}
+                        timelineEntries={selectedTimelineEntries}
                         meetup={selectedMeetup}
                         onBackToInbox={() => setMobileView("inbox")}
                         onSubmitMessage={appendOutgoingMessage}
@@ -2409,3 +2707,4 @@ function WallapopChatWorkspace() {
 }
 
 export { WallapopChatWorkspace }
+

@@ -52,6 +52,9 @@ function ChatComposer({
       return
     }
     onSubmit?.(resolvedValue)
+    if (!isControlled) {
+      setInnerValue("")
+    }
   }
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (event) => {
