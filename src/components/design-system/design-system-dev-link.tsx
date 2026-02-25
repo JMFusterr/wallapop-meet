@@ -1,10 +1,6 @@
 import { navigateTo } from "@/lib/navigation"
 
 function DesignSystemDevLink() {
-    if (!import.meta.env.DEV) {
-        return null
-    }
-
     if (window.location.pathname === "/design-system") {
         return null
     }
