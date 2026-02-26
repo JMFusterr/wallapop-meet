@@ -31,18 +31,18 @@ function MeetupProposalHeader({
         <button
           type="button"
           aria-label="Cerrar configuracion de meetup"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[var(--text-primary)]"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[color:var(--text-primary)]"
           onClick={onClose}
         >
           <WallapopIcon name="cross" size={22} />
         </button>
-        <h2 className="font-wallie-chunky text-[18px] text-[var(--text-primary)] md:text-[20px]">
+        <h2 className="font-wallie-chunky text-[length:var(--wm-size-18)] text-[color:var(--text-primary)] md:text-[length:var(--wm-size-20)]">
           Paso {currentStep} de {totalSteps}
         </h2>
         <button
           type="button"
           onClick={onHelp}
-          className="font-wallie-chunky text-[15px] text-[var(--action-primary)] md:text-[16px]"
+          className="font-wallie-chunky text-[length:var(--wm-size-15)] text-[color:var(--action-primary)] md:text-[length:var(--wm-size-16)]"
         >
           {helpLabel}
         </button>
@@ -55,8 +55,8 @@ function MeetupProposalHeader({
             type="button"
             onClick={() => onStepChange(stepItem.id)}
             disabled={stepItem.disabled}
-            className={`h-[5px] rounded-full ${
-              stepItem.id <= currentStep ? "bg-[var(--text-primary)]" : "bg-[var(--border-strong)]"
+            className={`h-[var(--wm-size-5)] rounded-full ${
+              stepItem.id <= currentStep ? "bg-[color:var(--text-primary)]" : "bg-[color:var(--border-strong)]"
             }`}
             aria-label={`Paso ${stepItem.id}: ${stepItem.label}`}
           />
@@ -68,3 +68,5 @@ function MeetupProposalHeader({
 
 export { MeetupProposalHeader }
 export type { MeetupProposalHeaderProps, MeetupProposalHeaderStep }
+
+

@@ -42,7 +42,7 @@ function InboxBottomNav({
       data-slot="inbox-bottom-nav"
       aria-label="Navegacion principal"
       className={cn(
-        "w-full border-t border-[#D3DEE2] bg-white px-2 pt-1.5 pb-[max(6px,env(safe-area-inset-bottom))]",
+        "w-full border-t border-[color:var(--border-strong)] bg-white px-2 pt-1.5 pb-[max(6px,env(safe-area-inset-bottom))]",
         className
       )}
       {...props}
@@ -57,8 +57,8 @@ function InboxBottomNav({
                 type="button"
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "relative flex h-[60px] w-full flex-col items-center justify-center gap-0.5 px-0.5 text-center",
-                  "focus-visible:ring-2 focus-visible:ring-[var(--wm-color-border-focus)] focus-visible:outline-none"
+                  "relative flex h-[var(--wm-size-60)] w-full flex-col items-center justify-center gap-0.5 px-0.5 text-center",
+                  "focus-visible:ring-2 focus-visible:ring-[color:var(--wm-color-border-focus)] focus-visible:outline-none"
                 )}
                 onClick={() => onItemSelect?.(item.id)}
               >
@@ -66,14 +66,14 @@ function InboxBottomNav({
                   <WallapopIcon
                     name={item.icon}
                     size={20}
-                    className={cn(isActive ? "text-[#253238]" : "text-[#6E8792]")}
+                    className={cn(isActive ? "text-[color:var(--text-primary)]" : "text-[color:var(--text-tertiary)]")}
                     strokeWidth={1.9}
                   />
                 </span>
                 <span
                   className={cn(
-                    "max-w-full whitespace-nowrap text-center font-wallie text-[11px] leading-[14px]",
-                    isActive ? "font-wallie-chunky text-[#253238]" : "text-[#6E8792]"
+                    "max-w-full whitespace-nowrap text-center font-wallie text-[length:var(--wm-size-11)] leading-[var(--wm-size-14)]",
+                    isActive ? "font-wallie-chunky text-[color:var(--text-primary)]" : "text-[color:var(--text-tertiary)]"
                   )}
                 >
                   {item.label}
@@ -81,7 +81,7 @@ function InboxBottomNav({
                 {item.badgeCount ? (
                   <Badge
                     value={item.badgeCount}
-                    className="absolute top-0 right-[22%] min-h-[18px] min-w-[18px] text-[11px] leading-[16px]"
+                    className="absolute top-0 right-[22%] min-h-[var(--wm-size-18)] min-w-[var(--wm-size-18)] text-[length:var(--wm-size-11)] leading-[var(--wm-size-16)]"
                   />
                 ) : null}
               </button>
@@ -94,3 +94,5 @@ function InboxBottomNav({
 }
 
 export { InboxBottomNav, type InboxBottomNavItem }
+
+

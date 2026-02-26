@@ -19,7 +19,7 @@ function StarRating({ rating, ratingCount }: { rating: number; ratingCount?: num
 
     return (
         <div className="flex items-center gap-2" aria-label={`${rating}/5 estrellas`}>
-            <div className="flex items-center gap-0.5 text-[var(--wm-color-text-primary)]">
+            <div className="flex items-center gap-0.5 text-[color:var(--wm-color-text-primary)]">
                 {stars.map((value) => {
                     const full = rating >= value
                     const half = !full && rating >= value - 0.5
@@ -33,22 +33,22 @@ function StarRating({ rating, ratingCount }: { rating: number; ratingCount?: num
                             <span key={value} className="relative inline-flex h-4 w-4">
                                 <Star
                                     size={16}
-                                    className="absolute inset-0 text-[var(--wm-color-border-default)]"
+                                    className="absolute inset-0 text-[color:var(--wm-color-border-default)]"
                                 />
                                 <span className="absolute inset-0 overflow-hidden" style={{ width: "50%" }}>
-                                    <Star size={16} className="fill-current text-[var(--wm-color-text-primary)]" />
+                                    <Star size={16} className="fill-current text-[color:var(--wm-color-text-primary)]" />
                                 </span>
                             </span>
                         )
                     }
 
                     return (
-                        <Star key={value} size={16} className="text-[var(--wm-color-border-default)]" />
+                        <Star key={value} size={16} className="text-[color:var(--wm-color-border-default)]" />
                     )
                 })}
             </div>
             {typeof ratingCount === "number" && ratingCount > 0 ? (
-                <span className="font-wallie-fit text-[14px] text-[var(--wm-color-text-secondary)]">
+                <span className="font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--wm-color-text-secondary)]">
                     ({ratingCount})
                 </span>
             ) : null}
@@ -83,37 +83,37 @@ function ChatCounterpartCard({
             : resolvedAttendanceRate > 90
               ? {
                     text: `${resolvedAttendanceRate}% de asistencia (${attendanceMeetups})`,
-                    className: "text-[var(--wm-color-input-ring-success)]",
+                    className: "text-[color:var(--wm-color-input-ring-success)]",
                 }
               : resolvedAttendanceRate >= 70
                 ? {
                       text: `${resolvedAttendanceRate}% de asistencia (${attendanceMeetups})`,
-                      className: "text-[#F4A000]",
+                      className: "text-[color:var(--feedback-warning)]",
                   }
                 : {
                       text: "Baja asistencia a quedadas",
-                      className: "text-[var(--wm-color-semantic-error)]",
+                      className: "text-[color:var(--wm-color-semantic-error)]",
                   }
 
     return (
         <article
             data-slot="chat-counterpart-card"
-            className={cn("rounded-[12px] bg-white p-4", className)}
+            className={cn("rounded-[var(--wm-size-12)] bg-white p-4", className)}
             {...props}
         >
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                    <h3 className="truncate font-wallie-chunky text-[16px] text-[var(--wm-color-text-primary)]">
+                    <h3 className="truncate font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--wm-color-text-primary)]">
                         {name}
                     </h3>
                     <div className="mt-2">
                         <StarRating rating={rating} ratingCount={ratingCount} />
                     </div>
-                    <p className="mt-2 font-wallie-fit text-[14px] text-[var(--wm-color-text-secondary)]">
+                    <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--wm-color-text-secondary)]">
                         {distanceLabel}
                     </p>
                     {attendanceMessage ? (
-                        <p className={`mt-1 font-wallie-fit text-[14px] ${attendanceMessage.className}`}>
+                        <p className={`mt-1 font-wallie-fit text-[length:var(--wm-size-14)] ${attendanceMessage.className}`}>
                             {attendanceMessage.text}
                         </p>
                     ) : null}
@@ -122,7 +122,7 @@ function ChatCounterpartCard({
                     <img
                         src={profileImageSrc}
                         alt={profileImageAlt ?? `Foto de perfil de ${name}`}
-                        className="h-[60px] w-[60px] rounded-full object-cover"
+                        className="h-[var(--wm-size-60)] w-[var(--wm-size-60)] rounded-full object-cover"
                     />
                 ) : null}
             </div>
@@ -131,3 +131,4 @@ function ChatCounterpartCard({
 }
 
 export { ChatCounterpartCard }
+

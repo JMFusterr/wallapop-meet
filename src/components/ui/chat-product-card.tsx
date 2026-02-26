@@ -80,18 +80,18 @@ function ChatProductCard({
         <article
             data-slot="chat-product-card"
             className={cn(
-                "relative w-full overflow-hidden rounded-[12px] border border-[var(--border-divider)] bg-[var(--bg-base)]",
+                "relative w-full overflow-hidden rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-[color:var(--bg-base)]",
                 className
             )}
             {...props}
         >
             <div className="relative">
-                <img src={imageSrc} alt={imageAlt} className="h-[200px] w-full object-cover" />
+                <img src={imageSrc} alt={imageAlt} className="h-[var(--wm-size-200)] w-full object-cover" />
                 {isSeller && !isSoldListing && onEdit ? (
                     <button
                         type="button"
                         onClick={onEdit}
-                        className="absolute top-3 right-3 inline-flex h-12 w-12 items-center justify-center rounded-[12px] border border-[var(--border-strong)] bg-[var(--bg-base)] text-[var(--text-secondary)]"
+                        className="absolute top-3 right-3 inline-flex h-12 w-12 items-center justify-center rounded-[var(--wm-size-12)] border border-[color:var(--border-strong)] bg-[color:var(--bg-base)] text-[color:var(--text-secondary)]"
                         aria-label="Editar anuncio"
                     >
                         <WallapopIcon name="edit" size={20} />
@@ -99,7 +99,7 @@ function ChatProductCard({
                 ) : null}
                 {statusLabel ? (
                     <span
-                        className="absolute right-4 bottom-4 inline-flex items-center gap-1 rounded-full bg-[var(--bg-base)] px-3 py-1 font-wallie-chunky text-[14px]"
+                        className="absolute right-4 bottom-4 inline-flex items-center gap-1 rounded-full bg-[color:var(--bg-base)] px-3 py-1 font-wallie-chunky text-[length:var(--wm-size-14)]"
                         style={{ color: statusBadgeConfig.color }}
                     >
                         <WallapopIcon
@@ -121,10 +121,10 @@ function ChatProductCard({
                             size="md"
                             onClick={onReserve}
                             className={cn(
-                                "h-8 flex-1 rounded-full px-4 font-wallie-chunky text-[13px]",
+                                "h-8 flex-1 rounded-full px-4 font-wallie-chunky text-[length:var(--wm-size-13)]",
                                 isReservedListing
-                                    ? "border-[var(--status-reserved)] bg-[var(--bg-base)] text-[var(--status-reserved)]"
-                                    : "border-[var(--status-reserved)] bg-[var(--status-reserved)] text-[var(--text-inverse)]"
+                                    ? "border-[color:var(--status-reserved)] bg-[color:var(--bg-base)] text-[color:var(--status-reserved)]"
+                                    : "border-[color:var(--status-reserved)] bg-[color:var(--status-reserved)] text-[color:var(--text-inverse)]"
                             )}
                         >
                             {isReservedListing ? "Anular reserva" : reserveLabel}
@@ -134,7 +134,7 @@ function ChatProductCard({
                             variant="inline_action"
                             size="md"
                             onClick={onSold}
-                            className="h-8 flex-1 rounded-full bg-[var(--status-sold)] px-4 font-wallie-chunky text-[13px] text-[var(--text-inverse)]"
+                            className="h-8 flex-1 rounded-full bg-[color:var(--status-sold)] px-4 font-wallie-chunky text-[length:var(--wm-size-13)] text-[color:var(--text-inverse)]"
                         >
                             {soldLabel}
                         </Button>
@@ -143,15 +143,15 @@ function ChatProductCard({
             ) : null}
 
             <div className="px-4 py-4">
-                <h4 className="font-wallie-chunky text-[16px] leading-[20px] text-[var(--text-primary)]">
+                <h4 className="font-wallie-chunky text-[length:var(--wm-size-16)] leading-[var(--wm-size-20)] text-[color:var(--text-primary)]">
                     {title}
                 </h4>
                 <div className="mt-2 flex items-center justify-between gap-4">
-                    <p className="font-wallie-fit text-[16px] text-[var(--text-primary)]">
+                    <p className="font-wallie-fit text-[length:var(--wm-size-16)] text-[color:var(--text-primary)]">
                         {price}
                     </p>
                     {showStats ? (
-                        <div className="flex items-center gap-3 font-wallie-fit text-[14px] text-[var(--text-secondary)]">
+                        <div className="flex items-center gap-3 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
                             <span className="inline-flex items-center gap-1">
                                 <WallapopIcon name="eye" size={15} />
                                 {viewsCount}
@@ -164,7 +164,7 @@ function ChatProductCard({
                     ) : null}
                 </div>
                 {!showStats && stats ? (
-                    <p className="mt-1 font-wallie-fit text-[12px] text-[var(--text-secondary)]">{stats}</p>
+                    <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{stats}</p>
                 ) : null}
             </div>
         </article>
@@ -172,3 +172,5 @@ function ChatProductCard({
 }
 
 export { ChatProductCard, type ChatProductCardViewerRole }
+
+

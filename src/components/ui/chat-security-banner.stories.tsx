@@ -11,7 +11,7 @@ const meta = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="w-full max-w-[560px] border border-[var(--wm-color-border-default)] bg-white">
+      <div className="w-full max-w-[var(--wm-size-560)] border border-[color:var(--wm-color-border-default)] bg-white">
         <Story />
       </div>
     ),
@@ -33,3 +33,4 @@ export const CompactFooter: Story = {
     linkText: "Mas informacion",
   },
 }
+

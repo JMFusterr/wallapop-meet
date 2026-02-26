@@ -25,13 +25,13 @@ const wrapperStateClass: Record<InputState, string> = {
 }
 
 const helperTextClass =
-    "font-wallie-fit text-[12px] leading-4 text-[var(--wm-color-input-label)]"
+    "font-wallie-fit text-[length:var(--wm-size-12)] leading-4 text-[color:var(--wm-color-input-label)]"
 const successTextClass =
-    "font-wallie-fit text-[12px] leading-4 text-[var(--wm-color-input-ring-success)]"
+    "font-wallie-fit text-[length:var(--wm-size-12)] leading-4 text-[color:var(--wm-color-input-ring-success)]"
 const counterTextClass =
-    "flex-1 text-right font-wallie-fit text-[12px] leading-4 text-[var(--wm-color-input-label)]"
+    "flex-1 text-right font-wallie-fit text-[length:var(--wm-size-12)] leading-4 text-[color:var(--wm-color-input-label)]"
 const errorTextClass =
-    "font-wallie-fit text-[12px] leading-4 text-[var(--wm-color-input-ring-error)]"
+    "font-wallie-fit text-[length:var(--wm-size-12)] leading-4 text-[color:var(--wm-color-input-ring-error)]"
 
 const getInitialValue = (value: React.ComponentProps<"input">["defaultValue"]) =>
     value == null ? "" : String(value)
@@ -109,7 +109,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                     className={cn(
                         wrapperBaseClass,
                         isCompact
-                            ? "px-[var(--wm-input-padding-x)] pt-[var(--wm-input-padding-y-compact)] pb-[var(--wm-input-padding-y-compact)] min-h-[44px]"
+                            ? "px-[var(--wm-input-padding-x)] pt-[var(--wm-input-padding-y-compact)] pb-[var(--wm-input-padding-y-compact)] min-h-[var(--wm-size-44)]"
                             : "px-[var(--wm-input-padding-x)] pt-[var(--wm-input-padding-y-default)] pb-[var(--wm-input-padding-y-default)]",
                         disabled
                             ? "opacity-[var(--wm-opacity-input-disabled)] shadow-[inset_0_0_0_1px_var(--wm-color-input-ring-default)] hover:shadow-[inset_0_0_0_1px_var(--wm-color-input-ring-default)]"
@@ -124,11 +124,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                             className={cn(
                                 "pointer-events-none absolute right-14 left-4 overflow-hidden text-ellipsis whitespace-nowrap font-wallie-fit transition-all duration-200 ease-out",
                                 resolvedState === "error"
-                                    ? "text-[var(--wm-color-input-ring-error)]"
-                                    : "text-[var(--wm-color-input-label)]",
+                                    ? "text-[color:var(--wm-color-input-ring-error)]"
+                                    : "text-[color:var(--wm-color-input-label)]",
                                 isCompact
-                                    ? "top-[10px] text-[14px] leading-5"
-                                    : "top-[20px] text-[16px] leading-6"
+                                    ? "top-[var(--wm-size-10)] text-[length:var(--wm-size-14)] leading-5"
+                                    : "top-[var(--wm-size-20)] text-[length:var(--wm-size-16)] leading-6"
                             )}
                         >
                             {label}
@@ -152,8 +152,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                             onBlur={handleBlur}
                             onChange={handleChange}
                             className={cn(
-                                "w-full border-none bg-transparent p-0 pr-8 font-wallie-fit text-[16px] leading-6 text-[var(--wm-color-input-text)] outline-none",
-                                "placeholder:text-transparent focus:placeholder:text-[var(--wm-color-input-placeholder-focus)]",
+                                "w-full border-none bg-transparent p-0 pr-8 font-wallie-fit text-[length:var(--wm-size-16)] leading-6 text-[color:var(--wm-color-input-text)] outline-none",
+                                "placeholder:text-transparent focus:placeholder:text-[color:var(--wm-color-input-placeholder-focus)]",
                                 "transition-colors duration-100 ease-out",
                                 disabled ? "cursor-initial" : "cursor-pointer",
                                 className
@@ -163,7 +163,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                         {showErrorIcon ? (
                             <span
                                 aria-hidden="true"
-                                className="pointer-events-none absolute top-1/2 right-0 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--wm-color-input-ring-error)] text-[18px] leading-none text-white"
+                                className="pointer-events-none absolute top-1/2 right-0 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-[color:var(--wm-color-input-ring-error)] text-[length:var(--wm-size-18)] leading-none text-white"
                             >
                                 !
                             </span>
@@ -200,3 +200,5 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = "Input"
 
 export { Input }
+
+

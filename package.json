@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "audit:design-system": "node scripts/audit-design-system.mjs",
+    "audit:design-system:baseline": "node scripts/audit-design-system.mjs --update-baseline",
+    "lint": "npm run audit:design-system && eslint .",
     "preview": "vite preview",
     "test": "vitest --passWithNoTests",
     "storybook": "storybook dev -p 6006",

@@ -11,9 +11,9 @@ type BadgeProps = React.ComponentProps<"span"> & {
 }
 
 const badgeVariantClass: Record<BadgeVariant, string> = {
-  unread: "bg-[var(--status-sold)] text-[var(--text-inverse)]",
-  success: "bg-[var(--feedback-success)] text-[var(--text-inverse)]",
-  error: "bg-[var(--feedback-error)] text-[var(--text-inverse)]",
+  unread: "bg-[color:var(--status-sold)] text-[color:var(--text-inverse)]",
+  success: "bg-[color:var(--feedback-success)] text-[color:var(--text-inverse)]",
+  error: "bg-[color:var(--feedback-error)] text-[color:var(--text-inverse)]",
 }
 
 function Badge({
@@ -38,7 +38,7 @@ function Badge({
       data-slot="badge"
       data-variant={variant}
       className={cn(
-        "inline-flex min-h-6 min-w-6 items-center justify-center rounded-full px-1.5 font-wallie text-[12px] leading-[18px]",
+        "inline-flex min-h-6 min-w-6 items-center justify-center rounded-full px-1.5 font-wallie text-[length:var(--wm-size-12)] leading-[var(--wm-size-18)]",
         badgeVariantClass[variant],
         className
       )}
@@ -50,3 +50,5 @@ function Badge({
 }
 
 export { Badge }
+
+

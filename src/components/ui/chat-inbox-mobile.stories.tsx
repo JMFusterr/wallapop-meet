@@ -50,7 +50,7 @@ const conversations = [
 
 export const MobileInboxReference: Story = {
   render: () => (
-    <div className="w-full max-w-[390px] overflow-hidden rounded-[20px] border border-[#D3DEE2] bg-white">
+    <div className="w-full max-w-[var(--wm-size-390)] overflow-hidden rounded-[var(--wm-size-20)] border border-[color:var(--border-strong)] bg-white">
       <div className="px-4 pt-4 pb-3">
         <div role="tablist" aria-label="Secciones de inbox" className="flex items-center gap-2">
           <Button variant="tab" role="tab" aria-selected="true" data-selected="true">
@@ -72,3 +72,4 @@ export const MobileInboxReference: Story = {
     </div>
   ),
 }
+

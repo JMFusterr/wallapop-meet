@@ -11,7 +11,7 @@ const meta = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="w-[360px] rounded-[18px] border border-[#E8ECEF] bg-white p-4">
+      <div className="w-[var(--wm-size-360)] rounded-[var(--wm-size-18)] border border-[color:var(--border-divider)] bg-white p-4">
         <Story />
       </div>
     ),
@@ -35,3 +35,4 @@ export const CaptionOnly: Story = {
     onBack: () => undefined,
   },
 }
+

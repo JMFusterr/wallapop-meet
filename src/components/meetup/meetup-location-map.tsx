@@ -44,7 +44,7 @@ function createCustomPointIcon(customPointColor: string): L.DivIcon {
         className: "",
         html: `
         <span style="display:inline-flex;flex-direction:column;align-items:center;">
-            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:${customPointColor};border:2px solid var(--text-inverse);box-shadow:0 4px 10px rgba(37,50,56,0.28);padding:0 10px;">
+            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:${customPointColor};border:2px solid var(--text-inverse);box-shadow:var(--wm-shadow-marker-strong);padding:0 10px;">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="m11 17 2 2a1 1 0 1 0 3-3"></path>
                     <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path>
@@ -93,11 +93,11 @@ function MeetupLocationMap({
     onSafePointClick,
 }: MeetupLocationMapProps) {
     const safePointDefaultColor = React.useMemo(
-        () => resolveCssColor("--action-primary", "#13C1AC"),
+        () => resolveCssColor("--action-primary", "var(--action-primary)"),
         []
     )
     const safePointSelectedColor = React.useMemo(
-        () => resolveCssColor("--action-primary-pressed", "#0D907A"),
+        () => resolveCssColor("--action-primary-pressed", "var(--action-primary-pressed)"),
         []
     )
     const customPointIcon = React.useMemo(
@@ -106,7 +106,7 @@ function MeetupLocationMap({
     )
 
     return (
-        <div className="h-[280px] w-full overflow-hidden rounded-[14px] border border-[var(--border-strong)]">
+        <div className="h-[var(--wm-size-280)] w-full overflow-hidden rounded-[var(--wm-size-14)] border border-[color:var(--border-strong)]">
             <MapContainer
                 center={[center.lat, center.lng]}
                 zoom={14}
@@ -126,7 +126,7 @@ function MeetupLocationMap({
                         center={[point.lat, point.lng]}
                         radius={7}
                         pathOptions={{
-                            color: resolveCssColor("--text-inverse", "#ffffff"),
+                            color: resolveCssColor("--text-inverse", "var(--text-inverse)"),
                             weight: 2,
                             fillColor:
                                 selectedPointId === point.id
@@ -162,3 +162,4 @@ function MeetupLocationMap({
 
 export { MeetupLocationMap }
 export type { LatLng, SafePoint }
+

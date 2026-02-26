@@ -11,7 +11,7 @@ const meta = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="w-[380px] overflow-hidden rounded-[18px] border border-[#E8ECEF] bg-white pb-4">
+      <div className="w-[var(--wm-size-380)] overflow-hidden rounded-[var(--wm-size-18)] border border-[color:var(--border-divider)] bg-white pb-4">
         <Story />
       </div>
     ),
@@ -50,3 +50,4 @@ export const StepTwoWithLocks: Story = {
     onStepChange: () => undefined,
   },
 }
+

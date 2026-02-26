@@ -37,7 +37,7 @@ function ChatListItem({
   ...props
 }: ChatListItemProps) {
   const indicatorIconName = leadingIndicator === "deal" ? "deal" : "bookmark"
-  const leadingIndicatorColor = leadingIndicator === "deal" ? "#D32069" : "#86418A"
+  const leadingIndicatorColor = leadingIndicator === "deal" ? "var(--status-sold)" : "var(--status-reserved)"
 
   return (
     <button
@@ -45,24 +45,24 @@ function ChatListItem({
       data-slot="chat-list-item"
       data-selected={selected}
       className={cn(
-        "flex h-[100px] w-full cursor-pointer items-start gap-3 border-0 bg-transparent pl-5 pt-5 pr-3 pb-5 text-left",
-        showDivider && "border-b border-[var(--wm-color-border-default)]",
-        "transition-colors hover:bg-[var(--wm-color-background-surface)] data-[selected=true]:bg-[var(--wm-color-background-surface)]",
+        "flex h-[var(--wm-size-100)] w-full cursor-pointer items-start gap-3 border-0 bg-transparent pl-5 pt-5 pr-3 pb-5 text-left",
+        showDivider && "border-b border-[color:var(--wm-color-border-default)]",
+        "transition-colors hover:bg-[color:var(--wm-color-background-surface)] data-[selected=true]:bg-[color:var(--wm-color-background-surface)]",
         className
       )}
       {...props}
     >
-      <div className="relative h-16 w-16 shrink-0 overflow-visible rounded-[16px] bg-[var(--wm-color-border-default)]">
+      <div className="relative h-16 w-16 shrink-0 overflow-visible rounded-[var(--wm-size-16)] bg-[color:var(--wm-color-border-default)]">
         {avatarSrc ? (
           <img
             src={avatarSrc}
             alt={avatarAlt ?? userName}
-            className="h-full w-full rounded-[16px] object-cover"
+            className="h-full w-full rounded-[var(--wm-size-16)] object-cover"
           />
         ) : null}
         {leadingIndicator ? (
           <span
-            className="absolute -top-2 -left-2 z-10 inline-flex size-8 items-center justify-center rounded-full border border-[#ECEFF1] bg-white"
+            className="absolute -top-2 -left-2 z-10 inline-flex size-8 items-center justify-center rounded-full border border-[color:var(--border-divider)] bg-white"
             style={{ color: leadingIndicatorColor }}
             aria-hidden="true"
           >
@@ -72,24 +72,24 @@ function ChatListItem({
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
-          <p className="truncate font-wallie text-[12px] leading-[18px] text-[#90A4AE]">
+          <p className="truncate font-wallie text-[length:var(--wm-size-12)] leading-[var(--wm-size-18)] text-[color:var(--text-meta)]">
             {userName}
           </p>
-          <p className="shrink-0 font-wallie text-[12px] leading-[18px] text-[#90A4AE]">
+          <p className="shrink-0 font-wallie text-[length:var(--wm-size-12)] leading-[var(--wm-size-18)] text-[color:var(--text-meta)]">
             {messageDate}
           </p>
         </div>
-        <p className="truncate font-wallie-chunky text-[16px] leading-[16px] text-[var(--wm-color-text-primary)]">
+        <p className="truncate font-wallie-chunky text-[length:var(--wm-size-16)] leading-[var(--wm-size-16)] text-[color:var(--wm-color-text-primary)]">
           {itemTitle}
         </p>
         <div className="mt-1 flex items-center justify-between gap-2">
-          <p className="flex min-w-0 items-center gap-1 truncate font-wallie text-[14px] leading-[14px] text-[#90A4AE]">
+          <p className="flex min-w-0 items-center gap-1 truncate font-wallie text-[length:var(--wm-size-14)] leading-[var(--wm-size-14)] text-[color:var(--text-meta)]">
             {lastMessageDeliveryState ? (
               <span
                 aria-label={lastMessageDeliveryState === "read" ? "Leido" : "Enviado"}
                 className={cn(
                   "inline-flex shrink-0 items-center leading-none",
-                  lastMessageDeliveryState === "read" ? "text-[#13C1AC]" : "text-[#C2CDD3]"
+                  lastMessageDeliveryState === "read" ? "text-[color:var(--action-primary)]" : "text-[color:var(--delivery-sent)]"
                 )}
               >
                 <WallapopIcon name="double_check" size={13} strokeWidth={1.9} />
@@ -105,4 +105,6 @@ function ChatListItem({
 }
 
 export { ChatListItem }
+
+
 

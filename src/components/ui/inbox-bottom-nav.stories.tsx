@@ -11,8 +11,8 @@ const meta = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="w-full max-w-[390px] overflow-hidden rounded-[20px] border border-[var(--wm-color-border-default)] bg-[#F8F9FA]">
-        <div className="h-[520px]" />
+      <div className="w-full max-w-[var(--wm-size-390)] overflow-hidden rounded-[var(--wm-size-20)] border border-[color:var(--wm-color-border-default)] bg-[color:var(--bg-surface)]">
+        <div className="h-[var(--wm-size-520)]" />
         <Story />
       </div>
     ),
@@ -36,3 +36,4 @@ export const HomeActiveWithBadge: Story = {
     ],
   },
 }
+

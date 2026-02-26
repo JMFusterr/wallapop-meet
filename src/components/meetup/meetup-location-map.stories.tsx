@@ -18,7 +18,7 @@ const meta = {
     tags: ["autodocs"],
     decorators: [
         (Story) => (
-            <div className="w-full min-w-[340px] max-w-[720px] bg-white p-4">
+            <div className="w-full min-w-[var(--wm-size-340)] max-w-[var(--wm-size-720)] bg-white p-4">
                 <Story />
             </div>
         ),
@@ -62,7 +62,7 @@ function MapHarness({
                     setSelectedCustomPoint(null)
                 }}
             />
-            <p className="font-wallie-fit text-[12px] text-[#6E8792]">
+            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                 Punto seleccionado: {selectedPointId || "ninguno"}
             </p>
         </div>
@@ -104,3 +104,4 @@ export const CustomPointSelected: Story = {
         />
     ),
 }
+

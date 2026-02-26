@@ -29,7 +29,7 @@ export const Playground: Story = {}
 
 export const Variants: Story = {
     render: () => (
-        <div className="w-[360px] space-y-3">
+        <div className="w-[var(--wm-size-360)] space-y-3">
             <Toast
                 variant="success"
                 title="Has llegado al punto de encuentro"

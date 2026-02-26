@@ -31,12 +31,12 @@ function MeetupProposalFooter({
     : null
   const attendanceColorClass =
     resolvedAttendanceRate === null
-      ? "text-[var(--text-secondary)]"
+      ? "text-[color:var(--text-secondary)]"
       : resolvedAttendanceRate > 90
-        ? "text-[var(--feedback-success)]"
+        ? "text-[color:var(--feedback-success)]"
         : resolvedAttendanceRate >= 70
-          ? "text-[var(--feedback-warning)]"
-          : "text-[var(--feedback-error)]"
+          ? "text-[color:var(--feedback-warning)]"
+          : "text-[color:var(--feedback-error)]"
   const attendanceLabel = hasAttendance
     ? resolvedAttendanceRate !== null && resolvedAttendanceRate < 70
       ? "Baja asistencia a quedadas"
@@ -44,25 +44,25 @@ function MeetupProposalFooter({
     : null
 
   return (
-    <div className="mt-3 border-t border-[var(--border-divider)] px-4 py-3">
+    <div className="mt-3 border-t border-[color:var(--border-divider)] px-4 py-3">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-2">
             <img
               src={listingImageSrc}
               alt={itemTitle}
-              className="h-[42px] w-[42px] shrink-0 rounded-[10px] object-cover"
+              className="h-[var(--wm-size-42)] w-[var(--wm-size-42)] shrink-0 rounded-[var(--wm-size-10)] object-cover"
             />
             <div className="min-w-0">
-              <p className="truncate font-wallie-chunky text-[15px] leading-tight text-[var(--text-primary)]">
+              <p className="truncate font-wallie-chunky text-[length:var(--wm-size-15)] leading-tight text-[color:var(--text-primary)]">
                 {userName}
               </p>
               {attendanceLabel ? (
-                <p className={`truncate font-wallie-fit text-[12px] leading-tight ${attendanceColorClass}`}>
+                <p className={`truncate font-wallie-fit text-[length:var(--wm-size-12)] leading-tight ${attendanceColorClass}`}>
                   {attendanceLabel}
                 </p>
               ) : null}
-              <p className="truncate font-wallie-fit text-[12px] leading-tight text-[var(--text-secondary)]">
+              <p className="truncate font-wallie-fit text-[length:var(--wm-size-12)] leading-tight text-[color:var(--text-secondary)]">
                 {itemTitle}
               </p>
             </div>
@@ -72,12 +72,12 @@ function MeetupProposalFooter({
         <div className="shrink-0 flex justify-end gap-2">
           <button
             type="button"
-            className={`rounded-full px-4 py-2 font-wallie-chunky text-[14px] ${
+            className={`rounded-full px-4 py-2 font-wallie-chunky text-[length:var(--wm-size-14)] ${
               actionDisabled
-                ? "cursor-not-allowed border border-[var(--border-strong)] bg-[var(--action-disabled-bg)] text-[var(--action-disabled-text)] shadow-none"
+                ? "cursor-not-allowed border border-[color:var(--border-strong)] bg-[color:var(--action-disabled-bg)] text-[color:var(--action-disabled-text)] shadow-none"
                 : actionTextTone === "light"
-                  ? "bg-[var(--action-primary)] text-[var(--text-inverse)]"
-                  : "bg-[var(--action-primary)] text-[var(--text-on-action)]"
+                  ? "bg-[color:var(--action-primary)] text-[color:var(--text-inverse)]"
+                  : "bg-[color:var(--action-primary)] text-[color:var(--text-on-action)]"
             }`}
             onClick={onAction}
             disabled={actionDisabled}
@@ -92,3 +92,5 @@ function MeetupProposalFooter({
 
 export { MeetupProposalFooter }
 export type { MeetupProposalFooterProps }
+
+

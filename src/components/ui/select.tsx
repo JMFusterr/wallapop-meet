@@ -27,12 +27,12 @@ type SelectProps = Omit<React.ComponentProps<"select">, "size" | "onChange"> & {
 }
 
 const selectBaseClass =
-  "w-full rounded-[var(--wm-radius-200)] border bg-[var(--wm-color-background-base)] pr-10 text-left text-[16px] leading-[1.4] text-[var(--wm-color-text-primary)] transition-colors duration-150 ease-out outline-none focus-visible:ring-2 focus-visible:ring-[var(--wm-color-border-focus)] focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+  "w-full rounded-[var(--wm-radius-200)] border bg-[color:var(--wm-color-background-base)] pr-10 text-left text-[length:var(--wm-size-16)] leading-[1.4] text-[color:var(--wm-color-text-primary)] transition-colors duration-150 ease-out outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--wm-color-border-focus)] focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
 
 const selectStateClass: Record<SelectState, string> = {
-  default: "border-[var(--wm-color-border-default)]",
+  default: "border-[color:var(--wm-color-border-default)]",
   error:
-    "border-2 border-[var(--wm-color-input-ring-error)] focus-visible:ring-[var(--wm-color-input-ring-error)]",
+    "border-2 border-[color:var(--wm-color-input-ring-error)] focus-visible:ring-[color:var(--wm-color-input-ring-error)]",
 }
 
 const selectSizeClass: Record<SelectSize, string> = {
@@ -41,9 +41,9 @@ const selectSizeClass: Record<SelectSize, string> = {
 }
 
 const helperTextClass =
-  "text-[12px] leading-[1.4] text-[var(--wm-color-text-secondary)]"
+  "text-[length:var(--wm-size-12)] leading-[1.4] text-[color:var(--wm-color-text-secondary)]"
 
-const errorTextClass = "text-[12px] leading-[1.4] text-[var(--wm-color-input-ring-error)]"
+const errorTextClass = "text-[length:var(--wm-size-12)] leading-[1.4] text-[color:var(--wm-color-input-ring-error)]"
 
 function extractOptionsFromChildren(children: React.ReactNode): SelectOption[] {
   return React.Children.toArray(children).flatMap((child) => {
@@ -173,7 +173,7 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         {label ? (
           <label
             htmlFor={resolvedId}
-            className="text-[14px] font-medium leading-[1.4] text-[var(--wm-color-text-primary)]"
+            className="text-[length:var(--wm-size-14)] font-medium leading-[1.4] text-[color:var(--wm-color-text-primary)]"
           >
             {label}
           </label>
@@ -197,12 +197,12 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
             )}
             onClick={() => setIsOpen((previous) => !previous)}
           >
-            <span className={cn(!selectedOption && "text-[var(--wm-color-text-secondary)]")}>
+            <span className={cn(!selectedOption && "text-[color:var(--wm-color-text-secondary)]")}>
               {selectedOption?.label ?? placeholder}
             </span>
           </button>
           <span
-            className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[var(--wm-color-text-secondary)]/70"
+            className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[color:var(--wm-color-text-secondary)]/70"
             aria-hidden="true"
           >
             <ChevronDown size={14} strokeWidth={1.8} />
@@ -213,7 +213,7 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
               role="listbox"
               aria-labelledby={resolvedId}
               className={cn(
-                "absolute z-50 w-full overflow-y-auto rounded-[var(--wm-radius-200)] border border-[var(--wm-color-border-default)] bg-[var(--wm-color-background-base)] py-1 shadow-[0_10px_24px_rgba(16,42,67,0.14)]",
+                "absolute z-50 w-full overflow-y-auto rounded-[var(--wm-radius-200)] border border-[color:var(--wm-color-border-default)] bg-[color:var(--wm-color-background-base)] py-1 shadow-[var(--wm-shadow-200)]",
                 dropdownDirection === "up" ? "bottom-full mb-1" : "top-full mt-1"
               )}
               style={dropdownHeightStyle}
@@ -229,9 +229,9 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
                       disabled={option.disabled}
                       onClick={() => handleSelectOption(option.value)}
                       className={cn(
-                        "flex h-9 w-full items-center px-3 text-left text-[13px] text-[var(--wm-color-text-primary)] transition-colors",
-                        isSelected && "bg-[var(--wm-color-background-surface)]",
-                        !isSelected && "hover:bg-[var(--wm-color-background-surface)]",
+                        "flex h-9 w-full items-center px-3 text-left text-[length:var(--wm-size-13)] text-[color:var(--wm-color-text-primary)] transition-colors",
+                        isSelected && "bg-[color:var(--wm-color-background-surface)]",
+                        !isSelected && "hover:bg-[color:var(--wm-color-background-surface)]",
                         option.disabled && "cursor-not-allowed opacity-40"
                       )}
                     >
@@ -269,3 +269,5 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
 Select.displayName = "Select"
 
 export { Select, type SelectOption }
+
+

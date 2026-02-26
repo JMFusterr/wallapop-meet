@@ -83,8 +83,8 @@ function ChatComposer({
           className={cn(
             "flex min-w-0 flex-1 items-center gap-1.5 rounded-full border-[0.8px] bg-white p-1.5 transition-colors",
             disabled
-              ? "border-[var(--wm-color-border-default)]"
-              : "border-[var(--wm-color-border-default)] focus-within:border-[#3DD2BA]"
+              ? "border-[color:var(--wm-color-border-default)]"
+              : "border-[color:var(--wm-color-border-default)] focus-within:border-[color:var(--action-primary)]"
           )}
         >
           <textarea
@@ -95,8 +95,8 @@ function ChatComposer({
             rows={1}
             placeholder={placeholder}
             className={cn(
-              "max-h-32 min-h-7 min-w-0 flex-1 resize-none border-none bg-transparent px-1 py-1.5 font-wallie text-[16px] leading-6 text-black outline-none",
-              "placeholder:text-[#90A4AE]"
+              "max-h-32 min-h-7 min-w-0 flex-1 resize-none border-none bg-transparent px-1 py-1.5 font-wallie text-[length:var(--wm-size-16)] leading-6 text-black outline-none",
+              "placeholder:text-[color:var(--text-meta)]"
             )}
             {...props}
           />
@@ -110,8 +110,8 @@ function ChatComposer({
               className={cn(
                 "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-[0.8px] transition-colors sm:h-10 sm:w-10",
                 disabled || secondaryActionDisabled
-                  ? "border-[#D9E1E5] bg-[#C9D3D8] text-white"
-                  : "border-[#3DD2BA] bg-[#3DD2BA] text-white"
+                  ? "border-[color:var(--border-soft)] bg-[color:var(--action-disabled-strong-bg)] text-[color:var(--text-inverse)]"
+                  : "border-[color:var(--action-primary)] bg-[color:var(--action-primary)] text-[color:var(--text-inverse)]"
               )}
             >
               <WallapopIcon name={secondaryActionIconName} size="small" />
@@ -132,11 +132,11 @@ function ChatComposer({
           className={cn(
             "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-[0.8px] transition-colors sm:h-10 sm:w-10",
             disabled || isEmpty
-              ? "border-[#D9E1E5] bg-[#C9D3D8] text-white"
-              : "border-[#3DD2BA] bg-[#3DD2BA] text-white"
+              ? "border-[color:var(--border-soft)] bg-[color:var(--action-disabled-strong-bg)] text-[color:var(--text-inverse)]"
+              : "border-[color:var(--action-primary)] bg-[color:var(--action-primary)] text-[color:var(--text-inverse)]"
           )}
         >
-          <WallapopIcon name="paper_plane" size="small" className="-translate-x-[1px] rotate-[12deg]" />
+          <WallapopIcon name="paper_plane" size="small" className="-translate-x-[var(--wm-size-1)] rotate-[12deg]" />
         </button>
       </div>
     </div>
@@ -144,3 +144,5 @@ function ChatComposer({
 }
 
 export { ChatComposer }
+
+

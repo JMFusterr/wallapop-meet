@@ -199,6 +199,15 @@ components
 - Componentes críticos (`button`, `card`, `banner`, `toast`, `modal`, `input`, `badge`) definidos por referencia a tokens.
 - Preparado para exportación futura a web/app sin romper naming.
 
+## Contrato tipado de consumo (implementado)
+
+- Archivo: `src/design-system/tokens.ts`.
+- Objetivo: exponer nombres de token semantico tipados para evitar strings sueltos en componentes.
+- API base:
+  - `TokenName`: union de keys semanticas soportadas.
+  - `tokenVar(token)`: retorna `var(--alias)`.
+  - `tokenVarArbitrary(token)`: retorna formato Tailwind arbitrario `[var(--alias)]`.
+
 ## Decisiones abiertas (para validar con diseño oficial)
 1. Nombre exacto y fallback de familia tipográfica oficial.
 2. Escala final de grises neutros.

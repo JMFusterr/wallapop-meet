@@ -139,6 +139,12 @@ Patrones mínimos:
 - Todos los estados de negocio tienen UI y CTA asociada.
 - Se cubren happy path y rutas de error/expiración.
 
+## Guardrails de implementación (vigente)
+
+- No introducir nuevos hardcodes visuales en `src`.
+- Auditoría obligatoria en CI/local con `npm run audit:design-system`.
+- Baseline versionado en `.design-system-audit-baseline.json`; solo se admite reducción o estabilidad, nunca regresión.
+
 ## Referencias implementadas (2026-02-21)
 - Workspace de chat con entrada de propuesta desde composer + overlay: `src/components/meetup/wallapop-chat-workspace.tsx`.
 - Mapa interactivo de seleccion de ubicacion: `src/components/meetup/meetup-location-map.tsx`.

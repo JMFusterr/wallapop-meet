@@ -11,7 +11,7 @@ const meta = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="w-[380px] overflow-hidden rounded-[18px] border border-[#E8ECEF] bg-white">
+      <div className="w-[var(--wm-size-380)] overflow-hidden rounded-[var(--wm-size-18)] border border-[color:var(--border-divider)] bg-white">
         <Story />
       </div>
     ),
@@ -55,3 +55,4 @@ export const Submit: Story = {
     actionDisabled: false,
   },
 }
+

@@ -1,0 +1,14 @@
+{
+    "ignoreFiles": [
+        "src/index.css",
+        "src/App.css"
+    ],
+    "ignorePathPrefixes": [
+        "src/assets/",
+        "src/stories/assets/"
+    ],
+    "ignoreLinePatterns": [
+        "https://",
+        "http://"
+    ]
+}

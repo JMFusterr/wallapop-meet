@@ -6,6 +6,8 @@ type ArrivalActionState = {
     message: string
 }
 
+type MeetupDayBannerVariant = "hidden" | "upcoming" | "in_window" | "expired"
+
 export function resolveArrivalActionState(
     meetup: MeetupMachine,
     currentTime: Date,
@@ -38,4 +40,21 @@ export function resolveArrivalActionState(
         message:
             "Acercate a menos de 100 metros del punto de encuentro para indicar que has llegado.",
     }
+}
+
+export function resolveMeetupDayBannerVariant(
+    meetup: MeetupMachine,
+    currentTime: Date
+): MeetupDayBannerVariant {
+    if (meetup.status === "EXPIRED") {
+        return "expired"
+    }
+
+    if (meetup.status !== "CONFIRMED" && meetup.status !== "ARRIVED") {
+        return "hidden"
+    }
+
+    return isWithinArrivalWindow(meetup.scheduledAt, currentTime)
+        ? "in_window"
+        : "upcoming"
 }

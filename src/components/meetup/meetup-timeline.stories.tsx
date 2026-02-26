@@ -12,7 +12,7 @@ const meta = {
     tags: ["autodocs"],
     decorators: [
         (Story) => (
-            <div className="w-full min-w-[320px] max-w-[560px] rounded-[12px] border border-[#D3DEE2] bg-white p-4">
+            <div className="w-full min-w-[var(--wm-size-320)] max-w-[var(--wm-size-560)] rounded-[var(--wm-size-12)] border border-[color:var(--border-strong)] bg-white p-4">
                 <Story />
             </div>
         ),
@@ -45,8 +45,8 @@ export const ByStatus: Story = {
     render: () => (
         <div className="space-y-3">
             {flowStatuses.map((status) => (
-                <div key={status} className="rounded-[8px] border border-[#E8ECEF] p-3">
-                    <p className="mb-2 font-wallie-fit text-[12px] text-[#6E8792]">
+                <div key={status} className="rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)] p-3">
+                    <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                         Estado: {status}
                     </p>
                     <MeetupTimeline currentStatus={status} />
@@ -55,3 +55,5 @@ export const ByStatus: Story = {
         </div>
     ),
 }
+
+

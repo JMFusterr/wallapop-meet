@@ -61,7 +61,7 @@ const meta = {
     tags: ["autodocs"],
     decorators: [
         (Story) => (
-            <div className="w-full min-w-[360px] max-w-[860px] bg-[var(--wm-color-background-surface)] p-4">
+            <div className="w-full min-w-[var(--wm-size-360)] max-w-[var(--wm-size-860)] bg-[color:var(--wm-color-background-surface)] p-4">
                 <Story />
             </div>
         ),
@@ -93,7 +93,7 @@ function CardHarness({
                 onError={setError}
             />
             {error ? (
-                <p className="rounded-[8px] bg-[#FDEBEC] px-3 py-2 font-wallie-fit text-[13px] text-[#A81F2D]">
+                <p className="rounded-[var(--wm-size-8)] bg-[color:var(--bg-surface)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-error)]">
                     {error}
                 </p>
             ) : null}
@@ -168,3 +168,5 @@ export const SellerNeutralClosureOption: Story = {
         />
     ),
 }
+
+

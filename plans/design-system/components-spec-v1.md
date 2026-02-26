@@ -503,6 +503,18 @@ Reglas:
 - Cada componente define propiedades, estados, tokens y regla de uso.
 - No hay ambigüedad entre uso de `badge`, `chip`, `banner` y `toast`.
 
+## Componentes base añadidos para evitar duplicación local
+
+- `IconButton` (`src/components/ui/icon-button.tsx`)
+  - Wrapper de `Button` para controles icon-only.
+  - `aria-label` obligatorio vía prop `label`.
+- `SelectableOption` (`src/components/ui/selectable-option.tsx`)
+  - Patrón reutilizable de opción seleccionable con estado visual `selected`.
+  - Unifica bordes y estado activo en flujos de propuesta.
+- `OverlayHeader` (`src/components/ui/overlay-header.tsx`)
+  - Cabecera reutilizable de overlays con título y cierre.
+  - Evita variaciones ad-hoc en headers de modal/sheet.
+
 ---
 
 ## Addendum v2 (2026-02-23) - Componentes y contratos para flujo completo por rol

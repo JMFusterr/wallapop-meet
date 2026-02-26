@@ -17,15 +17,15 @@ function MeetupWizardStepHeading({
         <button
           type="button"
           aria-label="Volver al paso anterior"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--bg-surface)] text-[var(--text-primary)]"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]"
           onClick={onBack}
         >
           <WallapopIcon name="arrow_left" size="small" />
         </button>
-        <span className="font-wallie-fit text-[13px] text-[var(--text-secondary)]">{caption}</span>
+        <span className="font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)]">{caption}</span>
       </div>
       {title ? (
-        <h3 className="font-wallie-chunky text-[20px] leading-[1.12] text-[var(--text-primary)] md:text-[22px]">
+        <h3 className="font-wallie-chunky text-[length:var(--wm-size-20)] leading-[1.12] text-[color:var(--text-primary)] md:text-[length:var(--wm-size-22)]">
           {title}
         </h3>
       ) : null}
@@ -35,3 +35,5 @@ function MeetupWizardStepHeading({
 
 export { MeetupWizardStepHeading }
 export type { MeetupWizardStepHeadingProps }
+
+

@@ -43,20 +43,20 @@ const stepClassName: Record<
     { dot: string; text: string }
 > = {
     pending: {
-        dot: "bg-[var(--border-strong)]",
-        text: "text-[var(--text-secondary)]",
+        dot: "bg-[color:var(--border-strong)]",
+        text: "text-[color:var(--text-secondary)]",
     },
     active: {
-        dot: "bg-[var(--action-primary)]",
-        text: "text-[var(--text-primary)]",
+        dot: "bg-[color:var(--action-primary)]",
+        text: "text-[color:var(--text-primary)]",
     },
     done: {
-        dot: "bg-[var(--text-primary)]",
-        text: "text-[var(--text-primary)]",
+        dot: "bg-[color:var(--text-primary)]",
+        text: "text-[color:var(--text-primary)]",
     },
     terminal: {
-        dot: "bg-[var(--feedback-error)]",
-        text: "text-[var(--text-primary)]",
+        dot: "bg-[color:var(--feedback-error)]",
+        text: "text-[color:var(--text-primary)]",
     },
 }
 
@@ -72,7 +72,7 @@ function MeetupTimeline({ currentStatus }: MeetupTimelineProps) {
                             aria-hidden="true"
                             className={`inline-block size-2.5 rounded-full ${styles.dot}`}
                         />
-                        <span className={`font-wallie-fit text-[13px] leading-5 ${styles.text}`}>
+                        <span className={`font-wallie-fit text-[length:var(--wm-size-13)] leading-5 ${styles.text}`}>
                             {step}
                         </span>
                     </li>
@@ -83,3 +83,5 @@ function MeetupTimeline({ currentStatus }: MeetupTimelineProps) {
 }
 
 export { MeetupTimeline }
+
+

@@ -11,7 +11,7 @@ const meta = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="w-full max-w-[360px] border border-[var(--wm-color-border-default)] bg-white">
+      <div className="w-full max-w-[var(--wm-size-360)] border border-[color:var(--wm-color-border-default)] bg-white">
         <Story />
       </div>
     ),
@@ -67,3 +67,4 @@ export const WithUnreadBadge: Story = {
     unreadCount: 2,
   },
 }
+

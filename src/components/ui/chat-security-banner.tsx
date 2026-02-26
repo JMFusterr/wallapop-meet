@@ -26,17 +26,17 @@ function ChatSecurityBanner({
     >
       <div className="flex items-center gap-2">
         {showIcon ? (
-          <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-[8px] bg-[#F0F3F5]">
-            <WallapopIcon name="shield" size="small" className="text-[#13C1AC]" />
+          <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-[var(--wm-size-8)] bg-[color:var(--bg-surface)]">
+            <WallapopIcon name="shield" size="small" className="text-[color:var(--action-primary)]" />
           </span>
         ) : null}
-        <p className="font-wallie text-[12px] leading-[18px] text-[#212529]">
+        <p className="font-wallie text-[length:var(--wm-size-12)] leading-[var(--wm-size-18)] text-[color:var(--text-security)]">
           {message}{" "}
           {linkText ? (
             <button
               type="button"
               onClick={onLinkClick}
-              className="font-wallie-fit text-[12px] leading-4 text-[#038673] underline"
+              className="font-wallie-fit text-[length:var(--wm-size-12)] leading-4 text-[color:var(--action-link)] underline"
             >
               {linkText}
             </button>
@@ -48,3 +48,5 @@ function ChatSecurityBanner({
 }
 
 export { ChatSecurityBanner }
+
+

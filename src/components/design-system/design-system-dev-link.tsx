@@ -8,7 +8,7 @@ function DesignSystemDevLink() {
     return (
         <button
             type="button"
-            className="fixed right-5 bottom-4 z-50 hidden text-xs text-[#253238]/45 underline decoration-[#253238]/25 underline-offset-2 transition-colors hover:text-[#253238]/70 lg:block"
+            className="fixed right-5 bottom-4 z-50 hidden text-xs text-[color:var(--text-primary)]/45 underline decoration-[var(--text-primary)]/25 underline-offset-2 transition-colors hover:text-[color:var(--text-primary)]/70 lg:block"
             onClick={() => navigateTo("/design-system")}
         >
             Design System
@@ -17,3 +17,4 @@ function DesignSystemDevLink() {
 }
 
 export { DesignSystemDevLink }
+

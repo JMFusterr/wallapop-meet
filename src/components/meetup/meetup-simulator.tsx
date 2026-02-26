@@ -31,13 +31,13 @@ function MeetupSimulator() {
     const [lastError, setLastError] = React.useState<string>("")
 
     return (
-        <section className="w-full rounded-[16px] border border-[var(--wm-color-border-default)] bg-white p-5 shadow-[0_1px_2px_rgba(37,50,56,0.1)]">
+        <section className="w-full rounded-[var(--wm-size-16)] border border-[color:var(--wm-color-border-default)] bg-white p-5 shadow-[var(--wm-shadow-100)]">
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                    <p className="font-wallie-fit text-[12px] text-[#6E8792]">
+                    <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                         Wallapop Meet Demo
                     </p>
-                    <h1 className="font-wallie-chunky text-[24px] leading-8 text-[#253238]">
+                    <h1 className="font-wallie-chunky text-[length:var(--wm-size-24)] leading-8 text-[color:var(--text-primary)]">
                         Flujo de meetup
                     </h1>
                 </div>
@@ -102,7 +102,7 @@ function MeetupSimulator() {
                 </Button>
             </div>
 
-            <p className="mt-3 font-wallie-fit text-[13px] text-[#4A5A63]">
+            <p className="mt-3 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)]">
                 Hora simulada: {currentTime.toLocaleString()}
             </p>
 
@@ -117,7 +117,7 @@ function MeetupSimulator() {
             </div>
 
             {lastError ? (
-                <p className="mt-3 rounded-[8px] bg-[#FDEBEC] px-3 py-2 font-wallie-fit text-[13px] text-[#A81F2D]">
+                <p className="mt-3 rounded-[var(--wm-size-8)] bg-[color:var(--bg-surface)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-error)]">
                     {lastError}
                 </p>
             ) : null}
@@ -126,3 +126,5 @@ function MeetupSimulator() {
 }
 
 export { MeetupSimulator }
+
+

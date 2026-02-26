@@ -20,7 +20,8 @@ Fuera de alcance v1:
 Orden oficial de precedencia:
 1. `styles.json` (canon de tokens y contratos base de componentes).
 2. `src/index.css` (capa runtime de variables CSS y aliases de tema).
-3. Implementacion de componentes en `src/components/*` (referencia de estado actual, no canon si contradice tokens).
+3. `src/design-system/tokens.ts` (contrato tipado de consumo de tokens semanticos en TS/TSX).
+4. Implementacion de componentes en `src/components/*` (referencia de estado actual, no canon si contradice tokens).
 
 Regla de conflicto:
 - Si existe diferencia entre implementacion y token, **prevalece el token**.
@@ -123,7 +124,16 @@ En codigo nuevo esta prohibido:
 - Sombras y opacidades fuera del sistema
 
 Excepciones:
-- Ninguna en componentes de producto. Solo permitido en prototipos aislados no productivos.
+- Solo en capa canonica de token (`styles.json`, `src/index.css`) y casos tecnicos documentados.
+- Cualquier excepcion debe registrarse en baseline del auditor DS.
+
+### 4.5 Guardrails automáticos (obligatorio)
+
+- Script de auditoria: `scripts/audit-design-system.mjs`.
+- Configuracion de excepciones: `.design-system-audit.config.json`.
+- Baseline versionado: `.design-system-audit-baseline.json`.
+- Integracion obligatoria en lint: `npm run lint` ejecuta auditoria DS antes de ESLint.
+- Regla operativa: no se aceptan nuevas incidencias fuera del baseline.
 
 ## 5. Patrones de componentes (resumen operacional)
 
@@ -296,6 +306,7 @@ Permitido:
 ### 9.2 Checklist obligatorio para PRs UI
 
 - [ ] No hay hex/px/ms hardcodeados para estilos de producto.
+- [ ] `npm run audit:design-system` sin incidencias nuevas.
 - [ ] Se reutilizan componentes base (`Button`, `Input`, etc.).
 - [ ] Se cubren estados `disabled`, `loading`, `error`.
 - [ ] Contraste y foco cumplen reglas minimas de a11y.

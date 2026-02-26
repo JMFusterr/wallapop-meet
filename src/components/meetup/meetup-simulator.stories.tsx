@@ -11,7 +11,7 @@ const meta = {
     tags: ["autodocs"],
     decorators: [
         (Story) => (
-            <div className="w-full min-w-[360px] max-w-[920px] bg-[var(--wm-color-background-surface)] p-4">
+            <div className="w-full min-w-[var(--wm-size-360)] max-w-[var(--wm-size-920)] bg-[color:var(--wm-color-background-surface)] p-4">
                 <Story />
             </div>
         ),
@@ -22,3 +22,4 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Playground: Story = {}
+

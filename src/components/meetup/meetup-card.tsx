@@ -174,7 +174,7 @@ function createMiniMapMarkerIcon(markerColor: string): L.DivIcon {
         className: "",
         html: `
         <span style="display:inline-flex;flex-direction:column;align-items:center;">
-            <span style="display:flex;min-width:34px;height:26px;align-items:center;justify-content:center;border-radius:999px;background:${markerColor};border:2px solid var(--text-inverse);box-shadow:0 4px 10px rgba(37,50,56,0.24);padding:0 8px;">
+            <span style="display:flex;min-width:34px;height:26px;align-items:center;justify-content:center;border-radius:999px;background:${markerColor};border:2px solid var(--text-inverse);box-shadow:var(--wm-shadow-marker);padding:0 8px;">
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="m11 17 2 2a1 1 0 1 0 3-3"></path>
                     <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path>
@@ -209,7 +209,7 @@ function paymentMethodLabel(method: MeetupPaymentMethod): string {
 
 function PaymentMethodIcon({ method }: { method: MeetupPaymentMethod | undefined }) {
     void method
-    return <Banknote size={16} className="text-[var(--text-primary)]" />
+    return <Banknote size={16} className="text-[color:var(--text-primary)]" />
 }
 
 function MeetupCard({
@@ -267,11 +267,11 @@ function MeetupCard({
 
     const actions: CardAction[] = []
     const PRIMARY_ACTION_CLASS =
-        "h-10 w-full font-wallie-chunky text-[16px]"
+        "h-10 w-full font-wallie-chunky text-[length:var(--wm-size-16)]"
     const OUTLINE_ACTION_CLASS =
-        "h-10 w-full rounded-[999px] border-[var(--action-primary-hover)] bg-[var(--bg-base)] font-wallie-chunky text-[16px] text-[var(--action-primary-hover)] hover:bg-[var(--bg-surface)]"
+        "h-10 w-full rounded-[var(--wm-size-999)] border-[color:var(--action-primary-hover)] bg-[color:var(--bg-base)] font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--action-primary-hover)] hover:bg-[color:var(--bg-surface)]"
     const TEXT_ACTION_CLASS =
-        "h-auto border-transparent bg-transparent px-0 py-1 font-wallie-chunky text-[16px] text-[var(--text-secondary)] underline underline-offset-2 hover:bg-transparent hover:text-[var(--text-primary)]"
+        "h-auto border-transparent bg-transparent px-0 py-1 font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-secondary)] underline underline-offset-2 hover:bg-transparent hover:text-[color:var(--text-primary)]"
 
     const runCancel = () => {
         setIsCancelModalOpen(true)
@@ -337,7 +337,7 @@ function MeetupCard({
                 }),
             disabled: actorRole !== "BUYER",
             className:
-                `${PRIMARY_ACTION_CLASS} rounded-[999px] bg-[var(--action-primary)] text-[var(--text-on-action)] shadow-[inset_0_-2px_0_rgba(0,0,0,0.08)]`,
+                `${PRIMARY_ACTION_CLASS} rounded-[var(--wm-size-999)] bg-[color:var(--action-primary)] text-[color:var(--text-on-action)] shadow-[var(--wm-shadow-inset-cta)]`,
             fullWidth: true,
         })
         actions.push({
@@ -531,10 +531,10 @@ function MeetupCard({
         : null
     return (
         <>
-            <section className="relative w-full max-w-[360px] rounded-[20px] border border-[var(--border-divider)] bg-[var(--bg-base)] px-4 pb-3 pt-3">
+            <section className="relative w-full max-w-[var(--wm-size-360)] rounded-[var(--wm-size-20)] border border-[color:var(--border-divider)] bg-[color:var(--bg-base)] px-4 pb-3 pt-3">
             <button
                 type="button"
-                className="wm-mini-map relative mb-3 h-[88px] w-full overflow-hidden rounded-[14px] border border-[var(--border-strong)] bg-[var(--bg-accent-subtle)] text-left"
+                className="wm-mini-map relative mb-3 h-[var(--wm-size-88)] w-full overflow-hidden rounded-[var(--wm-size-14)] border border-[color:var(--border-strong)] bg-[color:var(--bg-accent-subtle)] text-left"
                 onClick={onOpenMapPreview}
             >
                 {hasMapCoordinates && mapThumbnailPosition ? (
@@ -559,11 +559,11 @@ function MeetupCard({
             </button>
 
             <div className="flex items-center gap-2.5">
-                <p className="font-wallie-chunky text-[17px] leading-[1.1] text-[var(--text-primary)]">
+                <p className="font-wallie-chunky text-[length:var(--wm-size-17)] leading-[1.1] text-[color:var(--text-primary)]">
                     {title}
                 </p>
                 <span
-                    className="inline-flex rounded-full border px-2.5 py-1 font-wallie-fit text-[11px] leading-[1]"
+                    className="inline-flex rounded-full border px-2.5 py-1 font-wallie-fit text-[length:var(--wm-size-11)] leading-[1]"
                     style={
                         isPendingActionStatus
                             ? meetupStatusColors("pending")
@@ -576,28 +576,28 @@ function MeetupCard({
 
             <dl className="mt-3 space-y-2.5">
                 <div className="flex items-center gap-2.5">
-                    <dt className="inline-flex items-center justify-center text-[var(--text-primary)]">
+                    <dt className="inline-flex items-center justify-center text-[color:var(--text-primary)]">
                         <WallapopIcon name="calendar" size={14} />
                     </dt>
-                    <dd className="font-wallie-fit text-[13px] text-[var(--text-primary)]">
+                    <dd className="font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-primary)]">
                         {formatScheduledAt(meetup.scheduledAt)}
                     </dd>
                 </div>
                 <div className="flex items-center gap-2.5">
-                    <dt className="inline-flex items-center justify-center text-[var(--text-primary)]">
+                    <dt className="inline-flex items-center justify-center text-[color:var(--text-primary)]">
                         <MapPin size={14} />
                     </dt>
-                    <dd className="font-wallie-fit text-[13px] text-[var(--text-primary)]">
+                    <dd className="font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-primary)]">
                         {meetup.proposedLocation || "Calle sin definir"}
                     </dd>
                 </div>
                 <div className="flex items-center gap-2.5">
-                    <dt className="inline-flex items-center justify-center text-[var(--text-primary)]">
+                    <dt className="inline-flex items-center justify-center text-[color:var(--text-primary)]">
                         <PaymentMethodIcon method={meetup.proposedPaymentMethod} />
                     </dt>
-                    <dd className="font-wallie-fit text-[13px] text-[var(--text-primary)]">
+                    <dd className="font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-primary)]">
                         {paymentMethodValue} {" \u00B7 "}
-                        <span className="font-wallie-chunky text-[var(--text-primary)]">
+                        <span className="font-wallie-chunky text-[color:var(--text-primary)]">
                             {formattedPrice}
                         </span>
                     </dd>
@@ -605,7 +605,7 @@ function MeetupCard({
             </dl>
 
             {meetup.status === "CONFIRMED" && isCalendarFallbackWindow ? (
-                <p className="mt-3 rounded-[12px] border border-[var(--border-strong)] bg-[var(--bg-accent-subtle)] px-3 py-2 font-wallie-fit text-[12px] text-[var(--action-primary-pressed)]">
+                <p className="mt-3 rounded-[var(--wm-size-12)] border border-[color:var(--border-strong)] bg-[color:var(--bg-accent-subtle)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--action-primary-pressed)]">
                     {arrivalAction.message}
                 </p>
             ) : null}
@@ -641,22 +641,22 @@ function MeetupCard({
                 </div>
             ) : null}
             {sentAt ? (
-                <p className="absolute bottom-3 right-4 text-right font-wallie-fit text-[12px] text-[var(--text-secondary)]">
+                <p className="absolute bottom-3 right-4 text-right font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                     {formatMessageTime(sentAt)}
                 </p>
             ) : null}
             </section>
             {isCancelModalOpen ? (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[color:var(--overlay-scrim)] px-4">
-                    <div className="w-full max-w-[420px] rounded-[16px] bg-[var(--bg-base)] p-4 shadow-[0_8px_30px_rgba(37,50,56,0.22)]">
-                        <h3 className="font-wallie-chunky text-[18px] text-[var(--text-primary)]">
+                    <div className="w-full max-w-[var(--wm-size-420)] rounded-[var(--wm-size-16)] bg-[color:var(--bg-base)] p-4 shadow-[var(--wm-shadow-300)]">
+                        <h3 className="font-wallie-chunky text-[length:var(--wm-size-18)] text-[color:var(--text-primary)]">
                             Seguro que quieres cancelar o rechazar la quedada?
                         </h3>
-                        <p className="mt-2 font-wallie-fit text-[14px] text-[var(--text-secondary)]">
+                        <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
                             Esta accion no se puede deshacer.
                         </p>
                         {isRedZoneCancellation ? (
-                            <p className="mt-2 rounded-[12px] border border-[var(--feedback-warning)] bg-[var(--bg-surface)] px-3 py-2 font-wallie-fit text-[13px] text-[var(--feedback-warning)]">
+                            <p className="mt-2 rounded-[var(--wm-size-12)] border border-[color:var(--feedback-warning)] bg-[color:var(--bg-warning-subtle)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-warning)]">
                                 Estas en los ultimos 30 min y esto afectara a tu fiabilidad.
                             </p>
                         ) : null}
@@ -686,6 +686,8 @@ function MeetupCard({
 }
 
 export { MeetupCard }
+
+
 
 
 

@@ -11,7 +11,7 @@ const meta = {
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="w-full max-w-[680px] bg-[var(--wm-color-background-surface)] p-3">
+      <div className="w-full max-w-[var(--wm-size-680)] bg-[color:var(--wm-color-background-surface)] p-3">
         <Story />
       </div>
     ),
@@ -46,3 +46,4 @@ export const WithSecondaryAction: Story = {
     secondaryActionIconName: "calendar",
   },
 }
+
