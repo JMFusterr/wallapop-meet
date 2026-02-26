@@ -42,7 +42,7 @@ function MeetupProposalHeader({
         <button
           type="button"
           onClick={onHelp}
-          className="font-wallie-chunky text-[length:var(--wm-size-15)] text-[color:var(--action-primary)] md:text-[length:var(--wm-size-16)]"
+          className="font-wallie-chunky text-[length:var(--wm-size-15)] text-[color:var(--action-link)] hover:text-[color:var(--action-primary-pressed)] active:text-[color:var(--action-primary-pressed)] md:text-[length:var(--wm-size-16)]"
         >
           {helpLabel}
         </button>

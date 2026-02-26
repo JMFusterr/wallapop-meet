@@ -117,24 +117,19 @@ function ChatProductCard({
                     <div className="flex items-center gap-3">
                         <Button
                             type="button"
-                            variant="inline_action"
+                            variant={isReservedListing ? "status_reserve_outline" : "status_reserve_solid"}
                             size="md"
                             onClick={onReserve}
-                            className={cn(
-                                "h-8 flex-1 rounded-full px-4 font-wallie-chunky text-[length:var(--wm-size-13)]",
-                                isReservedListing
-                                    ? "border-[color:var(--status-reserved)] bg-[color:var(--bg-base)] text-[color:var(--status-reserved)]"
-                                    : "border-[color:var(--status-reserved)] bg-[color:var(--status-reserved)] text-[color:var(--text-inverse)]"
-                            )}
+                            className="h-8 flex-1 px-4"
                         >
                             {isReservedListing ? "Anular reserva" : reserveLabel}
                         </Button>
                         <Button
                             type="button"
-                            variant="inline_action"
+                            variant="status_sold_solid"
                             size="md"
                             onClick={onSold}
-                            className="h-8 flex-1 rounded-full bg-[color:var(--status-sold)] px-4 font-wallie-chunky text-[length:var(--wm-size-13)] text-[color:var(--text-inverse)]"
+                            className="h-8 flex-1 px-4"
                         >
                             {soldLabel}
                         </Button>

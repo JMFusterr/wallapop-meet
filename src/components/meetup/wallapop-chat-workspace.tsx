@@ -1511,7 +1511,7 @@ function MeetupProposalOverlay({
                                             <span className="ml-1">en este punto seguro.</span>
                                         </p>
                                     ) : (
-                                        <p className="mt-2 inline-flex w-fit rounded-[var(--wm-size-8)] bg-[color:var(--bg-warning-subtle)] px-2 py-1 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-warning)]">
+                                        <p className="mt-2 inline-flex w-fit rounded-[var(--wm-size-8)] bg-[color:var(--bg-warning-subtle)] px-2 py-1 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-warning-strong)]">
                                             Este punto no es un punto seguro verificado.
                                         </p>
                                     )}
@@ -1692,7 +1692,7 @@ function MeetupProposalOverlay({
                                         showCharCounter={false}
                                     />
                                     {shouldShowDac7Alert ? (
-                                        <p className="rounded-[var(--wm-size-8)] bg-[color:var(--bg-surface)] px-2 py-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-warning)]">
+                                        <p className="rounded-[var(--wm-size-8)] bg-[color:var(--bg-warning-subtle)] px-2 py-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-warning-strong)]">
                                             {priceInputAlertText}{" "}
                                             <a
                                                 href="https://ayuda.wallapop.com/hc/es-es/articles/19093732048785--Qu%C3%A9-es-DAC7-y-a-que-vendedores-de-Wallapop-les-afecta"

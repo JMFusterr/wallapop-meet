@@ -16,6 +16,12 @@ const buttonVariants = cva(
         tab: "rounded-[var(--wm-size-999)] border-transparent bg-transparent px-4 font-wallie-chunky text-[length:var(--wm-size-16)] leading-6 text-[color:var(--text-primary)] transition-[color,background-color] duration-150 ease-out hover:bg-[color:var(--bg-surface)] active:bg-[color:var(--bg-accent-subtle)] data-[selected=true]:bg-[color:var(--text-primary)] data-[selected=true]:text-[color:var(--text-inverse)] aria-selected:bg-[color:var(--text-primary)] aria-selected:text-[color:var(--text-inverse)] disabled:bg-transparent disabled:text-[color:var(--action-disabled-text)] disabled:opacity-100",
         inline_action:
           "rounded-[var(--wm-size-25)] border-transparent bg-[color:var(--action-primary)] font-wallie text-[length:var(--wm-size-14)] leading-[var(--wm-size-21)] text-[color:var(--text-on-action)] hover:bg-[color:var(--action-primary-hover)] active:bg-[color:var(--action-primary-pressed)]",
+        status_reserve_solid:
+          "rounded-[var(--wm-size-25)] border-[color:var(--status-reserved)] bg-[color:var(--status-reserved)] font-wallie-chunky text-[length:var(--wm-size-13)] text-[color:var(--text-inverse)] hover:border-[color:var(--status-reserved-hover)] hover:bg-[color:var(--status-reserved-hover)] active:border-[color:var(--status-reserved-pressed)] active:bg-[color:var(--status-reserved-pressed)]",
+        status_reserve_outline:
+          "rounded-[var(--wm-size-25)] border border-[color:var(--status-reserved)] bg-[color:var(--bg-base)] font-wallie-chunky text-[length:var(--wm-size-13)] text-[color:var(--status-reserved)] hover:bg-[color:var(--status-reserved-subtle)] active:bg-[color:var(--status-reserved-subtle-strong)]",
+        status_sold_solid:
+          "rounded-[var(--wm-size-25)] border-[color:var(--status-sold)] bg-[color:var(--status-sold)] font-wallie-chunky text-[length:var(--wm-size-13)] text-[color:var(--text-inverse)] hover:border-[color:var(--status-sold-hover)] hover:bg-[color:var(--status-sold-hover)] active:border-[color:var(--status-sold-pressed)] active:bg-[color:var(--status-sold-pressed)]",
         icon: "rounded-full border-transparent bg-[color:var(--bg-surface)] text-[color:var(--text-primary)] shadow-[var(--wm-shadow-200)] hover:brightness-[0.98] active:brightness-95",
         menu_close:
           "rounded-[var(--wm-size-12)] border-transparent bg-[color:var(--bg-base)] font-wallie text-[length:var(--wm-size-16)] leading-6 text-[color:var(--text-primary)] hover:bg-[color:var(--bg-surface)] active:bg-[color:var(--border-divider)]",
