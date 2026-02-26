@@ -316,7 +316,7 @@ function ProposalSelectionIndicator({ selected }: { selected: boolean }) {
     return (
         <span
             className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white ${
-                selected ? "border-[8px] border-[#253238]" : "border-2 border-[#6E8792]"
+                selected ? "border-[var(--wm-size-8)] border-[color:var(--text-primary)]" : "border-2 border-[color:var(--text-secondary)]"
             }`}
             aria-hidden
         />
@@ -457,8 +457,8 @@ function contrastRatio(background: string, foreground: string): number {
 }
 
 function getContrastTextHint(background: string): { label: "Texto Blanco" | "Texto Oscuro"; color: string } {
-    const white = "#FFFFFF"
-    const dark = "#253238"
+    const white = "var(--text-inverse)"
+    const dark = "var(--text-primary)"
     const whiteRatio = contrastRatio(background, white)
     const darkRatio = contrastRatio(background, dark)
 
@@ -610,10 +610,10 @@ function DesignSystemPage() {
     const now = new Date()
 
     return (
-        <main className="min-h-dvh bg-[#F5F7F8] text-[#253238]">
-            <div className="mx-auto flex w-full max-w-[1400px] gap-8 px-6 py-8">
-                <aside className="sticky top-6 hidden h-[calc(100dvh-48px)] w-72 flex-col rounded-[12px] border border-[#D3DEE2] bg-white p-4 lg:flex">
-                    <div className="mb-4 border-b border-[#E8ECEF] pb-3">
+        <main className="min-h-dvh bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
+            <div className="mx-auto flex w-full max-w-[var(--wm-size-1400)] gap-8 px-6 py-8">
+                <aside className="sticky top-6 hidden h-[calc(100dvh-48px)] w-72 flex-col rounded-[var(--wm-size-12)] border border-[color:var(--border-strong)] bg-white p-4 lg:flex">
+                    <div className="mb-4 border-b border-[color:var(--border-divider)] pb-3">
                         <div className="flex items-center gap-3">
                             <img
                                 src={wallapopLogoUrl}
@@ -622,8 +622,8 @@ function DesignSystemPage() {
                                 loading="lazy"
                             />
                             <div>
-                                <p className="font-wallie-chunky text-[18px] leading-6">Wallapop Meet</p>
-                                <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Living Design System</p>
+                                <p className="font-wallie-chunky text-[length:var(--wm-size-18)] leading-6">Wallapop Meet</p>
+                                <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Living Design System</p>
                             </div>
                         </div>
                     </div>
@@ -632,7 +632,7 @@ function DesignSystemPage() {
                             <a
                                 key={entry.id}
                                 href={`#${entry.id}`}
-                                className="block rounded-[8px] px-3 py-2 font-wallie-fit text-[13px] text-[#4A5A63] transition-colors hover:bg-[#E9FAF7] hover:text-[#253238]"
+                                className="block rounded-[var(--wm-size-8)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)] transition-colors hover:bg-[color:var(--bg-accent-subtle)] hover:text-[color:var(--text-primary)]"
                             >
                                 {entry.label}
                             </a>
@@ -646,22 +646,22 @@ function DesignSystemPage() {
                 </aside>
 
                 <div className="min-w-0 flex-1 space-y-10">
-                    <header className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <p className="font-wallie-fit text-[12px] uppercase tracking-[0.08em] text-[#4A5A63]">
+                    <header className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
+                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] uppercase tracking-[0.08em] text-[color:var(--text-secondary)]">
                             Documentacion viva
                         </p>
-                        <h1 className="mt-1 font-wallie-chunky text-[34px] leading-[1.1] text-[#253238]">
+                        <h1 className="mt-1 font-wallie-chunky text-[length:var(--wm-size-34)] leading-[1.1] text-[color:var(--text-primary)]">
                             Design System Viewer
                         </h1>
-                        <p className="mt-3 max-w-[65ch] font-wallie-fit text-[15px] leading-6 text-[#4A5A63]">
+                        <p className="mt-3 max-w-[65ch] font-wallie-fit text-[length:var(--wm-size-15)] leading-6 text-[color:var(--text-secondary)]">
                             Esta pagina consume tokens de <code>styles.json</code> para documentar foundations,
                             componentes base y patrones de producto en un unico portal operativo.
                         </p>
                     </header>
 
-                    <section id="foundations-color" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[24px]">Color</h2>
-                        <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                    <section id="foundations-color" className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
+                        <h2 className="font-wallie-chunky text-[length:var(--wm-size-24)]">Color</h2>
+                        <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
                             Paletas oficiales en escala 50-900.
                         </p>
                         <div className="mt-6 space-y-6">
@@ -674,24 +674,24 @@ function DesignSystemPage() {
                                 { title: "Neutral Scale", items: neutralScale },
                             ].map((group) => (
                                 <div key={group.title}>
-                                    <h4 className="mb-3 font-wallie-chunky text-[17px]">{group.title}</h4>
-                                    <div className="overflow-x-auto rounded-[10px] border border-[#E8ECEF] p-2">
+                                    <h4 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-17)]">{group.title}</h4>
+                                    <div className="overflow-x-auto rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-2">
                                         <div className="flex min-w-max gap-2">
                                         {group.items.map((item) => {
                                             const contrastHint = getContrastTextHint(item.value)
                                             return (
-                                            <article key={item.tokenPath} className="w-[110px] shrink-0 overflow-hidden rounded-[8px] border border-[#E8ECEF]">
+                                            <article key={item.tokenPath} className="w-[var(--wm-size-110)] shrink-0 overflow-hidden rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)]">
                                                 <div className="h-14 w-full" style={{ background: item.value }} />
                                                 <div className="px-2 py-1.5">
-                                                    <p className="font-wallie-fit text-[11px] text-[#253238]">
+                                                    <p className="font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-primary)]">
                                                         {item.tokenPath.split(".").pop()}
                                                     </p>
-                                                    <p className="font-wallie-fit text-[11px] text-[#4A5A63]">{item.value}</p>
+                                                    <p className="font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{item.value}</p>
                                                     <span
-                                                        className="mt-1 inline-flex rounded-full border px-1.5 py-0.5 font-wallie-fit text-[10px] leading-[1]"
+                                                        className="mt-1 inline-flex rounded-full border px-1.5 py-0.5 font-wallie-fit text-[length:var(--wm-size-10)] leading-[1]"
                                                         style={{
                                                             backgroundColor: contrastHint.color,
-                                                            color: contrastHint.color === "#FFFFFF" ? "#253238" : "#FFFFFF",
+                                                            color: contrastHint.color === "var(--text-inverse)" ? "var(--text-primary)" : "var(--text-inverse)",
                                                             borderColor: contrastHint.color,
                                                         }}
                                                     >
@@ -708,41 +708,41 @@ function DesignSystemPage() {
                         </div>
                     </section>
 
-                    <section id="foundations-semantic-colors" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[24px]">Semantic Colors</h2>
-                        <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                    <section id="foundations-semantic-colors" className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
+                        <h2 className="font-wallie-chunky text-[length:var(--wm-size-24)]">Semantic Colors</h2>
+                        <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
                             Copia directa de alias oficiales: una variable CSS corta y una raiz unica para Tailwind.
                         </p>
                         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                             {semanticColorItems.map((item) => (
-                                <article key={item.aliasVar} className="rounded-[10px] border border-[#E8ECEF] p-3">
-                                    <div className="h-12 rounded-[8px] border border-[#E8ECEF]" style={{ backgroundColor: item.value }} />
-                                    <p className="mt-2 font-wallie-chunky text-[14px] text-[#253238]">{item.name}</p>
-                                    <p className="mt-1 font-wallie-fit text-[12px] text-[#4A5A63]">{item.description}</p>
-                                    <p className="mt-2 font-mono text-[11px] text-[#253238]">{`CSS: var(${item.aliasVar})`}</p>
-                                    <p className="font-mono text-[11px] text-[#4A5A63]">{`Tailwind: text-/bg-/border-${item.aliasTailwindRoot}`}</p>
-                                    <p className="mt-1 font-wallie-fit text-[11px] text-[#4A5A63]">{item.value}</p>
+                                <article key={item.aliasVar} className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
+                                    <div className="h-12 rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)]" style={{ backgroundColor: item.value }} />
+                                    <p className="mt-2 font-wallie-chunky text-[length:var(--wm-size-14)] text-[color:var(--text-primary)]">{item.name}</p>
+                                    <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{item.description}</p>
+                                    <p className="mt-2 font-mono text-[length:var(--wm-size-11)] text-[color:var(--text-primary)]">{`CSS: var(${item.aliasVar})`}</p>
+                                    <p className="font-mono text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{`Tailwind: text-/bg-/border-${item.aliasTailwindRoot}`}</p>
+                                    <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{item.value}</p>
                                 </article>
                             ))}
                         </div>
                     </section>
 
-                    <section id="foundations-typography" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[24px]">Typography</h2>
-                        <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                    <section id="foundations-typography" className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
+                        <h2 className="font-wallie-chunky text-[length:var(--wm-size-24)]">Typography</h2>
+                        <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
                             Guia tipografica propuesta para Wallapop Meet basada en proporciones reales del producto. Familia principal: <code>{fontPrimary}</code>, fallbacks: <code>{fontFallback}</code>.
                         </p>
                         <div className="mt-5 space-y-4">
-                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
                                 <div className="grid gap-4 md:grid-cols-[190px_1fr] md:items-start">
                                     <div>
-                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Display / Hero</p>
-                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">20px · LH 1.4</p>
-                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Peso 700</p>
+                                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Display / Hero</p>
+                                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">20px · LH 1.4</p>
+                                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Peso 700</p>
                                     </div>
                                     <div>
                                         <p
-                                            className="text-[#253238]"
+                                            className="text-[color:var(--text-primary)]"
                                             style={{
                                                 fontFamily: fontPrimary,
                                                 fontSize: size500,
@@ -752,22 +752,22 @@ function DesignSystemPage() {
                                         >
                                             Quedada confirmada con Laura M.
                                         </p>
-                                        <p className="mt-2 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                        <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)]">
                                             Para encabezados de bloque, títulos de card y puntos de entrada principales.
                                         </p>
                                     </div>
                                 </div>
                             </article>
-                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
                                 <div className="grid gap-4 md:grid-cols-[190px_1fr] md:items-start">
                                     <div>
-                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Section / Heading</p>
-                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">16px · LH 1.5</p>
-                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Peso 600</p>
+                                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Section / Heading</p>
+                                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">16px · LH 1.5</p>
+                                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Peso 600</p>
                                     </div>
                                     <div>
                                         <p
-                                            className="text-[#253238]"
+                                            className="text-[color:var(--text-primary)]"
                                             style={{
                                                 fontFamily: fontPrimary,
                                                 fontSize: size300,
@@ -777,22 +777,22 @@ function DesignSystemPage() {
                                         >
                                             Punto de encuentro y metodo de pago
                                         </p>
-                                        <p className="mt-2 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                        <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)]">
                                             Para subtitulos, grupos de formulario y jerarquias internas de pantalla.
                                         </p>
                                     </div>
                                 </div>
                             </article>
-                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
                                 <div className="grid gap-4 md:grid-cols-[190px_1fr] md:items-start">
                                     <div>
-                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Body / Reading</p>
-                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">14px · LH 1.5</p>
-                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Peso 400</p>
+                                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Body / Reading</p>
+                                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">14px · LH 1.5</p>
+                                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Peso 400</p>
                                     </div>
                                     <div>
                                         <p
-                                            className="text-[#253238]"
+                                            className="text-[color:var(--text-primary)]"
                                             style={{
                                                 fontFamily: fontPrimary,
                                                 fontSize: "14px",
@@ -802,22 +802,22 @@ function DesignSystemPage() {
                                         >
                                             Nos vemos a las 18:30 en la entrada principal. Lleva efectivo o Bizum.
                                         </p>
-                                        <p className="mt-2 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                        <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)]">
                                             Tamaño base para contenido de conversación, mensajes y descripción funcional.
                                         </p>
                                     </div>
                                 </div>
                             </article>
-                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
                                 <div className="grid gap-4 md:grid-cols-[190px_1fr] md:items-start">
                                     <div>
-                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Caption / Label</p>
-                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">12px · LH 1.2</p>
-                                        <p className="font-wallie-fit text-[12px] text-[#4A5A63]">Peso 500-700</p>
+                                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Caption / Label</p>
+                                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">12px · LH 1.2</p>
+                                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Peso 500-700</p>
                                     </div>
                                     <div>
                                         <p
-                                            className="text-[#253238]"
+                                            className="text-[color:var(--text-primary)]"
                                             style={{
                                                 fontFamily: fontPrimary,
                                                 fontSize: size100,
@@ -827,7 +827,7 @@ function DesignSystemPage() {
                                         >
                                             Estado: pendiente · actualizado hace 2 min
                                         </p>
-                                        <p className="mt-2 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                        <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)]">
                                             Para metadatos, etiquetas de estado y ayudas breves sin perder legibilidad.
                                         </p>
                                     </div>
@@ -836,119 +836,119 @@ function DesignSystemPage() {
                         </div>
                     </section>
 
-                    <section id="foundations-spacing" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[24px]">Spacing & Layout</h2>
-                        <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                    <section id="foundations-spacing" className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
+                        <h2 className="font-wallie-chunky text-[length:var(--wm-size-24)]">Spacing & Layout</h2>
+                        <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
                             Escala basada en incrementos de 4px y 8px, consumida desde tokens.
                         </p>
                         <div className="mt-5 grid gap-3">
                             {spacingTokens.map((item) => (
-                                <div key={item.tokenPath} className="flex items-center gap-3 rounded-[10px] border border-[#E8ECEF] p-3">
-                                    <div className="h-3 rounded-[999px] bg-[#13C1AC]" style={{ width: `${Math.max(item.pixels, 2)}px` }} />
-                                    <p className="w-[190px] font-wallie-fit text-[12px]">{item.tokenPath}</p>
-                                    <p className="font-wallie-fit text-[12px] text-[#4A5A63]">{item.value}</p>
+                                <div key={item.tokenPath} className="flex items-center gap-3 rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
+                                    <div className="h-3 rounded-[var(--wm-size-999)] bg-[color:var(--action-primary)]" style={{ width: `${Math.max(item.pixels, 2)}px` }} />
+                                    <p className="w-[var(--wm-size-190)] font-wallie-fit text-[length:var(--wm-size-12)]">{item.tokenPath}</p>
+                                    <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{item.value}</p>
                                 </div>
                             ))}
                         </div>
                     </section>
 
-                    <section id="foundations-radius" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[24px]">Corner Radius</h2>
-                        <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                    <section id="foundations-radius" className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
+                        <h2 className="font-wallie-chunky text-[length:var(--wm-size-24)]">Corner Radius</h2>
+                        <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
                             Escala de radios para esquinas y pills.
                         </p>
                         <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                             {radiusTokens.map((item) => (
-                                <article key={item.tokenPath} className="rounded-[12px] border border-[#E8ECEF] p-3">
-                                    <div className="h-14 w-full border border-[#D3DEE2] bg-[#F5F7F8]" style={{ borderRadius: item.value }} />
-                                    <p className="mt-2 font-wallie-fit text-[12px] text-[#253238]">{item.tokenPath}</p>
-                                    <p className="font-wallie-fit text-[12px] text-[#4A5A63]">{item.value}</p>
+                                <article key={item.tokenPath} className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
+                                    <div className="h-14 w-full border border-[color:var(--border-strong)] bg-[color:var(--bg-surface)]" style={{ borderRadius: item.value }} />
+                                    <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-primary)]">{item.tokenPath}</p>
+                                    <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{item.value}</p>
                                 </article>
                             ))}
                         </div>
                     </section>
 
-                    <section id="foundations-elevation" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[24px]">Elevation</h2>
-                        <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                    <section id="foundations-elevation" className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
+                        <h2 className="font-wallie-chunky text-[length:var(--wm-size-24)]">Elevation</h2>
+                        <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
                             Niveles de sombra para separar superficies y jerarquia visual.
                         </p>
                         <div className="mt-5 grid gap-4 md:grid-cols-2">
                             {shadowTokens.map((item) => (
-                                <article key={item.tokenPath} className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
-                                    <div className="h-20 rounded-[10px] bg-white" style={{ boxShadow: item.value }} />
-                                    <p className="mt-3 font-wallie-fit text-[12px]">{item.tokenPath}</p>
-                                    <p className="font-wallie-fit text-[12px] text-[#4A5A63]">{item.value}</p>
+                                <article key={item.tokenPath} className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
+                                    <div className="h-20 rounded-[var(--wm-size-10)] bg-white" style={{ boxShadow: item.value }} />
+                                    <p className="mt-3 font-wallie-fit text-[length:var(--wm-size-12)]">{item.tokenPath}</p>
+                                    <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{item.value}</p>
                                 </article>
                             ))}
                         </div>
                     </section>
 
-                    <section id="components-playground" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[24px]">Components - Playground</h2>
-                        <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                    <section id="components-playground" className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
+                        <h2 className="font-wallie-chunky text-[length:var(--wm-size-24)]">Components - Playground</h2>
+                        <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
                             Catalogo interactivo de componentes base y sus variantes clave.
                         </p>
                         <div className="mt-5 space-y-6">
-                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[18px]">Button</p>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
+                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Button</p>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Estados visuales simulados: default, hover, active, disabled.
                                 </p>
-                                <div className="overflow-auto rounded-[10px] border border-[#E8ECEF]">
-                                    <div className="grid min-w-[860px] grid-cols-[160px_repeat(4,minmax(150px,1fr))]">
-                                        <div className="border-b border-r border-[#E8ECEF] bg-[#F5F7F8] px-3 py-2 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                <div className="overflow-auto rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)]">
+                                    <div className="grid min-w-[var(--wm-size-860)] grid-cols-[160px_repeat(4,minmax(150px,1fr))]">
+                                        <div className="border-b border-r border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                             Variante
                                         </div>
-                                        <div className="border-b border-r border-[#E8ECEF] bg-[#F5F7F8] px-3 py-2 text-center font-wallie-fit text-[12px] text-[#4A5A63]">Default</div>
-                                        <div className="border-b border-r border-[#E8ECEF] bg-[#F5F7F8] px-3 py-2 text-center font-wallie-fit text-[12px] text-[#4A5A63]">Hover</div>
-                                        <div className="border-b border-r border-[#E8ECEF] bg-[#F5F7F8] px-3 py-2 text-center font-wallie-fit text-[12px] text-[#4A5A63]">Pressed</div>
-                                        <div className="border-b border-[#E8ECEF] bg-[#F5F7F8] px-3 py-2 text-center font-wallie-fit text-[12px] text-[#4A5A63]">Disabled</div>
+                                        <div className="border-b border-r border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-3 py-2 text-center font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Default</div>
+                                        <div className="border-b border-r border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-3 py-2 text-center font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Hover</div>
+                                        <div className="border-b border-r border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-3 py-2 text-center font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Pressed</div>
+                                        <div className="border-b border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-3 py-2 text-center font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Disabled</div>
                                         {buttonShowcaseVariants.map((entry) => {
                                             const hoverClass =
                                                 entry.variant === "secondary"
-                                                    ? "bg-[#F5FFFD]"
+                                                    ? "bg-[color:var(--bg-accent-subtle)]"
                                                     : entry.variant === "ghost"
-                                                      ? "text-[#4A5A63]"
+                                                      ? "text-[color:var(--text-secondary)]"
                                                       : entry.variant === "link"
-                                                        ? "text-[#0FA896]"
+                                                        ? "text-[color:var(--action-primary-hover)]"
                                                         : entry.variant === "tab"
-                                                          ? "bg-[rgba(16,42,67,0.06)]"
+                                                          ? "bg-[color:var(--wm-surface-overlay-hover)]"
                                                           : "brightness-[0.98]"
                                             const activeClass =
                                                 entry.variant === "secondary"
-                                                    ? "bg-[#E9FAF7]"
+                                                    ? "bg-[color:var(--bg-accent-subtle)]"
                                                     : entry.variant === "ghost"
-                                                      ? "text-[#253238]"
+                                                      ? "text-[color:var(--text-primary)]"
                                                       : entry.variant === "link"
-                                                        ? "text-[#0C8E7E]"
+                                                        ? "text-[color:var(--action-primary-pressed)]"
                                                         : entry.variant === "tab"
-                                                          ? "bg-[rgba(16,42,67,0.12)]"
+                                                          ? "bg-[color:var(--wm-surface-overlay-pressed)]"
                                                           : "brightness-95"
                                             const disabledLabel =
                                                 entry.variant === "link" ? "Link" : entry.label
 
                                             return (
                                                 <div key={entry.variant} className="contents">
-                                                    <div className="border-r border-b border-[#E8ECEF] px-3 py-3 font-wallie-fit text-[12px] text-[#253238]">
+                                                    <div className="border-r border-b border-[color:var(--border-divider)] px-3 py-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-primary)]">
                                                         {entry.label}
                                                     </div>
-                                                    <div className="border-r border-b border-[#E8ECEF] px-3 py-3 text-center">
+                                                    <div className="border-r border-b border-[color:var(--border-divider)] px-3 py-3 text-center">
                                                         <Button variant={entry.variant} size="sm">
                                                             {entry.label}
                                                         </Button>
                                                     </div>
-                                                    <div className="border-r border-b border-[#E8ECEF] px-3 py-3 text-center">
+                                                    <div className="border-r border-b border-[color:var(--border-divider)] px-3 py-3 text-center">
                                                         <Button variant={entry.variant} size="sm" className={hoverClass}>
                                                             {entry.label}
                                                         </Button>
                                                     </div>
-                                                    <div className="border-r border-b border-[#E8ECEF] px-3 py-3 text-center">
+                                                    <div className="border-r border-b border-[color:var(--border-divider)] px-3 py-3 text-center">
                                                         <Button variant={entry.variant} size="sm" className={activeClass}>
                                                             {entry.label}
                                                         </Button>
                                                     </div>
-                                                    <div className="border-b border-[#E8ECEF] px-3 py-3 text-center">
+                                                    <div className="border-b border-[color:var(--border-divider)] px-3 py-3 text-center">
                                                         <Button variant={entry.variant} size="sm" disabled>
                                                             {disabledLabel}
                                                         </Button>
@@ -960,9 +960,9 @@ function DesignSystemPage() {
                                 </div>
                             </article>
 
-                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[18px]">Input</p>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
+                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Input</p>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Campo de texto con estados de validacion y ayuda contextual.
                                 </p>
                                 <div className="grid gap-4 md:grid-cols-2">
@@ -973,17 +973,17 @@ function DesignSystemPage() {
                                 </div>
                             </article>
 
-                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[18px]">Labels</p>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
+                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Labels</p>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Labels de estado usados en cards de meetup (fuente: tokens `tokens.color.meetup_status.*`).
                                 </p>
                                 <div className="grid gap-3 md:grid-cols-2">
                                     {statusLabelItems.map((item) => (
-                                        <article key={item.name} className="rounded-[10px] border border-[#E8ECEF] p-3">
-                                            <p className="font-wallie-fit text-[12px] text-[#4A5A63]">{item.name}</p>
+                                        <article key={item.name} className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
+                                            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{item.name}</p>
                                             <span
-                                                className="mt-2 inline-flex rounded-full border px-2.5 py-1 font-wallie-fit text-[11px] leading-[1]"
+                                                className="mt-2 inline-flex rounded-full border px-2.5 py-1 font-wallie-fit text-[length:var(--wm-size-11)] leading-[1]"
                                                 style={{
                                                     backgroundColor: item.background,
                                                     borderColor: item.border,
@@ -992,17 +992,17 @@ function DesignSystemPage() {
                                             >
                                                 {item.label}
                                             </span>
-                                            <p className="mt-2 font-wallie-fit text-[11px] text-[#4A5A63]">{`bg ${item.background}`}</p>
-                                            <p className="font-wallie-fit text-[11px] text-[#4A5A63]">{`border ${item.border}`}</p>
-                                            <p className="font-wallie-fit text-[11px] text-[#4A5A63]">{`text ${item.text}`}</p>
+                                            <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{`bg ${item.background}`}</p>
+                                            <p className="font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{`border ${item.border}`}</p>
+                                            <p className="font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{`text ${item.text}`}</p>
                                         </article>
                                     ))}
                                 </div>
                             </article>
 
-                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[18px]">Select</p>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
+                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Select</p>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Selector desplegable para decisiones de una opcion con soporte de error.
                                 </p>
                                 <div className="grid gap-4 md:grid-cols-2">
@@ -1027,9 +1027,9 @@ function DesignSystemPage() {
                                 </div>
                             </article>
 
-                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[18px]">Badge</p>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
+                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Badge</p>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Indicadores compactos para conteo y alertas de estado puntual.
                                 </p>
                                 <div className="mt-4 flex items-center gap-2">
@@ -1038,9 +1038,9 @@ function DesignSystemPage() {
                                 </div>
                             </article>
 
-                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[18px]">Toast / Snackbar</p>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
+                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Toast / Snackbar</p>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Alertas efimeras con variantes <code>success</code>, <code>error</code> e <code>info</code>, consumiendo tokens semanticos.
                                 </p>
                                 <div className="grid gap-3 md:grid-cols-3">
@@ -1062,21 +1062,21 @@ function DesignSystemPage() {
                                 </div>
                             </article>
 
-                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
-                                <p className="mb-1 font-wallie-chunky text-[18px]">Iconografia</p>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
+                                <p className="mb-1 font-wallie-chunky text-[length:var(--wm-size-18)]">Iconografia</p>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Inventario base de iconos con su nombre tecnico y accion principal en producto.
                                 </p>
                                 <div className="grid gap-3 md:grid-cols-2">
                                     {iconShowcaseItems.map((item) => (
-                                        <article key={item.name} className="rounded-[10px] border border-[#E8ECEF] p-3">
+                                        <article key={item.name} className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
                                             <div className="flex items-center gap-3">
-                                                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[#ECEFF1] text-[#253238]">
+                                                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
                                                     <WallapopIcon name={item.name} size="small" />
                                                 </span>
                                                 <div className="min-w-0">
-                                                    <p className="font-mono text-[12px] text-[#253238]">{item.name}</p>
-                                                    <p className="font-wallie-fit text-[12px] text-[#4A5A63]">{item.mainAction}</p>
+                                                    <p className="font-mono text-[length:var(--wm-size-12)] text-[color:var(--text-primary)]">{item.name}</p>
+                                                    <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{item.mainAction}</p>
                                                 </div>
                                             </div>
                                         </article>
@@ -1086,26 +1086,26 @@ function DesignSystemPage() {
                         </div>
                     </section>
 
-                    <section id="patterns" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[24px]">Patterns</h2>
-                        <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                    <section id="patterns" className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
+                        <h2 className="font-wallie-chunky text-[length:var(--wm-size-24)]">Patterns</h2>
+                        <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
                             Ensamblado de componentes complejos para casos de negocio reales.
                         </p>
                         <div className="mt-5 space-y-4">
-                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Chat Product Card Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Chat Product Card Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Versiones clave por rol: vendedor (acciones comerciales) y comprador (estado del anuncio).
                                 </p>
                                 <div className="overflow-x-auto">
                                     <div className="flex min-w-max gap-4">
-                                        <div className="w-[360px] shrink-0">
-                                            <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">Seller / available</p>
+                                        <div className="w-[var(--wm-size-360)] shrink-0">
+                                            <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Seller / available</p>
                                             <ChatProductCard
                                                 imageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=640&h=460"
                                                 imageAlt="Consola de ejemplo"
                                                 title="Nintendo Switch OLED + dock"
-                                                price="240 EUR"
+                                                price="240 €"
                                                 stats="Publicado hace 2 horas"
                                                 viewsCount={28}
                                                 likesCount={7}
@@ -1114,13 +1114,13 @@ function DesignSystemPage() {
                                                 onEdit={() => {}}
                                             />
                                         </div>
-                                        <div className="w-[360px] shrink-0">
-                                            <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">Buyer / reserved</p>
+                                        <div className="w-[var(--wm-size-360)] shrink-0">
+                                            <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Buyer / reserved</p>
                                             <ChatProductCard
                                                 imageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=640&h=460"
                                                 imageAlt="Consola de ejemplo"
                                                 title="Nintendo Switch OLED + dock"
-                                                price="240 EUR"
+                                                price="240 €"
                                                 viewerRole="buyer"
                                                 statusLabel="Reservado"
                                             />
@@ -1128,15 +1128,15 @@ function DesignSystemPage() {
                                     </div>
                                 </div>
                             </article>
-                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Meetup Card Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Meetup Card Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Tarjeta transaccional con variantes por estado para validar jerarquia y acciones.
                                 </p>
                                 <div className="overflow-x-auto">
                                     <div className="flex min-w-max gap-4">
-                                        <div className="w-[460px] shrink-0">
-                                            <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">PROPOSED / buyer</p>
+                                        <div className="w-[var(--wm-size-460)] shrink-0">
+                                            <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">PROPOSED / buyer</p>
                                             <MeetupCard
                                                 meetup={proposedPatternMeetup}
                                                 actorRole="BUYER"
@@ -1149,8 +1149,8 @@ function DesignSystemPage() {
                                                 onRedZoneCancelConfirmed={() => {}}
                                             />
                                         </div>
-                                        <div className="w-[460px] shrink-0">
-                                            <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">CONFIRMED / seller</p>
+                                        <div className="w-[var(--wm-size-460)] shrink-0">
+                                            <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">CONFIRMED / seller</p>
                                             <MeetupCard
                                                 meetup={confirmedPatternMeetup}
                                                 actorRole="SELLER"
@@ -1166,9 +1166,9 @@ function DesignSystemPage() {
                                     </div>
                                 </div>
                             </article>
-                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Conversation Block Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Conversation Block Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Bloque base de conversacion del proyecto: burbujas, banner de seguridad y composer con CTA secundaria por rol.
                                 </p>
                                 <div className="space-y-2">
@@ -1181,7 +1181,7 @@ function DesignSystemPage() {
                                         </ChatMessageBubble>
                                     </div>
                                 </div>
-                                <div className="mt-3 border-y border-[#E8ECEF] px-1 py-1">
+                                <div className="mt-3 border-y border-[color:var(--border-divider)] px-1 py-1">
                                     <ChatSecurityBanner
                                         message="Quedate en Wallapop. Mas facil, mas seguro."
                                         linkText="Mas informacion"
@@ -1198,13 +1198,13 @@ function DesignSystemPage() {
                                     />
                                 </div>
                             </article>
-                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Counterpart Context Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Counterpart Context Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Card de contexto del interlocutor para sidebar de conversacion (rating, distancia y asistencia).
                                 </p>
-                                <div className="w-full max-w-[380px] rounded-[12px] border border-[#E8ECEF] bg-white p-3">
-                                    <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">ChatCounterpartCard</p>
+                                <div className="w-full max-w-[var(--wm-size-380)] rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-3">
+                                    <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">ChatCounterpartCard</p>
                                     <ChatCounterpartCard
                                         name="Lorena"
                                         rating={4.5}
@@ -1216,15 +1216,15 @@ function DesignSystemPage() {
                                     />
                                 </div>
                             </article>
-                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Inbox Conversation Preview Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Inbox Conversation Preview Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Vista previa de conversacion en buzon con miniatura de articulo y estado comercial.
                                 </p>
                                 <div className="overflow-x-auto">
                                     <div className="flex min-w-max gap-4">
-                                        <div className="w-[360px] shrink-0 overflow-hidden rounded-[12px] border border-[#E8ECEF] bg-white">
-                                            <p className="border-b border-[#E8ECEF] px-3 py-2 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                        <div className="w-[var(--wm-size-360)] shrink-0 overflow-hidden rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white">
+                                            <p className="border-b border-[color:var(--border-divider)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                                 ChatListItem - reservado
                                             </p>
                                             <ChatListItem
@@ -1238,8 +1238,8 @@ function DesignSystemPage() {
                                                 avatarSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400"
                                             />
                                         </div>
-                                        <div className="w-[360px] shrink-0 overflow-hidden rounded-[12px] border border-[#E8ECEF] bg-white">
-                                            <p className="border-b border-[#E8ECEF] px-3 py-2 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                        <div className="w-[var(--wm-size-360)] shrink-0 overflow-hidden rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white">
+                                            <p className="border-b border-[color:var(--border-divider)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                                 ChatListItem - vendido
                                             </p>
                                             <ChatListItem
@@ -1255,12 +1255,12 @@ function DesignSystemPage() {
                                     </div>
                                 </div>
                             </article>
-                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Proposal Overlay Building Blocks</h3>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Proposal Overlay Building Blocks</h3>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Componentes base del overlay al configurar una quedada (header, step heading y footer).
                                 </p>
-                                <div className="space-y-3 overflow-hidden rounded-[12px] border border-[#E8ECEF] bg-white p-3">
+                                <div className="space-y-3 overflow-hidden rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-3">
                                     <MeetupProposalHeader
                                         currentStep={2}
                                         totalSteps={3}
@@ -1286,16 +1286,16 @@ function DesignSystemPage() {
                                     />
                                 </div>
                             </article>
-                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Proposal Step 1 Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Proposal Step 1 Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Seleccion de punto de encuentro con mapa y cards de opciones visibles.
                                 </p>
                                 <div className="space-y-4">
-                                    <div className="overflow-x-auto rounded-[12px] border border-[#E8ECEF] p-3">
+                                    <div className="overflow-x-auto rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
                                         <div className="flex min-w-max gap-4">
-                                            <div className="w-[360px] shrink-0 rounded-[12px] border border-[#E8ECEF] p-3">
-                                                <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                            <div className="w-[var(--wm-size-360)] shrink-0 rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
+                                                <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                                     Seleccionar punto de encuentro - mapa
                                                 </p>
                                                 <MeetupLocationMap
@@ -1309,32 +1309,32 @@ function DesignSystemPage() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="rounded-[12px] border border-[#E8ECEF] p-3">
-                                        <p className="mb-2 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    <div className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
+                                        <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                             Seleccionar punto de encuentro - opciones
                                         </p>
                                         <div className="overflow-x-auto">
                                             <div className="flex min-w-max gap-3">
                                                 <button
                                                     type="button"
-                                                    className="w-[300px] rounded-[18px] border border-[#253238] px-4 py-4 text-left shadow-[inset_0_0_0_1px_#253238]"
+                                                    className="w-[var(--wm-size-300)] rounded-[var(--wm-size-18)] border border-[color:var(--text-primary)] px-4 py-4 text-left shadow-[inset_0_0_0_1px_var(--text-primary)]"
                                                 >
                                                     <div className="flex items-start gap-3">
-                                                        <span className="mt-0.5 inline-flex text-[#253238]">
+                                                        <span className="mt-0.5 inline-flex text-[color:var(--text-primary)]">
                                                             <SafeShieldGlyph />
                                                         </span>
                                                         <div className="min-w-0 flex-1">
-                                                            <p className="font-wallie-chunky text-[18px] leading-tight text-[#253238]">
+                                                            <p className="font-wallie-chunky text-[length:var(--wm-size-18)] leading-tight text-[color:var(--text-primary)]">
                                                                 Estacion de Sants
                                                             </p>
-                                                            <p className="mt-1 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                                            <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)]">
                                                                 Barcelona, acceso principal
                                                             </p>
                                                             <div className="mt-1 flex items-center gap-2">
-                                                                <span className="rounded-full bg-[#E6FAF6] px-2 py-0.5 font-wallie-fit text-[12px] text-[#038673]">
+                                                                <span className="rounded-full bg-[color:var(--bg-accent-subtle)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--action-primary-pressed)]">
                                                                     Punto seguro
                                                                 </span>
-                                                                <span className="rounded-full bg-[#EEF3F5] px-2 py-0.5 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                                                <span className="rounded-full bg-[color:var(--bg-surface)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                                                     824 ventas
                                                                 </span>
                                                             </div>
@@ -1346,17 +1346,17 @@ function DesignSystemPage() {
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    className="w-[300px] rounded-[18px] border border-[#B8C9CF] px-4 py-4 text-left"
+                                                    className="w-[var(--wm-size-300)] rounded-[var(--wm-size-18)] border border-[color:var(--border-strong)] px-4 py-4 text-left"
                                                 >
                                                     <div className="flex items-start gap-3">
-                                                        <span className="mt-0.5 inline-flex text-[#253238]">
+                                                        <span className="mt-0.5 inline-flex text-[color:var(--text-primary)]">
                                                             <MapPin size={16} />
                                                         </span>
                                                         <div className="min-w-0 flex-1">
-                                                            <p className="font-wallie-chunky text-[18px] leading-tight text-[#253238]">
+                                                            <p className="font-wallie-chunky text-[length:var(--wm-size-18)] leading-tight text-[color:var(--text-primary)]">
                                                                 Carrer de Tarragona, 95
                                                             </p>
-                                                            <p className="mt-1 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                                            <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)]">
                                                                 Punto personalizado
                                                             </p>
                                                         </div>
@@ -1367,17 +1367,17 @@ function DesignSystemPage() {
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    className="w-[300px] rounded-[18px] border border-[#B8C9CF] px-4 py-4 text-left"
+                                                    className="w-[var(--wm-size-300)] rounded-[var(--wm-size-18)] border border-[color:var(--border-strong)] px-4 py-4 text-left"
                                                 >
                                                     <div className="flex items-center gap-3">
-                                                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
+                                                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
                                                             <WallapopIcon name="plus" size={16} />
                                                         </span>
                                                         <div className="min-w-0 flex-1">
-                                                            <p className="font-wallie-chunky text-[18px] text-[#253238]">
+                                                            <p className="font-wallie-chunky text-[length:var(--wm-size-18)] text-[color:var(--text-primary)]">
                                                                 Elige un punto
                                                             </p>
-                                                            <p className="font-wallie-fit text-[13px] text-[#6E8792]">
+                                                            <p className="font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)]">
                                                                 Puede ser un punto personalizado u otro punto seguro.
                                                             </p>
                                                         </div>
@@ -1388,15 +1388,15 @@ function DesignSystemPage() {
                                     </div>
                                 </div>
                             </article>
-                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Proposal Step 2 Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Proposal Step 2 Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Seleccion de dia y hora con estados de validacion para cada campo.
                                 </p>
-                                <div className="overflow-x-auto rounded-[12px] border border-[#E8ECEF] p-3">
+                                <div className="overflow-x-auto rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
                                     <div className="flex min-w-max gap-4">
-                                        <div className="w-[360px] shrink-0 space-y-3 rounded-[12px] border border-[#E8ECEF] p-3">
-                                            <p className="font-wallie-fit text-[12px] text-[#4A5A63]">
+                                        <div className="w-[var(--wm-size-360)] shrink-0 space-y-3 rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
+                                            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                                 Seleccionar dia y hora - estado default
                                             </p>
                                             <CalendarPicker
@@ -1419,8 +1419,8 @@ function DesignSystemPage() {
                                                 dropdownDirection="up"
                                             />
                                         </div>
-                                        <div className="w-[360px] shrink-0 space-y-3 rounded-[12px] border border-[#E8ECEF] p-3">
-                                            <p className="font-wallie-fit text-[12px] text-[#4A5A63]">
+                                        <div className="w-[var(--wm-size-360)] shrink-0 space-y-3 rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
+                                            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                                 Seleccionar dia y hora - estado error
                                             </p>
                                             <CalendarPicker
@@ -1450,59 +1450,59 @@ function DesignSystemPage() {
                                     </div>
                                 </div>
                             </article>
-                            <article className="rounded-[12px] border border-[#E8ECEF] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[18px]">Proposal Step 3 Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Proposal Step 3 Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Importe final y preferencia de pago con tres metodos como en el flujo real.
                                 </p>
-                                <div className="space-y-3 rounded-[12px] border border-[#E8ECEF] p-3">
+                                <div className="space-y-3 rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
                                     <Input
                                         label="Importe final acordado (€)"
                                         value="220"
                                         onChange={() => {}}
                                         placeholder="Ej: 220"
                                     />
-                                    <p className="font-wallie-fit text-[13px] text-[#253238]">Preferencia de pago</p>
+                                    <p className="font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-primary)]">Preferencia de pago</p>
                                     <div className="overflow-x-auto">
                                         <div className="flex min-w-max gap-3">
                                             <button
                                                 type="button"
-                                                className="w-[180px] rounded-[18px] border border-[#B8C9CF] px-4 py-3 text-left"
+                                                className="w-[var(--wm-size-180)] rounded-[var(--wm-size-18)] border border-[color:var(--border-strong)] px-4 py-3 text-left"
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
+                                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
                                                         <Banknote size={16} />
                                                     </span>
                                                     <div className="min-w-0 flex-1">
-                                                        <p className="font-wallie-fit text-[14px] leading-[1.2] text-[#253238]">Efectivo</p>
+                                                        <p className="font-wallie-fit text-[length:var(--wm-size-14)] leading-[1.2] text-[color:var(--text-primary)]">Efectivo</p>
                                                     </div>
                                                     <ProposalSelectionIndicator selected={false} />
                                                 </div>
                                             </button>
                                             <button
                                                 type="button"
-                                                className="w-[180px] rounded-[18px] border border-[#253238] px-4 py-3 text-left shadow-[inset_0_0_0_1px_#253238]"
+                                                className="w-[var(--wm-size-180)] rounded-[var(--wm-size-18)] border border-[color:var(--text-primary)] px-4 py-3 text-left shadow-[inset_0_0_0_1px_var(--text-primary)]"
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
+                                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
                                                         <Smartphone size={16} />
                                                     </span>
                                                     <div className="min-w-0 flex-1">
-                                                        <p className="font-wallie-fit text-[14px] leading-[1.2] text-[#253238]">Bizum</p>
+                                                        <p className="font-wallie-fit text-[length:var(--wm-size-14)] leading-[1.2] text-[color:var(--text-primary)]">Bizum</p>
                                                     </div>
                                                     <ProposalSelectionIndicator selected={true} />
                                                 </div>
                                             </button>
                                             <button
                                                 type="button"
-                                                className="w-[180px] rounded-[18px] border border-[#B8C9CF] px-4 py-3 text-left"
+                                                className="w-[var(--wm-size-180)] rounded-[var(--wm-size-18)] border border-[color:var(--border-strong)] px-4 py-3 text-left"
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
+                                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
                                                         <QrCode size={16} />
                                                     </span>
                                                     <div className="min-w-0 flex-1">
-                                                        <p className="font-wallie-fit text-[14px] leading-[1.2] text-[#253238]">Wallapop Wallet</p>
+                                                        <p className="font-wallie-fit text-[length:var(--wm-size-14)] leading-[1.2] text-[color:var(--text-primary)]">Wallapop Wallet</p>
                                                     </div>
                                                     <ProposalSelectionIndicator selected={false} />
                                                 </div>
@@ -1520,3 +1520,5 @@ function DesignSystemPage() {
 }
 
 export { DesignSystemPage }
+
+

@@ -206,7 +206,7 @@ const initialConversations: Conversation[] = [
     {
         id: "conv-a-arrival",
         userName: "Laura M.",
-        itemPrice: "240 EUR",
+        itemPrice: "240 €",
         messageDate: "Hoy",
         itemTitle: "Nintendo Switch OLED + dock",
         messagePreview: "Estoy llegando al punto, en 10 min estoy alli.",
@@ -232,7 +232,7 @@ const initialConversations: Conversation[] = [
     {
         id: "conv-b-seller-propose",
         userName: "Javi R.",
-        itemPrice: "520 EUR",
+        itemPrice: "520 €",
         messageDate: "Hoy",
         itemTitle: "Bicicleta fixie Fuji",
         messagePreview: "Si te encaja, te envio propuesta de quedada ahora.",
@@ -258,7 +258,7 @@ const initialConversations: Conversation[] = [
     {
         id: "conv-c-buyer-incoming",
         userName: "Marta P.",
-        itemPrice: "640 EUR",
+        itemPrice: "640 €",
         messageDate: "Hoy",
         itemTitle: "Camara Fujifilm X-T20",
         messagePreview: "Te acabo de enviar la propuesta con sitio y hora.",
@@ -285,7 +285,7 @@ const initialConversations: Conversation[] = [
     {
         id: "conv-d-sold-closed",
         userName: "Carlos G.",
-        itemPrice: "310 EUR",
+        itemPrice: "310 €",
         messageDate: "Ayer",
         itemTitle: "Silla gamer Secretlab",
         messagePreview: "Perfecto, gracias por todo. Venta cerrada.",
@@ -313,7 +313,7 @@ const initialConversations: Conversation[] = [
     {
         id: "conv-e-low-attendance",
         userName: "Iker S.",
-        itemPrice: "210 EUR",
+        itemPrice: "210 €",
         messageDate: "12 feb",
         itemTitle: "Monitor LG 27 pulgadas 144Hz",
         messagePreview: "Prefiero venderselo a otra persona por tranquilidad.",
@@ -375,7 +375,7 @@ const initialMessagesByConversation: Record<string, Message[]> = {
         },
         {
             id: "m-b-3",
-            text: "Perfecto, me cuadra. Cuando puedas mÃ¡ndame propuesta de quedada.",
+            text: "Perfecto, me cuadra. Cuando puedas mándame propuesta de quedada.",
             variant: "received",
             time: formatTime(new Date(tsMinutesAgo(14))),
             createdAt: tsMinutesAgo(14),
@@ -1395,9 +1395,9 @@ function MeetupProposalOverlay({
         parsedFinalPriceValue !== null && parsedFinalPriceValue > DAC7_ALERT_THRESHOLD_EUR
     const priceInputError =
         isStepThreePriceMissing
-            ? "Introduce un importe de 0 â‚¬ o superior."
+            ? "Introduce un importe de 0 € o superior."
             : isFinalPriceAboveMaximum
-                ? `El importe maximo permitido es ${MAX_FINAL_PRICE_EUR} â‚¬.`
+                ? `El importe maximo permitido es ${MAX_FINAL_PRICE_EUR} €.`
                 : undefined
     const priceInputAlertText =
         "Has excedido el importe maximo anual y Wallapop debera informar a Hacienda bajo la normativa DAC7."
@@ -1678,7 +1678,7 @@ function MeetupProposalOverlay({
                                         onBack={onBack}
                                     />
                                     <Input
-                                        label="Importe final acordado (â‚¬)"
+                                        label="Importe final acordado (€)"
                                         type="text"
                                         inputMode="decimal"
                                         min="0"
@@ -1700,7 +1700,7 @@ function MeetupProposalOverlay({
                                                 rel="noopener noreferrer"
                                                 className="font-wallie-chunky underline"
                                             >
-                                                MÃ¡s informaciÃ³n
+                                                Más información
                                             </a>
                                         </p>
                                     ) : null}
@@ -2807,7 +2807,7 @@ function WallapopChatWorkspace() {
             return
         }
         if (parsedFinalPrice > MAX_FINAL_PRICE_EUR) {
-            setProposalError(`El importe maximo permitido es ${MAX_FINAL_PRICE_EUR} â‚¬.`)
+            setProposalError(`El importe maximo permitido es ${MAX_FINAL_PRICE_EUR} €.`)
             return
         }
 
