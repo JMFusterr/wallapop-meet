@@ -13,6 +13,7 @@ import {
 } from "@/components/meetup/wallapop-chat-workspace-utils"
 import { MeetupWizardStepHeading } from "@/components/meetup/meetup-wizard-step-heading"
 import { ChatComposer } from "@/components/ui/chat-composer"
+import { ChatConversationHeader } from "@/components/ui/chat-conversation-header"
 import { ChatCounterpartCard } from "@/components/ui/chat-counterpart-card"
 import { ChatListItem } from "@/components/ui/chat-list-item"
 import { ChatMessageBubble } from "@/components/ui/chat-message-bubble"
@@ -1891,44 +1892,61 @@ function ConversationPane({
         ? resolveProposalEntryActionState(meetup, actorRole)
         : null
     const canShowProposalAction = proposalActionState?.visible === true
+    const listingStatusLabelNormalized = conversation.listingStatusLabel?.trim().toLowerCase() ?? ""
+    const headerProductStatusIcon =
+        listingStatusLabelNormalized.includes("reservad")
+            ? "bookmark"
+            : listingStatusLabelNormalized.includes("vendid")
+                ? "deal"
+                : conversation.leadingIndicator
 
     return (
         <section className="flex h-full min-h-0 flex-col bg-white">
-            <header className="flex items-center gap-3 border-b border-[color:var(--border-divider)] bg-white px-4 py-3">
-                {onBackToInbox ? (
-                    <IconButton
-                        label="Volver a conversaciones"
-                        icon={<WallapopIcon name="arrow_left" size="small" />}
-                        variant="menu_close"
-                        onClick={onBackToInbox}
-                        className="h-8 w-8 bg-transparent p-0 text-[color:var(--text-primary)]"
+            {onBackToInbox ? (
+                <ChatConversationHeader
+                    onBack={onBackToInbox}
+                    itemImageSrc={conversation.listingImageSrc}
+                    itemImageAlt={conversation.itemTitle}
+                    itemPrice={conversation.itemPrice}
+                    itemTitle={conversation.itemTitle}
+                    profileImageSrc={conversation.profileImageSrc}
+                    profileImageAlt={`Foto de perfil de ${conversation.userName}`}
+                    userName={conversation.userName}
+                    rating={conversation.counterpartRating}
+                    distanceLabel={conversation.counterpartDistanceLabel}
+                    attendanceRate={conversation.counterpartAttendanceRate}
+                    attendanceMeetups={conversation.counterpartAttendanceMeetups}
+                    productStatusIcon={headerProductStatusIcon}
+                    defaultExpanded={false}
+                />
+            ) : (
+                <header className="flex items-center gap-3 border-b border-[color:var(--border-divider)] bg-white px-4 py-3">
+                    <img
+                        src={conversation.listingImageSrc}
+                        alt={conversation.itemTitle}
+                        className="h-11 w-11 rounded-[var(--wm-size-12)] object-cover"
                     />
-                ) : null}
-                <img
-                    src={conversation.listingImageSrc}
-                    alt={conversation.itemTitle}
-                    className="h-11 w-11 rounded-[var(--wm-size-12)] object-cover"
-                />
-                <div className="min-w-0">
-                    <p className="truncate font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-primary)]">
-                        {conversation.itemPrice}
-                    </p>
-                    <p className="truncate font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-tertiary)]">
-                        {conversation.itemTitle}
-                    </p>
-                </div>
-                <img
-                    src={conversation.profileImageSrc}
-                    alt={`Foto de perfil de ${conversation.userName}`}
-                    className="ml-auto h-9 w-9 rounded-full border border-[color:var(--border-strong)] object-cover"
-                />
-                <IconButton
-                    label={`Mas opciones de la conversacion con ${conversation.userName}`}
-                    icon={<WallapopIcon name="ellipsis_horizontal" size={16} strokeWidth={1.8} />}
-                    variant="menu_close"
-                    className="h-9 w-9 rounded-full bg-transparent p-0 text-[color:var(--text-tertiary)] hover:bg-[color:var(--bg-surface)]"
-                />
-            </header>
+                    <div className="min-w-0">
+                        <p className="truncate font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-primary)]">
+                            {conversation.itemPrice}
+                        </p>
+                        <p className="truncate font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-tertiary)]">
+                            {conversation.itemTitle}
+                        </p>
+                    </div>
+                    <img
+                        src={conversation.profileImageSrc}
+                        alt={`Foto de perfil de ${conversation.userName}`}
+                        className="ml-auto h-9 w-9 rounded-full border border-[color:var(--border-strong)] object-cover"
+                    />
+                    <IconButton
+                        label={`Mas opciones de la conversacion con ${conversation.userName}`}
+                        icon={<WallapopIcon name="ellipsis_horizontal" size={16} strokeWidth={1.8} />}
+                        variant="menu_close"
+                        className="h-9 w-9 rounded-full bg-transparent p-0 text-[color:var(--text-tertiary)] hover:bg-[color:var(--bg-surface)]"
+                    />
+                </header>
+            )}
 
             <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5">
                 <div className="space-y-3">
