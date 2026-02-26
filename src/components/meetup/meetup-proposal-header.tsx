@@ -31,18 +31,18 @@ function MeetupProposalHeader({
         <button
           type="button"
           aria-label="Cerrar configuracion de meetup"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#253238]"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[var(--text-primary)]"
           onClick={onClose}
         >
           <WallapopIcon name="cross" size={22} />
         </button>
-        <h2 className="font-wallie-chunky text-[18px] text-[#253238] md:text-[20px]">
+        <h2 className="font-wallie-chunky text-[18px] text-[var(--text-primary)] md:text-[20px]">
           Paso {currentStep} de {totalSteps}
         </h2>
         <button
           type="button"
           onClick={onHelp}
-          className="font-wallie-chunky text-[15px] text-[#038673] md:text-[16px]"
+          className="font-wallie-chunky text-[15px] text-[var(--action-primary)] md:text-[16px]"
         >
           {helpLabel}
         </button>
@@ -56,7 +56,7 @@ function MeetupProposalHeader({
             onClick={() => onStepChange(stepItem.id)}
             disabled={stepItem.disabled}
             className={`h-[5px] rounded-full ${
-              stepItem.id <= currentStep ? "bg-[#253238]" : "bg-[#D3DEE2]"
+              stepItem.id <= currentStep ? "bg-[var(--text-primary)]" : "bg-[var(--border-strong)]"
             }`}
             aria-label={`Paso ${stepItem.id}: ${stepItem.label}`}
           />

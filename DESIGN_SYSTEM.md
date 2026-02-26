@@ -41,7 +41,13 @@ Namespaces oficiales:
 - `tokens.color.palette.error`: `50..900`
 - `tokens.color.brand`: `primary`, `primary_hover`, `on_primary`
 - `tokens.color.neutral`: `0`, `100`, `200`, `400`, `700`, `900`
-- `tokens.color.semantic`: `warning.base`, `error.base`
+- `tokens.color.semantic`:
+  - `background.base`, `background.surface`, `background.accent_subtle`
+  - `text.primary`, `text.secondary`, `text.inverse`, `text.on_action`, `text.on_dark`
+  - `action.primary`, `action.primary_hover`, `action.primary_pressed`, `action.disabled_bg`, `action.disabled_text`
+  - `border.divider`, `border.strong`, `border.focus`, `border.error`
+  - `feedback.success`, `feedback.error`, `feedback.info`
+  - `warning.base`, `error.base`
 - `tokens.color.text`: `primary`, `secondary`, `inverse`, `disabled`
 - `tokens.color.background`: `base`, `surface`, `accent`
 - `tokens.color.border`: `default`, `focus`, `error`
@@ -83,6 +89,12 @@ Regla:
   - Easing: `standard`, `emphasized`
 
 ## 4. Reglas de arquitectura UI
+
+### 4.0 Storybook como validación de fuente de verdad
+
+- Las stories en `Design System/*` deben renderizar componentes que consuman tokens del canon (`styles.json` + aliases de `src/index.css`).
+- Si hay conflicto visual entre una story y tokens, prevalece token y la story se actualiza.
+- En componentes documentados en Storybook no se aceptan nuevos hex hardcodeados para color.
 
 ### 4.1 Semantica de color
 
@@ -197,7 +209,7 @@ Uso de componente base:
 Consumo tokenizado de color/radius:
 
 ```tsx
-<div className="bg-[var(--wm-color-background-surface)] text-[var(--wm-color-text-primary)] rounded-[var(--wm-radius-300)]" />
+<div className="bg-[var(--bg-surface)] text-[var(--text-primary)] rounded-[var(--wm-radius-300)]" />
 ```
 
 Consumo tokenizado en input:
@@ -223,7 +235,7 @@ No permitido:
 Permitido:
 
 ```tsx
-<div className="bg-[var(--wm-color-brand-primary)] px-[var(--wm-input-padding-x)] rounded-[var(--wm-radius-300)]" />
+<div className="bg-[var(--action-primary)] px-[var(--wm-input-padding-x)] rounded-[var(--wm-radius-300)]" />
 ```
 
 No permitido:
@@ -269,10 +281,17 @@ Permitido:
 
 | Archivo | Situacion actual | Token/contrato objetivo | Prioridad |
 | --- | --- | --- | --- |
-| `src/components/ui/button.tsx` | Varias variantes con hex/radius/tamanos hardcodeados | Migrar a variables/tokens de `styles.json` y runtime CSS | Alta |
-| `src/components/meetup/meetup-card.tsx` | Colores, sombras y radios hardcodeados en multiples bloques | Sustituir por tokens semanticos y de componente | Alta |
+| `src/components/ui/button.tsx` | Migrado a aliases semánticos en variantes principales (`primary`, `secondary`, `ghost`, `critical`, `link`) | Completar migración de variantes de nicho restantes y normalizar tamaños/radios | Media |
+| `src/components/ui/badge.tsx` | Migrado a aliases semánticos (`feedback.*`, `text.inverse`) y dominio (`status-sold`) | Mantener sincronizado con `styles.json` si cambia semántica de estados | Baja |
+| `src/components/ui/chat-product-card.tsx` | Migrado a aliases semánticos para fondos, bordes, texto y estados de listing | Sustituir colores de dominio por tokens de componente si se formalizan en `styles.json` | Media |
+| `src/components/meetup/meetup-card.tsx` | Migrado a aliases semánticos en superficies, texto, estados y acciones; quedan sombras inline puntuales | Completar extracción de sombras a tokens/component contracts | Media |
+| `src/components/meetup/meetup-timeline.tsx` | Migrado a aliases semánticos en puntos y texto | Sin acciones pendientes de color | Baja |
+| `src/components/meetup/meetup-proposal-header.tsx` | Migrado a aliases semánticos en texto y progreso | Sin acciones pendientes de color | Baja |
+| `src/components/meetup/meetup-proposal-footer.tsx` | Migrado a aliases semánticos en estados, textos y CTA | Revisar token específico para warning surface si diseño lo exige | Baja |
+| `src/components/meetup/meetup-wizard-step-heading.tsx` | Migrado a aliases semánticos en icon-button y tipografía | Sin acciones pendientes de color | Baja |
+| `src/components/meetup/meetup-location-map.tsx` | Migrado a colores resueltos desde aliases semánticos para marcadores y bordes | Mantener fallback hex solo como respaldo runtime | Baja |
 | `src/components/ui/input.tsx` | Usa tokens para color/ring, pero mezcla tamanos tipograficos y espaciados literales | Completar tokenizacion de tamanos/spacing tipografico | Media |
-| `src/index.css` | Alias de tokens parcial; no todos los tokens de `styles.json` tienen variable runtime dedicada | Completar capa de aliases CSS para consumo uniforme | Media |
+| `src/index.css` | Capa de aliases semánticos ampliada (action/text/border/feedback + estados de dominio de listing) | Mantener cobertura completa cuando se añadan tokens nuevos | Baja |
 
 ### 9.2 Checklist obligatorio para PRs UI
 

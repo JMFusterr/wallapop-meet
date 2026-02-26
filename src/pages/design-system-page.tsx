@@ -15,6 +15,7 @@ import { MeetupLocationMap } from "@/components/meetup/meetup-location-map"
 import { ChatComposer } from "@/components/ui/chat-composer"
 import { ChatMessageBubble } from "@/components/ui/chat-message-bubble"
 import { ChatSecurityBanner } from "@/components/ui/chat-security-banner"
+import { Toast } from "@/components/ui/toast"
 import { CalendarPicker } from "@/components/ui/calendar-picker"
 import { WallapopIcon, type WallapopIconName } from "@/components/ui/wallapop-icon"
 import { navigateTo } from "@/lib/navigation"
@@ -32,6 +33,14 @@ type ColorItem = {
     value: string
     cssVar: string
     tailwindClass: string
+}
+
+type SemanticColorItem = {
+    name: string
+    description: string
+    aliasVar: string
+    aliasTailwindRoot: string
+    value: string
 }
 
 type SpacingItem = {
@@ -105,12 +114,128 @@ const wallapopLogoUrl = "https://es.wallapop.com/favicon.ico"
 
 const sectionEntries = [
     { id: "foundations-color", label: "Color" },
+    { id: "foundations-semantic-colors", label: "Semantic Colors" },
     { id: "foundations-typography", label: "Typography" },
     { id: "foundations-spacing", label: "Spacing & Layout" },
     { id: "foundations-radius", label: "Corner Radius" },
     { id: "foundations-elevation", label: "Elevation" },
     { id: "components-playground", label: "Components" },
     { id: "patterns", label: "Patterns" },
+] as const
+
+const semanticColorDefinitions = [
+    {
+        name: "Background Base",
+        description: "Fondo principal de tarjetas y paneles.",
+        tokenPath: "tokens.color.semantic.background.base",
+        aliasVar: "--bg-base",
+        aliasTailwindRoot: "bg-base",
+    },
+    {
+        name: "Background Surface",
+        description: "Superficie general de app y layouts.",
+        tokenPath: "tokens.color.semantic.background.surface",
+        aliasVar: "--bg-surface",
+        aliasTailwindRoot: "bg-surface",
+    },
+    {
+        name: "Text Primary",
+        description: "Texto principal en interfaz.",
+        tokenPath: "tokens.color.semantic.text.primary",
+        aliasVar: "--text-primary",
+        aliasTailwindRoot: "text-primary",
+    },
+    {
+        name: "Text Secondary",
+        description: "Texto secundario y metadatos.",
+        tokenPath: "tokens.color.semantic.text.secondary",
+        aliasVar: "--text-secondary",
+        aliasTailwindRoot: "text-secondary",
+    },
+    {
+        name: "Text Inverse",
+        description: "Texto sobre fondos oscuros o de marca.",
+        tokenPath: "tokens.color.semantic.text.inverse",
+        aliasVar: "--text-inverse",
+        aliasTailwindRoot: "text-inverse",
+    },
+    {
+        name: "Action Primary",
+        description: "CTA principal y estados interactivos.",
+        tokenPath: "tokens.color.semantic.action.primary",
+        aliasVar: "--action-primary",
+        aliasTailwindRoot: "action-primary",
+    },
+    {
+        name: "Action Primary Hover",
+        description: "Estado hover de accion principal.",
+        tokenPath: "tokens.color.semantic.action.primary_hover",
+        aliasVar: "--action-primary-hover",
+        aliasTailwindRoot: "action-primary-hover",
+    },
+    {
+        name: "Action Primary Pressed",
+        description: "Estado pressed de accion principal.",
+        tokenPath: "tokens.color.semantic.action.primary_pressed",
+        aliasVar: "--action-primary-pressed",
+        aliasTailwindRoot: "action-primary-pressed",
+    },
+    {
+        name: "Action Disabled BG",
+        description: "Fondo para acciones deshabilitadas.",
+        tokenPath: "tokens.color.semantic.action.disabled_bg",
+        aliasVar: "--action-disabled-bg",
+        aliasTailwindRoot: "action-disabled-bg",
+    },
+    {
+        name: "Action Disabled Text",
+        description: "Texto para acciones deshabilitadas.",
+        tokenPath: "tokens.color.semantic.action.disabled_text",
+        aliasVar: "--action-disabled-text",
+        aliasTailwindRoot: "action-disabled-text",
+    },
+    {
+        name: "Border Divider",
+        description: "Separadores y contornos de baja jerarquia.",
+        tokenPath: "tokens.color.semantic.border.divider",
+        aliasVar: "--border-divider",
+        aliasTailwindRoot: "border-divider",
+    },
+    {
+        name: "Border Focus",
+        description: "Contorno de foco accesible.",
+        tokenPath: "tokens.color.semantic.border.focus",
+        aliasVar: "--border-focus",
+        aliasTailwindRoot: "border-focus",
+    },
+    {
+        name: "Border Error",
+        description: "Contorno para estados de error.",
+        tokenPath: "tokens.color.semantic.border.error",
+        aliasVar: "--border-error",
+        aliasTailwindRoot: "border-error",
+    },
+    {
+        name: "Feedback Success",
+        description: "Completado/confirmacion positiva.",
+        tokenPath: "tokens.color.semantic.feedback.success",
+        aliasVar: "--feedback-success",
+        aliasTailwindRoot: "feedback-success",
+    },
+    {
+        name: "Feedback Error",
+        description: "Errores bloqueantes o fallos.",
+        tokenPath: "tokens.color.semantic.feedback.error",
+        aliasVar: "--feedback-error",
+        aliasTailwindRoot: "feedback-error",
+    },
+    {
+        name: "Feedback Info",
+        description: "Informacion neutral o contextual.",
+        tokenPath: "tokens.color.semantic.feedback.info",
+        aliasVar: "--feedback-info",
+        aliasTailwindRoot: "feedback-info",
+    },
 ] as const
 
 const proposalHeaderSteps = [
@@ -272,6 +397,78 @@ function normalizeColorTokenGroup(groupPath: string, input: unknown): ColorItem[
     return result
 }
 
+function normalizeSemanticColorItems(): SemanticColorItem[] {
+    return semanticColorDefinitions.map((item) => ({
+        name: item.name,
+        description: item.description,
+        aliasVar: item.aliasVar,
+        aliasTailwindRoot: item.aliasTailwindRoot,
+        value: String(resolveReference(`{${item.tokenPath}}`, styles)),
+    }))
+}
+
+function hexToRgb(value: string): { r: number; g: number; b: number } | null {
+    const clean = value.trim()
+    const match = clean.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i)
+    if (!match) {
+        return null
+    }
+
+    const hex = match[1] ?? ""
+    if (hex.length === 3) {
+        return {
+            r: Number.parseInt(hex[0] + hex[0], 16),
+            g: Number.parseInt(hex[1] + hex[1], 16),
+            b: Number.parseInt(hex[2] + hex[2], 16),
+        }
+    }
+
+    return {
+        r: Number.parseInt(hex.slice(0, 2), 16),
+        g: Number.parseInt(hex.slice(2, 4), 16),
+        b: Number.parseInt(hex.slice(4, 6), 16),
+    }
+}
+
+function toRelativeLuminance(color: { r: number; g: number; b: number }): number {
+    const normalize = (channel: number) => {
+        const sRGB = channel / 255
+        return sRGB <= 0.03928 ? sRGB / 12.92 : ((sRGB + 0.055) / 1.055) ** 2.4
+    }
+
+    const r = normalize(color.r)
+    const g = normalize(color.g)
+    const b = normalize(color.b)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+function contrastRatio(background: string, foreground: string): number {
+    const bg = hexToRgb(background)
+    const fg = hexToRgb(foreground)
+    if (!bg || !fg) {
+        return 0
+    }
+
+    const bgLuminance = toRelativeLuminance(bg)
+    const fgLuminance = toRelativeLuminance(fg)
+    const lighter = Math.max(bgLuminance, fgLuminance)
+    const darker = Math.min(bgLuminance, fgLuminance)
+    return (lighter + 0.05) / (darker + 0.05)
+}
+
+function getContrastTextHint(background: string): { label: "Texto Blanco" | "Texto Oscuro"; color: string } {
+    const white = "#FFFFFF"
+    const dark = "#253238"
+    const whiteRatio = contrastRatio(background, white)
+    const darkRatio = contrastRatio(background, dark)
+
+    if (whiteRatio >= darkRatio) {
+        return { label: "Texto Blanco", color: white }
+    }
+
+    return { label: "Texto Oscuro", color: dark }
+}
+
 function normalizeSpacingTokens(input: unknown): SpacingItem[] {
     if (!isRecord(input)) {
         return []
@@ -390,6 +587,7 @@ function DesignSystemPage() {
     const neutralScale = normalizeColorTokenGroup("tokens.color.palette.neutral", paletteRoot.neutral)
     const warningScale = normalizeColorTokenGroup("tokens.color.palette.warning", paletteRoot.warning)
     const errorScale = normalizeColorTokenGroup("tokens.color.palette.error", paletteRoot.error)
+    const semanticColorItems = normalizeSemanticColorItems()
     const typographyTokens = normalizeTypographyTokens(foundations.typography)
     const spacingTokens = normalizeSpacingTokens(foundations.spacing)
     const radiusTokens = normalizeRadiusTokens(foundations.radius)
@@ -397,6 +595,8 @@ function DesignSystemPage() {
     const statusLabelItems = buildStatusLabelItems()
 
     const fontPrimary = typographyTokens.find((item) => item.tokenPath.includes("family.primary"))?.value ?? "Wallie"
+    const fontFallback =
+        String(getByPath(styles, "brand.typography.family.fallback") ?? "system-ui, sans-serif")
     const size100 = typographyTokens.find((item) => item.tokenPath.endsWith("size.100"))?.value ?? "12px"
     const size300 = typographyTokens.find((item) => item.tokenPath.endsWith("size.300"))?.value ?? "16px"
     const size500 = typographyTokens.find((item) => item.tokenPath.endsWith("size.500"))?.value ?? "20px"
@@ -477,7 +677,9 @@ function DesignSystemPage() {
                                     <h4 className="mb-3 font-wallie-chunky text-[17px]">{group.title}</h4>
                                     <div className="overflow-x-auto rounded-[10px] border border-[#E8ECEF] p-2">
                                         <div className="flex min-w-max gap-2">
-                                        {group.items.map((item) => (
+                                        {group.items.map((item) => {
+                                            const contrastHint = getContrastTextHint(item.value)
+                                            return (
                                             <article key={item.tokenPath} className="w-[110px] shrink-0 overflow-hidden rounded-[8px] border border-[#E8ECEF]">
                                                 <div className="h-14 w-full" style={{ background: item.value }} />
                                                 <div className="px-2 py-1.5">
@@ -485,9 +687,20 @@ function DesignSystemPage() {
                                                         {item.tokenPath.split(".").pop()}
                                                     </p>
                                                     <p className="font-wallie-fit text-[11px] text-[#4A5A63]">{item.value}</p>
+                                                    <span
+                                                        className="mt-1 inline-flex rounded-full border px-1.5 py-0.5 font-wallie-fit text-[10px] leading-[1]"
+                                                        style={{
+                                                            backgroundColor: contrastHint.color,
+                                                            color: contrastHint.color === "#FFFFFF" ? "#253238" : "#FFFFFF",
+                                                            borderColor: contrastHint.color,
+                                                        }}
+                                                    >
+                                                        {contrastHint.label}
+                                                    </span>
                                                 </div>
                                             </article>
-                                        ))}
+                                            )
+                                        })}
                                         </div>
                                     </div>
                                 </div>
@@ -495,10 +708,29 @@ function DesignSystemPage() {
                         </div>
                     </section>
 
+                    <section id="foundations-semantic-colors" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
+                        <h2 className="font-wallie-chunky text-[24px]">Semantic Colors</h2>
+                        <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                            Copia directa de alias oficiales: una variable CSS corta y una raiz unica para Tailwind.
+                        </p>
+                        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                            {semanticColorItems.map((item) => (
+                                <article key={item.aliasVar} className="rounded-[10px] border border-[#E8ECEF] p-3">
+                                    <div className="h-12 rounded-[8px] border border-[#E8ECEF]" style={{ backgroundColor: item.value }} />
+                                    <p className="mt-2 font-wallie-chunky text-[14px] text-[#253238]">{item.name}</p>
+                                    <p className="mt-1 font-wallie-fit text-[12px] text-[#4A5A63]">{item.description}</p>
+                                    <p className="mt-2 font-mono text-[11px] text-[#253238]">{`CSS: var(${item.aliasVar})`}</p>
+                                    <p className="font-mono text-[11px] text-[#4A5A63]">{`Tailwind: text-/bg-/border-${item.aliasTailwindRoot}`}</p>
+                                    <p className="mt-1 font-wallie-fit text-[11px] text-[#4A5A63]">{item.value}</p>
+                                </article>
+                            ))}
+                        </div>
+                    </section>
+
                     <section id="foundations-typography" className="rounded-[16px] border border-[#D3DEE2] bg-white p-6">
                         <h2 className="font-wallie-chunky text-[24px]">Typography</h2>
                         <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
-                            Guia tipografica propuesta para Wallapop Meet basada en proporciones reales del producto.
+                            Guia tipografica propuesta para Wallapop Meet basada en proporciones reales del producto. Familia principal: <code>{fontPrimary}</code>, fallbacks: <code>{fontFallback}</code>.
                         </p>
                         <div className="mt-5 space-y-4">
                             <article className="rounded-[12px] border border-[#E8ECEF] p-4">
@@ -803,6 +1035,30 @@ function DesignSystemPage() {
                                 <div className="mt-4 flex items-center gap-2">
                                     <Badge variant="unread" value={8} />
                                     <Badge variant="error" value="!" />
+                                </div>
+                            </article>
+
+                            <article className="rounded-[12px] border border-[#E8ECEF] p-4">
+                                <p className="mb-3 font-wallie-chunky text-[18px]">Toast / Snackbar</p>
+                                <p className="mb-3 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                    Alertas efimeras con variantes <code>success</code>, <code>error</code> e <code>info</code>, consumiendo tokens semanticos.
+                                </p>
+                                <div className="grid gap-3 md:grid-cols-3">
+                                    <Toast
+                                        variant="success"
+                                        title="Has llegado al punto de encuentro"
+                                        description="La otra persona ya puede verlo en el chat."
+                                    />
+                                    <Toast
+                                        variant="error"
+                                        title="No se pudo confirmar la llegada"
+                                        description="Comprueba la conexion e intentalo de nuevo."
+                                    />
+                                    <Toast
+                                        variant="info"
+                                        title="Quedada confirmada para hoy"
+                                        description="Te avisaremos 15 minutos antes."
+                                    />
                                 </div>
                             </article>
 

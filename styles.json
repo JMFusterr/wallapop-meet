@@ -5,7 +5,7 @@
         "typography": {
             "family": {
                 "primary": "Wallie",
-                "fallback": "Inter, Arial, sans-serif"
+                "fallback": "system-ui, sans-serif"
             }
         }
     },
@@ -126,6 +126,96 @@
                 }
             },
             "semantic": {
+                "background": {
+                    "base": {
+                        "value": "{tokens.color.neutral.0}",
+                        "type": "color"
+                    },
+                    "surface": {
+                        "value": "{tokens.color.neutral.100}",
+                        "type": "color"
+                    },
+                    "accent_subtle": {
+                        "value": "{tokens.color.palette.brand.50}",
+                        "type": "color"
+                    }
+                },
+                "text": {
+                    "primary": {
+                        "value": "{tokens.color.neutral.900}",
+                        "type": "color"
+                    },
+                    "secondary": {
+                        "value": "{tokens.color.neutral.700}",
+                        "type": "color"
+                    },
+                    "inverse": {
+                        "value": "{tokens.color.neutral.0}",
+                        "type": "color"
+                    },
+                    "on_action": {
+                        "value": "{tokens.color.neutral.0}",
+                        "type": "color"
+                    },
+                    "on_dark": {
+                        "value": "{tokens.color.neutral.0}",
+                        "type": "color"
+                    }
+                },
+                "action": {
+                    "primary": {
+                        "value": "{tokens.color.palette.brand.500}",
+                        "type": "color"
+                    },
+                    "primary_hover": {
+                        "value": "{tokens.color.palette.brand.600}",
+                        "type": "color"
+                    },
+                    "primary_pressed": {
+                        "value": "{tokens.color.palette.brand.700}",
+                        "type": "color"
+                    },
+                    "disabled_bg": {
+                        "value": "{tokens.color.neutral.200}",
+                        "type": "color"
+                    },
+                    "disabled_text": {
+                        "value": "{tokens.color.neutral.400}",
+                        "type": "color"
+                    }
+                },
+                "border": {
+                    "divider": {
+                        "value": "{tokens.color.neutral.200}",
+                        "type": "color"
+                    },
+                    "strong": {
+                        "value": "{tokens.color.neutral.300}",
+                        "type": "color"
+                    },
+                    "focus": {
+                        "value": "{tokens.color.palette.brand.500}",
+                        "type": "color"
+                    },
+                    "error": {
+                        "value": "{tokens.color.palette.error.500}",
+                        "type": "color"
+                    }
+                },
+                "feedback": {
+                    "success": {
+                        "value": "{tokens.color.palette.brand.700}",
+                        "type": "color"
+                    },
+                    "error": {
+                        "value": "{tokens.color.palette.error.600}",
+                        "type": "color"
+                    },
+                    "info": {
+                        "value": "{tokens.color.neutral.700}",
+                        "type": "color"
+                    }
+                },
                 "warning": {
                     "base": {
                         "value": "{tokens.color.palette.warning.500}",
@@ -572,9 +662,10 @@
     "components": {
         "button": {
             "primary": {
-                "background": "{tokens.color.brand.primary}",
-                "background_hover": "{tokens.color.brand.primary_hover}",
-                "text_color": "{tokens.color.brand.on_primary}",
+                "background": "{tokens.color.semantic.action.primary}",
+                "background_hover": "{tokens.color.semantic.action.primary_hover}",
+                "background_pressed": "{tokens.color.semantic.action.primary_pressed}",
+                "text_color": "{tokens.color.semantic.text.on_action}",
                 "radius": "{tokens.radius.200}",
                 "padding_y": "{tokens.spacing.300}",
                 "padding_x": "{tokens.spacing.400}",
@@ -617,8 +708,8 @@
                 "font_weight": "{tokens.typography.weight.medium}"
             },
             "disabled": {
-                "background": "{tokens.color.neutral.200}",
-                "text_color": "{tokens.color.text.disabled}",
+                "background": "{tokens.color.semantic.action.disabled_bg}",
+                "text_color": "{tokens.color.semantic.action.disabled_text}",
                 "opacity": "{tokens.opacity.disabled}"
             }
         },
@@ -637,8 +728,10 @@
             "padding": "{tokens.spacing.400}"
         },
         "toast": {
-            "background": "{tokens.color.neutral.900}",
-            "text_color": "{tokens.color.text.inverse}",
+            "background": "{tokens.color.semantic.feedback.info}",
+            "background_success": "{tokens.color.semantic.feedback.success}",
+            "background_error": "{tokens.color.semantic.feedback.error}",
+            "text_color": "{tokens.color.semantic.text.on_dark}",
             "radius": "{tokens.radius.200}",
             "shadow": "{tokens.shadow.200}"
         },
@@ -665,13 +758,13 @@
         },
         "badge": {
             "success": {
-                "background": "{tokens.color.brand.primary}",
-                "text_color": "{tokens.color.text.inverse}",
+                "background": "{tokens.color.semantic.feedback.success}",
+                "text_color": "{tokens.color.semantic.text.inverse}",
                 "radius": "{tokens.radius.pill}"
             },
             "error": {
-                "background": "{tokens.color.semantic.error.base}",
-                "text_color": "{tokens.color.text.inverse}",
+                "background": "{tokens.color.semantic.feedback.error}",
+                "text_color": "{tokens.color.semantic.text.inverse}",
                 "radius": "{tokens.radius.pill}"
             }
         },

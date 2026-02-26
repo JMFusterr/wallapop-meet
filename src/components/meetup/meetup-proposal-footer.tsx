@@ -31,12 +31,12 @@ function MeetupProposalFooter({
     : null
   const attendanceColorClass =
     resolvedAttendanceRate === null
-      ? "text-[#4A5A63]"
+      ? "text-[var(--text-secondary)]"
       : resolvedAttendanceRate > 90
-        ? "text-[var(--wm-color-input-ring-success)]"
+        ? "text-[var(--feedback-success)]"
         : resolvedAttendanceRate >= 70
-          ? "text-[#F4A000]"
-          : "text-[var(--wm-color-semantic-error)]"
+          ? "text-[var(--feedback-warning)]"
+          : "text-[var(--feedback-error)]"
   const attendanceLabel = hasAttendance
     ? resolvedAttendanceRate !== null && resolvedAttendanceRate < 70
       ? "Baja asistencia a quedadas"
@@ -44,7 +44,7 @@ function MeetupProposalFooter({
     : null
 
   return (
-    <div className="mt-3 border-t border-[#E8ECEF] px-4 py-3">
+    <div className="mt-3 border-t border-[var(--border-divider)] px-4 py-3">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-2">
@@ -54,7 +54,7 @@ function MeetupProposalFooter({
               className="h-[42px] w-[42px] shrink-0 rounded-[10px] object-cover"
             />
             <div className="min-w-0">
-              <p className="truncate font-wallie-chunky text-[15px] leading-tight text-[#253238]">
+              <p className="truncate font-wallie-chunky text-[15px] leading-tight text-[var(--text-primary)]">
                 {userName}
               </p>
               {attendanceLabel ? (
@@ -62,7 +62,7 @@ function MeetupProposalFooter({
                   {attendanceLabel}
                 </p>
               ) : null}
-              <p className="truncate font-wallie-fit text-[12px] leading-tight text-[#4A5A63]">
+              <p className="truncate font-wallie-fit text-[12px] leading-tight text-[var(--text-secondary)]">
                 {itemTitle}
               </p>
             </div>
@@ -74,10 +74,10 @@ function MeetupProposalFooter({
             type="button"
             className={`rounded-full px-4 py-2 font-wallie-chunky text-[14px] ${
               actionDisabled
-                ? "cursor-not-allowed border border-[#B8C9CF] bg-[#E8ECEF] text-[#6E8792] shadow-none"
+                ? "cursor-not-allowed border border-[var(--border-strong)] bg-[var(--action-disabled-bg)] text-[var(--action-disabled-text)] shadow-none"
                 : actionTextTone === "light"
-                  ? "bg-[#13C1AC] text-white"
-                  : "bg-[#13C1AC] text-[#0F252B]"
+                  ? "bg-[var(--action-primary)] text-[var(--text-inverse)]"
+                  : "bg-[var(--action-primary)] text-[var(--text-on-action)]"
             }`}
             onClick={onAction}
             disabled={actionDisabled}

@@ -11,9 +11,9 @@ type BadgeProps = React.ComponentProps<"span"> & {
 }
 
 const badgeVariantClass: Record<BadgeVariant, string> = {
-  unread: "bg-[#D32069] text-white",
-  success: "bg-[#19A05D] text-white",
-  error: "bg-[var(--wm-color-semantic-error)] text-white",
+  unread: "bg-[var(--status-sold)] text-[var(--text-inverse)]",
+  success: "bg-[var(--feedback-success)] text-[var(--text-inverse)]",
+  error: "bg-[var(--feedback-error)] text-[var(--text-inverse)]",
 }
 
 function Badge({

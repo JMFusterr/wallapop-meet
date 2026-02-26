@@ -5,30 +5,30 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "relative inline-flex min-w-0 items-center justify-center whitespace-nowrap font-normal transition-[color,background-color,box-shadow,opacity] duration-150 ease-out outline-none focus-visible:ring-2 focus-visible:ring-[var(--wm-color-border-focus)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "relative inline-flex min-w-0 items-center justify-center whitespace-nowrap font-normal transition-[color,background-color,box-shadow,opacity] duration-150 ease-out outline-none focus-visible:ring-2 focus-visible:ring-[var(--border-focus)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         primary:
-          "rounded-[100px] border-[#3DD2BA] bg-[#3DD2BA] font-wallie-chunky text-[16px] leading-6 text-[#29363D] hover:brightness-[0.98] active:brightness-95",
+          "rounded-[100px] border-[var(--action-primary)] bg-[var(--action-primary)] font-wallie-chunky text-[16px] leading-6 text-[var(--text-on-action)] hover:border-[var(--action-primary-hover)] hover:bg-[var(--action-primary-hover)] active:border-[var(--action-primary-pressed)] active:bg-[var(--action-primary-pressed)] disabled:border-[var(--action-disabled-bg)] disabled:bg-[var(--action-disabled-bg)] disabled:text-[var(--action-disabled-text)] disabled:opacity-100",
         nav_expandable:
-          "rounded-none border-transparent bg-transparent font-wallie-fit text-[16px] leading-6 text-[#29363D] hover:bg-[rgba(41,54,61,0.06)] active:bg-[rgba(41,54,61,0.1)]",
-        tab: "rounded-[999px] border-transparent bg-transparent px-4 font-wallie-chunky text-[16px] leading-6 text-[#102A43] transition-[color,background-color] duration-150 ease-out hover:bg-[rgba(16,42,67,0.06)] active:bg-[rgba(16,42,67,0.12)] data-[selected=true]:bg-[#253238] data-[selected=true]:text-white aria-selected:bg-[#253238] aria-selected:text-white disabled:bg-transparent disabled:text-[#102A43] disabled:opacity-100",
+          "rounded-none border-transparent bg-transparent font-wallie-fit text-[16px] leading-6 text-[var(--text-primary)] hover:bg-[var(--bg-surface)] active:bg-[var(--bg-accent-subtle)]",
+        tab: "rounded-[999px] border-transparent bg-transparent px-4 font-wallie-chunky text-[16px] leading-6 text-[var(--text-primary)] transition-[color,background-color] duration-150 ease-out hover:bg-[var(--bg-surface)] active:bg-[var(--bg-accent-subtle)] data-[selected=true]:bg-[var(--text-primary)] data-[selected=true]:text-[var(--text-inverse)] aria-selected:bg-[var(--text-primary)] aria-selected:text-[var(--text-inverse)] disabled:bg-transparent disabled:text-[var(--action-disabled-text)] disabled:opacity-100",
         inline_action:
-          "rounded-[25px] border-transparent bg-[#3DAABF] font-wallie text-[14px] leading-[21px] text-white hover:brightness-[0.98] active:brightness-95",
-        icon: "rounded-full border-transparent bg-[#ECEFF1] text-black shadow-[0_4px_4px_0_rgba(37,50,56,0.15)] hover:brightness-[0.98] active:brightness-95",
+          "rounded-[25px] border-transparent bg-[var(--action-primary)] font-wallie text-[14px] leading-[21px] text-[var(--text-on-action)] hover:bg-[var(--action-primary-hover)] active:bg-[var(--action-primary-pressed)]",
+        icon: "rounded-full border-transparent bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-[0_4px_4px_0_rgba(37,50,56,0.15)] hover:brightness-[0.98] active:brightness-95",
         menu_close:
-          "rounded-[12px] border-transparent bg-white font-wallie text-[16px] leading-6 text-black hover:bg-[#f6f7f8] active:bg-[#eceff1]",
+          "rounded-[12px] border-transparent bg-[var(--bg-base)] font-wallie text-[16px] leading-6 text-[var(--text-primary)] hover:bg-[var(--bg-surface)] active:bg-[var(--border-divider)]",
 
         // Legacy aliases: mantener temporalmente para no romper usos existentes.
         secondary:
-          "rounded-[999px] border border-[#0FA58A] bg-white font-wallie-chunky text-[16px] text-[#0D907A] hover:bg-[#F5FFFD] active:bg-[#E9FAF7]",
+          "rounded-[999px] border border-[var(--action-primary-hover)] bg-[var(--bg-base)] font-wallie-chunky text-[16px] text-[var(--action-primary-hover)] hover:bg-[var(--bg-surface)] active:bg-[var(--bg-accent-subtle)]",
         ghost:
-          "border-none bg-transparent font-wallie-chunky text-[16px] text-[#6F7C83] underline underline-offset-2 hover:bg-transparent hover:text-[#4A5A63] active:bg-transparent",
+          "border-none bg-transparent font-wallie-chunky text-[16px] text-[var(--text-secondary)] underline underline-offset-2 hover:bg-transparent hover:text-[var(--text-primary)] active:bg-transparent",
         critical:
-          "rounded-[25px] border-transparent bg-[var(--wm-color-semantic-error)] text-[var(--wm-color-brand-on-primary)] hover:brightness-95",
+          "rounded-[25px] border-transparent bg-[var(--feedback-error)] text-[var(--text-inverse)] hover:brightness-95",
         link:
-          "border-none bg-transparent px-0 font-wallie-fit text-[14px] text-[#038673] underline underline-offset-2 hover:text-[#0FA896] active:text-[#0C8E7E]",
+          "border-none bg-transparent px-0 font-wallie-fit text-[14px] text-[var(--action-primary)] underline underline-offset-2 hover:text-[var(--action-primary-hover)] active:text-[var(--action-primary-pressed)]",
       },
       size: {
         sm: "h-9 px-3 text-[14px]",

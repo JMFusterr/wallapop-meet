@@ -43,20 +43,20 @@ const stepClassName: Record<
     { dot: string; text: string }
 > = {
     pending: {
-        dot: "bg-[#D3DEE2]",
-        text: "text-[#6E8792]",
+        dot: "bg-[var(--border-strong)]",
+        text: "text-[var(--text-secondary)]",
     },
     active: {
-        dot: "bg-[#13C1AC]",
-        text: "text-[#253238]",
+        dot: "bg-[var(--action-primary)]",
+        text: "text-[var(--text-primary)]",
     },
     done: {
-        dot: "bg-[#253238]",
-        text: "text-[#253238]",
+        dot: "bg-[var(--text-primary)]",
+        text: "text-[var(--text-primary)]",
     },
     terminal: {
-        dot: "bg-[#FF5A5F]",
-        text: "text-[#253238]",
+        dot: "bg-[var(--feedback-error)]",
+        text: "text-[var(--text-primary)]",
     },
 }
 

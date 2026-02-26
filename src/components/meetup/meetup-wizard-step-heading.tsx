@@ -17,15 +17,15 @@ function MeetupWizardStepHeading({
         <button
           type="button"
           aria-label="Volver al paso anterior"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--bg-surface)] text-[var(--text-primary)]"
           onClick={onBack}
         >
           <WallapopIcon name="arrow_left" size="small" />
         </button>
-        <span className="font-wallie-fit text-[13px] text-[#4A5A63]">{caption}</span>
+        <span className="font-wallie-fit text-[13px] text-[var(--text-secondary)]">{caption}</span>
       </div>
       {title ? (
-        <h3 className="font-wallie-chunky text-[20px] leading-[1.12] text-[#253238] md:text-[22px]">
+        <h3 className="font-wallie-chunky text-[20px] leading-[1.12] text-[var(--text-primary)] md:text-[22px]">
           {title}
         </h3>
       ) : null}
