@@ -45,9 +45,10 @@ function ChatListItem({
       data-slot="chat-list-item"
       data-selected={selected}
       className={cn(
-        "flex h-[var(--wm-size-100)] w-full cursor-pointer items-start gap-3 border-0 bg-transparent pl-5 pt-5 pr-3 pb-5 text-left",
+        "relative flex h-[var(--wm-size-100)] w-full cursor-pointer items-start gap-3 border-0 bg-transparent pl-5 pt-5 pr-3 pb-5 text-left",
         showDivider && "border-b border-[color:var(--wm-color-border-default)]",
         "transition-colors hover:bg-[color:var(--wm-color-background-surface)] data-[selected=true]:bg-[color:var(--wm-color-background-surface)]",
+        "data-[selected=true]:before:absolute data-[selected=true]:before:inset-y-0 data-[selected=true]:before:left-0 data-[selected=true]:before:w-[var(--wm-size-2)] data-[selected=true]:before:bg-[color:var(--action-primary)] data-[selected=true]:before:content-['']",
         className
       )}
       {...props}
