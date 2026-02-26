@@ -160,142 +160,173 @@ function ChatConversationHeader({
             )}
             {...props}
         >
-            <div className="flex items-center justify-between">
-                {onBack ? (
-                    <IconButton
-                        label={backButtonLabel}
-                        icon={<WallapopIcon name="arrow_left" size="small" />}
-                        variant="menu_close"
-                        onClick={onBack}
-                        className="h-8 w-8 bg-transparent p-0 text-[color:var(--text-primary)]"
-                    />
-                ) : (
-                    <span className="h-8 w-8" aria-hidden />
+            <div
+                className={cn(
+                    "overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out motion-reduce:transition-none",
+                    isExpanded ? "pointer-events-none max-h-0 opacity-0" : "max-h-[var(--wm-size-180)] opacity-100"
                 )}
+            >
+                <div className="grid w-full grid-cols-[auto_1fr_auto] items-start gap-x-3">
+                    {onBack ? (
+                        <IconButton
+                            label={backButtonLabel}
+                            icon={<WallapopIcon name="arrow_left" size="small" />}
+                            variant="menu_close"
+                            onClick={onBack}
+                            className="h-8 w-8 bg-transparent p-0 text-[color:var(--text-primary)]"
+                        />
+                    ) : (
+                        <span className="h-8 w-8" aria-hidden />
+                    )}
 
-                <IconButton
-                    label={menuLabel ?? `Mas opciones de la conversacion con ${userName}`}
-                    icon={<WallapopIcon name="ellipsis_horizontal" size={16} strokeWidth={1.8} />}
-                    variant="menu_close"
-                    onClick={onMenuClick}
-                    className="h-8 w-8 rounded-full bg-transparent p-0 text-[color:var(--text-tertiary)] hover:bg-[color:var(--bg-surface)]"
-                />
+                    <button
+                        type="button"
+                        className="grid min-w-0 grid-cols-[var(--wm-size-42)_1fr_var(--wm-size-34)] items-start gap-x-3 text-left"
+                        onClick={toggleExpanded}
+                        aria-expanded={false}
+                        aria-label={`Mostrar detalles del chat con ${userName}`}
+                    >
+                        <ProductImage
+                            src={itemImageSrc}
+                            alt={itemImageAlt}
+                            statusIcon={productStatusIcon}
+                            statusIconPosition="center"
+                            className="h-[var(--wm-size-42)] w-[var(--wm-size-42)]"
+                        />
+                        <div className="min-w-0">
+                            <p className="truncate font-wallie-chunky text-[length:var(--wm-size-19)] leading-[var(--wm-size-21)] text-[color:var(--text-primary)]">
+                                {itemPrice}
+                            </p>
+                            <p className="truncate pt-0.5 font-wallie-fit text-[length:var(--wm-size-15)] leading-[var(--wm-size-19)] text-[color:var(--text-primary)]">
+                                {itemTitle}
+                            </p>
+                        </div>
+                        {profileImageSrc ? (
+                            <img
+                                src={profileImageSrc}
+                                alt={profileImageAlt}
+                                className="h-[var(--wm-size-34)] w-[var(--wm-size-34)] rounded-full border border-[color:var(--border-strong)] object-cover"
+                            />
+                        ) : (
+                            <div
+                                className="h-[var(--wm-size-34)] w-[var(--wm-size-34)] rounded-full border border-[color:var(--border-strong)] bg-[color:var(--bg-surface)]"
+                                aria-hidden
+                            />
+                        )}
+                    </button>
+
+                    <IconButton
+                        label={menuLabel ?? `Mas opciones de la conversacion con ${userName}`}
+                        icon={<WallapopIcon name="ellipsis_horizontal" size={16} strokeWidth={1.8} />}
+                        variant="menu_close"
+                        onClick={onMenuClick}
+                        className="h-8 w-8 rounded-full bg-transparent p-0 text-[color:var(--text-tertiary)] hover:bg-[color:var(--bg-surface)]"
+                    />
+                </div>
             </div>
 
             <div
                 className={cn(
-                    "overflow-hidden transition-[max-height,opacity,transform] duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] motion-reduce:transition-none",
-                    isExpanded
-                        ? "pointer-events-none max-h-0 -translate-y-0.5 opacity-0"
-                        : "max-h-[var(--wm-size-180)] translate-y-0 opacity-100"
+                    "overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out motion-reduce:transition-none",
+                    isExpanded ? "max-h-[var(--wm-size-460)] opacity-100" : "pointer-events-none max-h-0 opacity-0"
                 )}
             >
+                <div className="mb-2 flex items-center justify-between">
+                    {onBack ? (
+                        <IconButton
+                            label={backButtonLabel}
+                            icon={<WallapopIcon name="arrow_left" size="small" />}
+                            variant="menu_close"
+                            onClick={onBack}
+                            className="h-8 w-8 bg-transparent p-0 text-[color:var(--text-primary)]"
+                        />
+                    ) : (
+                        <span className="h-8 w-8" aria-hidden />
+                    )}
+
+                    <IconButton
+                        label={menuLabel ?? `Mas opciones de la conversacion con ${userName}`}
+                        icon={<WallapopIcon name="ellipsis_horizontal" size={16} strokeWidth={1.8} />}
+                        variant="menu_close"
+                        onClick={onMenuClick}
+                        className="h-8 w-8 rounded-full bg-transparent p-0 text-[color:var(--text-tertiary)] hover:bg-[color:var(--bg-surface)]"
+                    />
+                </div>
+
                 <button
                     type="button"
-                    className="mt-2 grid w-full grid-cols-[var(--wm-size-42)_1fr_var(--wm-size-34)] items-start gap-x-3 text-left"
+                    className="grid w-full grid-cols-[var(--wm-size-110)_1fr] gap-x-3 text-left"
                     onClick={toggleExpanded}
-                    aria-expanded={false}
-                    aria-label={`Mostrar detalles del chat con ${userName}`}
+                    aria-expanded={true}
+                    aria-label={`Ocultar detalles del chat con ${userName}`}
                 >
                     <ProductImage
                         src={itemImageSrc}
                         alt={itemImageAlt}
                         statusIcon={productStatusIcon}
-                        statusIconPosition="center"
-                        className="h-[var(--wm-size-42)] w-[var(--wm-size-42)]"
+                        className={cn(
+                            "row-span-2 self-stretch transition-[width,height,transform] duration-500 ease-in-out motion-reduce:transition-none",
+                            isExpanded
+                                ? "h-full w-[var(--wm-size-110)] scale-100"
+                                : "h-[var(--wm-size-42)] w-[var(--wm-size-42)] scale-95"
+                        )}
                     />
-                    <div className="min-w-0">
-                        <p className="truncate font-wallie-chunky text-[length:var(--wm-size-19)] leading-[var(--wm-size-21)] text-[color:var(--text-primary)]">
+
+                    <div
+                        className={cn(
+                            "min-w-0 pb-1 transition-opacity duration-500 ease-in-out motion-reduce:transition-none",
+                            isExpanded ? "opacity-100" : "opacity-0"
+                        )}
+                    >
+                        <p className="truncate font-wallie-chunky text-[length:var(--wm-size-22)] leading-[var(--wm-size-24)] text-[color:var(--text-primary)]">
                             {itemPrice}
                         </p>
-                        <p className="truncate pt-0.5 font-wallie-fit text-[length:var(--wm-size-15)] leading-[var(--wm-size-19)] text-[color:var(--text-primary)]">
+                        <p className="truncate pt-0.5 font-wallie-fit text-[length:var(--wm-size-16)] leading-[var(--wm-size-20)] text-[color:var(--text-primary)]">
                             {itemTitle}
                         </p>
                     </div>
-                    {profileImageSrc ? (
-                        <img
-                            src={profileImageSrc}
-                            alt={profileImageAlt}
-                            className="h-[var(--wm-size-34)] w-[var(--wm-size-34)] rounded-full border border-[color:var(--border-strong)] object-cover"
-                        />
-                    ) : (
-                        <div
-                            className="h-[var(--wm-size-34)] w-[var(--wm-size-34)] rounded-full border border-[color:var(--border-strong)] bg-[color:var(--bg-surface)]"
-                            aria-hidden
-                        />
-                    )}
-                </button>
-            </div>
 
-            <div
-                className={cn(
-                    "overflow-hidden transition-[max-height,opacity,transform] duration-320 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] motion-reduce:transition-none",
-                    isExpanded
-                        ? "max-h-[var(--wm-size-420)] translate-y-0 opacity-100"
-                        : "pointer-events-none max-h-0 -translate-y-0.5 opacity-0"
-                )}
-            >
-                <button
-                    type="button"
-                    className="mt-2 w-full text-left"
-                    onClick={toggleExpanded}
-                    aria-expanded={true}
-                    aria-label={`Ocultar detalles del chat con ${userName}`}
-                >
-                    <div className="grid grid-cols-[var(--wm-size-110)_1fr] gap-x-3">
-                        <ProductImage
-                            src={itemImageSrc}
-                            alt={itemImageAlt}
-                            statusIcon={productStatusIcon}
-                            className="row-span-2 h-full w-[var(--wm-size-110)] self-stretch"
-                        />
-
-                        <div className="min-w-0 pb-1">
-                            <p className="truncate font-wallie-chunky text-[length:var(--wm-size-22)] leading-[var(--wm-size-24)] text-[color:var(--text-primary)]">
-                                {itemPrice}
-                            </p>
-                            <p className="truncate pt-0.5 font-wallie-fit text-[length:var(--wm-size-16)] leading-[var(--wm-size-20)] text-[color:var(--text-primary)]">
-                                {itemTitle}
+                    <div
+                        className={cn(
+                            "relative min-w-0 border-t border-[color:var(--border-divider)] pt-1 transition-opacity duration-500 ease-in-out motion-reduce:transition-none",
+                            isExpanded ? "opacity-100" : "opacity-0"
+                        )}
+                    >
+                        {profileImageSrc ? (
+                            <img
+                                src={profileImageSrc}
+                                alt={profileImageAlt}
+                                className="absolute top-1 right-0 h-[var(--wm-size-60)] w-[var(--wm-size-60)] rounded-full border border-[color:var(--border-strong)] object-cover"
+                            />
+                        ) : (
+                            <div
+                                className="absolute top-1 right-0 h-[var(--wm-size-60)] w-[var(--wm-size-60)] rounded-full border border-[color:var(--border-strong)] bg-[color:var(--bg-surface)]"
+                                aria-hidden
+                            />
+                        )}
+                        <div className="pr-[var(--wm-size-60)]">
+                            <p className="truncate font-wallie-chunky text-[length:var(--wm-size-20)] leading-[var(--wm-size-21)] text-[color:var(--text-secondary)]">
+                                {userName}
                             </p>
                         </div>
-
-                        <div className="relative min-w-0 border-t border-[color:var(--border-divider)] pt-1">
-                            {profileImageSrc ? (
-                                <img
-                                    src={profileImageSrc}
-                                    alt={profileImageAlt}
-                                    className="absolute top-1 right-0 h-[var(--wm-size-60)] w-[var(--wm-size-60)] rounded-full border border-[color:var(--border-strong)] object-cover"
-                                />
-                            ) : (
-                                <div
-                                    className="absolute top-1 right-0 h-[var(--wm-size-60)] w-[var(--wm-size-60)] rounded-full border border-[color:var(--border-strong)] bg-[color:var(--bg-surface)]"
-                                    aria-hidden
-                                />
-                            )}
-                            <div className="pr-[var(--wm-size-60)]">
-                                <p className="truncate font-wallie-chunky text-[length:var(--wm-size-20)] leading-[var(--wm-size-21)] text-[color:var(--text-secondary)]">
-                                    {userName}
+                        <div className="mt-0 pr-[var(--wm-size-60)] space-y-0">
+                            {typeof rating === "number" ? <StarRating rating={rating} /> : null}
+                            {distanceLabel ? (
+                                <p className="flex items-center gap-2 truncate font-wallie-fit text-[length:var(--wm-size-16)] leading-[var(--wm-size-20)] text-[color:var(--text-secondary)]">
+                                    <MapPin size={15} />
+                                    {distanceLabel}
                                 </p>
-                            </div>
-                            <div className="mt-0 pr-[var(--wm-size-60)] space-y-0">
-                                {typeof rating === "number" ? <StarRating rating={rating} /> : null}
-                                {distanceLabel ? (
-                                    <p className="flex items-center gap-2 truncate font-wallie-fit text-[length:var(--wm-size-16)] leading-[var(--wm-size-20)] text-[color:var(--text-secondary)]">
-                                        <MapPin size={15} />
-                                        {distanceLabel}
-                                    </p>
-                                ) : null}
-                                {attendanceMessage ? (
-                                    <p
-                                        className={cn(
-                                            "truncate font-wallie-fit text-[length:var(--wm-size-16)] leading-[var(--wm-size-20)]",
-                                            attendanceMessage.className
-                                        )}
-                                    >
-                                        {attendanceMessage.text}
-                                    </p>
-                                ) : null}
-                            </div>
+                            ) : null}
+                            {attendanceMessage ? (
+                                <p
+                                    className={cn(
+                                        "truncate font-wallie-fit text-[length:var(--wm-size-16)] leading-[var(--wm-size-20)]",
+                                        attendanceMessage.className
+                                    )}
+                                >
+                                    {attendanceMessage.text}
+                                </p>
+                            ) : null}
                         </div>
                     </div>
                 </button>
