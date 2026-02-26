@@ -39,7 +39,10 @@ Regla operativa obligatoria:
 - Mantener nombres de estado alineados con la máquina de estados:
   `PROPOSED`, `COUNTER_PROPOSED`, `CONFIRMED`, `ARRIVED`, `COMPLETED`, `EXPIRED`, `CANCELLED`.
 - Mantener reglas de negocio explícitas y cercanas a la funcionalidad (ventana de llegada, inicio exclusivo del vendedor, etc.).
-- Evitar valores hardcodeados en componentes cuando existan tokens.
+- Prohibido hardcodear valores visuales en `src` (hex/rgb/hsl/oklch, `px`, radios, sombras, opacidades), salvo en la capa canónica de tokens (`styles.json` y variables raíz de `src/index.css`).
+- No añadir estilos inline para UI (`style={...}`) salvo casos técnicos justificados (ejemplo: posición dinámica de mapa) y documentados en PR.
+- Toda nueva UI debe componerse con componentes reutilizables del sistema de diseño; no crear variantes ad-hoc duplicadas en páginas de producto.
+- Si se requiere un patrón nuevo, primero crear/actualizar componente base en `src/components/ui` o `src/components/meetup` y después consumirlo.
 
 ## Directrices específicas del sistema de diseño
 
@@ -53,6 +56,8 @@ Al modificar tokens o componentes:
 - Actualizar `styles.json` y la documentación correspondiente en `plans/design-system/`.
 - Verificar que estados críticos (`disabled`, `loading`, `error`) estén cubiertos.
 - Registrar siempre las stories de componentes bajo `Design System/*` en Storybook (no crear apartados paralelos como `Elements/*`).
+- Ejecutar `npm run audit:design-system` y mantener `0` incidencias nuevas antes de cerrar la tarea.
+- Mantener trazabilidad token -> alias semántico -> componente; no referenciar valores literales directamente desde componentes.
 
 ## Guía de testing
 

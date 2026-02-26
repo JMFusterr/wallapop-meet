@@ -1,6 +1,6 @@
-import * as React from "react"
+﻿import * as React from "react"
 import L from "leaflet"
-import { Banknote, MapPin, QrCode, Search, Smartphone } from "lucide-react"
+import { Banknote, MapPin, QrCode, Smartphone } from "lucide-react"
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet"
 
 import { MeetupCard } from "@/components/meetup/meetup-card"
@@ -18,10 +18,14 @@ import { ChatListItem } from "@/components/ui/chat-list-item"
 import { ChatMessageBubble } from "@/components/ui/chat-message-bubble"
 import { ChatProductCard, type ChatProductCardViewerRole } from "@/components/ui/chat-product-card"
 import { ChatSecurityBanner } from "@/components/ui/chat-security-banner"
+import { Button } from "@/components/ui/button"
 import { CalendarPicker } from "@/components/ui/calendar-picker"
 import { toLocalDateValue } from "@/components/ui/calendar-picker.utils"
+import { IconButton } from "@/components/ui/icon-button"
 import { InboxBottomNav } from "@/components/ui/inbox-bottom-nav"
 import { Input } from "@/components/ui/input"
+import { LocationSearchInput } from "@/components/ui/location-search-input"
+import { SelectableOption } from "@/components/ui/selectable-option"
 import { getOrCreateLocalChatUserId } from "@/lib/local-chat-user-id"
 import { Select } from "@/components/ui/select"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
@@ -371,7 +375,7 @@ const initialMessagesByConversation: Record<string, Message[]> = {
         },
         {
             id: "m-b-3",
-            text: "Perfecto, me cuadra. Cuando puedas mándame propuesta de quedada.",
+            text: "Perfecto, me cuadra. Cuando puedas mÃ¡ndame propuesta de quedada.",
             variant: "received",
             time: formatTime(new Date(tsMinutesAgo(14))),
             createdAt: tsMinutesAgo(14),
@@ -1062,10 +1066,17 @@ function paymentMethodLabel(method: MeetupPaymentMethod): string {
 function ProposalSelectionIndicator({ selected }: { selected: boolean }) {
     return (
         <span
-            className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white ${selected ? "border-[8px] border-[#253238]" : "border-2 border-[#6E8792]"
+            className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 transition-[background-color,border-color,transform] duration-150 ease-out motion-reduce:transition-none ${selected
+                ? "border-[color:var(--text-primary)] bg-[color:var(--text-primary)]"
+                : "border-[color:var(--text-secondary)] bg-white"
                 }`}
             aria-hidden
-        />
+        >
+            <span
+                className={`h-2.5 w-2.5 rounded-full bg-white transition-transform duration-150 ease-out motion-reduce:transition-none ${selected ? "scale-100" : "scale-0"
+                    }`}
+            />
+        </span>
     )
 }
 
@@ -1073,14 +1084,14 @@ const safePointMarkerIcon = L.divIcon({
     className: "",
     html: `
         <span style="display:inline-flex;flex-direction:column;align-items:center;">
-            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:#13C1AC;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.22);padding:0 10px;">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:var(--action-primary);border:2px solid var(--text-inverse);box-shadow:0 4px 10px var(--wm-shadow-marker);padding:0 10px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
                 </svg>
             </span>
             <svg viewBox="0 0 14 8" width="14" height="8" style="display:block;margin-top:-2px;" aria-hidden="true">
-                <path d="M1 0H13L7 7Z" fill="#13C1AC"></path>
-                <path d="M1 0L7 7L13 0" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M1 0H13L7 7Z" fill="var(--action-primary)"></path>
+                <path d="M1 0L7 7L13 0" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
         </span>
     `,
@@ -1092,14 +1103,14 @@ const selectedSafePointMarkerIcon = L.divIcon({
     className: "",
     html: `
         <span style="display:inline-flex;flex-direction:column;align-items:center;">
-            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:#038673;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.28);padding:0 10px;">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:var(--action-primary-pressed);border:2px solid var(--text-inverse);box-shadow:0 4px 10px var(--wm-shadow-marker);padding:0 10px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
                 </svg>
             </span>
             <svg viewBox="0 0 14 8" width="14" height="8" style="display:block;margin-top:-2px;" aria-hidden="true">
-                <path d="M1 0H13L7 7Z" fill="#038673"></path>
-                <path d="M1 0L7 7L13 0" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M1 0H13L7 7Z" fill="var(--action-primary-pressed)"></path>
+                <path d="M1 0L7 7L13 0" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
         </span>
     `,
@@ -1110,7 +1121,7 @@ const selectedSafePointMarkerIcon = L.divIcon({
 const userPositionIcon = L.divIcon({
     className: "",
     html: `
-        <span style="display:block;height:16px;width:16px;border-radius:999px;background:#13C1AC;border:2px solid #FFFFFF;box-shadow:0 0 0 4px rgba(19,193,172,0.24);"></span>
+        <span style="display:block;height:16px;width:16px;border-radius:999px;background:var(--action-primary);border:2px solid var(--text-inverse);box-shadow:0 0 0 4px var(--wm-surface-overlay-hover);"></span>
     `,
     iconSize: [16, 16],
     iconAnchor: [8, 8],
@@ -1120,8 +1131,8 @@ const customPointIcon = L.divIcon({
     className: "",
     html: `
         <span style="display:inline-flex;flex-direction:column;align-items:center;">
-            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:#0D907A;border:2px solid #FFFFFF;box-shadow:0 4px 10px rgba(37,50,56,0.28);padding:0 10px;">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:var(--action-primary-pressed);border:2px solid var(--text-inverse);box-shadow:0 4px 10px var(--wm-shadow-marker);padding:0 10px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="m11 17 2 2a1 1 0 1 0 3-3"></path>
                     <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path>
                     <path d="m21 3 1 11h-2"></path>
@@ -1130,8 +1141,8 @@ const customPointIcon = L.divIcon({
                 </svg>
             </span>
             <svg viewBox="0 0 14 8" width="14" height="8" style="display:block;margin-top:-2px;" aria-hidden="true">
-                <path d="M1 0H13L7 7Z" fill="#0D907A"></path>
-                <path d="M1 0L7 7L13 0" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M1 0H13L7 7Z" fill="var(--action-primary-pressed)"></path>
+                <path d="M1 0L7 7L13 0" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
         </span>
     `,
@@ -1171,18 +1182,17 @@ function MeetupMapPreviewModal({
     onClose: () => void
 }) {
     return (
-        <div className="fixed inset-0 z-[60] bg-[#253238]/55 p-0 md:p-6">
-            <section className="flex h-full w-full flex-col bg-white md:mx-auto md:h-[88vh] md:max-w-[760px] md:rounded-[18px]">
-                <header className="flex items-center justify-between border-b border-[#E8ECEF] px-4 py-3">
-                    <p className="font-wallie-chunky text-[18px] text-[#253238]">Mapa de la quedada</p>
-                    <button
-                        type="button"
-                        aria-label="Cerrar mapa"
+        <div className="fixed inset-0 z-[60] bg-[color:var(--text-primary)]/55 p-0 md:p-6">
+            <section className="flex h-full w-full flex-col bg-white md:mx-auto md:h-[88vh] md:max-w-[var(--wm-size-760)] md:rounded-[var(--wm-size-18)]">
+                <header className="flex items-center justify-between border-b border-[color:var(--border-divider)] px-4 py-3">
+                    <p className="font-wallie-chunky text-[length:var(--wm-size-18)] text-[color:var(--text-primary)]">Mapa de la quedada</p>
+                    <IconButton
+                        label="Cerrar mapa"
+                        icon={<WallapopIcon name="cross" size="small" />}
+                        variant="menu_close"
                         onClick={onClose}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]"
-                    >
-                        <WallapopIcon name="cross" size="small" />
-                    </button>
+                        className="h-9 w-9 rounded-full bg-[color:var(--bg-surface)] p-0 text-[color:var(--text-primary)]"
+                    />
                 </header>
                 <div className="min-h-0 flex-1">
                     <MapContainer
@@ -1385,41 +1395,36 @@ function MeetupProposalOverlay({
         parsedFinalPriceValue !== null && parsedFinalPriceValue > DAC7_ALERT_THRESHOLD_EUR
     const priceInputError =
         isStepThreePriceMissing
-            ? "Introduce un importe de 0 € o superior."
+            ? "Introduce un importe de 0 â‚¬ o superior."
             : isFinalPriceAboveMaximum
-                ? `El importe maximo permitido es ${MAX_FINAL_PRICE_EUR} €.`
+                ? `El importe maximo permitido es ${MAX_FINAL_PRICE_EUR} â‚¬.`
                 : undefined
     const priceInputAlertText =
         "Has excedido el importe maximo anual y Wallapop debera informar a Hacienda bajo la normativa DAC7."
 
     return (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#253238]/50 p-0 md:items-center md:p-6">
-            <section className="flex h-[94vh] w-full max-h-[94vh] flex-col rounded-t-[22px] bg-white shadow-[0_16px_48px_rgba(37,50,56,0.22)] md:h-[88vh] md:max-h-[88vh] md:max-w-[760px] md:rounded-[20px]">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-[color:var(--text-primary)]/50 p-0 md:items-center md:p-6">
+            <section className="flex h-[94vh] w-full max-h-[94vh] flex-col rounded-t-[var(--wm-size-22)] bg-white shadow-[0_16px_48px_var(--wm-shadow-marker)] md:h-[88vh] md:max-h-[88vh] md:max-w-[var(--wm-size-760)] md:rounded-[var(--wm-size-20)]">
                 {mapPickerOpen ? (
                     <div className="flex min-h-0 flex-1 flex-col">
-                        <div className="border-b border-[#E8ECEF] px-4 py-3">
+                        <div className="border-b border-[color:var(--border-divider)] px-4 py-3">
                             <div className="flex items-center justify-between">
-                                <button
-                                    type="button"
-                                    aria-label="Volver al paso anterior"
-                                    className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#253238]"
+                                <IconButton
+                                    label="Volver al paso anterior"
+                                    icon={<WallapopIcon name="arrow_left" size={20} />}
+                                    variant="menu_close"
                                     onClick={onCloseMapPicker}
-                                >
-                                    <WallapopIcon name="arrow_left" size={20} />
-                                </button>
-                                <h2 className="font-wallie-chunky text-[22px] text-[#253238] md:text-[24px]">Elige un punto</h2>
+                                    className="h-10 w-10 rounded-full bg-transparent p-0 text-[color:var(--text-primary)]"
+                                />
+                                <h2 className="font-wallie-chunky text-[length:var(--wm-size-22)] text-[color:var(--text-primary)] md:text-[length:var(--wm-size-24)]">Elige un punto</h2>
                                 <span className="h-10 w-10" aria-hidden />
                             </div>
-                            <label className="mt-3 flex items-center gap-2 rounded-full border border-[#9BB0B9] bg-[#F3F6F8] px-4 py-2.5">
-                                <Search size={16} className="text-[#9BB0B9]" aria-hidden />
-                                <input
-                                    type="text"
-                                    value={mapSearchValue}
-                                    onChange={(event) => onMapSearchChange(event.target.value)}
-                                    placeholder="¿Donde?"
-                                    className="w-full bg-transparent font-wallie-fit text-[16px] text-[#4A5A63] outline-none placeholder:text-[#9BB0B9]"
-                                />
-                            </label>
+                            <LocationSearchInput
+                                className="mt-3"
+                                value={mapSearchValue}
+                                onValueChange={onMapSearchChange}
+                                placeholder="¿Donde?"
+                            />
                         </div>
 
                         <div className="relative min-h-0 flex-1 overflow-hidden">
@@ -1465,32 +1470,32 @@ function MeetupProposalOverlay({
                             </MapContainer>
 
                             {mapSelectedPoint || isCustomPointSelected ? (
-                                <div className="absolute inset-x-3 bottom-3 z-1200 rounded-[16px] bg-white p-4 shadow-[0_10px_28px_rgba(37,50,56,0.2)]">
+                                <div className="absolute inset-x-3 bottom-3 z-1200 rounded-[var(--wm-size-16)] bg-white p-4 shadow-[var(--wm-shadow-modal)]">
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2">
                                                 {mapSelectedPoint ? (
-                                                    <span className="inline-flex text-[#253238]">
+                                                    <span className="inline-flex text-[color:var(--text-primary)]">
                                                         <SafeShieldGlyph className="h-4 w-4" />
                                                     </span>
                                                 ) : (
-                                                    <span className="inline-flex text-[#253238]">
+                                                    <span className="inline-flex text-[color:var(--text-primary)]">
                                                         <MapPin size={14} />
                                                     </span>
                                                 )}
-                                                <p className="font-wallie-chunky text-[20px] text-[#253238] md:text-[22px]">
+                                                <p className="font-wallie-chunky text-[length:var(--wm-size-20)] text-[color:var(--text-primary)] md:text-[length:var(--wm-size-22)]">
                                                     {mapSelectedPoint
                                                         ? mapSelectedPoint.name
                                                         : shortenLocationLabel(customLocationLabel || "Calle seleccionada")}
                                                 </p>
                                             </div>
-                                            <p className="mt-1 font-wallie-fit text-[14px] text-[#4A5A63]">
+                                            <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-tertiary)]">
                                                 {mapSelectedPoint ? mapSelectedPoint.address : (customLocationLabel || "Calle seleccionada")}
                                             </p>
                                         </div>
                                         <div className="shrink-0">
-                                            <p className="whitespace-nowrap font-wallie-chunky text-[15px] text-[#038673]">
-                                                <span className="inline-flex w-fit rounded-full bg-[#E6FAF6] px-3 py-1">
+                                            <p className="whitespace-nowrap font-wallie-chunky text-[length:var(--wm-size-15)] text-[color:var(--action-primary-pressed)]">
+                                                <span className="inline-flex w-fit rounded-full bg-[color:var(--bg-accent-subtle)] px-3 py-1">
                                                     {mapSelectedPoint
                                                         ? formatDistance(mapSelectedPoint.distanceMeters)
                                                         : formatDistance(customDistanceMeters ?? 0)}
@@ -1499,24 +1504,25 @@ function MeetupProposalOverlay({
                                         </div>
                                     </div>
                                     {mapSelectedPoint ? (
-                                        <p className="mt-2 inline-flex w-fit rounded-[8px] bg-[#E6FAF6] px-2 py-1 font-wallie-fit text-[13px] text-[#038673]">
+                                        <p className="mt-2 inline-flex w-fit rounded-[var(--wm-size-8)] bg-[color:var(--bg-accent-subtle)] px-2 py-1 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--action-primary-pressed)]">
                                             <span className="font-wallie-chunky">
                                                 {mapSelectedPoint.completedSales} ventas completadas
                                             </span>
                                             <span className="ml-1">en este punto seguro.</span>
                                         </p>
                                     ) : (
-                                        <p className="mt-2 inline-flex w-fit rounded-[8px] bg-[#FFF4E8] px-2 py-1 font-wallie-fit text-[13px] text-[#8A4A00]">
+                                        <p className="mt-2 inline-flex w-fit rounded-[var(--wm-size-8)] bg-[color:var(--bg-warning-subtle)] px-2 py-1 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-warning)]">
                                             Este punto no es un punto seguro verificado.
                                         </p>
                                     )}
-                                    <button
+                                    <Button
                                         type="button"
-                                        className="mt-4 w-full rounded-full bg-[#13C1AC] py-3 font-wallie-chunky text-[17px] text-[#0F252B]"
+                                        variant="primary"
+                                        className="mt-4 h-auto w-full rounded-full py-3 text-[length:var(--wm-size-17)] text-[color:var(--text-primary)]"
                                         onClick={onConfirmMapPickerPoint}
                                     >
                                         Seleccionar
-                                    </button>
+                                    </Button>
                                 </div>
                             ) : null}
                         </div>
@@ -1537,7 +1543,7 @@ function MeetupProposalOverlay({
                             onClose={onCancel}
                         />
                         {errorMessage ? (
-                            <p className="mx-4 mt-3 rounded-[8px] bg-[#FDEBEC] px-3 py-2 font-wallie-fit text-[13px] text-[#A81F2D]">
+                            <p className="mx-4 mt-3 rounded-[var(--wm-size-8)] bg-[color:var(--bg-error-subtle)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-error)]">
                                 {errorMessage}
                             </p>
                         ) : null}
@@ -1545,45 +1551,41 @@ function MeetupProposalOverlay({
                         <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
                             {step === 1 ? (
                                 <div className="mt-4 space-y-4">
-                                    <h3 className="font-wallie-chunky text-[20px] leading-[1.12] text-[#253238] md:text-[22px]">
+                                    <h3 className="font-wallie-chunky text-[length:var(--wm-size-20)] leading-[1.12] text-[color:var(--text-primary)] md:text-[length:var(--wm-size-22)]">
                                         Seleccionar punto de encuentro
                                     </h3>
                                     {visibleOptions.map((option) => {
                                         const isSelected = selectedOptionId === option.id
                                         return (
-                                            <button
+                                            <SelectableOption
                                                 key={option.id}
-                                                type="button"
                                                 onClick={() => onSelectPoint(option.id)}
-                                                className={`w-full rounded-[18px] border px-4 py-4 text-left ${isSelected
-                                                    ? "border-[#253238] shadow-[inset_0_0_0_1px_#253238]"
-                                                    : "border-[#B8C9CF]"
-                                                    }`}
+                                                selected={isSelected}
                                             >
                                                 <div className="flex items-start gap-3">
                                                     {option.kind === "safe" ? (
-                                                        <span className="mt-0.5 inline-flex text-[#253238]">
+                                                        <span className="mt-0.5 inline-flex text-[color:var(--text-primary)]">
                                                             <SafeShieldGlyph />
                                                         </span>
                                                     ) : (
-                                                        <span className="mt-0.5 inline-flex text-[#253238]">
+                                                        <span className="mt-0.5 inline-flex text-[color:var(--text-primary)]">
                                                             <MapPin size={16} />
                                                         </span>
                                                     )}
                                                     <div className="min-w-0 flex-1">
-                                                        <p className="font-wallie-chunky text-[18px] leading-tight text-[#253238] md:text-[19px]">
+                                                        <p className="font-wallie-chunky text-[length:var(--wm-size-18)] leading-tight text-[color:var(--text-primary)] md:text-[length:var(--wm-size-19)]">
                                                             {option.label}
                                                         </p>
-                                                        <p className="mt-1 font-wallie-fit text-[13px] text-[#4A5A63]">
+                                                        <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-tertiary)]">
                                                             {option.address}
                                                         </p>
                                                         <div className="mt-1 flex items-center gap-2">
                                                             {option.kind === "safe" ? (
                                                                 <>
-                                                                    <span className="rounded-full bg-[#E6FAF6] px-2 py-0.5 font-wallie-fit text-[12px] text-[#038673]">
+                                                                    <span className="rounded-full bg-[color:var(--bg-accent-subtle)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--action-primary-pressed)]">
                                                                         Punto seguro
                                                                     </span>
-                                                                    <span className="rounded-full bg-[#EEF3F5] px-2 py-0.5 font-wallie-fit text-[12px] text-[#4A5A63]">
+                                                                    <span className="rounded-full bg-[color:var(--bg-surface)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-tertiary)]">
                                                                         {option.completedSales ?? 0} ventas
                                                                     </span>
                                                                 </>
@@ -1594,29 +1596,28 @@ function MeetupProposalOverlay({
                                                         <ProposalSelectionIndicator selected={isSelected} />
                                                     </span>
                                                 </div>
-                                            </button>
+                                            </SelectableOption>
                                         )
                                     })}
 
-                                    <button
-                                        type="button"
+                                    <SelectableOption
                                         onClick={onOpenMapPicker}
-                                        className="w-full rounded-[18px] border border-[#B8C9CF] px-4 py-4 text-left"
+                                        selected={false}
                                     >
                                         <div className="flex items-center gap-3">
-                                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
+                                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
                                                 <WallapopIcon name="plus" size={16} />
                                             </span>
                                             <div className="min-w-0 flex-1">
-                                                <p className="font-wallie-chunky text-[18px] text-[#253238] md:text-[19px]">
+                                                <p className="font-wallie-chunky text-[length:var(--wm-size-18)] text-[color:var(--text-primary)] md:text-[length:var(--wm-size-19)]">
                                                     Elige un punto
                                                 </p>
-                                                <p className="font-wallie-fit text-[13px] text-[#6E8792]">
+                                                <p className="font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-tertiary)]">
                                                     Puede ser un punto personalizado u otro punto seguro.
                                                 </p>
                                             </div>
                                         </div>
-                                    </button>
+                                    </SelectableOption>
                                 </div>
                             ) : null}
 
@@ -1664,7 +1665,7 @@ function MeetupProposalOverlay({
                                                     timeOption < minTimeValue,
                                             })),
                                         ]}
-                                        className="rounded-[10px] bg-white px-3 py-2 font-wallie-fit text-[14px] text-[#253238] focus:border-[#3DD2BA]"
+                                        className="rounded-[var(--wm-size-10)] bg-white px-3 py-2 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-primary)] focus:border-[color:var(--action-primary)]"
                                     />
                                 </div>
                             ) : null}
@@ -1677,7 +1678,7 @@ function MeetupProposalOverlay({
                                         onBack={onBack}
                                     />
                                     <Input
-                                        label="Importe final acordado (€)"
+                                        label="Importe final acordado (â‚¬)"
                                         type="text"
                                         inputMode="decimal"
                                         min="0"
@@ -1691,7 +1692,7 @@ function MeetupProposalOverlay({
                                         showCharCounter={false}
                                     />
                                     {shouldShowDac7Alert ? (
-                                        <p className="rounded-[8px] bg-[#FFF4E8] px-2 py-2 font-wallie-fit text-[13px] text-[#8A4A00]">
+                                        <p className="rounded-[var(--wm-size-8)] bg-[color:var(--bg-surface)] px-2 py-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-warning)]">
                                             {priceInputAlertText}{" "}
                                             <a
                                                 href="https://ayuda.wallapop.com/hc/es-es/articles/19093732048785--Qu%C3%A9-es-DAC7-y-a-que-vendedores-de-Wallapop-les-afecta"
@@ -1699,13 +1700,13 @@ function MeetupProposalOverlay({
                                                 rel="noopener noreferrer"
                                                 className="font-wallie-chunky underline"
                                             >
-                                                Más información
+                                                MÃ¡s informaciÃ³n
                                             </a>
                                         </p>
                                     ) : null}
 
                                     <fieldset>
-                                        <legend className="mb-2 font-wallie-fit text-[13px] text-[#253238]">
+                                        <legend className="mb-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-primary)]">
                                             Preferencia de pago
                                         </legend>
                                         <div className="grid gap-3 sm:grid-cols-3">
@@ -1724,34 +1725,33 @@ function MeetupProposalOverlay({
                                             ).map(({ method, icon }) => {
                                                 const isSelected = paymentMethod === method
                                                 return (
-                                                    <button
+                                                    <SelectableOption
                                                         key={method}
-                                                        type="button"
                                                         onClick={() => onPaymentMethodChange(method)}
-                                                        className={`rounded-[18px] border px-4 py-3 text-left ${isStepThreePaymentMissing
-                                                            ? "border-2 border-[var(--wm-color-input-ring-error)]"
-                                                            : isSelected
-                                                                ? "border-[#253238] shadow-[inset_0_0_0_1px_#253238]"
-                                                                : "border-[var(--wm-color-input-ring-default)]"
-                                                            }`}
+                                                        selected={isSelected}
+                                                        className={isStepThreePaymentMissing
+                                                            ? "border-2 !border-[color:var(--wm-color-input-ring-error)] shadow-none"
+                                                            : !isSelected
+                                                                ? "border-[color:var(--wm-color-input-ring-default)]"
+                                                                : undefined}
                                                     >
                                                         <div className="flex items-center gap-3">
-                                                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6F8] text-[#253238]">
+                                                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
                                                                 {icon()}
                                                             </span>
                                                             <div className="min-w-0 flex-1">
-                                                                <p className="font-wallie-fit text-[14px] leading-[1.2] text-[#253238] md:text-[15px]">
+                                                                <p className="font-wallie-fit text-[length:var(--wm-size-14)] leading-[1.2] text-[color:var(--text-primary)] md:text-[length:var(--wm-size-15)]">
                                                                     {paymentMethodLabel(method)}
                                                                 </p>
                                                             </div>
                                                             <ProposalSelectionIndicator selected={isSelected} />
                                                         </div>
-                                                    </button>
+                                                    </SelectableOption>
                                                 )
                                             })}
                                         </div>
                                         {isStepThreePaymentMissing ? (
-                                            <p className="mt-2 text-[12px] leading-[1.4] text-[var(--wm-color-input-ring-error)]">
+                                            <p className="mt-2 text-[length:var(--wm-size-12)] leading-[1.4] text-[color:var(--wm-color-input-ring-error)]">
                                                 Selecciona un metodo de pago para continuar.
                                             </p>
                                         ) : null}
@@ -1795,27 +1795,33 @@ function InboxPane({
 }: InboxPaneProps) {
     return (
         <section className="flex h-full min-h-0 flex-col bg-white">
-            <div className="border-b border-[#E8ECEF] px-4 py-4">
+            <div className="border-b border-[color:var(--border-divider)] px-4 py-4">
                 <div className="flex items-center">
-                    <h1 className="font-wallie-chunky text-[22px] text-[#253238]">Buzon</h1>
+                    <h1 className="font-wallie-chunky text-[length:var(--wm-size-22)] text-[color:var(--text-primary)]">Buzon</h1>
                 </div>
                 <div
                     role="tablist"
                     aria-label="Secciones de inbox"
                     className="mt-4 flex items-center gap-2"
                 >
-                    <button
+                    <Button
                         type="button"
-                        className="rounded-full bg-[#253238] px-4 py-2 font-wallie-chunky text-[14px] text-white"
+                        variant="tab"
+                        size="tab"
+                        data-selected="true"
+                        aria-selected="true"
                     >
                         Mensajes
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         type="button"
-                        className="rounded-full bg-[#F3F6F8] px-4 py-2 font-wallie-fit text-[14px] text-[#253238]"
+                        variant="tab"
+                        size="tab"
+                        data-selected="false"
+                        aria-selected="false"
                     >
                         Notificaciones
-                    </button>
+                    </Button>
                 </div>
             </div>
 
@@ -1842,7 +1848,7 @@ function InboxPane({
             </div>
 
             {showBottomNav ? (
-                <div className="border-t border-[#E8ECEF]">
+                <div className="border-t border-[color:var(--border-divider)]">
                     <InboxBottomNav activeItemId="inbox" />
                 </div>
             ) : null}
@@ -1887,42 +1893,40 @@ function ConversationPane({
 
     return (
         <section className="flex h-full min-h-0 flex-col bg-white">
-            <header className="flex items-center gap-3 border-b border-[#E8ECEF] bg-white px-4 py-3">
+            <header className="flex items-center gap-3 border-b border-[color:var(--border-divider)] bg-white px-4 py-3">
                 {onBackToInbox ? (
-                    <button
-                        type="button"
-                        className="inline-flex h-8 w-8 items-center justify-center text-[#253238]"
-                        aria-label="Volver a conversaciones"
+                    <IconButton
+                        label="Volver a conversaciones"
+                        icon={<WallapopIcon name="arrow_left" size="small" />}
+                        variant="menu_close"
                         onClick={onBackToInbox}
-                    >
-                        <WallapopIcon name="arrow_left" size="small" />
-                    </button>
+                        className="h-8 w-8 bg-transparent p-0 text-[color:var(--text-primary)]"
+                    />
                 ) : null}
                 <img
                     src={conversation.listingImageSrc}
                     alt={conversation.itemTitle}
-                    className="h-11 w-11 rounded-[12px] object-cover"
+                    className="h-11 w-11 rounded-[var(--wm-size-12)] object-cover"
                 />
                 <div className="min-w-0">
-                    <p className="truncate font-wallie-chunky text-[16px] text-[#253238]">
+                    <p className="truncate font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-primary)]">
                         {conversation.itemPrice}
                     </p>
-                    <p className="truncate font-wallie-fit text-[13px] text-[#6E8792]">
+                    <p className="truncate font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-tertiary)]">
                         {conversation.itemTitle}
                     </p>
                 </div>
                 <img
                     src={conversation.profileImageSrc}
                     alt={`Foto de perfil de ${conversation.userName}`}
-                    className="ml-auto h-9 w-9 rounded-full border border-[#D3DEE2] object-cover"
+                    className="ml-auto h-9 w-9 rounded-full border border-[color:var(--border-strong)] object-cover"
                 />
-                <button
-                    type="button"
-                    aria-label={`Mas opciones de la conversacion con ${conversation.userName}`}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[#6E8792] hover:bg-[#F3F6F8]"
-                >
-                    <WallapopIcon name="ellipsis_horizontal" size={16} strokeWidth={1.8} />
-                </button>
+                <IconButton
+                    label={`Mas opciones de la conversacion con ${conversation.userName}`}
+                    icon={<WallapopIcon name="ellipsis_horizontal" size={16} strokeWidth={1.8} />}
+                    variant="menu_close"
+                    className="h-9 w-9 rounded-full bg-transparent p-0 text-[color:var(--text-tertiary)] hover:bg-[color:var(--bg-surface)]"
+                />
             </header>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5">
@@ -1939,7 +1943,7 @@ function ConversationPane({
                                 <div key={entry.id} className="space-y-2">
                                     {showDateSeparator ? (
                                         <div className="flex justify-center">
-                                            <span className="inline-flex rounded-full bg-[#D7E1E6] px-4 py-1 font-wallie-fit text-[13px] text-[#6E8792]">
+                                            <span className="inline-flex rounded-full bg-[color:var(--bg-date-chip)] px-4 py-1 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-tertiary)]">
                                                 {formatTimelineDayLabel(entry.createdAt)}
                                             </span>
                                         </div>
@@ -1967,7 +1971,7 @@ function ConversationPane({
                             <div key={entry.id} className="space-y-2 pt-2">
                                 {showDateSeparator ? (
                                     <div className="flex justify-center">
-                                        <span className="inline-flex rounded-full bg-[#D7E1E6] px-4 py-1 font-wallie-fit text-[13px] text-[#6E8792]">
+                                        <span className="inline-flex rounded-full bg-[color:var(--bg-date-chip)] px-4 py-1 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-tertiary)]">
                                             {formatTimelineDayLabel(entry.createdAt)}
                                         </span>
                                     </div>
@@ -2008,13 +2012,13 @@ function ConversationPane({
                 ) : null}
 
                 {errorMessage ? (
-                    <p className="mt-4 rounded-[8px] bg-[#FDEBEC] px-3 py-2 font-wallie-fit text-[13px] text-[#A81F2D]">
+                    <p className="mt-4 rounded-[var(--wm-size-8)] bg-[color:var(--bg-error-subtle)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-error)]">
                         {errorMessage}
                     </p>
                 ) : null}
             </div>
 
-            <div className="shrink-0 border-t border-[#E8ECEF] bg-white">
+            <div className="shrink-0 border-t border-[color:var(--border-divider)] bg-white">
                 <div className="px-3 pt-1 sm:px-4">
                     <ChatSecurityBanner
                         message="Quedate en Wallapop. Mas facil, mas seguro."
@@ -2069,7 +2073,7 @@ function DesktopConversationSidebar({
                 : undefined)
 
     return (
-        <aside className="hidden h-full min-h-0 flex-col gap-4 overflow-y-auto bg-[#F3F6F8] p-4 lg:flex">
+        <aside className="hidden h-full min-h-0 flex-col gap-4 overflow-y-auto bg-[color:var(--bg-surface)] p-4 lg:flex">
             <ChatCounterpartCard
                 name={conversation.userName}
                 rating={conversation.counterpartRating}
@@ -2803,7 +2807,7 @@ function WallapopChatWorkspace() {
             return
         }
         if (parsedFinalPrice > MAX_FINAL_PRICE_EUR) {
-            setProposalError(`El importe maximo permitido es ${MAX_FINAL_PRICE_EUR} €.`)
+            setProposalError(`El importe maximo permitido es ${MAX_FINAL_PRICE_EUR} â‚¬.`)
             return
         }
 
@@ -2883,8 +2887,8 @@ function WallapopChatWorkspace() {
 
     return (
         <main className="h-[100dvh] w-full overflow-hidden bg-white">
-            <section className="hidden h-full overflow-hidden border-x border-[#D3DEE2] md:grid md:grid-cols-[360px_1fr] lg:grid-cols-[360px_1fr_320px]">
-                <div className="min-h-0 border-r border-[#E8ECEF]">
+            <section className="hidden h-full overflow-hidden border-x border-[color:var(--border-strong)] md:grid md:grid-cols-[360px_1fr] lg:grid-cols-[360px_1fr_320px]">
+                <div className="min-h-0 border-r border-[color:var(--border-divider)]">
                     <InboxPane
                         conversations={conversationsState}
                         selectedConversationId={selectedConversationId}
@@ -3031,3 +3035,7 @@ function WallapopChatWorkspace() {
 }
 
 export { WallapopChatWorkspace }
+
+
+
+
