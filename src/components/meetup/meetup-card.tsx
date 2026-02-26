@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Button } from "@/components/ui/button"
+import { NoticeBanner } from "@/components/ui/notice-banner"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { resolveArrivalActionState } from "@/components/meetup/meetup-ui-rules"
 import L from "leaflet"
@@ -605,9 +606,9 @@ function MeetupCard({
             </dl>
 
             {meetup.status === "CONFIRMED" && isCalendarFallbackWindow ? (
-                <p className="mt-3 rounded-[var(--wm-size-12)] border border-[color:var(--border-strong)] bg-[color:var(--bg-accent-subtle)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--action-primary-pressed)]">
+                <NoticeBanner tone="success" className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)]">
                     {arrivalAction.message}
-                </p>
+                </NoticeBanner>
             ) : null}
 
             {primaryActions.length > 0 ? (
@@ -656,9 +657,9 @@ function MeetupCard({
                             Esta accion no se puede deshacer.
                         </p>
                         {isRedZoneCancellation ? (
-                            <p className="mt-2 rounded-[var(--wm-size-12)] border border-[color:var(--feedback-warning)] bg-[color:var(--bg-warning-subtle)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-warning)]">
+                            <NoticeBanner className="mt-2 py-2">
                                 Estas en los ultimos 30 min y esto afectara a tu fiabilidad.
-                            </p>
+                            </NoticeBanner>
                         ) : null}
                         <div className="mt-4 space-y-2">
                             <Button

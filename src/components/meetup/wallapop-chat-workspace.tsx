@@ -25,6 +25,7 @@ import { IconButton } from "@/components/ui/icon-button"
 import { InboxBottomNav } from "@/components/ui/inbox-bottom-nav"
 import { Input } from "@/components/ui/input"
 import { LocationSearchInput } from "@/components/ui/location-search-input"
+import { NoticeBanner } from "@/components/ui/notice-banner"
 import { SelectableOption } from "@/components/ui/selectable-option"
 import { getOrCreateLocalChatUserId } from "@/lib/local-chat-user-id"
 import { Select } from "@/components/ui/select"
@@ -1504,16 +1505,16 @@ function MeetupProposalOverlay({
                                         </div>
                                     </div>
                                     {mapSelectedPoint ? (
-                                        <p className="mt-2 inline-flex w-fit rounded-[var(--wm-size-8)] bg-[color:var(--bg-accent-subtle)] px-2 py-1 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--action-primary-pressed)]">
+                                        <NoticeBanner tone="success" className="mt-2 inline-flex w-fit">
                                             <span className="font-wallie-chunky">
                                                 {mapSelectedPoint.completedSales} ventas completadas
                                             </span>
                                             <span className="ml-1">en este punto seguro.</span>
-                                        </p>
+                                        </NoticeBanner>
                                     ) : (
-                                        <p className="mt-2 inline-flex w-fit rounded-[var(--wm-size-8)] bg-[color:var(--bg-warning-subtle)] px-2 py-1 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-warning-strong)]">
+                                        <NoticeBanner className="mt-2 inline-flex w-fit">
                                             Este punto no es un punto seguro verificado.
-                                        </p>
+                                        </NoticeBanner>
                                     )}
                                     <Button
                                         type="button"
@@ -1692,7 +1693,7 @@ function MeetupProposalOverlay({
                                         showCharCounter={false}
                                     />
                                     {shouldShowDac7Alert ? (
-                                        <p className="rounded-[var(--wm-size-8)] bg-[color:var(--bg-warning-subtle)] px-2 py-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-warning-strong)]">
+                                        <NoticeBanner className="py-2">
                                             {priceInputAlertText}{" "}
                                             <a
                                                 href="https://ayuda.wallapop.com/hc/es-es/articles/19093732048785--Qu%C3%A9-es-DAC7-y-a-que-vendedores-de-Wallapop-les-afecta"
@@ -1702,7 +1703,7 @@ function MeetupProposalOverlay({
                                             >
                                                 Más información
                                             </a>
-                                        </p>
+                                        </NoticeBanner>
                                     ) : null}
 
                                     <fieldset>
