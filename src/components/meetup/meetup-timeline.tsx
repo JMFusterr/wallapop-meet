@@ -6,11 +6,10 @@ const ORDERED_STATUSES: MeetupStatus[] = [
     "CONFIRMED",
     "ARRIVED",
     "COMPLETED",
-    "EXPIRED",
     "CANCELLED",
 ]
 
-const FINAL_STATUSES: MeetupStatus[] = ["COMPLETED", "EXPIRED", "CANCELLED"]
+const FINAL_STATUSES: MeetupStatus[] = ["COMPLETED", "CANCELLED"]
 
 type MeetupTimelineProps = {
     currentStatus: MeetupStatus | null

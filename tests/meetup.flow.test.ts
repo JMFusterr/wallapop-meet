@@ -78,7 +78,7 @@ describe("meetup flow integration", () => {
         expect(machine.completedAt?.toISOString()).toBe("2026-02-20T19:10:00.000Z")
     })
 
-    it("expira meetup confirmado y bloquea transiciones posteriores", () => {
+    it("cancela meetup por no-show y bloquea transiciones posteriores", () => {
         let machine = createMeetupMachine({ scheduledAt, chatContext })
 
         machine = expectSuccess(
@@ -97,13 +97,21 @@ describe("meetup flow integration", () => {
 
         machine = expectSuccess(
             transitionMeetup(machine, {
-                type: "EXPIRE",
-                trigger: "SYSTEM",
-                occurredAt: new Date("2026-02-20T21:00:00.000Z"),
+                type: "MARK_ARRIVED",
+                actorRole: "SELLER",
+                occurredAt: new Date("2026-02-20T18:01:00.000Z"),
             })
         )
 
-        expect(machine.status).toBe("EXPIRED")
+        machine = expectSuccess(
+            transitionMeetup(machine, {
+                type: "REPORT_NO_SHOW",
+                actorRole: "SELLER",
+                occurredAt: new Date("2026-02-20T18:06:00.000Z"),
+            })
+        )
+
+        expect(machine.status).toBe("CANCELLED")
 
         const invalid = transitionMeetup(machine, {
             type: "COMPLETE",

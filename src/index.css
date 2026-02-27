@@ -161,6 +161,8 @@
   --wm-color-semantic-background-warning-subtle: #fff4e8;
   --wm-color-semantic-background-error-subtle: #fdebec;
   --wm-color-semantic-background-date-chip: #d7e1e6;
+  --wm-color-semantic-background-pending-sale-banner: #dce9ff;
+  --wm-color-semantic-background-pending-sale-banner-hover: #c8dcff;
   --wm-color-semantic-text-primary: #253238;
   --wm-color-semantic-text-secondary: #4a5a63;
   --wm-color-semantic-text-tertiary: #6e8792;
@@ -170,6 +172,7 @@
   --wm-color-semantic-text-inverse: #ffffff;
   --wm-color-semantic-text-on-action: #ffffff;
   --wm-color-semantic-text-on-dark: #ffffff;
+  --wm-color-semantic-text-pending-sale-banner: #1e3a8a;
   --wm-color-semantic-action-primary: #13c1ac;
   --wm-color-semantic-action-primary-hover: #0fa896;
   --wm-color-semantic-action-primary-pressed: #0d907f;
@@ -177,6 +180,8 @@
   --wm-color-semantic-action-disabled-bg: #e8ecef;
   --wm-color-semantic-action-disabled-strong-bg: #c9d3d8;
   --wm-color-semantic-action-disabled-text: #a8b2b8;
+  --wm-color-semantic-action-sale-confirm: #86418a;
+  --wm-color-semantic-action-sale-confirm-hover: #703474;
   --wm-color-semantic-border-divider: #e8ecef;
   --wm-color-semantic-border-strong: #d3dee2;
   --wm-color-semantic-border-soft: #d9e1e5;
@@ -206,6 +211,8 @@
   --bg-warning-subtle: var(--wm-color-semantic-background-warning-subtle);
   --bg-error-subtle: var(--wm-color-semantic-background-error-subtle);
   --bg-date-chip: var(--wm-color-semantic-background-date-chip);
+  --bg-pending-sale-banner: var(--wm-color-semantic-background-pending-sale-banner);
+  --bg-pending-sale-banner-hover: var(--wm-color-semantic-background-pending-sale-banner-hover);
   --text-primary: var(--wm-color-semantic-text-primary);
   --text-secondary: var(--wm-color-semantic-text-secondary);
   --text-tertiary: var(--wm-color-semantic-text-tertiary);
@@ -214,6 +221,7 @@
   --text-security: var(--wm-color-semantic-text-security);
   --text-inverse: var(--wm-color-semantic-text-inverse);
   --text-on-action: var(--wm-color-semantic-text-on-action);
+  --text-pending-sale-banner: var(--wm-color-semantic-text-pending-sale-banner);
   --action-primary: var(--wm-color-semantic-action-primary);
   --action-primary-hover: var(--wm-color-semantic-action-primary-hover);
   --action-primary-pressed: var(--wm-color-semantic-action-primary-pressed);
@@ -221,6 +229,8 @@
   --action-disabled-bg: var(--wm-color-semantic-action-disabled-bg);
   --action-disabled-strong-bg: var(--wm-color-semantic-action-disabled-strong-bg);
   --action-disabled-text: var(--wm-color-semantic-action-disabled-text);
+  --action-sale-confirm: var(--wm-color-semantic-action-sale-confirm);
+  --action-sale-confirm-hover: var(--wm-color-semantic-action-sale-confirm-hover);
   --border-divider: var(--wm-color-semantic-border-divider);
   --border-strong: var(--wm-color-semantic-border-strong);
   --border-soft: var(--wm-color-semantic-border-soft);

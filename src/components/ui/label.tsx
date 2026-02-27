@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 
 import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 
-type LabelTone = "pending" | "confirmed" | "arrived" | "completed" | "expired" | "cancelled"
+type LabelTone = "pending" | "confirmed" | "arrived" | "completed" | "cancelled"
 
 type LabelProps = React.ComponentProps<"span"> & {
     tone?: LabelTone
@@ -19,8 +19,6 @@ const toneClassMap: Record<LabelTone, string> = {
         "border-[color:var(--border-warning-subtle)] bg-[color:var(--bg-warning-subtle)] text-[color:var(--feedback-warning-strong)]",
     completed:
         "border-[color:var(--status-sold-hover)] bg-[color:var(--bg-soft)] text-[color:var(--text-primary)]",
-    expired:
-        "border-[color:var(--border-divider)] bg-[color:var(--bg-soft)] text-[color:var(--text-tertiary)]",
     cancelled:
         "border-[color:var(--border-error)] bg-[color:var(--bg-error-subtle)] text-[color:var(--text-primary)]",
 }
@@ -48,7 +46,7 @@ const designSystemMeta = {
     title: "Label",
     description: "Label de estado para componentes de meetup.",
     status: "ready",
-    states: ["pending", "confirmed", "arrived", "completed", "expired", "cancelled"],
+    states: ["pending", "confirmed", "arrived", "completed", "cancelled"],
     storybookTitle: "Design System/Label",
     tokensUsed: [
         "tokens.color.meetup_status.pending.background",

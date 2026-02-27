@@ -34,7 +34,6 @@ const flowStatuses: MeetupStatus[] = [
     "CONFIRMED",
     "ARRIVED",
     "COMPLETED",
-    "EXPIRED",
     "CANCELLED",
 ]
 

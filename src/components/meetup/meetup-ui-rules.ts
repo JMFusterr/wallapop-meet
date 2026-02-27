@@ -6,7 +6,7 @@ type ArrivalActionState = {
     message: string
 }
 
-type MeetupDayBannerVariant = "hidden" | "upcoming" | "in_window" | "expired"
+type MeetupDayBannerVariant = "hidden" | "upcoming" | "in_window"
 
 export function resolveArrivalActionState(
     meetup: MeetupMachine,
@@ -46,10 +46,6 @@ export function resolveMeetupDayBannerVariant(
     meetup: MeetupMachine,
     currentTime: Date
 ): MeetupDayBannerVariant {
-    if (meetup.status === "EXPIRED") {
-        return "expired"
-    }
-
     if (meetup.status !== "CONFIRMED" && meetup.status !== "ARRIVED") {
         return "hidden"
     }

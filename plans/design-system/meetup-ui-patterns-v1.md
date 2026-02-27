@@ -78,7 +78,6 @@ Estados soportados:
 - `CONFIRMED`
 - `ARRIVED`
 - `COMPLETED`
-- `EXPIRED`
 - `CANCELLED`
 
 Etiquetas visibles en UI (español, minusculas):
@@ -92,7 +91,7 @@ Etiquetas visibles en UI (español, minusculas):
 
 Reglas visuales:
 - Estado actual resaltado.
-- Estados finales (`COMPLETED`, `EXPIRED`, `CANCELLED`) bloquean acciones incompatibles.
+- Estados finales (`COMPLETED`, `CANCELLED`) bloquean acciones incompatibles.
 - Debe existir una referencia navegable en Storybook: `Design System/Meetup Timeline`.
 
 ## 4. Check-in "Estoy aqui"
@@ -123,8 +122,7 @@ Contenido:
 Estados:
 - `COMPLETED` si se confirma la venta.
 - `CANCELLED` si no se realizó.
-- `EXPIRED` si no hay respuesta tras la ventana definida por producto.
-
+- `CANCELLED` con motivo de no-show cuando no hay respuesta tras la ventana definida por producto.`r`n
 ## 7. Estados empty, loading y error
 Patrones mínimos:
 - Empty: no hay meetup activo.
@@ -265,10 +263,9 @@ Si hay conflicto con reglas anteriores del documento, prevalece este anexo v2.
 | `null` | `Proponer quedar` | Sin CTA de propuesta | Entrada exclusiva de vendedor |
 | `PROPOSED` | `Editar` (outline), `Cancelar quedada` (texto) | `Aceptar` (principal), `Proponer cambios` (outline), `Rechazar quedada` (texto) | Comprador decide sobre propuesta inicial |
 | `COUNTER_PROPOSED` | `Editar` (outline), `Aceptar contraoferta` (principal), `Reenviar propuesta` (outline), `Cancelar quedada` (texto) | Espera respuesta | Vendedor retoma control |
-| `CONFIRMED` | `Estoy aqui` (principal) o `Anadir a Calendar` (outline), `Cancelar quedada` (texto) | `Estoy aqui` (principal) o `Anadir a Calendar` (outline), `Cancelar quedada` (texto) | `EXPIRE` no visible en UI |
+| `CONFIRMED` | `Estoy aqui` (principal) o `Anadir a Calendar` (outline), `Cancelar quedada` (texto) | `Estoy aqui` (principal) o `Anadir a Calendar` (outline), `Cancelar quedada` (texto) | `REPORT_NO_SHOW no visible como accion de comprador |
 | `ARRIVED` | `Confirmar venta` (principal), `Cancelar quedada` (texto) | `Estoy aqui` (principal, si aun no marco), `Cancelar quedada` (texto) | `COMPLETE` solo vendedor |
 | `COMPLETED` | Sin CTA de transicion | Sin CTA de transicion | Estado final |
-| `EXPIRED` | Sin CTA de transicion | Sin CTA de transicion | Estado final automatico |
 | `CANCELLED` | `Proponer quedar` (desde composer) | Sin CTA de propuesta | Se permite reiniciar con nueva propuesta del vendedor |
 
 ### B. Politica de cancelacion y zona roja
@@ -286,13 +283,13 @@ Si hay conflicto con reglas anteriores del documento, prevalece este anexo v2.
   - Si ambos usuarios marcan llegada y geovalidan proximidad (`<=100m`), se considera encuentro validado.
   - Si solo una parte marca llegada valida y la otra no comparece, se habilita flujo de no-show atribuible.
 - Resultado de no-show:
-  - Resolucion automatica por sistema hacia `EXPIRED` cuando venza la ventana temporal de no-show.
+  - Resolucion via `CANCELLED` con `cancelReason` al vencer la ventana temporal de no-show.
   - Debe quedar trazabilidad de actor presente/ausente en metadata (para siguiente fase de implementacion).
 
 ### D. Check-in y expiracion
 
 - Ventana de `Estoy aqui`: `-30 min` a `+2 h` respecto a `scheduledAt`.
-- `EXPIRE` es evento interno del sistema:
+- No existe estado `EXPIRED`; el cierre no-show usa `CANCELLED` con `cancelReason`:
   - No existe boton manual `Expirar meetup`.
   - No se muestra CTA equivalente en tarjeta, timeline ni banner.
 
@@ -354,6 +351,7 @@ Reglas:
   - Bloque `N ventas completadas` en punto seguro con mismo patron visual del aviso de no verificado, en variante verde Wallapop.
 - Mini mapa de `MeetupCard`:
   - Reutiliza pin tipo capsula con mini triangulo unido.
+
 
 
 

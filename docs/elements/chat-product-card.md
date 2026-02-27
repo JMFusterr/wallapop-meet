@@ -56,7 +56,7 @@ Reglas de estado en implementacion (`src/components/ui/chat-product-card.tsx`):
   - badge de estado en la card derecha (`Reservado`).
 - Integracion con meetup en `wallapop-chat-workspace`:
   - `CONFIRMED` y `ARRIVED` fuerzan estado `Reservado`;
-  - `CANCELLED` y `EXPIRED` limpian estado de reserva;
+  - `CANCELLED` limpia estado de reserva;
   - `Vendido` prevalece frente a cambios automaticos.
 
 ### 4) Boton de editar superpuesto (solo seller)

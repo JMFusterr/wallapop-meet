@@ -52,6 +52,29 @@ function buildIncomingProposalMachine(): MeetupMachine {
     return proposed.ok ? proposed.meetup : draft
 }
 
+function buildArrivedMachine(options?: { buyerArrived?: boolean }): MeetupMachine {
+    const confirmed = buildConfirmedMachine()
+    const sellerArrived = transitionMeetup(confirmed, {
+        type: "MARK_ARRIVED",
+        actorRole: "SELLER",
+        occurredAt: new Date("2026-02-20T17:55:00.000Z"),
+        withinSafeRadius: true,
+    })
+    if (!sellerArrived.ok) {
+        return confirmed
+    }
+    if (!options?.buyerArrived) {
+        return sellerArrived.meetup
+    }
+    const buyerArrived = transitionMeetup(sellerArrived.meetup, {
+        type: "MARK_ARRIVED",
+        actorRole: "BUYER",
+        occurredAt: new Date("2026-02-20T17:56:00.000Z"),
+        withinSafeRadius: true,
+    })
+    return buyerArrived.ok ? buyerArrived.meetup : sellerArrived.meetup
+}
+
 const meta = {
     title: "Design System/Meetup Card",
     component: MeetupCard,
@@ -162,9 +185,52 @@ export const SellerNeutralClosureOption: Story = {
     },
     render: () => (
         <CardHarness
-            initialMeetup={buildConfirmedMachine()}
+            initialMeetup={buildArrivedMachine()}
             actorRole="SELLER"
-            currentTime={new Date("2026-02-20T21:30:00.000Z")}
+            currentTime={new Date("2026-02-20T18:06:00.000Z")}
+        />
+    ),
+}
+
+export const SellerArrivedNoShowGracePending: Story = {
+    args: {
+        meetup: buildArrivedMachine(),
+        actorRole: "SELLER",
+        currentTime: new Date("2026-02-20T18:03:00.000Z"),
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
+    render: () => (
+        <CardHarness
+            initialMeetup={buildArrivedMachine()}
+            actorRole="SELLER"
+            currentTime={new Date("2026-02-20T18:03:00.000Z")}
+        />
+    ),
+}
+
+export const SellerArrivedContradictionAlert: Story = {
+    args: {
+        meetup: buildArrivedMachine({ buyerArrived: true }),
+        actorRole: "SELLER",
+        currentTime: new Date("2026-02-20T18:07:00.000Z"),
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
+    render: () => (
+        <CardHarness
+            initialMeetup={{
+                ...buildArrivedMachine({ buyerArrived: true }),
+                noShowReport: {
+                    reportedBy: "SELLER",
+                    reportedAt: new Date("2026-02-20T18:06:00.000Z"),
+                    graceEndsAt: new Date("2026-02-20T18:05:00.000Z"),
+                    contradictionDetected: true,
+                    buyerWasMarkedArrived: true,
+                },
+            }}
+            actorRole="SELLER"
+            currentTime={new Date("2026-02-20T18:07:00.000Z")}
         />
     ),
 }

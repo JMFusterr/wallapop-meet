@@ -138,6 +138,14 @@
                     "accent_subtle": {
                         "value": "{tokens.color.palette.brand.50}",
                         "type": "color"
+                    },
+                    "pending_sale_banner": {
+                        "value": "{tokens.color.palette.brand.100}",
+                        "type": "color"
+                    },
+                    "pending_sale_banner_hover": {
+                        "value": "{tokens.color.palette.brand.200}",
+                        "type": "color"
                     }
                 },
                 "text": {
@@ -159,6 +167,10 @@
                     },
                     "on_dark": {
                         "value": "{tokens.color.neutral.0}",
+                        "type": "color"
+                    },
+                    "pending_sale_banner": {
+                        "value": "{tokens.color.palette.brand.700}",
                         "type": "color"
                     }
                 },
@@ -185,6 +197,14 @@
                     },
                     "disabled_text": {
                         "value": "{tokens.color.neutral.400}",
+                        "type": "color"
+                    },
+                    "sale_confirm": {
+                        "value": "{tokens.color.palette.reserve.500}",
+                        "type": "color"
+                    },
+                    "sale_confirm_hover": {
+                        "value": "{tokens.color.palette.reserve.600}",
                         "type": "color"
                     }
                 },
@@ -425,20 +445,6 @@
                     },
                     "text": {
                         "value": "{tokens.color.palette.sold.700}",
-                        "type": "color"
-                    }
-                },
-                "expired": {
-                    "background": {
-                        "value": "{tokens.color.palette.neutral.100}",
-                        "type": "color"
-                    },
-                    "border": {
-                        "value": "{tokens.color.palette.neutral.400}",
-                        "type": "color"
-                    },
-                    "text": {
-                        "value": "{tokens.color.palette.neutral.700}",
                         "type": "color"
                     }
                 },

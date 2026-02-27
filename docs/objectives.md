@@ -22,7 +22,7 @@ Objetivos:
 - Solo el vendedor puede iniciar una propuesta de encuentro.
 - El comprador puede aceptar o contraofertar.
 - El evento sigue una maquina de estados clara:
-  `PROPOSED -> COUNTER_PROPOSED -> CONFIRMED -> ARRIVED -> COMPLETED/EXPIRED/CANCELLED`.
+  `PROPOSED -> COUNTER_PROPOSED -> CONFIRMED -> ARRIVED -> COMPLETED/CANCELLED`.
 - Las notificaciones push deben ser interactivas y funcionar desde la pantalla bloqueada en iOS y Android.
 - La logica de llegada debe respetar una ventana temporal: 30 minutos antes y hasta 2 horas despues de la hora programada.
 - La integracion con mapas debe sugerir puntos de encuentro seguros en lugares publicos (por ejemplo, estaciones, centros comerciales o comisarias), permitiendo tambien seleccion personalizada con advertencia de seguridad.
@@ -160,7 +160,7 @@ Objetivos:
 - Sincronizacion estado comercial <-> meetup:
   - Al confirmar una propuesta (`CONFIRMED`) el articulo pasa automaticamente a `Reservado` en listado y card derecha.
   - En `ARRIVED` se mantiene `Reservado`.
-  - Si la quedada termina en `CANCELLED` o `EXPIRED`, se elimina la reserva automaticamente.
+  - Si la quedada termina en `CANCELLED`, se elimina la reserva automaticamente.
   - El estado `Vendido` prevalece y no se sobreescribe por sincronizacion de meetup.
 - Toggle manual en card de producto (seller):
   - `Reservar` activa estado `Reservado` y muestra icono de reserva en listado + badge en card.
@@ -191,7 +191,6 @@ Si hay conflicto con secciones anteriores, prevalece este contrato v2.
 - `CONFIRMED`
 - `ARRIVED`
 - `COMPLETED`
-- `EXPIRED`
 - `CANCELLED`
 
 No se introducen nuevos estados terminales en esta iteracion.
@@ -210,8 +209,7 @@ No se introducen nuevos estados terminales en esta iteracion.
 - Estado `CONFIRMED`:
   - `SELLER` y `BUYER`: pueden `MARK_ARRIVED`.
   - `SELLER` y `BUYER`: pueden `CANCEL` hasta el ultimo segundo antes/durante la cita.
-  - `EXPIRE` no se expone como accion manual.
-  - `LATE_NOTICE` queda fuera de la UI actual (evento reservado para futura fase si se reactiva).
+    - `LATE_NOTICE` queda fuera de la UI actual (evento reservado para futura fase si se reactiva).
 - Estado `ARRIVED`:
   - Se alcanza cuando al menos una parte marca llegada dentro de la ventana valida.
   - Si ambos marcan llegada y hay geovalidacion positiva, queda evidencia objetiva de asistencia.
@@ -219,8 +217,7 @@ No se introducen nuevos estados terminales en esta iteracion.
 - Estados terminales:
   - `COMPLETED`: venta cerrada.
   - `CANCELLED`: cancelacion manual por una de las partes.
-  - `EXPIRED`: cierre automatico del sistema por no-show o no resolucion temporal.
-  - Excepcion funcional: tras `CANCELLED`, `SELLER` puede reabrir el flujo con un nuevo `PROPOSE` desde el composer.
+    - Excepcion funcional: tras `CANCELLED`, `SELLER` puede reabrir el flujo con un nuevo `PROPOSE` desde el composer.
 
 #### 3) Reglas temporales y de evidencia
 
@@ -238,11 +235,11 @@ No se introducen nuevos estados terminales en esta iteracion.
   - Geovalidacion por defecto: radio `<= 100m` del punto pactado.
   - Si solo una parte valida llegada y la otra no, debe poder resolverse como no-show atribuible.
 
-#### 4) Politica de expiracion y cierres automaticos
+#### 4) Politica de no-show y cierres
 
-- `EXPIRE` se considera evento interno de sistema.
-- `EXPIRE` no debe aparecer como CTA manual en UI.
-- El sistema puede cerrar en `EXPIRED` por timeout de no-show o por falta de resolucion.
+- No existe estado EXPIRED.
+- El no-show se resuelve con CANCELLED y cancelReason (NO_SHOW_BUYER, NO_SHOW_FINAL_CONTRADICTION).
+- El reporte de no-show requiere 5 minutos de cortesia tras scheduledAt.
 
 #### 5) Fiabilidad y seguimiento post-encuentro
 
@@ -254,7 +251,7 @@ No se introducen nuevos estados terminales en esta iteracion.
 
 - `MeetupEvent`:
   - Mantener eventos actuales.
-  - Tratar `EXPIRE` como evento de sistema (no disparable desde UI).
+  - Sustituir `EXPIRE` por `REPORT_NO_SHOW` y `CONFIRM_NO_SHOW_FINAL` (seller).
   - `LATE_NOTICE` se mantiene como capacidad de dominio no expuesta en UI por ahora.
 - `MeetupMachine`:
   - Añadir metadata de check-in por rol (timestamp y resultado de proximidad).
@@ -270,7 +267,6 @@ Si hay conflicto con bloques anteriores, prevalece v3.
 
 #### 1) Flujo y estados en UI
 
-- `EXPIRE` se mantiene como evento interno de sistema (sin CTA manual en card).
 - El estado `COUNTER_PROPOSED` se representa visualmente como `pendiente` (en lugar de `contraoferta`) para mantener foco en revision del vendedor.
 - En propuesta recibida (`BUYER` + `PROPOSED`), la accion `Proponer cambios` abre el overlay de propuesta para editar parametros existentes.
 - Al enviar esos cambios desde comprador, la entidad transiciona a `COUNTER_PROPOSED` con los nuevos datos propuestos.
@@ -310,5 +306,7 @@ Si hay conflicto con bloques anteriores, prevalece v3.
 ### Flujo visual de referencia
 
 - User flow Mermaid oficial: `docs/wallapop-meet-user-flow.md`.
+
+
 
 

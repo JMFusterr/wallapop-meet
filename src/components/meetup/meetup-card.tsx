@@ -36,6 +36,7 @@ type CardAction = {
 }
 
 const RED_ZONE_CANCELLATION_MINUTES = 30
+const NO_SHOW_GRACE_MINUTES = 5
 
 type StatusPill = {
     label: string
@@ -93,14 +94,6 @@ function statusPill(meetup: MeetupMachine): StatusPill {
             return {
                 label: "completada",
                 tone: "completed",
-            }
-        case "EXPIRED":
-            return {
-                label:
-                    meetup.expiredByTrigger === "SELLER_NO_RESPONSE_48H"
-                        ? "cierre neutral"
-                        : "expirada",
-                tone: "expired",
             }
         case "CANCELLED":
             return {
@@ -228,14 +221,9 @@ function MeetupCard({
     const isCalendarFallbackWindow =
         currentTime.getTime() >= arrivalWindow.opensAt.getTime() &&
         currentTime.getTime() <= arrivalWindow.closesAt.getTime()
-    const areBothActorsArrived =
-        Boolean(meetup.arrivalCheckins?.SELLER) && Boolean(meetup.arrivalCheckins?.BUYER)
-    const canApplyNeutralClosureBySellerInaction =
-        actorRole === "SELLER" &&
-        !areBothActorsArrived &&
-        (meetup.status === "CONFIRMED" || meetup.status === "ARRIVED") &&
-        currentTime.getTime() > arrivalWindow.closesAt.getTime()
     const [isCancelModalOpen, setIsCancelModalOpen] = React.useState(false)
+    const [isNoShowSheetOpen, setIsNoShowSheetOpen] = React.useState(false)
+    const [noShowGraceError, setNoShowGraceError] = React.useState("")
     const miniMapMarkerIcon = React.useMemo(
         () => createMiniMapMarkerIcon(resolveColorToken("tokens.color.semantic.action.primary")),
         []
@@ -248,8 +236,14 @@ function MeetupCard({
             | { type: "ACCEPT"; actorRole: ActorRole; occurredAt: Date }
             | { type: "MARK_ARRIVED"; actorRole: ActorRole; occurredAt: Date }
             | { type: "COMPLETE"; actorRole: ActorRole; occurredAt: Date }
-            | { type: "CANCEL"; actorRole: ActorRole; occurredAt: Date }
-            | { type: "EXPIRE"; trigger: "SYSTEM" | "SELLER_NO_RESPONSE_48H"; occurredAt: Date }
+            | {
+                  type: "CANCEL"
+                  actorRole: ActorRole
+                  occurredAt: Date
+                  reason?: "MANUAL_CANCEL" | "COUNTER_REPLACED" | "NO_SHOW_BUYER" | "NO_SHOW_FINAL_CONTRADICTION"
+              }
+            | { type: "REPORT_NO_SHOW"; actorRole: ActorRole; occurredAt: Date }
+            | { type: "CONFIRM_NO_SHOW_FINAL"; actorRole: ActorRole; occurredAt: Date }
     ) => {
         const result = transitionMeetup(meetup, event)
         if (!result.ok) {
@@ -278,10 +272,48 @@ function MeetupCard({
             type: "CANCEL",
             actorRole,
             occurredAt: currentTime,
+            reason: "MANUAL_CANCEL",
         })
         if (isRedZoneCancellation) {
             onRedZoneCancelConfirmed?.()
         }
+    }
+
+    const noShowGraceEndsAt = new Date(meetup.scheduledAt.getTime() + NO_SHOW_GRACE_MINUTES * 60 * 1000)
+    const canReportNoShow = currentTime.getTime() >= noShowGraceEndsAt.getTime()
+    const hasContradictionAlert =
+        meetup.status === "ARRIVED" && Boolean(meetup.noShowReport?.contradictionDetected)
+
+    const showNoShowGraceError = () => {
+        setNoShowGraceError("Debes dar al menos 5 minutos de cortesia antes de reportar no-show.")
+        window.setTimeout(() => {
+            setNoShowGraceError("")
+        }, 3000)
+    }
+
+    const openNoShowFlow = () => {
+        if (!canReportNoShow) {
+            showNoShowGraceError()
+            return
+        }
+        setIsNoShowSheetOpen(true)
+    }
+
+    const confirmNoShowFlow = () => {
+        setIsNoShowSheetOpen(false)
+        if (hasContradictionAlert) {
+            applyEvent({
+                type: "CONFIRM_NO_SHOW_FINAL",
+                actorRole,
+                occurredAt: currentTime,
+            })
+            return
+        }
+        applyEvent({
+            type: "REPORT_NO_SHOW",
+            actorRole,
+            occurredAt: currentTime,
+        })
     }
 
     const addToCalendar = () => {
@@ -451,33 +483,25 @@ function MeetupCard({
                         actorRole,
                         occurredAt: currentTime,
                     }),
-                className: PRIMARY_ACTION_CLASS,
+                className: `${PRIMARY_ACTION_CLASS} bg-[color:var(--action-sale-confirm)] hover:bg-[color:var(--action-sale-confirm-hover)]`,
+                fullWidth: true,
+            })
+            actions.push({
+                id: "no-show",
+                label: hasContradictionAlert ? "Definitivamente no esta" : "El comprador no ha aparecido",
+                variant: "ghost",
+                run: openNoShowFlow,
+                className: TEXT_ACTION_CLASS,
                 fullWidth: true,
             })
         }
     }
 
-    if (canApplyNeutralClosureBySellerInaction) {
-        actions.push({
-            id: "neutral-close",
-            label: "Ignorar notificacion (48h)",
-            variant: "outline",
-            run: () =>
-                applyEvent({
-                    type: "EXPIRE",
-                    trigger: "SELLER_NO_RESPONSE_48H",
-                    occurredAt: currentTime,
-                }),
-            className: OUTLINE_ACTION_CLASS,
-            fullWidth: true,
-        })
-    }
-
     if (
         meetup.status !== "COMPLETED" &&
-        meetup.status !== "EXPIRED" &&
         meetup.status !== "CANCELLED" &&
         meetup.status !== null &&
+        !(meetup.status === "ARRIVED" && actorRole === "SELLER") &&
         !(meetup.status === "PROPOSED" && actorRole === "BUYER")
     ) {
         actions.push({
@@ -597,6 +621,11 @@ function MeetupCard({
                     {arrivalAction.message}
                 </NoticeBanner>
             ) : null}
+            {hasContradictionAlert ? (
+                <NoticeBanner className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)] text-[color:var(--feedback-error)]">
+                    El radar indica que {counterpartName ?? "el comprador"} esta muy cerca. Escribidle o llamadle para encontraros.
+                </NoticeBanner>
+            ) : null}
 
             {primaryActions.length > 0 ? (
                 <div className="mt-4 space-y-2">
@@ -627,6 +656,11 @@ function MeetupCard({
                         {footerAction.label}
                     </Button>
                 </div>
+            ) : null}
+            {noShowGraceError ? (
+                <p className="mt-2 text-center font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--feedback-error)]">
+                    {noShowGraceError}
+                </p>
             ) : null}
             {sentAt ? (
                 <p className="absolute bottom-3 right-4 text-right font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
@@ -664,6 +698,36 @@ function MeetupCard({
                                 onClick={() => setIsCancelModalOpen(false)}
                             >
                                 No
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            ) : null}
+            {isNoShowSheetOpen ? (
+                <div className="fixed inset-0 z-50 flex items-end justify-center bg-[color:var(--overlay-scrim)]">
+                    <div className="w-full max-w-[var(--wm-size-560)] rounded-t-[var(--wm-size-20)] bg-[color:var(--bg-base)] p-4 shadow-[var(--wm-shadow-300)]">
+                        <h3 className="font-wallie-chunky text-[length:var(--wm-size-18)] text-[color:var(--text-primary)]">
+                            Confirmar no-show del comprador?
+                        </h3>
+                        <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
+                            Esta accion cancela la quedada y libera el articulo.
+                        </p>
+                        <div className="mt-4 space-y-2">
+                            <Button
+                                variant="critical"
+                                size="sm"
+                                className={PRIMARY_ACTION_CLASS}
+                                onClick={confirmNoShowFlow}
+                            >
+                                {hasContradictionAlert ? "Definitivamente no esta" : "Confirmar no-show"}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className={OUTLINE_ACTION_CLASS}
+                                onClick={() => setIsNoShowSheetOpen(false)}
+                            >
+                                Volver
                             </Button>
                         </div>
                     </div>

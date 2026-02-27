@@ -58,22 +58,13 @@ describe("meetup ui rules", () => {
         expect(state.enabled).toBe(false)
     })
 
-    it("resuelve variante de banner para meetup expirado", () => {
+    it("resuelve variante de banner en ventana activa", () => {
         const meetup = buildConfirmedMeetup()
-        const expired = transitionMeetup(meetup, {
-            type: "EXPIRE",
-            trigger: "SYSTEM",
-            occurredAt: new Date("2026-02-20T21:30:00.000Z"),
-        })
-        if (!expired.ok) {
-            throw new Error("Se esperaba meetup expirado para la prueba.")
-        }
-
         const variant = resolveMeetupDayBannerVariant(
-            expired.meetup,
-            new Date("2026-02-20T21:31:00.000Z")
+            meetup,
+            new Date("2026-02-20T17:45:00.000Z")
         )
 
-        expect(variant).toBe("expired")
+        expect(variant).toBe("in_window")
     })
 })

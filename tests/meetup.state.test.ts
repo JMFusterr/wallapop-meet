@@ -52,6 +52,7 @@ describe("meetup state machine", () => {
         expect(result.ok).toBe(true)
         if (result.ok) {
             expect(result.meetup.status).toBe("COUNTER_PROPOSED")
+            expect(result.meetup.supersedesMeetupId).toBe(proposed.meetup.id)
         }
     })
 
@@ -124,6 +125,40 @@ describe("meetup state machine", () => {
 
         expect(arrivedBuyer.meetup.arrivalCheckins?.SELLER?.withinSafeRadius).toBe(true)
         expect(arrivedBuyer.meetup.arrivalCheckins?.BUYER?.distanceMeters).toBe(31)
+    })
+
+    it("bloquea no-show antes de los 5 minutos de cortesia", () => {
+        const proposed = transitionMeetup(createMeetupMachine({ scheduledAt, chatContext }), {
+            type: "PROPOSE",
+            actorRole: "SELLER",
+        })
+        if (!proposed.ok) {
+            throw new Error("Se esperaba PROPOSE valido para el escenario.")
+        }
+
+        const confirmed = transitionMeetup(proposed.meetup, {
+            type: "ACCEPT",
+            actorRole: "BUYER",
+        })
+        if (!confirmed.ok) {
+            throw new Error("Se esperaba ACCEPT valido para el escenario.")
+        }
+
+        const arrived = transitionMeetup(confirmed.meetup, {
+            type: "MARK_ARRIVED",
+            actorRole: "SELLER",
+            occurredAt: new Date("2026-02-20T18:01:00.000Z"),
+        })
+        if (!arrived.ok) {
+            throw new Error("Se esperaba MARK_ARRIVED valido para el escenario.")
+        }
+
+        const reportTooEarly = transitionMeetup(arrived.meetup, {
+            type: "REPORT_NO_SHOW",
+            actorRole: "SELLER",
+            occurredAt: new Date("2026-02-20T18:03:00.000Z"),
+        })
+        expect(reportTooEarly.ok).toBe(false)
     })
 
     it("permite COMPLETE solo para vendedor", () => {
@@ -270,14 +305,15 @@ describe("meetup state machine", () => {
         }
 
         const retry = transitionMeetup(terminal.meetup, {
-            type: "EXPIRE",
-            trigger: "SYSTEM",
+            type: "REPORT_NO_SHOW",
+            actorRole: "SELLER",
+            occurredAt: new Date("2026-02-20T18:06:00.000Z"),
         })
 
         expect(retry.ok).toBe(false)
     })
 
-    it("permite cierre neutral por inaccion del vendedor (opcion D)", () => {
+    it("activa contradiccion y permite no-show final del vendedor", () => {
         const initial = createMeetupMachine({ scheduledAt, chatContext })
         const proposed = transitionMeetup(initial, {
             type: "PROPOSE",
@@ -295,16 +331,47 @@ describe("meetup state machine", () => {
             throw new Error("Se esperaba ACCEPT valido para el escenario.")
         }
 
-        const expiredNeutral = transitionMeetup(confirmed.meetup, {
-            type: "EXPIRE",
-            trigger: "SELLER_NO_RESPONSE_48H",
-            occurredAt: new Date("2026-02-22T18:00:00.000Z"),
+        const arrivedByBoth = transitionMeetup(confirmed.meetup, {
+            type: "MARK_ARRIVED",
+            actorRole: "SELLER",
+            occurredAt: new Date("2026-02-20T18:01:00.000Z"),
+            withinSafeRadius: true,
         })
+        if (!arrivedByBoth.ok) {
+            throw new Error("Se esperaba MARK_ARRIVED valido para seller.")
+        }
 
-        expect(expiredNeutral.ok).toBe(true)
-        if (expiredNeutral.ok) {
-            expect(expiredNeutral.meetup.status).toBe("EXPIRED")
-            expect(expiredNeutral.meetup.expiredByTrigger).toBe("SELLER_NO_RESPONSE_48H")
+        const buyerArrived = transitionMeetup(arrivedByBoth.meetup, {
+            type: "MARK_ARRIVED",
+            actorRole: "BUYER",
+            occurredAt: new Date("2026-02-20T18:02:00.000Z"),
+            withinSafeRadius: true,
+        })
+        if (!buyerArrived.ok) {
+            throw new Error("Se esperaba MARK_ARRIVED valido para buyer.")
+        }
+
+        const report = transitionMeetup(buyerArrived.meetup, {
+            type: "REPORT_NO_SHOW",
+            actorRole: "SELLER",
+            occurredAt: new Date("2026-02-20T18:06:00.000Z"),
+        })
+        expect(report.ok).toBe(true)
+        if (!report.ok) {
+            return
+        }
+        expect(report.meetup.status).toBe("ARRIVED")
+        expect(report.meetup.noShowReport?.contradictionDetected).toBe(true)
+
+        const finalNoShow = transitionMeetup(report.meetup, {
+            type: "CONFIRM_NO_SHOW_FINAL",
+            actorRole: "SELLER",
+            occurredAt: new Date("2026-02-20T18:07:00.000Z"),
+        })
+        expect(finalNoShow.ok).toBe(true)
+        if (finalNoShow.ok) {
+            expect(finalNoShow.meetup.status).toBe("CANCELLED")
+            expect(finalNoShow.meetup.cancelReason).toBe("NO_SHOW_FINAL_CONTRADICTION")
         }
     })
 })

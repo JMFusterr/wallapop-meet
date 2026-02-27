@@ -4,7 +4,6 @@ export const MEETUP_STATUSES = [
     "CONFIRMED",
     "ARRIVED",
     "COMPLETED",
-    "EXPIRED",
     "CANCELLED",
 ] as const
 
@@ -13,7 +12,11 @@ export type MeetupStatus = (typeof MEETUP_STATUSES)[number]
 export type ActorRole = "SELLER" | "BUYER"
 export type MeetupPaymentMethod = "CASH" | "BIZUM" | "WALLET"
 export type MeetupLateNoticeEtaMinutes = 10 | 20
-export type MeetupExpireTrigger = "SYSTEM" | "SELLER_NO_RESPONSE_48H"
+export type MeetupCancelReason =
+    | "MANUAL_CANCEL"
+    | "COUNTER_REPLACED"
+    | "NO_SHOW_BUYER"
+    | "NO_SHOW_FINAL_CONTRADICTION"
 
 export type MeetupArrivalCheckin = {
     occurredAt: Date
@@ -26,6 +29,14 @@ export type MeetupNoShowResolution = {
     missingActor?: ActorRole
     evidenceSource: "CHECKIN_EVIDENCE" | "MANUAL_REVIEW"
     resolvedAt: Date
+}
+
+export type MeetupNoShowReport = {
+    reportedBy: "SELLER"
+    reportedAt: Date
+    graceEndsAt: Date
+    contradictionDetected: boolean
+    buyerWasMarkedArrived: boolean
 }
 
 export type MeetupReliabilityImpact = {
@@ -54,6 +65,7 @@ export type CreateMeetupMachineInput = {
 }
 
 export type MeetupMachine = {
+    id: string
     status: MeetupStatus | null
     scheduledAt: Date
     proposedLocation?: string
@@ -66,11 +78,12 @@ export type MeetupMachine = {
     confirmedAt?: Date
     arrivedAt?: Date
     completedAt?: Date
-    expiredAt?: Date
-    expiredByTrigger?: MeetupExpireTrigger
     cancelledAt?: Date
+    cancelReason?: MeetupCancelReason
+    supersedesMeetupId?: string
     arrivalCheckins?: Partial<Record<ActorRole, MeetupArrivalCheckin>>
     noShowResolution?: MeetupNoShowResolution
+    noShowReport?: MeetupNoShowReport
     reliabilityImpacts?: MeetupReliabilityImpact[]
     lateNotices?: MeetupLateNotice[]
 }
@@ -93,8 +106,14 @@ export type MeetupEvent =
           occurredAt?: Date
       }
     | { type: "COMPLETE"; actorRole: ActorRole; occurredAt?: Date }
-    | { type: "CANCEL"; actorRole: ActorRole; occurredAt?: Date }
-    | { type: "EXPIRE"; trigger: MeetupExpireTrigger; occurredAt?: Date }
+    | {
+          type: "CANCEL"
+          actorRole: ActorRole
+          occurredAt?: Date
+          reason?: MeetupCancelReason
+      }
+    | { type: "REPORT_NO_SHOW"; actorRole: ActorRole; occurredAt: Date }
+    | { type: "CONFIRM_NO_SHOW_FINAL"; actorRole: ActorRole; occurredAt: Date }
 
 export type TransitionSuccess = {
     ok: true

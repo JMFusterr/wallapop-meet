@@ -7,6 +7,7 @@ import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-lea
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { MeetupProposalFooter } from "@/components/meetup/meetup-proposal-footer"
 import { MeetupProposalHeader } from "@/components/meetup/meetup-proposal-header"
+import { MeetupPendingSaleBanner } from "@/components/meetup/meetup-pending-sale-banner"
 import {
     buildReverseGeocodeUrl,
     resolveInitialProposalDateTimeValue,
@@ -689,7 +690,6 @@ function resolveMeetupTimelineTimestamp(meetup: MeetupMachine): number | null {
         meetup.arrivedAt ??
         meetup.completedAt ??
         meetup.cancelledAt ??
-        meetup.expiredAt ??
         meetup.scheduledAt
     return timestamp.getTime()
 }
@@ -706,20 +706,32 @@ function resolveMeetupTimelinePreview(meetup: MeetupMachine): string {
             return "Una de las partes ya ha marcado llegada."
         case "COMPLETED":
             return "Quedada cerrada. Venta completada."
-        case "EXPIRED":
-            return meetup.expiredByTrigger === "SELLER_NO_RESPONSE_48H"
-                ? "Cierre neutral por inaccion del vendedor (48h)."
-                : "La solicitud de quedada ha expirado."
         case "CANCELLED":
+            if (meetup.cancelReason === "COUNTER_REPLACED") {
+                return "Propuesta anterior cancelada por contraoferta."
+            }
+            if (meetup.cancelReason === "NO_SHOW_BUYER") {
+                return "Quedada cancelada por no-show del comprador."
+            }
+            if (meetup.cancelReason === "NO_SHOW_FINAL_CONTRADICTION") {
+                return "Quedada cancelada tras contradiccion de presencia."
+            }
             return "La quedada fue cancelada."
         default:
             return "Sin propuesta de quedada."
     }
 }
 
+function resolveCurrentMeetup(meetupHistory: MeetupMachine[] | undefined): MeetupMachine | undefined {
+    if (!meetupHistory || meetupHistory.length === 0) {
+        return undefined
+    }
+    return meetupHistory[meetupHistory.length - 1]
+}
+
 function buildConversationTimelineEntries(
     messages: Message[],
-    meetup: MeetupMachine | undefined
+    meetupHistory: MeetupMachine[] | undefined
 ): ConversationTimelineEntry[] {
     const entries: ConversationTimelineEntry[] = messages.map((message) => ({
         id: `message:${message.id}`,
@@ -728,11 +740,11 @@ function buildConversationTimelineEntries(
         message,
     }))
 
-    if (meetup) {
+    for (const meetup of meetupHistory ?? []) {
         const meetupTimestamp = resolveMeetupTimelineTimestamp(meetup)
         if (meetupTimestamp !== null) {
             entries.push({
-                id: `meetup:${meetup.chatContext.conversationId}`,
+                id: `meetup:${meetup.id}`,
                 type: "meetup",
                 createdAt: meetupTimestamp,
                 meetup,
@@ -745,9 +757,9 @@ function buildConversationTimelineEntries(
 
 function resolveConversationSummary(
     messages: Message[],
-    meetup: MeetupMachine | undefined
+    meetupHistory: MeetupMachine[] | undefined
 ): Pick<Conversation, "messageDate" | "messagePreview" | "lastMessageDeliveryState"> {
-    const timeline = buildConversationTimelineEntries(messages, meetup)
+    const timeline = buildConversationTimelineEntries(messages, meetupHistory)
     const latestEntry = timeline[timeline.length - 1]
 
     if (!latestEntry) {
@@ -779,9 +791,9 @@ function resolveConversationSummary(
 function resolveConversationUnreadCount(
     unreadCount: number | undefined,
     messages: Message[],
-    meetup: MeetupMachine | undefined
+    meetupHistory: MeetupMachine[] | undefined
 ): number {
-    const timeline = buildConversationTimelineEntries(messages, meetup)
+    const timeline = buildConversationTimelineEntries(messages, meetupHistory)
     const latestEntry = timeline[timeline.length - 1]
     if (!latestEntry || latestEntry.type !== "message" || latestEntry.message.variant !== "received") {
         return 0
@@ -808,7 +820,7 @@ function resolveConversationCommercialStatus(
         isReservedStatusLabel(conversation.listingStatusLabel)
     const shouldForceReserved = meetup?.status === "CONFIRMED" || meetup?.status === "ARRIVED"
     const shouldForceSold = meetup?.status === "COMPLETED"
-    const shouldClearReserved = meetup?.status === "CANCELLED" || meetup?.status === "EXPIRED"
+    const shouldClearReserved = meetup?.status === "CANCELLED"
 
     if (shouldForceSold) {
         return {
@@ -837,8 +849,8 @@ function resolveConversationCommercialStatus(
     }
 }
 
-function buildInitialMeetupState(): Record<string, MeetupMachine> {
-    const state: Record<string, MeetupMachine> = {}
+function buildInitialMeetupState(): Record<string, MeetupMachine[]> {
+    const state: Record<string, MeetupMachine[]> = {}
     const now = new Date()
 
     for (const conversation of initialConversations) {
@@ -867,7 +879,7 @@ function buildInitialMeetupState(): Record<string, MeetupMachine> {
                 occurredAt: new Date(now.getTime() - 50 * 60 * 1000),
             })
             if (!proposed.ok) {
-                state[conversation.id] = proposedDraft
+                state[conversation.id] = [proposedDraft]
                 continue
             }
             const confirmed = transitionMeetup(proposed.meetup, {
@@ -875,7 +887,7 @@ function buildInitialMeetupState(): Record<string, MeetupMachine> {
                 actorRole: "BUYER",
                 occurredAt: new Date(now.getTime() - 45 * 60 * 1000),
             })
-            state[conversation.id] = confirmed.ok ? confirmed.meetup : proposed.meetup
+            state[conversation.id] = [confirmed.ok ? confirmed.meetup : proposed.meetup]
             continue
         }
 
@@ -894,7 +906,7 @@ function buildInitialMeetupState(): Record<string, MeetupMachine> {
                 actorRole: "SELLER",
                 occurredAt: new Date(now.getTime() - 4 * 60 * 1000),
             })
-            state[conversation.id] = proposedResult.ok ? proposedResult.meetup : incomingProposal
+            state[conversation.id] = [proposedResult.ok ? proposedResult.meetup : incomingProposal]
             continue
         }
 
@@ -914,7 +926,7 @@ function buildInitialMeetupState(): Record<string, MeetupMachine> {
                 occurredAt: new Date(now.getTime() - 11 * 60 * 60 * 1000),
             })
             if (!proposed.ok) {
-                state[conversation.id] = closedDraft
+                state[conversation.id] = [closedDraft]
                 continue
             }
             const confirmed = transitionMeetup(proposed.meetup, {
@@ -923,7 +935,7 @@ function buildInitialMeetupState(): Record<string, MeetupMachine> {
                 occurredAt: new Date(now.getTime() - 10 * 60 * 60 * 1000),
             })
             if (!confirmed.ok) {
-                state[conversation.id] = proposed.meetup
+                state[conversation.id] = [proposed.meetup]
                 continue
             }
             const arrived = transitionMeetup(confirmed.meetup, {
@@ -934,7 +946,7 @@ function buildInitialMeetupState(): Record<string, MeetupMachine> {
                 withinSafeRadius: true,
             })
             if (!arrived.ok) {
-                state[conversation.id] = confirmed.meetup
+                state[conversation.id] = [confirmed.meetup]
                 continue
             }
             const completed = transitionMeetup(arrived.meetup, {
@@ -942,11 +954,11 @@ function buildInitialMeetupState(): Record<string, MeetupMachine> {
                 actorRole: "SELLER",
                 occurredAt: new Date(now.getTime() - 9 * 60 * 60 * 1000 + 5 * 60 * 1000),
             })
-            state[conversation.id] = completed.ok ? completed.meetup : arrived.meetup
+            state[conversation.id] = [completed.ok ? completed.meetup : arrived.meetup]
             continue
         }
 
-        state[conversation.id] = baseMeetup
+        state[conversation.id] = [baseMeetup]
     }
 
     return state
@@ -1878,6 +1890,7 @@ type ConversationPaneProps = {
     onMeetupRedZoneCancel: () => void
     onOpenMeetupProposal: () => void
     onOpenMeetupMapPreview: (meetup: MeetupMachine) => void
+    onJumpToActiveMeetup: () => void
     onError: (message: string) => void
     errorMessage: string
 }
@@ -1893,6 +1906,7 @@ function ConversationPane({
     onMeetupRedZoneCancel,
     onOpenMeetupProposal,
     onOpenMeetupMapPreview,
+    onJumpToActiveMeetup,
     onError,
     errorMessage,
 }: ConversationPaneProps) {
@@ -1909,6 +1923,17 @@ function ConversationPane({
                 ? "deal"
                 : conversation.leadingIndicator
     const timelineContainerRef = React.useRef<HTMLDivElement | null>(null)
+    const shouldShowPendingSaleBanner =
+        meetup?.status === "CONFIRMED" || meetup?.status === "ARRIVED"
+    const resolveMeetupRowAlignment = (meetupEntry: MeetupMachine): string => {
+        if (meetupEntry.status === "COUNTER_PROPOSED") {
+            return actorRole === "SELLER" ? "flex justify-start" : "flex justify-end"
+        }
+        if (meetupEntry.status === "PROPOSED") {
+            return actorRole === "SELLER" ? "flex justify-end" : "flex justify-start"
+        }
+        return actorRole === "SELLER" ? "flex justify-end" : "flex justify-start"
+    }
 
     React.useEffect(() => {
         if (!timelineContainerRef.current) {
@@ -1964,6 +1989,12 @@ function ConversationPane({
                     />
                 </header>
             )}
+            {shouldShowPendingSaleBanner && meetup ? (
+                <MeetupPendingSaleBanner
+                    scheduledAt={meetup.scheduledAt}
+                    onJumpToMeetup={onJumpToActiveMeetup}
+                />
+            ) : null}
 
             <div ref={timelineContainerRef} className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5">
                 <div className="space-y-3">
@@ -2012,7 +2043,10 @@ function ConversationPane({
                                         </span>
                                     </div>
                                 ) : null}
-                                <div className={actorRole === "SELLER" ? "flex justify-end" : "flex justify-start"}>
+                                <div
+                                    id={`meetup-card-${entry.meetup.id}`}
+                                    className={resolveMeetupRowAlignment(entry.meetup)}
+                                >
                                     <MeetupCard
                                         meetup={entry.meetup}
                                         actorRole={actorRole}
@@ -2031,7 +2065,7 @@ function ConversationPane({
                 </div>
                 {timelineEntries.length === 0 && meetup && meetup.status !== null ? (
                     <div className="mt-5 space-y-4">
-                        <div className={actorRole === "SELLER" ? "flex justify-end" : "flex justify-start"}>
+                        <div className={resolveMeetupRowAlignment(meetup)}>
                             <MeetupCard
                                 meetup={meetup}
                                 actorRole={actorRole}
@@ -2172,7 +2206,7 @@ function WallapopChatWorkspace() {
         )
     )
     const [meetupByConversation, setMeetupByConversation] = React.useState<
-        Record<string, MeetupMachine>
+        Record<string, MeetupMachine[]>
     >(buildInitialMeetupState)
     const [lastError, setLastError] = React.useState("")
     const [isProposalOverlayOpen, setIsProposalOverlayOpen] = React.useState(false)
@@ -2220,12 +2254,13 @@ function WallapopChatWorkspace() {
         }
         return messagesByConversation[selectedConversation.id] ?? []
     }, [messagesByConversation, selectedConversation])
-    const selectedMeetup = selectedConversation
+    const selectedMeetupHistory = selectedConversation
         ? meetupByConversation[selectedConversation.id]
         : undefined
+    const selectedMeetup = resolveCurrentMeetup(selectedMeetupHistory)
     const selectedTimelineEntries = React.useMemo<ConversationTimelineEntry[]>(
-        () => buildConversationTimelineEntries(selectedMessages, selectedMeetup),
-        [selectedMeetup, selectedMessages]
+        () => buildConversationTimelineEntries(selectedMessages, selectedMeetupHistory),
+        [selectedMeetupHistory, selectedMessages]
     )
     const selectedActorRole: ActorRole =
         selectedConversation?.listingViewerRole === "buyer" ? "BUYER" : "SELLER"
@@ -2234,12 +2269,16 @@ function WallapopChatWorkspace() {
         setConversationsState((previous) =>
             previous.map((conversation) => {
                 const conversationMessages = messagesByConversation[conversation.id] ?? []
-                const conversationMeetup = meetupByConversation[conversation.id]
-                const summary = resolveConversationSummary(conversationMessages, conversationMeetup)
+                const conversationMeetupHistory = meetupByConversation[conversation.id]
+                const conversationMeetup = resolveCurrentMeetup(conversationMeetupHistory)
+                const summary = resolveConversationSummary(
+                    conversationMessages,
+                    conversationMeetupHistory
+                )
                 const unreadCount = resolveConversationUnreadCount(
                     conversation.unreadCount,
                     conversationMessages,
-                    conversationMeetup
+                    conversationMeetupHistory
                 )
                 const commercialStatus = resolveConversationCommercialStatus(
                     conversation,
@@ -2517,10 +2556,36 @@ function WallapopChatWorkspace() {
     }
 
     const updateSelectedMeetup = (next: MeetupMachine) => {
-        setMeetupByConversation((previous) => ({
-            ...previous,
-            [selectedConversation.id]: next,
-        }))
+        setMeetupByConversation((previous) => {
+            const currentHistory = previous[selectedConversation.id] ?? []
+            let nextHistory = currentHistory
+            const existingIndex = currentHistory.findIndex((item) => item.id === next.id)
+
+            if (existingIndex >= 0) {
+                nextHistory = currentHistory.map((item, index) => (index === existingIndex ? next : item))
+            } else if (next.supersedesMeetupId) {
+                nextHistory = [
+                    ...currentHistory.map((item) =>
+                        item.id === next.supersedesMeetupId
+                            ? {
+                                  ...item,
+                                  status: "CANCELLED" as const,
+                                  cancelledAt: next.proposedAt ?? new Date(),
+                                  cancelReason: "COUNTER_REPLACED" as const,
+                              }
+                            : item
+                    ),
+                    next,
+                ]
+            } else {
+                nextHistory = [...currentHistory, next]
+            }
+
+            return {
+                ...previous,
+                [selectedConversation.id]: nextHistory,
+            }
+        })
 
         if (next.status === "COMPLETED") {
             setConversationsState((previous) =>
@@ -2557,9 +2622,15 @@ function WallapopChatWorkspace() {
             )
         }
 
-        if (next.status === "EXPIRED" && next.expiredByTrigger === "SELLER_NO_RESPONSE_48H") {
+        if (next.status === "CANCELLED" && next.cancelReason === "NO_SHOW_BUYER") {
             appendSystemMessage(
-                "Se cerro la quedada en estado neutral por inaccion del vendedor durante 48h."
+                `Quedada cancelada. Hemos penalizado a ${selectedConversation.userName} por no asistir. Tu articulo vuelve a estar disponible.`
+            )
+        }
+
+        if (next.status === "CANCELLED" && next.cancelReason === "NO_SHOW_FINAL_CONTRADICTION") {
+            appendSystemMessage(
+                "Confirmaste no-show final tras contradiccion de presencia. La reserva se canceló y el articulo vuelve a disponible."
             )
         }
     }
@@ -2607,6 +2678,17 @@ function WallapopChatWorkspace() {
         applyProposalDraftState(buildProposalDraftState(selectedMeetup))
         setIsProposalOverlayOpen(true)
     }
+
+    const jumpToActiveMeetup = React.useCallback(() => {
+        if (!selectedMeetup) {
+            return
+        }
+        const target = document.getElementById(`meetup-card-${selectedMeetup.id}`)
+        if (!target) {
+            return
+        }
+        target.scrollIntoView({ behavior: "smooth", block: "center" })
+    }, [selectedMeetup])
 
     const openMeetupMapPreview = (meetup: MeetupMachine) => {
         const hasPoint =
@@ -2958,6 +3040,7 @@ function WallapopChatWorkspace() {
                         onMeetupRedZoneCancel={handleMeetupRedZoneCancel}
                         onOpenMeetupProposal={openMeetupProposal}
                         onOpenMeetupMapPreview={openMeetupMapPreview}
+                        onJumpToActiveMeetup={jumpToActiveMeetup}
                         onError={setLastError}
                         errorMessage={lastError}
                     />
@@ -2989,6 +3072,7 @@ function WallapopChatWorkspace() {
                         onMeetupRedZoneCancel={handleMeetupRedZoneCancel}
                         onOpenMeetupProposal={openMeetupProposal}
                         onOpenMeetupMapPreview={openMeetupMapPreview}
+                        onJumpToActiveMeetup={jumpToActiveMeetup}
                         onError={setLastError}
                         errorMessage={lastError}
                     />

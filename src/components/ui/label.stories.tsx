@@ -13,7 +13,7 @@ const meta = {
     argTypes: {
         tone: {
             control: "inline-radio",
-            options: ["pending", "confirmed", "arrived", "completed", "expired", "cancelled"],
+            options: ["pending", "confirmed", "arrived", "completed", "cancelled"],
         },
     },
 } satisfies Meta<typeof Label>
@@ -37,11 +37,6 @@ export const Completed: Story = {
     args: { children: "completada", tone: "completed" },
 }
 
-export const Expired: Story = {
-    args: { children: "expirada", tone: "expired" },
-}
-
 export const Cancelled: Story = {
     args: { children: "cancelada", tone: "cancelled" },
 }
-

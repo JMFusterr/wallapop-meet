@@ -460,7 +460,7 @@ function findVariantForState(entityId: string, variants: StoryVariant[], state: 
     const stateKeywords: Record<string, string[]> = {
         default: ["default", "playground", "base", "proposal", "primary"],
         error: ["error", "invalid", "failed", "incoming", "danger"],
-        disabled: ["disabled", "inactive", "neutral", "closure", "expired"],
+        disabled: ["disabled", "inactive", "neutral", "closure"],
         loading: ["loading", "pending", "skeleton"],
         success: ["success", "confirmed", "complete", "done"],
         selected: ["selected", "active", "expanded", "open"],

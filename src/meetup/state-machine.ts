@@ -20,11 +20,17 @@ function success(meetup: MeetupMachine): TransitionResult {
 }
 
 const RED_ZONE_CANCELLATION_MINUTES = 30
+const NO_SHOW_GRACE_MINUTES = 5
+
+let meetupSequence = 0
+
+function createMeetupId(): string {
+    meetupSequence += 1
+    return `meetup-${meetupSequence}`
+}
 
 function isTerminalStatus(status: MeetupMachine["status"]): boolean {
-    return (
-        status === "COMPLETED" || status === "EXPIRED" || status === "CANCELLED"
-    )
+    return status === "COMPLETED" || status === "CANCELLED"
 }
 
 function isValidChatContextField(value: string): boolean {
@@ -67,6 +73,7 @@ export function createMeetupMachine({
     assertValidChatContext(chatContext)
 
     return {
+        id: createMeetupId(),
         status: null,
         scheduledAt,
         chatContext,
@@ -106,14 +113,15 @@ export function transitionMeetup(
                 status: "PROPOSED",
                 proposedAt: nowFallback(event.occurredAt),
                 cancelledAt: isReproposalAfterCancellation ? undefined : meetup.cancelledAt,
+                cancelReason: isReproposalAfterCancellation ? undefined : meetup.cancelReason,
                 confirmedAt: isReproposalAfterCancellation ? undefined : meetup.confirmedAt,
                 arrivedAt: isReproposalAfterCancellation ? undefined : meetup.arrivedAt,
                 completedAt: isReproposalAfterCancellation ? undefined : meetup.completedAt,
-                expiredAt: isReproposalAfterCancellation ? undefined : meetup.expiredAt,
                 arrivalCheckins: isReproposalAfterCancellation
                     ? undefined
                     : meetup.arrivalCheckins,
                 lateNotices: isReproposalAfterCancellation ? undefined : meetup.lateNotices,
+                noShowReport: isReproposalAfterCancellation ? undefined : meetup.noShowReport,
             })
         }
 
@@ -126,10 +134,20 @@ export function transitionMeetup(
                 return fail("COUNTER_PROPOSED solo puede ocurrir desde PROPOSED.")
             }
 
+            const nextOccurredAt = nowFallback(event.occurredAt)
             return success({
                 ...meetup,
+                id: createMeetupId(),
                 status: "COUNTER_PROPOSED",
-                proposedAt: nowFallback(event.occurredAt),
+                proposedAt: nextOccurredAt,
+                confirmedAt: undefined,
+                arrivedAt: undefined,
+                completedAt: undefined,
+                cancelledAt: undefined,
+                cancelReason: undefined,
+                arrivalCheckins: undefined,
+                noShowReport: undefined,
+                supersedesMeetupId: meetup.id,
             })
         }
 
@@ -237,6 +255,7 @@ export function transitionMeetup(
                 ...meetup,
                 status: "CANCELLED",
                 cancelledAt,
+                cancelReason: event.reason ?? "MANUAL_CANCEL",
                 reliabilityImpacts: inRedZone
                     ? [
                           ...(meetup.reliabilityImpacts ?? []),
@@ -251,16 +270,75 @@ export function transitionMeetup(
             })
         }
 
-        case "EXPIRE": {
-            if (meetup.status === null) {
-                return fail("No existe una propuesta activa para expirar.")
+        case "REPORT_NO_SHOW": {
+            if (event.actorRole !== "SELLER") {
+                return fail("Solo el vendedor puede reportar no-show.")
+            }
+
+            if (meetup.status !== "ARRIVED") {
+                return fail("REPORT_NO_SHOW solo es valido desde ARRIVED.")
+            }
+
+            const graceEndsAt = new Date(meetup.scheduledAt.getTime() + NO_SHOW_GRACE_MINUTES * 60 * 1000)
+            if (event.occurredAt.getTime() < graceEndsAt.getTime()) {
+                return fail("Debes esperar al menos 5 minutos de cortesia tras la hora de quedada.")
+            }
+
+            const buyerCheckin = meetup.arrivalCheckins?.BUYER
+            const contradictionDetected = Boolean(
+                buyerCheckin && (buyerCheckin.withinSafeRadius ?? false)
+            )
+
+            if (contradictionDetected) {
+                return success({
+                    ...meetup,
+                    noShowReport: {
+                        reportedBy: "SELLER",
+                        reportedAt: event.occurredAt,
+                        graceEndsAt,
+                        contradictionDetected: true,
+                        buyerWasMarkedArrived: true,
+                    },
+                })
             }
 
             return success({
                 ...meetup,
-                status: "EXPIRED",
-                expiredAt: nowFallback(event.occurredAt),
-                expiredByTrigger: event.trigger,
+                status: "CANCELLED",
+                cancelledAt: event.occurredAt,
+                cancelReason: "NO_SHOW_BUYER",
+                noShowReport: {
+                    reportedBy: "SELLER",
+                    reportedAt: event.occurredAt,
+                    graceEndsAt,
+                    contradictionDetected: false,
+                    buyerWasMarkedArrived: false,
+                },
+            })
+        }
+
+        case "CONFIRM_NO_SHOW_FINAL": {
+            if (event.actorRole !== "SELLER") {
+                return fail("Solo el vendedor puede confirmar no-show final.")
+            }
+
+            if (meetup.status !== "ARRIVED") {
+                return fail("CONFIRM_NO_SHOW_FINAL solo es valido desde ARRIVED.")
+            }
+
+            if (!meetup.noShowReport?.contradictionDetected) {
+                return fail("No existe contradiccion activa para confirmar no-show final.")
+            }
+
+            return success({
+                ...meetup,
+                status: "CANCELLED",
+                cancelledAt: event.occurredAt,
+                cancelReason: "NO_SHOW_FINAL_CONTRADICTION",
+                noShowReport: {
+                    ...meetup.noShowReport,
+                    reportedAt: meetup.noShowReport.reportedAt,
+                },
             })
         }
 
