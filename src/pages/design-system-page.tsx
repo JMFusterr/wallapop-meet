@@ -373,9 +373,12 @@ const componentStateVariantMap: Record<string, Record<string, string>> = {
         error: "playground",
     },
     "meetup-card": {
-        default: "proposalsellerview",
-        disabled: "sellerneutralclosureoption",
-        error: "incomingproposalbuyerview",
+        pending: "pending",
+        confirmed: "confirmed",
+        thirty_minutes_before: "thirtyminutesbefore",
+        arrival: "arrival",
+        cancelled: "cancelled",
+        completed: "completed",
     },
 }
 
@@ -634,42 +637,6 @@ function CatalogStoryCard({ entity }: { entity: CatalogEntity }) {
                 nextOverrides.error = ""
             }
         }
-        if (entity.id === "meetup-card" && isRecord(mergedArgs.meetup)) {
-            const sourceMeetup = mergedArgs.meetup as Record<string, unknown>
-            const scheduledAtSource = sourceMeetup.scheduledAt
-            const scheduledAtDate =
-                scheduledAtSource instanceof Date
-                    ? scheduledAtSource
-                    : typeof scheduledAtSource === "string" || typeof scheduledAtSource === "number"
-                        ? new Date(scheduledAtSource)
-                        : new Date()
-            const nextMeetup: Record<string, unknown> = {
-                ...sourceMeetup,
-                scheduledAt: scheduledAtDate,
-            }
-            if (stateKey === "default") {
-                nextMeetup.status = "DRAFT"
-                nextOverrides.actorRole = "SELLER"
-                nextOverrides.currentTime = new Date(scheduledAtDate.getTime() - 2 * 60 * 60 * 1000)
-            }
-            if (stateKey === "disabled") {
-                nextMeetup.status = "CONFIRMED"
-                nextMeetup.proposedLocation = "Calle sin definir"
-                nextMeetup.proposedPaymentMethod = "CASH"
-                nextOverrides.actorRole = "SELLER"
-                nextOverrides.currentTime = new Date(scheduledAtDate.getTime() + 3 * 60 * 60 * 1000)
-            }
-            if (stateKey === "error") {
-                nextMeetup.status = "PROPOSED"
-                nextMeetup.proposedLocation = "Estacion de Sants - Acceso principal"
-                nextMeetup.proposedPaymentMethod = "BIZUM"
-                nextMeetup.finalPrice = 500
-                nextOverrides.actorRole = "BUYER"
-                nextOverrides.currentTime = new Date(scheduledAtDate.getTime() - 45 * 60 * 1000)
-            }
-            nextOverrides.meetup = nextMeetup
-        }
-
         setSelectedState(state)
         setArgOverrides(nextOverrides)
     }

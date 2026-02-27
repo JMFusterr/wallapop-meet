@@ -744,7 +744,14 @@ const designSystemMeta = {
     title: "Meetup Card",
     description: "Meetup Card del design system de Wallapop Meet.",
     status: "ready",
-    states: ["default","disabled","error"],
+    states: [
+        "pending",
+        "confirmed",
+        "thirty_minutes_before",
+        "arrival",
+        "cancelled",
+        "completed",
+    ],
     storybookTitle: "Design System/Meetup Card",
     tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
 } satisfies DesignSystemEntityMeta

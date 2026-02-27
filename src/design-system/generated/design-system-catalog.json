@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-02-27T13:55:30.606Z",
+    "generatedAt": "2026-02-27T16:38:17.728Z",
     "entryFile": "src/App.tsx",
     "entities": [
         {
@@ -439,7 +439,6 @@
                 "confirmed",
                 "arrived",
                 "completed",
-                "expired",
                 "cancelled"
             ],
             "storybookTitle": "Design System/Label",
@@ -466,10 +465,6 @@
                 },
                 {
                     "state": "completed",
-                    "covered": true
-                },
-                {
-                    "state": "expired",
                     "covered": true
                 },
                 {
@@ -513,9 +508,12 @@
             "description": "Meetup Card del design system de Wallapop Meet.",
             "status": "ready",
             "states": [
-                "default",
-                "disabled",
-                "error"
+                "pending",
+                "confirmed",
+                "thirty_minutes_before",
+                "arrival",
+                "cancelled",
+                "completed"
             ],
             "storybookTitle": "Design System/Meetup Card",
             "tokensUsed": [
@@ -525,15 +523,51 @@
             ],
             "stateCoverage": [
                 {
-                    "state": "default",
+                    "state": "pending",
                     "covered": true
                 },
                 {
-                    "state": "disabled",
+                    "state": "confirmed",
+                    "covered": true
+                },
+                {
+                    "state": "thirty_minutes_before",
                     "covered": false
                 },
                 {
-                    "state": "error",
+                    "state": "arrival",
+                    "covered": true
+                },
+                {
+                    "state": "cancelled",
+                    "covered": true
+                },
+                {
+                    "state": "completed",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/meetup/meetup-pending-sale-banner.tsx",
+            "storyFile": "src/components/meetup/meetup-pending-sale-banner.stories.tsx",
+            "storyTitle": "Design System/Meetup Pending Sale Banner",
+            "id": "meetup-pending-sale-banner",
+            "entityType": "component",
+            "title": "Meetup Pending Sale Banner",
+            "description": "Banner fijo de venta pendiente en conversación.",
+            "status": "ready",
+            "states": [
+                "default"
+            ],
+            "storybookTitle": "Design System/Meetup Pending Sale Banner",
+            "tokensUsed": [
+                "tokens.color.semantic.background.pending_sale_banner",
+                "tokens.color.semantic.text.pending_sale_banner"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
                     "covered": true
                 }
             ]

@@ -13,30 +13,9 @@ const chatContext: MeetupChatContext = {
     buyerUserId: "user-buyer-story-001",
 }
 
-function buildConfirmedMachine(): MeetupMachine {
-    const proposed = transitionMeetup(createMeetupMachine({ scheduledAt, chatContext }), {
-        type: "PROPOSE",
-        actorRole: "SELLER",
-        occurredAt: new Date("2026-02-20T16:00:00.000Z"),
-    })
-    if (!proposed.ok) {
-        return createMeetupMachine({ scheduledAt, chatContext })
-    }
-
-    const confirmed = transitionMeetup(proposed.meetup, {
-        type: "ACCEPT",
-        actorRole: "BUYER",
-        occurredAt: new Date("2026-02-20T17:00:00.000Z"),
-    })
-    return confirmed.ok
-        ? confirmed.meetup
-        : createMeetupMachine({ scheduledAt, chatContext })
-}
-
-function buildIncomingProposalMachine(): MeetupMachine {
+function buildProposedSellerMachine(): MeetupMachine {
     const draft: MeetupMachine = {
         ...createMeetupMachine({ scheduledAt, chatContext }),
-        scheduledAt: new Date("2026-02-20T18:30:00.000Z"),
         proposedLocation: "Estacion de Sants - Acceso principal",
         proposedLocationLat: 41.37906,
         proposedLocationLng: 2.14006,
@@ -46,10 +25,19 @@ function buildIncomingProposalMachine(): MeetupMachine {
     const proposed = transitionMeetup(draft, {
         type: "PROPOSE",
         actorRole: "SELLER",
-        occurredAt: new Date("2026-02-20T16:30:00.000Z"),
+        occurredAt: new Date("2026-02-20T16:00:00.000Z"),
     })
-
     return proposed.ok ? proposed.meetup : draft
+}
+
+function buildConfirmedMachine(): MeetupMachine {
+    const proposed = buildProposedSellerMachine()
+    const confirmed = transitionMeetup(proposed, {
+        type: "ACCEPT",
+        actorRole: "BUYER",
+        occurredAt: new Date("2026-02-20T17:00:00.000Z"),
+    })
+    return confirmed.ok ? confirmed.meetup : proposed
 }
 
 function buildArrivedMachine(options?: { buyerArrived?: boolean }): MeetupMachine {
@@ -57,7 +45,7 @@ function buildArrivedMachine(options?: { buyerArrived?: boolean }): MeetupMachin
     const sellerArrived = transitionMeetup(confirmed, {
         type: "MARK_ARRIVED",
         actorRole: "SELLER",
-        occurredAt: new Date("2026-02-20T17:55:00.000Z"),
+        occurredAt: new Date("2026-02-20T18:01:00.000Z"),
         withinSafeRadius: true,
     })
     if (!sellerArrived.ok) {
@@ -69,10 +57,31 @@ function buildArrivedMachine(options?: { buyerArrived?: boolean }): MeetupMachin
     const buyerArrived = transitionMeetup(sellerArrived.meetup, {
         type: "MARK_ARRIVED",
         actorRole: "BUYER",
-        occurredAt: new Date("2026-02-20T17:56:00.000Z"),
+        occurredAt: new Date("2026-02-20T18:02:00.000Z"),
         withinSafeRadius: true,
     })
     return buyerArrived.ok ? buyerArrived.meetup : sellerArrived.meetup
+}
+
+function buildCancelledMachine(): MeetupMachine {
+    const confirmed = buildConfirmedMachine()
+    const cancelled = transitionMeetup(confirmed, {
+        type: "CANCEL",
+        actorRole: "SELLER",
+        occurredAt: new Date("2026-02-20T17:30:00.000Z"),
+        reason: "MANUAL_CANCEL",
+    })
+    return cancelled.ok ? cancelled.meetup : confirmed
+}
+
+function buildCompletedMachine(): MeetupMachine {
+    const arrived = buildArrivedMachine({ buyerArrived: true })
+    const completed = transitionMeetup(arrived, {
+        type: "COMPLETE",
+        actorRole: "SELLER",
+        occurredAt: new Date("2026-02-20T18:10:00.000Z"),
+    })
+    return completed.ok ? completed.meetup : arrived
 }
 
 const meta = {
@@ -114,6 +123,7 @@ function CardHarness({
                 currentTime={currentTime}
                 onMeetupChange={setMachine}
                 onError={setError}
+                onEditProposal={() => undefined}
             />
             {error ? (
                 <p className="rounded-[var(--wm-size-8)] bg-[color:var(--bg-surface)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-error)]">
@@ -124,75 +134,58 @@ function CardHarness({
     )
 }
 
-export const ProposalSellerView: Story = {
+export const Pending: Story = {
     args: {
-        meetup: createMeetupMachine({ scheduledAt, chatContext }),
+        meetup: buildProposedSellerMachine(),
         actorRole: "SELLER",
-        currentTime: new Date("2026-02-20T16:00:00.000Z"),
+        currentTime: new Date("2026-02-20T16:05:00.000Z"),
         onMeetupChange: () => undefined,
         onError: () => undefined,
     },
     render: () => (
         <CardHarness
-            initialMeetup={createMeetupMachine({ scheduledAt, chatContext })}
+            initialMeetup={buildProposedSellerMachine()}
             actorRole="SELLER"
-            currentTime={new Date("2026-02-20T16:00:00.000Z")}
+            currentTime={new Date("2026-02-20T16:05:00.000Z")}
         />
     ),
 }
 
-export const ConfirmedBuyerWindowOpen: Story = {
+export const Confirmed: Story = {
     args: {
         meetup: buildConfirmedMachine(),
-        actorRole: "BUYER",
-        currentTime: new Date("2026-02-20T17:50:00.000Z"),
+        actorRole: "SELLER",
+        currentTime: new Date("2026-02-20T15:00:00.000Z"),
         onMeetupChange: () => undefined,
         onError: () => undefined,
     },
     render: () => (
         <CardHarness
             initialMeetup={buildConfirmedMachine()}
-            actorRole="BUYER"
-            currentTime={new Date("2026-02-20T17:50:00.000Z")}
+            actorRole="SELLER"
+            currentTime={new Date("2026-02-20T15:00:00.000Z")}
         />
     ),
 }
 
-export const IncomingProposalBuyerView: Story = {
-    args: {
-        meetup: buildIncomingProposalMachine(),
-        actorRole: "BUYER",
-        currentTime: new Date("2026-02-20T16:45:00.000Z"),
-        onMeetupChange: () => undefined,
-        onError: () => undefined,
-    },
-    render: () => (
-        <CardHarness
-            initialMeetup={buildIncomingProposalMachine()}
-            actorRole="BUYER"
-            currentTime={new Date("2026-02-20T16:45:00.000Z")}
-        />
-    ),
-}
-
-export const SellerNeutralClosureOption: Story = {
+export const ThirtyMinutesBefore: Story = {
     args: {
         meetup: buildConfirmedMachine(),
         actorRole: "SELLER",
-        currentTime: new Date("2026-02-20T21:30:00.000Z"),
+        currentTime: new Date("2026-02-20T17:30:00.000Z"),
         onMeetupChange: () => undefined,
         onError: () => undefined,
     },
     render: () => (
         <CardHarness
-            initialMeetup={buildArrivedMachine()}
+            initialMeetup={buildConfirmedMachine()}
             actorRole="SELLER"
-            currentTime={new Date("2026-02-20T18:06:00.000Z")}
+            currentTime={new Date("2026-02-20T17:30:00.000Z")}
         />
     ),
 }
 
-export const SellerArrivedNoShowGracePending: Story = {
+export const Arrival: Story = {
     args: {
         meetup: buildArrivedMachine(),
         actorRole: "SELLER",
@@ -209,30 +202,36 @@ export const SellerArrivedNoShowGracePending: Story = {
     ),
 }
 
-export const SellerArrivedContradictionAlert: Story = {
+export const Cancelled: Story = {
     args: {
-        meetup: buildArrivedMachine({ buyerArrived: true }),
+        meetup: buildCancelledMachine(),
         actorRole: "SELLER",
-        currentTime: new Date("2026-02-20T18:07:00.000Z"),
+        currentTime: new Date("2026-02-20T17:31:00.000Z"),
         onMeetupChange: () => undefined,
         onError: () => undefined,
     },
     render: () => (
         <CardHarness
-            initialMeetup={{
-                ...buildArrivedMachine({ buyerArrived: true }),
-                noShowReport: {
-                    reportedBy: "SELLER",
-                    reportedAt: new Date("2026-02-20T18:06:00.000Z"),
-                    graceEndsAt: new Date("2026-02-20T18:05:00.000Z"),
-                    contradictionDetected: true,
-                    buyerWasMarkedArrived: true,
-                },
-            }}
+            initialMeetup={buildCancelledMachine()}
             actorRole="SELLER"
-            currentTime={new Date("2026-02-20T18:07:00.000Z")}
+            currentTime={new Date("2026-02-20T17:31:00.000Z")}
         />
     ),
 }
 
-
+export const Completed: Story = {
+    args: {
+        meetup: buildCompletedMachine(),
+        actorRole: "SELLER",
+        currentTime: new Date("2026-02-20T18:12:00.000Z"),
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
+    render: () => (
+        <CardHarness
+            initialMeetup={buildCompletedMachine()}
+            actorRole="SELLER"
+            currentTime={new Date("2026-02-20T18:12:00.000Z")}
+        />
+    ),
+}

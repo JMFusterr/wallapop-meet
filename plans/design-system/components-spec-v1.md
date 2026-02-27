@@ -681,6 +681,7 @@ Reglas de color:
 ## C. QA minimo actualizado
 
 Casos que deben seguir cubiertos en story/test visual:
+0. Estados oficiales de `MeetupCard` en Design System: `pendiente`, `confirmada`, `30 mins antes`, `llegada`, `cancelada`, `completada`.
 1. `MeetupCard` en `CONFIRMED` dentro de ventana (mensaje de proximidad + `Estoy aqui`).
 2. `MeetupCard` en `CONFIRMED` fuera de ventana (solo `Anadir a Calendar` + `Cancelar quedada`).
 3. `MeetupCard` con titulo post-confirmacion `Quedada con <nombre>`.
