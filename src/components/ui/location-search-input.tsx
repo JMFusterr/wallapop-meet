@@ -1,4 +1,5 @@
 import { Search } from "lucide-react"
+import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -16,8 +17,10 @@ function LocationSearchInput({
     placeholder = "¿Donde?",
     className,
 }: LocationSearchInputProps) {
+    const inputId = React.useId()
     return (
         <label
+            htmlFor={inputId}
             className={cn(
                 "flex items-center gap-2 rounded-full border border-[color:var(--border-soft)] bg-[color:var(--bg-soft)] px-4 py-2.5",
                 className
@@ -25,6 +28,8 @@ function LocationSearchInput({
         >
             <Search size={16} className="text-[color:var(--text-meta)]" aria-hidden />
             <input
+                id={inputId}
+                name="location-search-input"
                 type="text"
                 value={value}
                 onChange={(event) => onValueChange(event.target.value)}

@@ -175,6 +175,10 @@
                         "value": "{tokens.color.palette.brand.700}",
                         "type": "color"
                     },
+                    "link": {
+                        "value": "{tokens.color.palette.brand.700}",
+                        "type": "color"
+                    },
                     "disabled_bg": {
                         "value": "{tokens.color.neutral.200}",
                         "type": "color"

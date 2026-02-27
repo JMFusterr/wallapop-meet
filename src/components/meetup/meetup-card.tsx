@@ -264,7 +264,7 @@ function MeetupCard({
     const PRIMARY_ACTION_CLASS =
         "h-10 w-full font-wallie-chunky text-[length:var(--wm-size-16)]"
     const OUTLINE_ACTION_CLASS =
-        "h-10 w-full rounded-[var(--wm-size-999)] border-[color:var(--action-primary-hover)] bg-[color:var(--bg-base)] font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--action-primary-hover)] hover:bg-[color:var(--bg-surface)]"
+        "h-10 w-full rounded-[var(--wm-size-999)] border-[color:var(--action-link)] bg-[color:var(--bg-base)] font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--action-link)] hover:bg-[color:var(--bg-surface)]"
     const TEXT_ACTION_CLASS =
         "h-auto border-transparent bg-transparent px-0 py-1 font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-secondary)] underline underline-offset-2 hover:bg-transparent hover:text-[color:var(--text-primary)]"
 

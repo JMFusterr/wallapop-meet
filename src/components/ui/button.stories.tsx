@@ -16,6 +16,8 @@ const meta = {
       options: [
         "primary",
         "outline",
+        "link",
+        "critical",
         "nav_expandable",
         "tab",
         "inline_action",
@@ -45,6 +47,8 @@ export const Variants: Story = {
     <div className="flex flex-wrap items-center gap-3">
       <Button variant="primary">Primary</Button>
       <Button variant="outline">Outline</Button>
+      <Button variant="link">Link</Button>
+      <Button variant="critical">Critical</Button>
       <Button variant="nav_expandable">
         Todas las categorias
         <ChevronDown className="ml-2 size-4" aria-hidden="true" />

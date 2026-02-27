@@ -21,7 +21,7 @@ function SelectionCircle({ selected }: { selected: boolean }) {
             className={cn(
                 "mt-0.5 inline-flex h-[var(--wm-size-20)] w-[var(--wm-size-20)] items-center justify-center rounded-full border transition-colors",
                 selected
-                    ? "border-[color:var(--action-primary)] bg-[color:var(--action-primary)]"
+                    ? "border-[color:var(--text-primary)] bg-[color:var(--text-primary)]"
                     : "border-[color:var(--border-strong)] bg-[color:var(--bg-base)]"
             )}
         >
@@ -58,7 +58,7 @@ function SelectableOption({
             className={cn(
                 "w-full rounded-[var(--wm-size-18)] border px-4 py-4 text-left transition-shadow",
                 selected
-                    ? "border-[color:var(--action-primary)] shadow-[inset_0_0_0_1px_var(--action-primary)]"
+                    ? "border-[color:var(--text-primary)] shadow-[inset_0_0_0_1px_var(--text-primary)]"
                     : "border-[color:var(--border-strong)]",
                 disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
                 className

@@ -13,7 +13,7 @@ const toneClassName: Record<NoticeBannerTone, string> = {
     warning:
         "border border-[color:var(--border-warning-subtle)] bg-[color:var(--bg-warning-subtle)] text-[color:var(--feedback-warning-strong)]",
     success:
-        "border border-[color:var(--border-success-subtle)] bg-[color:var(--bg-accent-subtle)] text-[color:var(--action-primary-pressed)]",
+        "border border-[color:var(--border-success-subtle)] bg-[color:var(--bg-accent-subtle)] text-[color:var(--text-primary)]",
 }
 
 function NoticeBanner({ className, tone = "warning", ...props }: NoticeBannerProps) {
@@ -38,7 +38,12 @@ const designSystemMeta = {
     status: "ready",
     states: ["warning","success"],
     storybookTitle: "Design System/Notice Banner",
-    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+    tokensUsed: [
+        "tokens.color.semantic.background.accent_subtle",
+        "tokens.color.semantic.text.primary",
+        "tokens.color.semantic.warning.base",
+        "tokens.color.semantic.feedback.success",
+    ],
 } satisfies DesignSystemEntityMeta
 
 // eslint-disable-next-line react-refresh/only-export-components

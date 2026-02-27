@@ -29,13 +29,13 @@ const buttonVariants = cva(
 
         // Legacy aliases: mantener temporalmente para no romper usos existentes.
         outline:
-          "rounded-[var(--wm-size-999)] border border-[color:var(--action-primary-hover)] bg-[color:var(--bg-base)] font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--action-primary-hover)] hover:bg-[color:var(--bg-surface)] active:bg-[color:var(--bg-accent-subtle)]",
+          "rounded-[var(--wm-size-999)] border border-[color:var(--action-link)] bg-[color:var(--bg-base)] font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--action-link)] hover:bg-[color:var(--bg-surface)] active:bg-[color:var(--bg-accent-subtle)]",
         ghost:
           "border-none bg-transparent font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-secondary)] underline underline-offset-2 hover:bg-transparent hover:text-[color:var(--text-primary)] active:bg-transparent",
         critical:
           "rounded-[var(--wm-size-25)] border-transparent bg-[color:var(--feedback-error)] text-[color:var(--text-inverse)] hover:brightness-95",
         link:
-          "border-none bg-transparent px-0 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--action-primary)] underline underline-offset-2 hover:text-[color:var(--action-primary-hover)] active:text-[color:var(--action-primary-pressed)]",
+          "border-none bg-transparent px-0 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--action-link)] underline underline-offset-2 hover:text-[color:var(--action-primary-pressed)] active:text-[color:var(--action-primary-pressed)]",
       },
       size: {
         sm: "h-9 px-3 text-[length:var(--wm-size-14)]",
@@ -128,7 +128,12 @@ const designSystemMeta = {
     status: "ready",
     states: ["default","disabled","loading"],
     storybookTitle: "Design System/Button",
-    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+    tokensUsed: [
+        "tokens.color.semantic.action.primary",
+        "tokens.color.semantic.action.link",
+        "tokens.color.semantic.text.on_action",
+        "tokens.color.semantic.action.disabled_text",
+    ],
 } satisfies DesignSystemEntityMeta
 
 // eslint-disable-next-line react-refresh/only-export-components

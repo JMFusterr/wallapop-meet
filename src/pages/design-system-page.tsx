@@ -702,6 +702,8 @@ function CatalogStoryCard({ entity }: { entity: CatalogEntity }) {
                         <label key={`${entity.id}-${propName}`} className="flex flex-col gap-1">
                             <span className="font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{propName}</span>
                             <select
+                                id={`ds-control-${entity.id}-${propName}`}
+                                name={`ds-control-${entity.id}-${propName}`}
                                 value={String(argOverrides[propName] ?? mergedArgs[propName] ?? "")}
                                 onChange={(event) => {
                                     const option = (config.options ?? []).find((entry) => String(entry) === event.target.value)

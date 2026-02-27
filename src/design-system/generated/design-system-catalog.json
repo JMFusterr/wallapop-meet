@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-02-27T12:52:57.162Z",
+    "generatedAt": "2026-02-27T13:55:30.606Z",
     "entryFile": "src/App.tsx",
     "entities": [
         {
@@ -54,8 +54,9 @@
             "storybookTitle": "Design System/Button",
             "tokensUsed": [
                 "tokens.color.semantic.action.primary",
-                "tokens.color.semantic.text.primary",
-                "tokens.color.semantic.border.divider"
+                "tokens.color.semantic.action.link",
+                "tokens.color.semantic.text.on_action",
+                "tokens.color.semantic.action.disabled_text"
             ],
             "stateCoverage": [
                 {
@@ -119,7 +120,9 @@
             "storybookTitle": "Design System/Chat Composer",
             "tokensUsed": [
                 "tokens.color.semantic.action.primary",
-                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.action.disabled_bg",
+                "tokens.color.semantic.action.disabled_text",
+                "tokens.color.semantic.text.secondary",
                 "tokens.color.semantic.border.divider"
             ],
             "stateCoverage": [
@@ -445,8 +448,8 @@
                 "tokens.color.meetup_status.pending.border",
                 "tokens.color.meetup_status.confirmed.background",
                 "tokens.color.meetup_status.arrived.background",
-                "tokens.color.meetup_status.completed.text",
-                "tokens.color.meetup_status.cancelled.text"
+                "tokens.color.meetup_status.completed.background",
+                "tokens.color.meetup_status.cancelled.background"
             ],
             "stateCoverage": [
                 {
@@ -645,9 +648,10 @@
             ],
             "storybookTitle": "Design System/Notice Banner",
             "tokensUsed": [
-                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.background.accent_subtle",
                 "tokens.color.semantic.text.primary",
-                "tokens.color.semantic.border.divider"
+                "tokens.color.semantic.warning.base",
+                "tokens.color.semantic.feedback.success"
             ],
             "stateCoverage": [
                 {

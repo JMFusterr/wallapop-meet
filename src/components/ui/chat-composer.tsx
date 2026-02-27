@@ -33,6 +33,7 @@ function ChatComposer({
   placeholder = "Escribe un mensaje...",
   ...props
 }: ChatComposerProps) {
+  const textareaId = React.useId()
   const [innerValue, setInnerValue] = React.useState(
     defaultValue == null ? "" : String(defaultValue)
   )
@@ -89,6 +90,8 @@ function ChatComposer({
           )}
         >
           <textarea
+            id={textareaId}
+            name="chat-composer-message"
             value={resolvedValue}
             disabled={disabled}
             onChange={handleChange}
@@ -111,7 +114,7 @@ function ChatComposer({
               className={cn(
                 "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-[0.8px] transition-colors sm:h-10 sm:w-10",
                 disabled || secondaryActionDisabled
-                  ? "border-[color:var(--border-soft)] bg-[color:var(--action-disabled-strong-bg)] text-[color:var(--text-inverse)]"
+                  ? "border-[color:var(--border-soft)] bg-[color:var(--action-disabled-strong-bg)] text-[color:var(--action-disabled-text)]"
                   : "border-[color:var(--action-primary)] bg-[color:var(--action-primary)] text-[color:var(--text-inverse)]"
               )}
             >
@@ -133,7 +136,7 @@ function ChatComposer({
           className={cn(
             "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-[0.8px] transition-colors sm:h-10 sm:w-10",
             disabled || isEmpty
-              ? "border-[color:var(--border-soft)] bg-[color:var(--action-disabled-strong-bg)] text-[color:var(--text-inverse)]"
+              ? "border-[color:var(--border-soft)] bg-[color:var(--action-disabled-strong-bg)] text-[color:var(--action-disabled-text)]"
               : "border-[color:var(--action-primary)] bg-[color:var(--action-primary)] text-[color:var(--text-inverse)]"
           )}
         >
@@ -153,7 +156,13 @@ const designSystemMeta = {
     status: "ready",
     states: ["buyer","seller","disabled"],
     storybookTitle: "Design System/Chat Composer",
-    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+    tokensUsed: [
+        "tokens.color.semantic.action.primary",
+        "tokens.color.semantic.action.disabled_bg",
+        "tokens.color.semantic.action.disabled_text",
+        "tokens.color.semantic.text.secondary",
+        "tokens.color.semantic.border.divider",
+    ],
 } satisfies DesignSystemEntityMeta
 
 // eslint-disable-next-line react-refresh/only-export-components

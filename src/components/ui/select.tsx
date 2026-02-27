@@ -244,11 +244,12 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
             </ul>
           ) : null}
           <select
+            id={`${resolvedId}-native`}
             tabIndex={-1}
             aria-hidden="true"
             className="hidden"
             value={resolvedValue}
-            name={name}
+            name={name ?? `${resolvedId}-native`}
             required={required}
             onChange={() => {
               // El valor se sincroniza desde el dropdown custom.

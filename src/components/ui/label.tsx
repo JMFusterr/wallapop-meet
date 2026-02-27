@@ -14,15 +14,15 @@ const toneClassMap: Record<LabelTone, string> = {
     pending:
         "border-[color:var(--border-strong)] bg-[color:var(--bg-surface)] text-[color:var(--text-secondary)]",
     confirmed:
-        "border-[color:var(--border-focus)] bg-[color:var(--bg-accent-subtle)] text-[color:var(--action-primary-pressed)]",
+        "border-[color:var(--border-focus)] bg-[color:var(--bg-accent-subtle)] text-[color:var(--text-primary)]",
     arrived:
         "border-[color:var(--border-warning-subtle)] bg-[color:var(--bg-warning-subtle)] text-[color:var(--feedback-warning-strong)]",
     completed:
-        "border-[color:var(--status-sold-hover)] bg-[color:var(--bg-soft)] text-[color:var(--status-sold)]",
+        "border-[color:var(--status-sold-hover)] bg-[color:var(--bg-soft)] text-[color:var(--text-primary)]",
     expired:
         "border-[color:var(--border-divider)] bg-[color:var(--bg-soft)] text-[color:var(--text-tertiary)]",
     cancelled:
-        "border-[color:var(--border-error)] bg-[color:var(--bg-error-subtle)] text-[color:var(--feedback-error)]",
+        "border-[color:var(--border-error)] bg-[color:var(--bg-error-subtle)] text-[color:var(--text-primary)]",
 }
 
 function Label({ tone = "pending", className, children, ...props }: LabelProps) {
@@ -55,8 +55,8 @@ const designSystemMeta = {
         "tokens.color.meetup_status.pending.border",
         "tokens.color.meetup_status.confirmed.background",
         "tokens.color.meetup_status.arrived.background",
-        "tokens.color.meetup_status.completed.text",
-        "tokens.color.meetup_status.cancelled.text",
+        "tokens.color.meetup_status.completed.background",
+        "tokens.color.meetup_status.cancelled.background",
     ],
 } satisfies DesignSystemEntityMeta
 
