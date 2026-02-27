@@ -49,3 +49,21 @@ export const Interactive: Story = {
         expanded: undefined,
     },
 }
+
+export const MobileCompactDensity: Story = {
+    parameters: {
+        viewport: {
+            defaultViewport: "mobile1",
+        },
+    },
+    args: {
+        expanded: false,
+    },
+}
+
+export const SoldStatusIconPink: Story = {
+    args: {
+        expanded: false,
+        productStatusIcon: "deal",
+    },
+}

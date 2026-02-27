@@ -84,7 +84,7 @@ function ChatListItem({
           {itemTitle}
         </p>
         <div className="mt-1 flex items-center justify-between gap-2">
-          <p className="flex min-w-0 items-center gap-1 truncate font-wallie text-[length:var(--wm-size-14)] leading-[var(--wm-size-14)] text-[color:var(--text-meta)]">
+          <p className="flex min-w-0 items-center gap-1 font-wallie text-[length:var(--wm-size-14)] leading-[var(--wm-size-14)] text-[color:var(--text-meta)]">
             {lastMessageDeliveryState ? (
               <span
                 aria-label={lastMessageDeliveryState === "read" ? "Leido" : "Enviado"}
@@ -96,7 +96,7 @@ function ChatListItem({
                 <WallapopIcon name="double_check" size={13} strokeWidth={1.9} />
               </span>
             ) : null}
-            {messagePreview}
+            <span className="min-w-0 truncate">{messagePreview}</span>
           </p>
           <Badge value={unreadCount} variant="unread" />
         </div>

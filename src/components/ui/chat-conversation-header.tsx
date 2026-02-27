@@ -94,6 +94,9 @@ function ProductImage({
     statusIcon?: "bookmark" | "deal"
     statusIconPosition?: "top-left" | "center"
 }) {
+    const statusIconColor =
+        statusIcon === "deal" ? "text-[color:var(--status-sold)]" : "text-[color:var(--status-reserved)]"
+
     return (
         <div className={cn("relative overflow-hidden rounded-[var(--wm-size-8)]", className)}>
             {src ? (
@@ -104,7 +107,8 @@ function ProductImage({
             {statusIcon ? (
                 <span
                     className={cn(
-                        "absolute inline-flex h-8 w-8 items-center justify-center rounded-full border border-[color:var(--border-divider)] bg-[color:var(--bg-base)] text-[color:var(--status-reserved)]",
+                        "absolute inline-flex h-8 w-8 items-center justify-center rounded-full border border-[color:var(--border-divider)] bg-[color:var(--bg-base)]",
+                        statusIconColor,
                         statusIconPosition === "center" ? "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" : "left-2 top-2"
                     )}
                 >
@@ -170,13 +174,13 @@ function ChatConversationHeader({
                     {onBack ? (
                         <IconButton
                             label={backButtonLabel}
-                            icon={<WallapopIcon name="arrow_left" size="small" />}
+                            icon={<WallapopIcon name="arrow_left" size={20} />}
                             variant="menu_close"
                             onClick={onBack}
-                            className="h-8 w-8 bg-transparent p-0 text-[color:var(--text-primary)]"
+                            className="h-9 w-9 bg-transparent p-0 text-[color:var(--text-primary)] sm:h-10 sm:w-10"
                         />
                     ) : (
-                        <span className="h-8 w-8" aria-hidden />
+                        <span className="h-9 w-9 sm:h-10 sm:w-10" aria-hidden />
                     )}
 
                     <button
@@ -217,10 +221,10 @@ function ChatConversationHeader({
 
                     <IconButton
                         label={menuLabel ?? `Mas opciones de la conversacion con ${userName}`}
-                        icon={<WallapopIcon name="ellipsis_horizontal" size={16} strokeWidth={1.8} />}
+                        icon={<WallapopIcon name="ellipsis_horizontal" size={20} strokeWidth={1.8} />}
                         variant="menu_close"
                         onClick={onMenuClick}
-                        className="h-8 w-8 rounded-full bg-transparent p-0 text-[color:var(--text-tertiary)] hover:bg-[color:var(--bg-surface)]"
+                        className="h-9 w-9 rounded-full bg-transparent p-0 text-[color:var(--text-tertiary)] hover:bg-[color:var(--bg-surface)] sm:h-10 sm:w-10"
                     />
                 </div>
             </div>
@@ -235,21 +239,21 @@ function ChatConversationHeader({
                     {onBack ? (
                         <IconButton
                             label={backButtonLabel}
-                            icon={<WallapopIcon name="arrow_left" size="small" />}
+                            icon={<WallapopIcon name="arrow_left" size={20} />}
                             variant="menu_close"
                             onClick={onBack}
-                            className="h-8 w-8 bg-transparent p-0 text-[color:var(--text-primary)]"
+                            className="h-9 w-9 bg-transparent p-0 text-[color:var(--text-primary)] sm:h-10 sm:w-10"
                         />
                     ) : (
-                        <span className="h-8 w-8" aria-hidden />
+                        <span className="h-9 w-9 sm:h-10 sm:w-10" aria-hidden />
                     )}
 
                     <IconButton
                         label={menuLabel ?? `Mas opciones de la conversacion con ${userName}`}
-                        icon={<WallapopIcon name="ellipsis_horizontal" size={16} strokeWidth={1.8} />}
+                        icon={<WallapopIcon name="ellipsis_horizontal" size={20} strokeWidth={1.8} />}
                         variant="menu_close"
                         onClick={onMenuClick}
-                        className="h-8 w-8 rounded-full bg-transparent p-0 text-[color:var(--text-tertiary)] hover:bg-[color:var(--bg-surface)]"
+                        className="h-9 w-9 rounded-full bg-transparent p-0 text-[color:var(--text-tertiary)] hover:bg-[color:var(--bg-surface)] sm:h-10 sm:w-10"
                     />
                 </div>
 

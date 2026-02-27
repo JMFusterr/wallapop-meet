@@ -238,6 +238,11 @@ Notas de UI del workspace (actualizado 2026-02-23):
   - Sin reservar bloque de espacio inferior adicional.
 - Miniatura superior con render real de mapa y sin texto superpuesto.
 - La miniatura oculta controles de zoom `+/-`.
+
+Notas de UI del workspace (actualizado 2026-02-27):
+- `ChatConversationHeader`: en movil, botones de flecha y menu con densidad compacta (menor padding visual) manteniendo margen lateral consistente.
+- `ChatConversationHeader`: cuando el estado comercial es `Vendido`, el icono `deal` se renderiza con token de vendido (`--status-sold`) de forma consistente.
+- `ChatListItem`: la preview del ultimo mensaje debe truncar con elipsis (`...`) en textos largos, sin cortes abruptos y sin desplazar badge/estado de entrega.
 - Tap en miniatura abre modal de mapa en grande, solo lectura:
   - Sin buscador.
   - Sin seleccion de punto.

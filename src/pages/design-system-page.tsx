@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { ChatProductCard } from "@/components/ui/chat-product-card"
 import { ChatCounterpartCard } from "@/components/ui/chat-counterpart-card"
 import { ChatListItem } from "@/components/ui/chat-list-item"
+import { ChatConversationHeader } from "@/components/ui/chat-conversation-header"
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { MeetupProposalHeader } from "@/components/meetup/meetup-proposal-header"
 import { MeetupWizardStepHeading } from "@/components/meetup/meetup-wizard-step-heading"
@@ -1199,6 +1200,38 @@ function DesignSystemPage() {
                                 </div>
                             </article>
                             <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
+                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Conversation Header Pattern</h3>
+                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
+                                    Header de conversacion con densidad tactil equilibrada en movil y estado comercial visible del articulo.
+                                </p>
+                                <div className="overflow-x-auto">
+                                    <div className="flex min-w-max gap-4">
+                                        <div className="w-[var(--wm-size-360)] shrink-0 overflow-hidden rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white">
+                                            <p className="border-b border-[color:var(--border-divider)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
+                                                Compacto movil (flecha + menu)
+                                            </p>
+                                            <ChatConversationHeader
+                                                itemImageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400"
+                                                itemImageAlt="Nintendo Switch OLED + dock"
+                                                itemPrice="240 EUR"
+                                                itemTitle="Nintendo Switch OLED + dock"
+                                                profileImageSrc="https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320"
+                                                profileImageAlt="Laura M."
+                                                userName="Laura M."
+                                                productStatusIcon="deal"
+                                                rating={4.5}
+                                                distanceLabel="3,4km de ti"
+                                                attendanceRate={96}
+                                                attendanceMeetups={28}
+                                                expanded={false}
+                                                onBack={() => {}}
+                                                onMenuClick={() => {}}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
                                 <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Counterpart Context Pattern</h3>
                                 <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
                                     Card de contexto del interlocutor para sidebar de conversacion (rating, distancia y asistencia).
@@ -1250,6 +1283,19 @@ function DesignSystemPage() {
                                                 leadingIndicator="deal"
                                                 lastMessageDeliveryState="sent"
                                                 avatarSrc="https://images.pexels.com/photos/18105/pexels-photo.jpg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400"
+                                            />
+                                        </div>
+                                        <div className="w-[var(--wm-size-360)] shrink-0 overflow-hidden rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white">
+                                            <p className="border-b border-[color:var(--border-divider)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
+                                                ChatListItem - preview largo con elipsis
+                                            </p>
+                                            <ChatListItem
+                                                userName="Alex"
+                                                messageDate="Hoy"
+                                                itemTitle="Nintendo Switch OLED + dock"
+                                                messagePreview="Te confirmo que llego en 12 minutos al punto de encuentro y llevo tambien la funda, el cargador y la caja original para cerrar la venta ahi mismo."
+                                                lastMessageDeliveryState="read"
+                                                avatarSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400"
                                             />
                                         </div>
                                     </div>

@@ -806,7 +806,15 @@ function resolveConversationCommercialStatus(
         conversation.leadingIndicator === "bookmark" ||
         isReservedStatusLabel(conversation.listingStatusLabel)
     const shouldForceReserved = meetup?.status === "CONFIRMED" || meetup?.status === "ARRIVED"
+    const shouldForceSold = meetup?.status === "COMPLETED"
     const shouldClearReserved = meetup?.status === "CANCELLED" || meetup?.status === "EXPIRED"
+
+    if (shouldForceSold) {
+        return {
+            leadingIndicator: "deal",
+            listingStatusLabel: "Vendido",
+        }
+    }
 
     if (shouldForceReserved) {
         return {
@@ -1899,6 +1907,14 @@ function ConversationPane({
             : listingStatusLabelNormalized.includes("vendid")
                 ? "deal"
                 : conversation.leadingIndicator
+    const timelineContainerRef = React.useRef<HTMLDivElement | null>(null)
+
+    React.useEffect(() => {
+        if (!timelineContainerRef.current) {
+            return
+        }
+        timelineContainerRef.current.scrollTop = timelineContainerRef.current.scrollHeight
+    }, [conversation.id, timelineEntries.length])
 
     return (
         <section className="flex h-full min-h-0 flex-col bg-white">
@@ -1941,14 +1957,14 @@ function ConversationPane({
                     />
                     <IconButton
                         label={`Mas opciones de la conversacion con ${conversation.userName}`}
-                        icon={<WallapopIcon name="ellipsis_horizontal" size={16} strokeWidth={1.8} />}
+                        icon={<WallapopIcon name="ellipsis_horizontal" size={20} strokeWidth={1.8} />}
                         variant="menu_close"
-                        className="h-9 w-9 rounded-full bg-transparent p-0 text-[color:var(--text-tertiary)] hover:bg-[color:var(--bg-surface)]"
+                        className="h-10 w-10 rounded-full bg-transparent p-0 text-[color:var(--text-tertiary)] hover:bg-[color:var(--bg-surface)]"
                     />
                 </header>
             )}
 
-            <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5">
+            <div ref={timelineContainerRef} className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5">
                 <div className="space-y-3">
                     {timelineEntries.map((entry, entryIndex) => {
                         const previousEntry = entryIndex > 0 ? timelineEntries[entryIndex - 1] : null
@@ -2504,6 +2520,20 @@ function WallapopChatWorkspace() {
             ...previous,
             [selectedConversation.id]: next,
         }))
+
+        if (next.status === "COMPLETED") {
+            setConversationsState((previous) =>
+                previous.map((conversation) =>
+                    conversation.id === selectedConversation.id
+                        ? {
+                            ...conversation,
+                            leadingIndicator: "deal",
+                            listingStatusLabel: "Vendido",
+                        }
+                        : conversation
+                )
+            )
+        }
 
         if (next.status === "CONFIRMED") {
             setConversationsState((previous) =>

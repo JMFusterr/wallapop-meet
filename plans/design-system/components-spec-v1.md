@@ -688,6 +688,9 @@ Casos que deben seguir cubiertos en story/test visual:
 5. `ChatCounterpartCard` asistencia alta (`>90`).
 6. `ChatCounterpartCard` asistencia media (`70-89`, warning).
 7. `ChatCounterpartCard` asistencia baja (`<70`, mensaje rojo sin porcentaje).
+8. `ChatConversationHeader` en viewport movil con controles de cabecera compactos (flecha/menu) y espaciado lateral consistente.
+9. `ChatConversationHeader` con `productStatusIcon="deal"` en color de vendido (`--status-sold`), nunca color de reservado.
+10. `ChatListItem` con preview larga y `lastMessageDeliveryState`, truncando con elipsis sin desplazar badge ni icono de entrega.
 
 ## Inventarios de referencia (captura oficial)
 - `docs/elements/buttons.md`

@@ -68,3 +68,15 @@ export const WithUnreadBadge: Story = {
   },
 }
 
+export const LongPreviewEllipsis: Story = {
+  args: {
+    userName: "Alex",
+    messageDate: "Hoy",
+    itemTitle: "Nintendo Switch OLED + dock",
+    messagePreview:
+      "Te confirmo que llego en 12 minutos al punto de encuentro y llevo tambien la funda, el cargador y la caja original para cerrar la venta ahi mismo.",
+    lastMessageDeliveryState: "read",
+    unreadCount: 0,
+  },
+}
+
