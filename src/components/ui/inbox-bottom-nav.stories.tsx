@@ -22,9 +22,9 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const InboxActive: Story = {}
+export const Default: Story = {}
 
-export const HomeActiveWithBadge: Story = {
+export const WithBadge: Story = {
   args: {
     activeItemId: "home",
     items: [

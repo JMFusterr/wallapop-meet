@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-02-27T11:14:03.711Z",
+    "generatedAt": "2026-02-27T12:39:27.386Z",
     "entryFile": "src/App.tsx",
     "entities": [
         {
@@ -112,7 +112,8 @@
             "description": "Chat Composer del design system de Wallapop Meet.",
             "status": "ready",
             "states": [
-                "default",
+                "buyer",
+                "seller",
                 "disabled"
             ],
             "storybookTitle": "Design System/Chat Composer",
@@ -123,7 +124,11 @@
             ],
             "stateCoverage": [
                 {
-                    "state": "default",
+                    "state": "buyer",
+                    "covered": true
+                },
+                {
+                    "state": "seller",
                     "covered": true
                 },
                 {
@@ -172,9 +177,9 @@
             "description": "Chat Counterpart Card del design system de Wallapop Meet.",
             "status": "ready",
             "states": [
-                "default",
-                "error",
-                "success"
+                "high",
+                "medium",
+                "low"
             ],
             "storybookTitle": "Design System/Chat Counterpart Card",
             "tokensUsed": [
@@ -184,16 +189,16 @@
             ],
             "stateCoverage": [
                 {
-                    "state": "default",
+                    "state": "high",
                     "covered": true
                 },
                 {
-                    "state": "error",
-                    "covered": false
+                    "state": "medium",
+                    "covered": true
                 },
                 {
-                    "state": "success",
-                    "covered": false
+                    "state": "low",
+                    "covered": true
                 }
             ]
         },
@@ -207,9 +212,8 @@
             "description": "Chat List Item del design system de Wallapop Meet.",
             "status": "ready",
             "states": [
-                "default",
-                "selected",
-                "disabled"
+                "unselected",
+                "selected"
             ],
             "storybookTitle": "Design System/Chat List Item",
             "tokensUsed": [
@@ -219,16 +223,12 @@
             ],
             "stateCoverage": [
                 {
-                    "state": "default",
+                    "state": "unselected",
                     "covered": true
                 },
                 {
                     "state": "selected",
                     "covered": true
-                },
-                {
-                    "state": "disabled",
-                    "covered": false
                 }
             ]
         },
@@ -242,8 +242,8 @@
             "description": "Chat Message Bubble del design system de Wallapop Meet.",
             "status": "ready",
             "states": [
-                "default",
                 "sent",
+                "received",
                 "read"
             ],
             "storybookTitle": "Design System/Chat Message Bubble",
@@ -254,11 +254,11 @@
             ],
             "stateCoverage": [
                 {
-                    "state": "default",
+                    "state": "sent",
                     "covered": true
                 },
                 {
-                    "state": "sent",
+                    "state": "received",
                     "covered": true
                 },
                 {
@@ -277,7 +277,7 @@
             "description": "Chat Product Card del design system de Wallapop Meet.",
             "status": "ready",
             "states": [
-                "default",
+                "available",
                 "reserved",
                 "sold"
             ],
@@ -289,16 +289,16 @@
             ],
             "stateCoverage": [
                 {
-                    "state": "default",
+                    "state": "available",
                     "covered": true
                 },
                 {
                     "state": "reserved",
-                    "covered": false
+                    "covered": true
                 },
                 {
                     "state": "sold",
-                    "covered": false
+                    "covered": true
                 }
             ]
         },
@@ -367,8 +367,7 @@
             "description": "Inbox Bottom Nav del design system de Wallapop Meet.",
             "status": "ready",
             "states": [
-                "default",
-                "active"
+                "default"
             ],
             "storybookTitle": "Design System/Inbox Bottom Nav",
             "tokensUsed": [
@@ -379,10 +378,6 @@
             "stateCoverage": [
                 {
                     "state": "default",
-                    "covered": true
-                },
-                {
-                    "state": "active",
                     "covered": true
                 }
             ]
@@ -428,6 +423,56 @@
             ]
         },
         {
+            "file": "src/components/ui/label.tsx",
+            "storyFile": "src/components/ui/label.stories.tsx",
+            "storyTitle": "Design System/Label",
+            "id": "label",
+            "entityType": "component",
+            "title": "Label",
+            "description": "Label de estado para componentes de meetup.",
+            "status": "ready",
+            "states": [
+                "pending",
+                "confirmed",
+                "arrived",
+                "completed",
+                "expired",
+                "cancelled"
+            ],
+            "storybookTitle": "Design System/Label",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "pending",
+                    "covered": true
+                },
+                {
+                    "state": "confirmed",
+                    "covered": true
+                },
+                {
+                    "state": "arrived",
+                    "covered": true
+                },
+                {
+                    "state": "completed",
+                    "covered": true
+                },
+                {
+                    "state": "expired",
+                    "covered": true
+                },
+                {
+                    "state": "cancelled",
+                    "covered": true
+                }
+            ]
+        },
+        {
             "file": "src/components/ui/location-search-input.tsx",
             "storyFile": "src/components/ui/location-search-input.stories.tsx",
             "storyTitle": "Design System/Location Search Input",
@@ -437,8 +482,7 @@
             "description": "Location Search Input del design system de Wallapop Meet.",
             "status": "ready",
             "states": [
-                "default",
-                "error"
+                "default"
             ],
             "storybookTitle": "Design System/Location Search Input",
             "tokensUsed": [
@@ -450,10 +494,6 @@
                 {
                     "state": "default",
                     "covered": true
-                },
-                {
-                    "state": "error",
-                    "covered": false
                 }
             ]
         },
@@ -502,7 +542,7 @@
             "description": "Meetup Proposal Footer del design system de Wallapop Meet.",
             "status": "ready",
             "states": [
-                "default",
+                "enabled",
                 "disabled"
             ],
             "storybookTitle": "Design System/Meetup Proposal Footer",
@@ -513,7 +553,7 @@
             ],
             "stateCoverage": [
                 {
-                    "state": "default",
+                    "state": "enabled",
                     "covered": true
                 },
                 {
@@ -532,8 +572,9 @@
             "description": "Meetup Proposal Header del design system de Wallapop Meet.",
             "status": "ready",
             "states": [
-                "default",
-                "disabled"
+                "step_one",
+                "step_two",
+                "step_three"
             ],
             "storybookTitle": "Design System/Meetup Proposal Header",
             "tokensUsed": [
@@ -543,11 +584,15 @@
             ],
             "stateCoverage": [
                 {
-                    "state": "default",
+                    "state": "step_one",
                     "covered": true
                 },
                 {
-                    "state": "disabled",
+                    "state": "step_two",
+                    "covered": true
+                },
+                {
+                    "state": "step_three",
                     "covered": true
                 }
             ]
@@ -562,8 +607,8 @@
             "description": "Meetup Wizard Step Heading del design system de Wallapop Meet.",
             "status": "ready",
             "states": [
-                "default",
-                "disabled"
+                "with_title",
+                "caption_only"
             ],
             "storybookTitle": "Design System/Meetup Wizard Step Heading",
             "tokensUsed": [
@@ -573,12 +618,12 @@
             ],
             "stateCoverage": [
                 {
-                    "state": "default",
+                    "state": "with_title",
                     "covered": true
                 },
                 {
-                    "state": "disabled",
-                    "covered": false
+                    "state": "caption_only",
+                    "covered": true
                 }
             ]
         },

@@ -24,15 +24,27 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Playground: Story = {}
-
-export const WithEditAction: Story = {
+export const Available: Story = {
   args: {
+    statusLabel: undefined,
+    viewerRole: "seller",
     onEdit: () => undefined,
+    onReserve: () => undefined,
+    onSold: () => undefined,
   },
 }
 
-export const BuyerView: Story = {
+export const Reserved: Story = {
+  args: {
+    statusLabel: "Reservado",
+    viewerRole: "seller",
+    onEdit: () => undefined,
+    onReserve: () => undefined,
+    onSold: () => undefined,
+  },
+}
+
+export const Sold: Story = {
   args: {
     viewerRole: "buyer",
     statusLabel: "Vendido",

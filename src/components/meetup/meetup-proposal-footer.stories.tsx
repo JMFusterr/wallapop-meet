@@ -29,7 +29,7 @@ const baseArgs = {
   onAction: () => undefined,
 }
 
-export const NextEnabled: Story = {
+export const Enabled: Story = {
   args: {
     ...baseArgs,
     actionLabel: "Siguiente",
@@ -38,21 +38,12 @@ export const NextEnabled: Story = {
   },
 }
 
-export const NextDisabled: Story = {
+export const Disabled: Story = {
   args: {
     ...baseArgs,
     actionLabel: "Siguiente",
     actionTextTone: "dark",
     actionDisabled: true,
-  },
-}
-
-export const Submit: Story = {
-  args: {
-    ...baseArgs,
-    actionLabel: "Proponer quedada",
-    actionTextTone: "light",
-    actionDisabled: false,
   },
 }
 

@@ -41,7 +41,7 @@ const designSystemMeta = {
     title: "Meetup Wizard Step Heading",
     description: "Meetup Wizard Step Heading del design system de Wallapop Meet.",
     status: "ready",
-    states: ["default","disabled"],
+    states: ["with_title","caption_only"],
     storybookTitle: "Design System/Meetup Wizard Step Heading",
     tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
 } satisfies DesignSystemEntityMeta

@@ -29,54 +29,36 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Playground: Story = {}
-
-export const Selected: Story = {
+export const UnselectedWithoutAlert: Story = {
   args: {
-    selected: true,
+    selected: false,
+    unreadCount: 0,
+    leadingIndicator: undefined,
   },
 }
 
-export const WithBookmark: Story = {
+export const UnselectedWithAlert: Story = {
   args: {
-    userName: "Samuel",
-    messageDate: "15:07",
-    itemTitle: "Silent Hill f PS5 Juego",
-    messagePreview: "El paquete ha llegado al punto ...",
+    selected: false,
+    unreadCount: 2,
     leadingIndicator: "bookmark",
   },
 }
 
-export const WithDeal: Story = {
+export const SelectedWithoutAlert: Story = {
   args: {
-    userName: "Daniel",
-    messageDate: "17:24",
-    itemTitle: "Figura Pickett Animales Fan...",
-    messagePreview: "Ya voy",
+    selected: true,
+    unreadCount: 0,
+    leadingIndicator: undefined,
+  },
+}
+
+export const SelectedWithAlert: Story = {
+  args: {
+    selected: true,
+    unreadCount: 3,
     leadingIndicator: "deal",
     lastMessageDeliveryState: "read",
-  },
-}
-
-export const WithUnreadBadge: Story = {
-  args: {
-    userName: "Marta",
-    messageDate: "Ayer",
-    itemTitle: "iPhone 13 128GB",
-    messagePreview: "Perfecto, me va bien en el metro.",
-    unreadCount: 2,
-  },
-}
-
-export const LongPreviewEllipsis: Story = {
-  args: {
-    userName: "Alex",
-    messageDate: "Hoy",
-    itemTitle: "Nintendo Switch OLED + dock",
-    messagePreview:
-      "Te confirmo que llego en 12 minutos al punto de encuentro y llevo tambien la funda, el cargador y la caja original para cerrar la venta ahi mismo.",
-    lastMessageDeliveryState: "read",
-    unreadCount: 0,
   },
 }
 

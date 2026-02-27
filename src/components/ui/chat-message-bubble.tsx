@@ -71,7 +71,7 @@ const designSystemMeta = {
     title: "Chat Message Bubble",
     description: "Chat Message Bubble del design system de Wallapop Meet.",
     status: "ready",
-    states: ["default","sent","read"],
+    states: ["sent","received","read"],
     storybookTitle: "Design System/Chat Message Bubble",
     tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
 } satisfies DesignSystemEntityMeta

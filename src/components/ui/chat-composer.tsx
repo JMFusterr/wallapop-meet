@@ -151,7 +151,7 @@ const designSystemMeta = {
     title: "Chat Composer",
     description: "Chat Composer del design system de Wallapop Meet.",
     status: "ready",
-    states: ["default","disabled"],
+    states: ["buyer","seller","disabled"],
     storybookTitle: "Design System/Chat Composer",
     tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
 } satisfies DesignSystemEntityMeta

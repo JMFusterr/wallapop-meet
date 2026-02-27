@@ -22,6 +22,9 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const WithTitle: Story = {
+  parameters: {
+    dsState: "with_title",
+  },
   args: {
     caption: "Paso anterior",
     title: "Seleccionar dia y hora",
@@ -30,6 +33,9 @@ export const WithTitle: Story = {
 }
 
 export const CaptionOnly: Story = {
+  parameters: {
+    dsState: "caption_only",
+  },
   args: {
     caption: "Define el pago final y la preferencia de pago.",
     onBack: () => undefined,

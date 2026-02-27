@@ -101,7 +101,7 @@ const designSystemMeta = {
     title: "Inbox Bottom Nav",
     description: "Inbox Bottom Nav del design system de Wallapop Meet.",
     status: "ready",
-    states: ["default","active"],
+    states: ["default"],
     storybookTitle: "Design System/Inbox Bottom Nav",
     tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
 } satisfies DesignSystemEntityMeta

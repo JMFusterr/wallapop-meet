@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Button } from "@/components/ui/button"
+import { Label, type LabelTone } from "@/components/ui/label"
 import { NoticeBanner } from "@/components/ui/notice-banner"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { resolveArrivalActionState } from "@/components/meetup/meetup-ui-rules"
@@ -27,7 +28,7 @@ type MeetupCardProps = {
 type CardAction = {
     id: string
     label: string
-    variant: "primary" | "inline_action" | "critical" | "secondary" | "ghost"
+    variant: "primary" | "inline_action" | "critical" | "outline" | "ghost"
     run: () => void
     disabled?: boolean
     className?: string
@@ -38,7 +39,7 @@ const RED_ZONE_CANCELLATION_MINUTES = 30
 
 type StatusPill = {
     label: string
-    style: React.CSSProperties
+    tone: LabelTone
 }
 
 type TokenLeaf = { value?: string | number }
@@ -65,41 +66,33 @@ function resolveColorToken(path: string): string {
     return "var(--text-primary)"
 }
 
-function meetupStatusColors(name: "pending" | "confirmed" | "arrived" | "completed" | "expired" | "cancelled"): React.CSSProperties {
-    return {
-        backgroundColor: resolveColorToken(`tokens.color.meetup_status.${name}.background`),
-        borderColor: resolveColorToken(`tokens.color.meetup_status.${name}.border`),
-        color: resolveColorToken(`tokens.color.meetup_status.${name}.text`),
-    }
-}
-
 function statusPill(meetup: MeetupMachine): StatusPill {
     const { status } = meetup
     switch (status) {
         case "PROPOSED":
             return {
                 label: "pendiente",
-                style: meetupStatusColors("pending"),
+                tone: "pending",
             }
         case "COUNTER_PROPOSED":
             return {
                 label: "pendiente",
-                style: meetupStatusColors("pending"),
+                tone: "pending",
             }
         case "CONFIRMED":
             return {
                 label: "confirmada",
-                style: meetupStatusColors("confirmed"),
+                tone: "confirmed",
             }
         case "ARRIVED":
             return {
                 label: "llegada",
-                style: meetupStatusColors("arrived"),
+                tone: "arrived",
             }
         case "COMPLETED":
             return {
                 label: "completada",
-                style: meetupStatusColors("completed"),
+                tone: "completed",
             }
         case "EXPIRED":
             return {
@@ -107,17 +100,17 @@ function statusPill(meetup: MeetupMachine): StatusPill {
                     meetup.expiredByTrigger === "SELLER_NO_RESPONSE_48H"
                         ? "cierre neutral"
                         : "expirada",
-                style: meetupStatusColors("expired"),
+                tone: "expired",
             }
         case "CANCELLED":
             return {
                 label: "cancelada",
-                style: meetupStatusColors("cancelled"),
+                tone: "cancelled",
             }
         default:
             return {
                 label: "sin propuesta",
-                style: meetupStatusColors("pending"),
+                tone: "pending",
             }
     }
 }
@@ -345,7 +338,7 @@ function MeetupCard({
         actions.push({
             id: "counter",
             label: "Proponer cambios",
-            variant: "secondary",
+            variant: "outline",
             run: onEditProposal
                 ? onEditProposal
                 : () =>
@@ -388,7 +381,7 @@ function MeetupCard({
         actions.push({
             id: "repropose",
             label: "Reenviar propuesta",
-            variant: "secondary",
+            variant: "outline",
             run: () =>
                 applyEvent({
                     type: "PROPOSE",
@@ -421,7 +414,7 @@ function MeetupCard({
             actions.push({
                 id: "calendar",
                 label: "Anadir a Calendar",
-                variant: "secondary",
+                variant: "outline",
                 run: addToCalendar,
                 className: OUTLINE_ACTION_CLASS,
                 fullWidth: true,
@@ -468,7 +461,7 @@ function MeetupCard({
         actions.push({
             id: "neutral-close",
             label: "Ignorar notificacion (48h)",
-            variant: "secondary",
+            variant: "outline",
             run: () =>
                 applyEvent({
                     type: "EXPIRE",
@@ -513,7 +506,7 @@ function MeetupCard({
         actions.unshift({
             id: "edit",
             label: "Editar",
-            variant: "secondary",
+            variant: "outline",
             run: onEditProposal,
             className: OUTLINE_ACTION_CLASS,
             fullWidth: true,
@@ -564,16 +557,9 @@ function MeetupCard({
                 <p className="font-wallie-chunky text-[length:var(--wm-size-17)] leading-[1.1] text-[color:var(--text-primary)]">
                     {title}
                 </p>
-                <span
-                    className="inline-flex rounded-full border px-2.5 py-1 font-wallie-fit text-[length:var(--wm-size-11)] leading-[1]"
-                    style={
-                        isPendingActionStatus
-                            ? meetupStatusColors("pending")
-                            : currentStatusPill.style
-                    }
-                >
+                <Label tone={isPendingActionStatus ? "pending" : currentStatusPill.tone}>
                     {currentStatusPill.label}
-                </span>
+                </Label>
             </div>
 
             <dl className="mt-3 space-y-2.5">
@@ -672,7 +658,7 @@ function MeetupCard({
                                 Si
                             </Button>
                             <Button
-                                variant="secondary"
+                                variant="outline"
                                 size="sm"
                                 className={OUTLINE_ACTION_CLASS}
                                 onClick={() => setIsCancelModalOpen(false)}

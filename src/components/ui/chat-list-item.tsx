@@ -113,7 +113,7 @@ const designSystemMeta = {
     title: "Chat List Item",
     description: "Chat List Item del design system de Wallapop Meet.",
     status: "ready",
-    states: ["default","selected","disabled"],
+    states: ["unselected","selected"],
     storybookTitle: "Design System/Chat List Item",
     tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
 } satisfies DesignSystemEntityMeta

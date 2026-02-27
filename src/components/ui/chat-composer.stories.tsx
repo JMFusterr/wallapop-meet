@@ -24,26 +24,31 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Playground: Story = {}
+export const Buyer: Story = {
+  args: {
+    defaultValue: "Te va bien quedar manana?",
+    secondaryActionLabel: undefined,
+    onSecondaryAction: undefined,
+  },
+}
 
-export const Empty: Story = {
+export const Seller: Story = {
   args: {
     defaultValue: "",
+    secondaryActionLabel: "Proponer quedada",
+    secondaryActionAriaLabel: "Proponer quedada",
+    secondaryActionIconName: "calendar",
+    onSecondaryAction: () => undefined,
   },
 }
 
 export const Disabled: Story = {
   args: {
     disabled: true,
-  },
-}
-
-export const WithSecondaryAction: Story = {
-  args: {
-    defaultValue: "",
-    secondaryActionLabel: "Proponer quedar",
-    secondaryActionAriaLabel: "Proponer quedar",
+    secondaryActionLabel: "Proponer quedada",
+    secondaryActionAriaLabel: "Proponer quedada",
     secondaryActionIconName: "calendar",
+    onSecondaryAction: () => undefined,
   },
 }
 

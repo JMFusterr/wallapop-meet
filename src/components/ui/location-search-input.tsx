@@ -42,7 +42,7 @@ const designSystemMeta = {
     title: "Location Search Input",
     description: "Location Search Input del design system de Wallapop Meet.",
     status: "ready",
-    states: ["default","error"],
+    states: ["default"],
     storybookTitle: "Design System/Location Search Input",
     tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
 } satisfies DesignSystemEntityMeta

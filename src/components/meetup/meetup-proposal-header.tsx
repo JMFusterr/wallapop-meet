@@ -74,7 +74,7 @@ const designSystemMeta = {
     title: "Meetup Proposal Header",
     description: "Meetup Proposal Header del design system de Wallapop Meet.",
     status: "ready",
-    states: ["default","disabled"],
+    states: ["step_one","step_two","step_three"],
     storybookTitle: "Design System/Meetup Proposal Header",
     tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
 } satisfies DesignSystemEntityMeta

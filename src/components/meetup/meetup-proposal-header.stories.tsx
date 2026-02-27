@@ -28,6 +28,9 @@ const baseSteps = [
 ]
 
 export const StepOne: Story = {
+  parameters: {
+    dsState: "step_one",
+  },
   args: {
     currentStep: 1,
     totalSteps: 3,
@@ -37,7 +40,10 @@ export const StepOne: Story = {
   },
 }
 
-export const StepTwoWithLocks: Story = {
+export const StepTwo: Story = {
+  parameters: {
+    dsState: "step_two",
+  },
   args: {
     currentStep: 2,
     totalSteps: 3,
@@ -46,6 +52,19 @@ export const StepTwoWithLocks: Story = {
       { id: 2, label: "Dia y hora" },
       { id: 3, label: "Preferencia de pago", disabled: true },
     ],
+    onClose: () => undefined,
+    onStepChange: () => undefined,
+  },
+}
+
+export const StepThree: Story = {
+  parameters: {
+    dsState: "step_three",
+  },
+  args: {
+    currentStep: 3,
+    totalSteps: 3,
+    steps: baseSteps,
     onClose: () => undefined,
     onStepChange: () => undefined,
   },

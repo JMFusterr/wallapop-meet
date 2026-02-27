@@ -24,7 +24,12 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Playground: Story = {}
+export const AttendanceHigh: Story = {
+    args: {
+        attendanceRate: 94,
+        attendanceMeetups: 26,
+    },
+}
 
 export const AttendanceMedium: Story = {
     args: {

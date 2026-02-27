@@ -138,7 +138,7 @@ const designSystemMeta = {
     title: "Chat Counterpart Card",
     description: "Chat Counterpart Card del design system de Wallapop Meet.",
     status: "ready",
-    states: ["default","error","success"],
+    states: ["high","medium","low"],
     storybookTitle: "Design System/Chat Counterpart Card",
     tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
 } satisfies DesignSystemEntityMeta

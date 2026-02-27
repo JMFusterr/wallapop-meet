@@ -28,7 +28,7 @@ const buttonVariants = cva(
           "rounded-[var(--wm-size-12)] border-transparent bg-[color:var(--bg-base)] font-wallie text-[length:var(--wm-size-16)] leading-6 text-[color:var(--text-primary)] hover:bg-[color:var(--bg-surface)] active:bg-[color:var(--border-divider)]",
 
         // Legacy aliases: mantener temporalmente para no romper usos existentes.
-        secondary:
+        outline:
           "rounded-[var(--wm-size-999)] border border-[color:var(--action-primary-hover)] bg-[color:var(--bg-base)] font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--action-primary-hover)] hover:bg-[color:var(--bg-surface)] active:bg-[color:var(--bg-accent-subtle)]",
         ghost:
           "border-none bg-transparent font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-secondary)] underline underline-offset-2 hover:bg-transparent hover:text-[color:var(--text-primary)] active:bg-transparent",

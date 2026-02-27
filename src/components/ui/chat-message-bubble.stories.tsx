@@ -29,26 +29,28 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Playground: Story = {}
+export const Sent: Story = {
+  args: {
+    variant: "sent",
+    deliveryState: "sent",
+    children: "Si, confirmo en Glories.",
+    time: "15:16",
+  },
+}
 
-export const ThreadExample: Story = {
-  render: () => (
-    <div className="flex w-full max-w-[var(--wm-size-420)] flex-col gap-2">
-      <div className="flex justify-start">
-        <ChatMessageBubble variant="received" time="14:52">
-          Te va bien manana a las 18:30?
-        </ChatMessageBubble>
-      </div>
-      <div className="flex justify-end">
-        <ChatMessageBubble variant="sent" time="15:16" deliveryState="sent">
-          Si, confirmo en Glories.
-        </ChatMessageBubble>
-      </div>
-      <div className="flex justify-end">
-        <ChatMessageBubble variant="sent" time="15:18" deliveryState="read">
-          Perfecto
-        </ChatMessageBubble>
-      </div>
-    </div>
-  ),
+export const Received: Story = {
+  args: {
+    variant: "received",
+    children: "Te va bien manana a las 18:30?",
+    time: "14:52",
+  },
+}
+
+export const Read: Story = {
+  args: {
+    variant: "sent",
+    deliveryState: "read",
+    children: "Perfecto",
+    time: "15:18",
+  },
 }

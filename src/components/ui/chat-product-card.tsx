@@ -174,7 +174,7 @@ const designSystemMeta = {
     title: "Chat Product Card",
     description: "Chat Product Card del design system de Wallapop Meet.",
     status: "ready",
-    states: ["default","reserved","sold"],
+    states: ["available","reserved","sold"],
     storybookTitle: "Design System/Chat Product Card",
     tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
 } satisfies DesignSystemEntityMeta

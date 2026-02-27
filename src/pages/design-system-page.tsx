@@ -1,6 +1,7 @@
 import * as React from "react"
 import styles from "../../styles.json"
 import { Button } from "@/components/ui/button"
+import { WallapopIcon, type WallapopIconName } from "@/components/ui/wallapop-icon"
 import { navigateTo } from "@/lib/navigation"
 import designSystemCatalog from "@/design-system/generated/design-system-catalog.json"
 
@@ -65,7 +66,33 @@ const sectionEntries = [
     { id: "foundations-radius", label: "Corner Radius" },
     { id: "foundations-elevation", label: "Elevation" },
     { id: "components-playground", label: "Components" },
+    { id: "components-iconography", label: "Iconography" },
 ] as const
+
+const iconActionMap: Record<WallapopIconName, string> = {
+    arrow_left: "Volver a la pantalla anterior o al listado.",
+    burguer_menu: "Abrir menu principal o menu contextual.",
+    chevron_right: "Navegar al siguiente paso o expandir seccion.",
+    cross: "Cerrar modales, paneles o flujos activos.",
+    ellipsis_horizontal: "Mostrar acciones secundarias de contexto.",
+    paper_plane: "Enviar mensaje en composer de chat.",
+    shield: "Representar seguridad y recomendaciones de confianza.",
+    edit: "Editar datos de un artículo a la venta.",
+    home: "Acceso al inicio en navegacion inferior.",
+    heart: "Número de favoritos o guardados.",
+    plus: "Crear nueva accion o iniciar flujo.",
+    mail: "Entrar en inbox o conversaciones.",
+    user: "Acceso a perfil y area personal.",
+    bookmark: "Representar el estado como reservado.",
+    deal: "Representar el estado como vendido.",
+    calendar: "Abrir selector de fecha y planificacion de quedada.",
+    double_check: "Confirmar envío o lectura de mensaje.",
+    eye: "Número de visitas de un artículo.",
+}
+
+const iconCatalog = (Object.keys(iconActionMap) as WallapopIconName[])
+    .sort((a, b) => a.localeCompare(b))
+    .map((name) => ({ name, action: iconActionMap[name] }))
 
 const storyModules = Object.values(
     import.meta.glob("../components/**/*.stories.tsx", {
@@ -165,6 +192,10 @@ function toStartCase(input: string): string {
         .join(" ")
 }
 
+function normalizeKey(input: string): string {
+    return input.toLowerCase().replace(/[\s_-]/g, "")
+}
+
 function normalizeSemanticColorItems(input: unknown): SemanticColorItem[] {
     if (!isRecord(input)) {
         return []
@@ -255,28 +286,29 @@ function resolveTokenColor(path: string): string {
 }
 
 function getContrastTextHint(background: string): {
-    label: "Texto Blanco" | "Texto Oscuro"
+    label: "texto claro" | "texto oscuro"
     textColor: string
     pillBackground: string
 } {
-    const light = resolveTokenColor("tokens.color.palette.neutral.0")
+    const light = resolveTokenColor("tokens.color.palette.neutral.50")
     const dark = resolveTokenColor("tokens.color.palette.neutral.900")
     const lightRatio = contrastRatio(background, light)
     const darkRatio = contrastRatio(background, dark)
 
     if (lightRatio === 0 && darkRatio === 0) {
         return {
-            label: "Texto Oscuro",
+            label: "texto oscuro",
             textColor: "var(--text-primary)",
             pillBackground: "var(--bg-surface)",
         }
     }
 
-    if (lightRatio >= darkRatio) {
-        return { label: "Texto Blanco", textColor: light, pillBackground: dark }
+    const useLight = lightRatio >= darkRatio
+    if (useLight) {
+        return { label: "texto claro", textColor: light, pillBackground: dark }
     }
 
-    return { label: "Texto Oscuro", textColor: dark, pillBackground: light }
+    return { label: "texto oscuro", textColor: dark, pillBackground: light }
 }
 
 type StoryVariant = {
@@ -292,31 +324,109 @@ type StoryMeta = {
     argTypes?: Record<string, { options?: unknown[]; control?: unknown }>
 }
 
+class PreviewErrorBoundary extends React.Component<
+    { children: React.ReactNode; resetKey: string; fallback: React.ReactNode },
+    { hasError: boolean }
+> {
+    state = { hasError: false }
+
+    static getDerivedStateFromError(): { hasError: boolean } {
+        return { hasError: true }
+    }
+
+    componentDidUpdate(previousProps: { resetKey: string }) {
+        if (previousProps.resetKey !== this.props.resetKey && this.state.hasError) {
+            this.setState({ hasError: false })
+        }
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return this.props.fallback
+        }
+        return this.props.children
+    }
+}
+
 function buildStoryVariants(module: Record<string, unknown>): StoryVariant[] {
     return Object.entries(module)
-        .filter(([key, value]) => key !== "default" && typeof value === "object" && value !== null)
+        .filter(([key, value]) => key !== "default" && value !== null && (typeof value === "object" || typeof value === "function"))
         .map(([key, value]) => {
-            const story = value as { args?: Record<string, unknown>; render?: (args: Record<string, unknown>) => React.ReactNode }
+            const story = value as
+                | { args?: Record<string, unknown>; render?: (args: Record<string, unknown>) => React.ReactNode }
+                | ((args: Record<string, unknown>) => React.ReactNode)
             return {
                 key,
                 label: toStartCase(key),
-                args: story.args ?? {},
-                render: story.render,
+                args: (story as { args?: Record<string, unknown> }).args ?? {},
+                render:
+                    typeof story === "function"
+                        ? (args: Record<string, unknown>) => story(args)
+                        : story.render,
             }
         })
+}
+
+const componentStateVariantMap: Record<string, Record<string, string>> = {
+    "calendar-picker": {
+        default: "playground",
+        error: "playground",
+    },
+    "meetup-card": {
+        default: "proposalsellerview",
+        disabled: "sellerneutralclosureoption",
+        error: "incomingproposalbuyerview",
+    },
+}
+
+function findVariantForState(entityId: string, variants: StoryVariant[], state: string): StoryVariant | undefined {
+    const stateKey = normalizeKey(state)
+    const mappedVariantKey = componentStateVariantMap[entityId]?.[stateKey]
+    if (mappedVariantKey) {
+        const mappedVariant = variants.find((variant) => normalizeKey(variant.key) === mappedVariantKey)
+        if (mappedVariant) {
+            return mappedVariant
+        }
+    }
+
+    const exact = variants.find((variant) => normalizeKey(variant.key) === stateKey)
+    if (exact) {
+        return exact
+    }
+
+    const contains = variants.find((variant) => normalizeKey(variant.key).includes(stateKey))
+    if (contains) {
+        return contains
+    }
+
+    const stateKeywords: Record<string, string[]> = {
+        default: ["default", "playground", "base", "proposal", "primary"],
+        error: ["error", "invalid", "failed", "incoming", "danger"],
+        disabled: ["disabled", "inactive", "neutral", "closure", "expired"],
+        loading: ["loading", "pending", "skeleton"],
+        success: ["success", "confirmed", "complete", "done"],
+        selected: ["selected", "active", "expanded", "open"],
+        expanded: ["expanded", "open", "active"],
+        collapsed: ["collapsed", "closed"],
+    }
+    const keywords = stateKeywords[stateKey] ?? [stateKey]
+    return variants.find((variant) => {
+        const variantKey = normalizeKey(variant.key)
+        return keywords.some((keyword) => variantKey.includes(normalizeKey(keyword)))
+    })
 }
 
 function CatalogStoryCard({ entity }: { entity: CatalogEntity }) {
     const module = React.useMemo(() => resolveStoryModuleByTitle(entity.storybookTitle), [entity.storybookTitle])
     const meta = (module?.default ?? {}) as StoryMeta
-    const variants = React.useMemo(() => (module ? buildStoryVariants(module) : []), [module])
-    const [selectedVariantKey, setSelectedVariantKey] = React.useState(variants[0]?.key ?? "")
+    const allVariants = React.useMemo(() => (module ? buildStoryVariants(module) : []), [module])
+    const [selectedState, setSelectedState] = React.useState(entity.states[0] ?? "default")
     const [argOverrides, setArgOverrides] = React.useState<Record<string, unknown>>({})
 
     React.useEffect(() => {
-        setSelectedVariantKey(variants[0]?.key ?? "")
+        setSelectedState(entity.states[0] ?? "default")
         setArgOverrides({})
-    }, [entity.id, variants])
+    }, [entity.id, entity.states])
 
     if (!module) {
         return (
@@ -329,59 +439,201 @@ function CatalogStoryCard({ entity }: { entity: CatalogEntity }) {
         )
     }
 
-    const selectedVariant = variants.find((variant) => variant.key === selectedVariantKey) ?? variants[0]
+    const selectedStateIndex = Math.max(
+        0,
+        entity.states.findIndex((state) => normalizeKey(state) === normalizeKey(selectedState))
+    )
+    const defaultVariant =
+        allVariants.find((variant) => normalizeKey(variant.key) === "default") ??
+        allVariants.find((variant) => normalizeKey(variant.key) === "playground") ??
+        allVariants[0]
+    const indexedVariant =
+        allVariants.length > 0
+            ? allVariants[Math.min(selectedStateIndex, allVariants.length - 1)]
+            : undefined
+    const selectedRenderableVariant = findVariantForState(entity.id, allVariants, selectedState) ?? indexedVariant ?? defaultVariant
     const mergedArgs = {
         ...(meta.args ?? {}),
-        ...(selectedVariant?.args ?? {}),
+        ...(selectedRenderableVariant?.args ?? {}),
         ...argOverrides,
     }
 
     const argTypes = meta.argTypes ?? {}
+    const stateSet = new Set(entity.states.map((state) => normalizeKey(state)))
     const selectableArgEntries = Object.entries(argTypes)
         .filter(([, config]) => Array.isArray(config.options) && config.options.length > 1)
+        .filter(([, config]) => {
+            const normalizedOptions = new Set((config.options ?? []).map((option) => normalizeKey(String(option))))
+            const overlaps = [...normalizedOptions].filter((option) => stateSet.has(option)).length
+            return overlaps < 2
+        })
         .slice(0, 3)
 
-    const preview = selectedVariant?.render
-        ? selectedVariant.render(mergedArgs)
-        : meta.component
-          ? React.createElement(meta.component, mergedArgs)
-          : (
-            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--feedback-error)]">
-                Story sin preview renderizable.
-            </p>
-          )
+    const forceComponentRender = entity.id === "calendar-picker" || entity.id === "meetup-card"
+    const preview = forceComponentRender && meta.component
+        ? React.createElement(meta.component, mergedArgs)
+        : selectedRenderableVariant?.render
+            ? selectedRenderableVariant.render(mergedArgs)
+            : meta.component
+                ? React.createElement(meta.component, mergedArgs)
+                : (
+                    <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--feedback-error)]">
+                        Story sin preview renderizable.
+                    </p>
+                )
+
+    const applyState = (state: string) => {
+        const stateKey = normalizeKey(state)
+        const nextOverrides: Record<string, unknown> = {}
+        const stateIndex = Math.max(
+            0,
+            entity.states.findIndex((entry) => normalizeKey(entry) === stateKey)
+        )
+        const indexedStateVariant =
+            allVariants.length > 0 ? allVariants[Math.min(stateIndex, allVariants.length - 1)] : undefined
+        const stateVariant = findVariantForState(entity.id, allVariants, state) ?? indexedStateVariant
+        if (stateVariant?.args) {
+            Object.assign(nextOverrides, stateVariant.args)
+        }
+
+        for (const [propName, config] of Object.entries(argTypes)) {
+            const options = Array.isArray(config.options) ? config.options : []
+            const directOption = options.find((option) => normalizeKey(String(option)) === stateKey)
+            if (directOption !== undefined) {
+                nextOverrides[propName] = directOption
+                continue
+            }
+
+            if (stateKey === "default") {
+                const defaultOption = options.find((option) => {
+                    const key = normalizeKey(String(option))
+                    return key === "default" || key === "base" || key === "normal" || key === "rest" || key === "idle" || key === "unread"
+                })
+                if (defaultOption !== undefined) {
+                    nextOverrides[propName] = defaultOption
+                }
+            }
+        }
+
+        const booleanStateMap: Record<string, string[]> = {
+            disabled: ["disabled", "isdisabled"],
+            loading: ["loading", "isloading", "pending"],
+            error: ["error", "haserror", "invalid"],
+            success: ["success", "issuccess", "valid"],
+            selected: ["selected", "isselected", "active", "isactive"],
+            unselected: ["selected", "isselected", "active", "isactive"],
+            expanded: ["expanded", "isexpanded", "open", "isopen"],
+            collapsed: ["collapsed", "iscollapsed", "closed", "isclosed"],
+        }
+        const activeBooleanProps = new Set(booleanStateMap[stateKey] ?? [])
+        if (activeBooleanProps.size > 0) {
+            for (const propName of Object.keys({ ...meta.args, ...argTypes })) {
+                const normalizedProp = normalizeKey(propName)
+                if (activeBooleanProps.has(normalizedProp) && stateKey !== "unselected") {
+                    nextOverrides[propName] = true
+                }
+                if (activeBooleanProps.has(normalizedProp) && stateKey === "unselected") {
+                    nextOverrides[propName] = false
+                }
+            }
+        }
+        if (stateKey === "default") {
+            for (const propName of Object.keys({ ...meta.args, ...argTypes })) {
+                const normalizedProp = normalizeKey(propName)
+                if (["disabled", "isdisabled", "loading", "isloading", "pending", "error", "haserror", "invalid"].includes(normalizedProp)) {
+                    nextOverrides[propName] = false
+                }
+            }
+        }
+        const stringStatePropCandidates = ["state", "status", "variant", "mode"]
+        const knownArgKeys = new Set([
+            ...Object.keys(meta.args ?? {}),
+            ...Object.keys(defaultVariant?.args ?? {}),
+            ...Object.keys(stateVariant?.args ?? {}),
+            ...Object.keys(argTypes),
+        ])
+        for (const candidate of stringStatePropCandidates) {
+            if (!knownArgKeys.has(candidate)) {
+                continue
+            }
+            const candidateConfig = argTypes[candidate]
+            const candidateOptions = Array.isArray(candidateConfig?.options) ? candidateConfig.options : []
+            if (candidateOptions.length > 0) {
+                const matchedOption = candidateOptions.find((option) => normalizeKey(String(option)) === stateKey)
+                if (matchedOption !== undefined) {
+                    nextOverrides[candidate] = matchedOption
+                }
+            } else {
+                nextOverrides[candidate] = state
+            }
+        }
+        if (stateKey === "error") {
+            nextOverrides.error = typeof mergedArgs.error === "string" && mergedArgs.error.length > 0 ? mergedArgs.error : "Estado de error"
+        }
+        if (entity.id === "calendar-picker") {
+            nextOverrides.state = stateKey === "error" ? "error" : "default"
+            if (stateKey !== "error") {
+                nextOverrides.error = ""
+            }
+        }
+        if (entity.id === "meetup-card" && isRecord(mergedArgs.meetup)) {
+            const sourceMeetup = mergedArgs.meetup as Record<string, unknown>
+            const scheduledAtSource = sourceMeetup.scheduledAt
+            const scheduledAtDate =
+                scheduledAtSource instanceof Date
+                    ? scheduledAtSource
+                    : typeof scheduledAtSource === "string" || typeof scheduledAtSource === "number"
+                        ? new Date(scheduledAtSource)
+                        : new Date()
+            const nextMeetup: Record<string, unknown> = {
+                ...sourceMeetup,
+                scheduledAt: scheduledAtDate,
+            }
+            if (stateKey === "default") {
+                nextMeetup.status = "DRAFT"
+                nextOverrides.actorRole = "SELLER"
+                nextOverrides.currentTime = new Date(scheduledAtDate.getTime() - 2 * 60 * 60 * 1000)
+            }
+            if (stateKey === "disabled") {
+                nextMeetup.status = "CONFIRMED"
+                nextMeetup.proposedLocation = "Calle sin definir"
+                nextMeetup.proposedPaymentMethod = "CASH"
+                nextOverrides.actorRole = "SELLER"
+                nextOverrides.currentTime = new Date(scheduledAtDate.getTime() + 3 * 60 * 60 * 1000)
+            }
+            if (stateKey === "error") {
+                nextMeetup.status = "PROPOSED"
+                nextMeetup.proposedLocation = "Estacion de Sants - Acceso principal"
+                nextMeetup.proposedPaymentMethod = "BIZUM"
+                nextMeetup.finalPrice = 500
+                nextOverrides.actorRole = "BUYER"
+                nextOverrides.currentTime = new Date(scheduledAtDate.getTime() - 45 * 60 * 1000)
+            }
+            nextOverrides.meetup = nextMeetup
+        }
+
+        setSelectedState(state)
+        setArgOverrides(nextOverrides)
+    }
 
     return (
         <article className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
             <p className="font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-primary)]">{entity.title}</p>
             <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{entity.storybookTitle}</p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-                {entity.states.map((state) => (
-                    <span
-                        key={`${entity.id}-${state}`}
-                        className="rounded-full border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-primary)]"
-                    >
-                        {state}
-                    </span>
-                ))}
-            </div>
-            {variants.length > 0 ? (
-                <div className="mt-3 flex flex-wrap gap-2">
-                    {variants.map((variant) => (
+            {entity.states.length > 1 ? (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                    {entity.states.map((state) => (
                         <button
-                            key={variant.key}
+                            key={`${entity.id}-${state}`}
                             type="button"
-                            onClick={() => {
-                                setSelectedVariantKey(variant.key)
-                                setArgOverrides({})
-                            }}
+                            onClick={() => applyState(state)}
                             className={
-                                selectedVariant?.key === variant.key
-                                    ? "rounded-full border border-[color:var(--text-primary)] bg-[color:var(--text-primary)] px-2.5 py-1 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-inverse)]"
-                                    : "rounded-full border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-2.5 py-1 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-primary)]"
+                                normalizeKey(selectedState) === normalizeKey(state)
+                                    ? "rounded-full border border-[color:var(--text-primary)] bg-[color:var(--text-primary)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-inverse)]"
+                                    : "rounded-full border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-primary)]"
                             }
                         >
-                            {variant.label}
+                            {state}
                         </button>
                     ))}
                 </div>
@@ -413,7 +665,16 @@ function CatalogStoryCard({ entity }: { entity: CatalogEntity }) {
                 </div>
             ) : null}
             <div className="mt-3 rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)] bg-white p-3">
-                {preview}
+                <PreviewErrorBoundary
+                    resetKey={`${entity.id}-${selectedState}-${JSON.stringify(argOverrides)}`}
+                    fallback={
+                        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--feedback-error)]">
+                            Error al renderizar preview para {entity.storybookTitle}.
+                        </p>
+                    }
+                >
+                    {preview}
+                </PreviewErrorBoundary>
             </div>
         </article>
     )
@@ -522,7 +783,22 @@ function DesignSystemPage() {
     const catalogEntities = (
         (designSystemCatalog as { entities?: CatalogEntity[] }).entities ?? []
     ).sort((a, b) => a.title.localeCompare(b.title))
-    const catalogComponents = catalogEntities.filter((entity) => entity.entityType === "component")
+    const hiddenComponentIds = new Set(["wallapop-icon", "icon-button"])
+    const catalogComponents = catalogEntities
+        .filter((entity) => entity.entityType === "component" && !hiddenComponentIds.has(entity.id))
+        .sort((a, b) => {
+            if (a.id === "badge" && b.id !== "badge") {
+                return 1
+            }
+            if (b.id === "badge" && a.id !== "badge") {
+                return -1
+            }
+            return a.title.localeCompare(b.title)
+        })
+    const iconColumns: Array<Array<{ name: WallapopIconName; action: string }>> = [
+        iconCatalog.slice(0, Math.ceil(iconCatalog.length / 2)),
+        iconCatalog.slice(Math.ceil(iconCatalog.length / 2)),
+    ]
     const [showAllSemanticColors, setShowAllSemanticColors] = React.useState(false)
     const semanticColorPreviewLimit = 12
     const visibleSemanticColors = showAllSemanticColors
@@ -574,7 +850,7 @@ function DesignSystemPage() {
                         ))}
                     </nav>
                     <div className="mt-auto pt-4">
-                        <Button variant="secondary" size="sm" className="w-full" onClick={() => navigateTo("/")}>
+                        <Button variant="outline" size="sm" className="w-full" onClick={() => navigateTo("/")}>
                             Volver al chat
                         </Button>
                     </div>
@@ -612,36 +888,36 @@ function DesignSystemPage() {
                                     <h4 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-17)]">{group.title}</h4>
                                     <div className="overflow-x-auto rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-2">
                                         <div className="flex min-w-max gap-2">
-                                        {group.items.map((item) => {
-                                            const contrastHint = getContrastTextHint(item.value)
-                                            return (
-                                            <article key={item.tokenPath} className="w-[var(--wm-size-110)] shrink-0 overflow-hidden rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)]">
-                                                <div className="h-14 w-full" style={{ background: item.value }} />
-                                                <div
-                                                    className="px-2 py-1.5"
-                                                    style={{
-                                                        backgroundColor: item.value,
-                                                        color: contrastHint.textColor,
-                                                    }}
-                                                >
-                                                    <p className="font-wallie-fit text-[length:var(--wm-size-11)]">
-                                                        {item.tokenPath.split(".").pop()}
-                                                    </p>
-                                                    <p className="font-wallie-fit text-[length:var(--wm-size-11)] opacity-85">{item.value}</p>
-                                                    <span
-                                                        className="mt-1 inline-flex rounded-full border px-1.5 py-0.5 font-wallie-fit text-[length:var(--wm-size-10)] leading-[1]"
-                                                        style={{
-                                                            backgroundColor: contrastHint.pillBackground,
-                                                            color: contrastHint.textColor,
-                                                            borderColor: contrastHint.textColor,
-                                                        }}
-                                                    >
-                                                        {contrastHint.label}
-                                                    </span>
-                                                </div>
-                                            </article>
-                                            )
-                                        })}
+                                            {group.items.map((item) => {
+                                                const contrastHint = getContrastTextHint(item.value)
+                                                return (
+                                                    <article key={item.tokenPath} className="w-[var(--wm-size-110)] shrink-0 overflow-hidden rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)]">
+                                                        <div className="h-14 w-full" style={{ background: item.value }} />
+                                                        <div
+                                                            className="px-2 py-1.5"
+                                                            style={{
+                                                                backgroundColor: item.value,
+                                                                color: contrastHint.textColor,
+                                                            }}
+                                                        >
+                                                            <p className="font-wallie-fit text-[length:var(--wm-size-11)]">
+                                                                {item.tokenPath.split(".").pop()}
+                                                            </p>
+                                                            <p className="font-wallie-fit text-[length:var(--wm-size-11)] opacity-85">{item.value}</p>
+                                                            <span
+                                                                className="mt-1 inline-flex rounded-full border px-1.5 py-0.5 font-wallie-fit text-[length:var(--wm-size-10)] leading-[1]"
+                                                                style={{
+                                                                    backgroundColor: contrastHint.pillBackground,
+                                                                    color: contrastHint.textColor,
+                                                                    borderColor: contrastHint.textColor,
+                                                                }}
+                                                            >
+                                                                {contrastHint.label}
+                                                            </span>
+                                                        </div>
+                                                    </article>
+                                                )
+                                            })}
                                         </div>
                                     </div>
                                 </div>
@@ -848,6 +1124,34 @@ function DesignSystemPage() {
                             </div>
                         </div>
                     </section>
+
+                    <section id="components-iconography" className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
+                        <h2 className="font-wallie-chunky text-[length:var(--wm-size-24)]">Iconography</h2>
+                        <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
+                            Catalogo operativo de iconos usados en Wallapop Meet con su accion principal.
+                        </p>
+                        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+                            {iconColumns.map((column, index) => (
+                                <div key={`icon-column-${index}`} className="overflow-hidden rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)]">
+                                    <div className="grid grid-cols-2 border-b border-[color:var(--border-divider)] bg-[color:var(--bg-surface)]">
+                                        <p className="px-3 py-2 font-wallie-chunky text-[length:var(--wm-size-13)] text-[color:var(--text-primary)]">Icono / Nombre</p>
+                                        <p className="px-3 py-2 font-wallie-chunky text-[length:var(--wm-size-13)] text-[color:var(--text-primary)]">Accion principal</p>
+                                    </div>
+                                    {column.map((item) => (
+                                        <div key={item.name} className="grid grid-cols-2 border-b border-[color:var(--border-divider)] last:border-b-0">
+                                            <div className="flex items-center gap-2 px-3 py-2">
+                                                <span className="inline-flex h-8 w-8 items-center justify-center rounded-[var(--wm-size-8)] bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
+                                                    <WallapopIcon name={item.name} size="small" />
+                                                </span>
+                                                <p className="font-mono text-[length:var(--wm-size-12)] text-[color:var(--text-primary)]">{item.name}</p>
+                                            </div>
+                                            <p className="px-3 py-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{item.action}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </section>
                 </div>
             </div>
         </main>
@@ -855,5 +1159,3 @@ function DesignSystemPage() {
 }
 
 export { DesignSystemPage }
-
-
