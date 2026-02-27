@@ -18,10 +18,9 @@ type ColorItem = {
 }
 
 type SemanticColorItem = {
+    tokenPath: string
     name: string
-    description: string
     aliasVar: string
-    aliasTailwindRoot: string
     value: string
 }
 
@@ -66,7 +65,6 @@ const sectionEntries = [
     { id: "foundations-radius", label: "Corner Radius" },
     { id: "foundations-elevation", label: "Elevation" },
     { id: "components-playground", label: "Components" },
-    { id: "patterns", label: "Patterns" },
 ] as const
 
 const storyModules = Object.values(
@@ -82,169 +80,6 @@ function resolveStoryModuleByTitle(title: string): Record<string, unknown> | nul
     })
     return module ?? null
 }
-
-function renderStoryPreviewByTitle(title: string): React.ReactNode {
-    const module = resolveStoryModuleByTitle(title)
-    if (!module) {
-        return (
-            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--feedback-error)]">
-                Story no encontrada para {title}.
-            </p>
-        )
-    }
-
-    const meta = (module.default ?? {}) as {
-        component?: React.ComponentType<Record<string, unknown>>
-        args?: Record<string, unknown>
-    }
-
-    const storyCandidates = Object.entries(module)
-        .filter(([key]) => key !== "default")
-        .map(([, value]) => value)
-        .filter((value) => typeof value === "object" && value !== null) as Array<{
-        render?: (args: Record<string, unknown>) => React.ReactNode
-        args?: Record<string, unknown>
-    }>
-
-    const preferred =
-        (module.Playground as { render?: (args: Record<string, unknown>) => React.ReactNode; args?: Record<string, unknown> } | undefined) ??
-        (module.Default as { render?: (args: Record<string, unknown>) => React.ReactNode; args?: Record<string, unknown> } | undefined) ??
-        storyCandidates[0]
-
-    const combinedArgs = {
-        ...(meta.args ?? {}),
-        ...(preferred?.args ?? {}),
-    }
-
-    if (preferred?.render) {
-        return preferred.render(combinedArgs)
-    }
-
-    if (meta.component) {
-        return React.createElement(meta.component, combinedArgs)
-    }
-
-    return (
-        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--feedback-error)]">
-            Story sin preview renderizable.
-        </p>
-    )
-}
-
-const semanticColorDefinitions = [
-    {
-        name: "Background Base",
-        description: "Fondo principal de tarjetas y paneles.",
-        tokenPath: "tokens.color.semantic.background.base",
-        aliasVar: "--bg-base",
-        aliasTailwindRoot: "bg-base",
-    },
-    {
-        name: "Background Surface",
-        description: "Superficie general de app y layouts.",
-        tokenPath: "tokens.color.semantic.background.surface",
-        aliasVar: "--bg-surface",
-        aliasTailwindRoot: "bg-surface",
-    },
-    {
-        name: "Text Primary",
-        description: "Texto principal en interfaz.",
-        tokenPath: "tokens.color.semantic.text.primary",
-        aliasVar: "--text-primary",
-        aliasTailwindRoot: "text-primary",
-    },
-    {
-        name: "Text Secondary",
-        description: "Texto secundario y metadatos.",
-        tokenPath: "tokens.color.semantic.text.secondary",
-        aliasVar: "--text-secondary",
-        aliasTailwindRoot: "text-secondary",
-    },
-    {
-        name: "Text Inverse",
-        description: "Texto sobre fondos oscuros o de marca.",
-        tokenPath: "tokens.color.semantic.text.inverse",
-        aliasVar: "--text-inverse",
-        aliasTailwindRoot: "text-inverse",
-    },
-    {
-        name: "Action Primary",
-        description: "CTA principal y estados interactivos.",
-        tokenPath: "tokens.color.semantic.action.primary",
-        aliasVar: "--action-primary",
-        aliasTailwindRoot: "action-primary",
-    },
-    {
-        name: "Action Primary Hover",
-        description: "Estado hover de accion principal.",
-        tokenPath: "tokens.color.semantic.action.primary_hover",
-        aliasVar: "--action-primary-hover",
-        aliasTailwindRoot: "action-primary-hover",
-    },
-    {
-        name: "Action Primary Pressed",
-        description: "Estado pressed de accion principal.",
-        tokenPath: "tokens.color.semantic.action.primary_pressed",
-        aliasVar: "--action-primary-pressed",
-        aliasTailwindRoot: "action-primary-pressed",
-    },
-    {
-        name: "Action Disabled BG",
-        description: "Fondo para acciones deshabilitadas.",
-        tokenPath: "tokens.color.semantic.action.disabled_bg",
-        aliasVar: "--action-disabled-bg",
-        aliasTailwindRoot: "action-disabled-bg",
-    },
-    {
-        name: "Action Disabled Text",
-        description: "Texto para acciones deshabilitadas.",
-        tokenPath: "tokens.color.semantic.action.disabled_text",
-        aliasVar: "--action-disabled-text",
-        aliasTailwindRoot: "action-disabled-text",
-    },
-    {
-        name: "Border Divider",
-        description: "Separadores y contornos de baja jerarquia.",
-        tokenPath: "tokens.color.semantic.border.divider",
-        aliasVar: "--border-divider",
-        aliasTailwindRoot: "border-divider",
-    },
-    {
-        name: "Border Focus",
-        description: "Contorno de foco accesible.",
-        tokenPath: "tokens.color.semantic.border.focus",
-        aliasVar: "--border-focus",
-        aliasTailwindRoot: "border-focus",
-    },
-    {
-        name: "Border Error",
-        description: "Contorno para estados de error.",
-        tokenPath: "tokens.color.semantic.border.error",
-        aliasVar: "--border-error",
-        aliasTailwindRoot: "border-error",
-    },
-    {
-        name: "Feedback Success",
-        description: "Completado/confirmacion positiva.",
-        tokenPath: "tokens.color.semantic.feedback.success",
-        aliasVar: "--feedback-success",
-        aliasTailwindRoot: "feedback-success",
-    },
-    {
-        name: "Feedback Error",
-        description: "Errores bloqueantes o fallos.",
-        tokenPath: "tokens.color.semantic.feedback.error",
-        aliasVar: "--feedback-error",
-        aliasTailwindRoot: "feedback-error",
-    },
-    {
-        name: "Feedback Info",
-        description: "Informacion neutral o contextual.",
-        tokenPath: "tokens.color.semantic.feedback.info",
-        aliasVar: "--feedback-info",
-        aliasTailwindRoot: "feedback-info",
-    },
-] as const
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null
@@ -320,14 +155,43 @@ function normalizeColorTokenGroup(groupPath: string, input: unknown): ColorItem[
     return result
 }
 
-function normalizeSemanticColorItems(): SemanticColorItem[] {
-    return semanticColorDefinitions.map((item) => ({
-        name: item.name,
-        description: item.description,
-        aliasVar: item.aliasVar,
-        aliasTailwindRoot: item.aliasTailwindRoot,
-        value: String(resolveReference(`{${item.tokenPath}}`, styles)),
-    }))
+function toStartCase(input: string): string {
+    return input
+        .replaceAll("_", " ")
+        .replaceAll("-", " ")
+        .split(" ")
+        .filter(Boolean)
+        .map((chunk) => chunk[0].toUpperCase() + chunk.slice(1))
+        .join(" ")
+}
+
+function normalizeSemanticColorItems(input: unknown): SemanticColorItem[] {
+    if (!isRecord(input)) {
+        return []
+    }
+
+    const result: SemanticColorItem[] = []
+    const walk = (node: unknown, path: string) => {
+        if (isTokenLeaf(node)) {
+            const semanticSuffix = path.replace(/^tokens\.color\.semantic\./, "")
+            result.push({
+                tokenPath: path,
+                name: toStartCase(semanticSuffix),
+                aliasVar: `--wm-color-semantic-${semanticSuffix.replaceAll(".", "-").replaceAll("_", "-")}`,
+                value: String(resolveReference(node.value, styles)),
+            })
+            return
+        }
+        if (!isRecord(node)) {
+            return
+        }
+        for (const [key, child] of Object.entries(node)) {
+            walk(child, `${path}.${key}`)
+        }
+    }
+
+    walk(input, "tokens.color.semantic")
+    return result.sort((a, b) => a.tokenPath.localeCompare(b.tokenPath))
 }
 
 function hexToRgb(value: string): { r: number; g: number; b: number } | null {
@@ -379,17 +243,180 @@ function contrastRatio(background: string, foreground: string): number {
     return (lighter + 0.05) / (darker + 0.05)
 }
 
-function getContrastTextHint(background: string): { label: "Texto Blanco" | "Texto Oscuro"; color: string } {
-    const white = "var(--text-inverse)"
-    const dark = "var(--text-primary)"
-    const whiteRatio = contrastRatio(background, white)
+function resolveTokenColor(path: string): string {
+    const value = getByPath(styles, path)
+    if (isTokenLeaf(value)) {
+        return String(resolveReference(value.value, styles))
+    }
+    if (typeof value === "string" || typeof value === "number") {
+        return String(resolveReference(value, styles))
+    }
+    return ""
+}
+
+function getContrastTextHint(background: string): {
+    label: "Texto Blanco" | "Texto Oscuro"
+    textColor: string
+    pillBackground: string
+} {
+    const light = resolveTokenColor("tokens.color.palette.neutral.0")
+    const dark = resolveTokenColor("tokens.color.palette.neutral.900")
+    const lightRatio = contrastRatio(background, light)
     const darkRatio = contrastRatio(background, dark)
 
-    if (whiteRatio >= darkRatio) {
-        return { label: "Texto Blanco", color: white }
+    if (lightRatio === 0 && darkRatio === 0) {
+        return {
+            label: "Texto Oscuro",
+            textColor: "var(--text-primary)",
+            pillBackground: "var(--bg-surface)",
+        }
     }
 
-    return { label: "Texto Oscuro", color: dark }
+    if (lightRatio >= darkRatio) {
+        return { label: "Texto Blanco", textColor: light, pillBackground: dark }
+    }
+
+    return { label: "Texto Oscuro", textColor: dark, pillBackground: light }
+}
+
+type StoryVariant = {
+    key: string
+    label: string
+    args: Record<string, unknown>
+    render?: (args: Record<string, unknown>) => React.ReactNode
+}
+
+type StoryMeta = {
+    component?: React.ComponentType<Record<string, unknown>>
+    args?: Record<string, unknown>
+    argTypes?: Record<string, { options?: unknown[]; control?: unknown }>
+}
+
+function buildStoryVariants(module: Record<string, unknown>): StoryVariant[] {
+    return Object.entries(module)
+        .filter(([key, value]) => key !== "default" && typeof value === "object" && value !== null)
+        .map(([key, value]) => {
+            const story = value as { args?: Record<string, unknown>; render?: (args: Record<string, unknown>) => React.ReactNode }
+            return {
+                key,
+                label: toStartCase(key),
+                args: story.args ?? {},
+                render: story.render,
+            }
+        })
+}
+
+function CatalogStoryCard({ entity }: { entity: CatalogEntity }) {
+    const module = React.useMemo(() => resolveStoryModuleByTitle(entity.storybookTitle), [entity.storybookTitle])
+    const meta = (module?.default ?? {}) as StoryMeta
+    const variants = React.useMemo(() => (module ? buildStoryVariants(module) : []), [module])
+    const [selectedVariantKey, setSelectedVariantKey] = React.useState(variants[0]?.key ?? "")
+    const [argOverrides, setArgOverrides] = React.useState<Record<string, unknown>>({})
+
+    React.useEffect(() => {
+        setSelectedVariantKey(variants[0]?.key ?? "")
+        setArgOverrides({})
+    }, [entity.id, variants])
+
+    if (!module) {
+        return (
+            <article className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
+                <p className="font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-primary)]">{entity.title}</p>
+                <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--feedback-error)]">
+                    No hay story disponible para {entity.storybookTitle}.
+                </p>
+            </article>
+        )
+    }
+
+    const selectedVariant = variants.find((variant) => variant.key === selectedVariantKey) ?? variants[0]
+    const mergedArgs = {
+        ...(meta.args ?? {}),
+        ...(selectedVariant?.args ?? {}),
+        ...argOverrides,
+    }
+
+    const argTypes = meta.argTypes ?? {}
+    const selectableArgEntries = Object.entries(argTypes)
+        .filter(([, config]) => Array.isArray(config.options) && config.options.length > 1)
+        .slice(0, 3)
+
+    const preview = selectedVariant?.render
+        ? selectedVariant.render(mergedArgs)
+        : meta.component
+          ? React.createElement(meta.component, mergedArgs)
+          : (
+            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--feedback-error)]">
+                Story sin preview renderizable.
+            </p>
+          )
+
+    return (
+        <article className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
+            <p className="font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-primary)]">{entity.title}</p>
+            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{entity.storybookTitle}</p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+                {entity.states.map((state) => (
+                    <span
+                        key={`${entity.id}-${state}`}
+                        className="rounded-full border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-primary)]"
+                    >
+                        {state}
+                    </span>
+                ))}
+            </div>
+            {variants.length > 0 ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                    {variants.map((variant) => (
+                        <button
+                            key={variant.key}
+                            type="button"
+                            onClick={() => {
+                                setSelectedVariantKey(variant.key)
+                                setArgOverrides({})
+                            }}
+                            className={
+                                selectedVariant?.key === variant.key
+                                    ? "rounded-full border border-[color:var(--text-primary)] bg-[color:var(--text-primary)] px-2.5 py-1 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-inverse)]"
+                                    : "rounded-full border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-2.5 py-1 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-primary)]"
+                            }
+                        >
+                            {variant.label}
+                        </button>
+                    ))}
+                </div>
+            ) : null}
+            {selectableArgEntries.length > 0 ? (
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    {selectableArgEntries.map(([propName, config]) => (
+                        <label key={`${entity.id}-${propName}`} className="flex flex-col gap-1">
+                            <span className="font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{propName}</span>
+                            <select
+                                value={String(argOverrides[propName] ?? mergedArgs[propName] ?? "")}
+                                onChange={(event) => {
+                                    const option = (config.options ?? []).find((entry) => String(entry) === event.target.value)
+                                    setArgOverrides((previous) => ({
+                                        ...previous,
+                                        [propName]: option,
+                                    }))
+                                }}
+                                className="rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)] bg-white px-2 py-1 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-primary)]"
+                            >
+                                {(config.options ?? []).map((option) => (
+                                    <option key={`${propName}-${String(option)}`} value={String(option)}>
+                                        {String(option)}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    ))}
+                </div>
+            ) : null}
+            <div className="mt-3 rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)] bg-white p-3">
+                {preview}
+            </div>
+        </article>
+    )
 }
 
 function normalizeSpacingTokens(input: unknown): SpacingItem[] {
@@ -491,12 +518,16 @@ function DesignSystemPage() {
     const neutralScale = normalizeColorTokenGroup("tokens.color.palette.neutral", paletteRoot.neutral)
     const warningScale = normalizeColorTokenGroup("tokens.color.palette.warning", paletteRoot.warning)
     const errorScale = normalizeColorTokenGroup("tokens.color.palette.error", paletteRoot.error)
-    const semanticColorItems = normalizeSemanticColorItems()
+    const semanticColorItems = normalizeSemanticColorItems(colorRoot.semantic)
     const catalogEntities = (
         (designSystemCatalog as { entities?: CatalogEntity[] }).entities ?? []
     ).sort((a, b) => a.title.localeCompare(b.title))
     const catalogComponents = catalogEntities.filter((entity) => entity.entityType === "component")
-    const catalogPatterns = catalogEntities.filter((entity) => entity.entityType === "pattern")
+    const [showAllSemanticColors, setShowAllSemanticColors] = React.useState(false)
+    const semanticColorPreviewLimit = 12
+    const visibleSemanticColors = showAllSemanticColors
+        ? semanticColorItems
+        : semanticColorItems.slice(0, semanticColorPreviewLimit)
     const typographyTokens = normalizeTypographyTokens(foundations.typography)
     const spacingTokens = normalizeSpacingTokens(foundations.spacing)
     const radiusTokens = normalizeRadiusTokens(foundations.radius)
@@ -559,7 +590,7 @@ function DesignSystemPage() {
                         </h1>
                         <p className="mt-3 max-w-[65ch] font-wallie-fit text-[length:var(--wm-size-15)] leading-6 text-[color:var(--text-secondary)]">
                             Esta pagina consume tokens de <code>styles.json</code> para documentar foundations,
-                            componentes base y patrones de producto en un unico portal operativo.
+                            componentes base en un unico portal operativo.
                         </p>
                     </header>
 
@@ -586,17 +617,23 @@ function DesignSystemPage() {
                                             return (
                                             <article key={item.tokenPath} className="w-[var(--wm-size-110)] shrink-0 overflow-hidden rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)]">
                                                 <div className="h-14 w-full" style={{ background: item.value }} />
-                                                <div className="px-2 py-1.5">
-                                                    <p className="font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-primary)]">
+                                                <div
+                                                    className="px-2 py-1.5"
+                                                    style={{
+                                                        backgroundColor: item.value,
+                                                        color: contrastHint.textColor,
+                                                    }}
+                                                >
+                                                    <p className="font-wallie-fit text-[length:var(--wm-size-11)]">
                                                         {item.tokenPath.split(".").pop()}
                                                     </p>
-                                                    <p className="font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{item.value}</p>
+                                                    <p className="font-wallie-fit text-[length:var(--wm-size-11)] opacity-85">{item.value}</p>
                                                     <span
                                                         className="mt-1 inline-flex rounded-full border px-1.5 py-0.5 font-wallie-fit text-[length:var(--wm-size-10)] leading-[1]"
                                                         style={{
-                                                            backgroundColor: contrastHint.color,
-                                                            color: contrastHint.color === "var(--text-inverse)" ? "var(--text-primary)" : "var(--text-inverse)",
-                                                            borderColor: contrastHint.color,
+                                                            backgroundColor: contrastHint.pillBackground,
+                                                            color: contrastHint.textColor,
+                                                            borderColor: contrastHint.textColor,
                                                         }}
                                                     >
                                                         {contrastHint.label}
@@ -615,20 +652,30 @@ function DesignSystemPage() {
                     <section id="foundations-semantic-colors" className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
                         <h2 className="font-wallie-chunky text-[length:var(--wm-size-24)]">Semantic Colors</h2>
                         <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
-                            Copia directa de alias oficiales: una variable CSS corta y una raiz unica para Tailwind.
+                            Inventario dinamico de <code>tokens.color.semantic.*</code>, sincronizado automaticamente desde <code>styles.json</code>.
                         </p>
                         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                            {semanticColorItems.map((item) => (
-                                <article key={item.aliasVar} className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
+                            {visibleSemanticColors.map((item) => (
+                                <article key={item.tokenPath} className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
                                     <div className="h-12 rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)]" style={{ backgroundColor: item.value }} />
                                     <p className="mt-2 font-wallie-chunky text-[length:var(--wm-size-14)] text-[color:var(--text-primary)]">{item.name}</p>
-                                    <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{item.description}</p>
+                                    <p className="mt-1 font-mono text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{item.tokenPath}</p>
                                     <p className="mt-2 font-mono text-[length:var(--wm-size-11)] text-[color:var(--text-primary)]">{`CSS: var(${item.aliasVar})`}</p>
-                                    <p className="font-mono text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{`Tailwind: text-/bg-/border-${item.aliasTailwindRoot}`}</p>
                                     <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{item.value}</p>
                                 </article>
                             ))}
                         </div>
+                        {semanticColorItems.length > semanticColorPreviewLimit ? (
+                            <div className="mt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAllSemanticColors((previous) => !previous)}
+                                    className="rounded-full border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-3 py-1.5 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-primary)]"
+                                >
+                                    {showAllSemanticColors ? "Ver menos" : "Ver más"}
+                                </button>
+                            </div>
+                        ) : null}
                     </section>
 
                     <section id="foundations-typography" className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
@@ -789,73 +836,16 @@ function DesignSystemPage() {
                     </section>
 
                     <section id="components-playground" className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[length:var(--wm-size-24)]">Components - Playground</h2>
+                        <h2 className="font-wallie-chunky text-[length:var(--wm-size-24)]">Components</h2>
                         <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
-                            Catalogo interactivo de componentes base y sus variantes clave.
+                            Explora estados y propiedades de cada componente desde previews vivas.
                         </p>
                         <div className="mt-5 space-y-6">
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Catalogo visual sincronizado</p>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Este bloque se genera automaticamente desde el catalogo y renderiza previews reales de stories.
-                                </p>
-                                <div className="grid gap-4 md:grid-cols-2">
-                                    {catalogComponents.map((entity) => (
-                                        <article key={entity.id} className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
-                                            <p className="font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-primary)]">{entity.title}</p>
-                                            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{entity.storybookTitle}</p>
-                                            <div className="mt-2 flex flex-wrap gap-1.5">
-                                                {entity.states.map((state) => (
-                                                    <span
-                                                        key={`${entity.id}-${state}`}
-                                                        className="rounded-full border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-primary)]"
-                                                    >
-                                                        {state}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                            <div className="mt-3 rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)] bg-white p-3">
-                                                {renderStoryPreviewByTitle(entity.storybookTitle)}
-                                            </div>
-                                        </article>
-                                    ))}
-                                </div>
-                            </article>
-
-                        </div>
-                    </section>
-
-                    <section id="patterns" className="rounded-[var(--wm-size-16)] border border-[color:var(--border-strong)] bg-white p-6">
-                        <h2 className="font-wallie-chunky text-[length:var(--wm-size-24)]">Patterns</h2>
-                        <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
-                            Ensamblado de componentes complejos para casos de negocio reales.
-                        </p>
-                        <div className="mt-5 space-y-4">
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Patterns sincronizados</p>
-                                <div className="grid gap-4">
-                                    {catalogPatterns.map((entity) => (
-                                        <article key={entity.id} className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
-                                            <p className="font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-primary)]">{entity.title}</p>
-                                            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{entity.storybookTitle}</p>
-                                            <div className="mt-2 flex flex-wrap gap-1.5">
-                                                {entity.states.map((state) => (
-                                                    <span
-                                                        key={`${entity.id}-${state}`}
-                                                        className="rounded-full border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-primary)]"
-                                                    >
-                                                        {state}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                            <div className="mt-3 rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)] bg-white p-3">
-                                                {renderStoryPreviewByTitle(entity.storybookTitle)}
-                                            </div>
-                                        </article>
-                                    ))}
-                                </div>
-                            </article>
-
+                            <div className="grid gap-4 md:grid-cols-2">
+                                {catalogComponents.map((entity) => (
+                                    <CatalogStoryCard key={entity.id} entity={entity} />
+                                ))}
+                            </div>
                         </div>
                     </section>
                 </div>
