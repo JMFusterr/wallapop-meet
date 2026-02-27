@@ -379,6 +379,64 @@ const componentStateVariantMap: Record<string, Record<string, string>> = {
     },
 }
 
+function estimateCatalogCardWeight(entity: CatalogEntity): number {
+    const heavyPreviewIds = new Set([
+        "meetup-card",
+        "chat-conversation-header",
+        "wallapop-chat-workspace",
+        "meetup-location-map",
+    ])
+    const mediumPreviewIds = new Set([
+        "calendar-picker",
+        "chat-product-card",
+        "chat-list-item",
+        "chat-counterpart-card",
+    ])
+
+    const base = entity.states.length * 10 + entity.title.length
+    if (heavyPreviewIds.has(entity.id)) {
+        return base + 50
+    }
+    if (mediumPreviewIds.has(entity.id)) {
+        return base + 25
+    }
+    return base
+}
+
+function buildBalancedRows(entities: CatalogEntity[]): CatalogEntity[][] {
+    const remaining = [...entities]
+    const rows: CatalogEntity[][] = []
+
+    while (remaining.length > 0) {
+        const first = remaining.shift()
+        if (!first) {
+            break
+        }
+        if (remaining.length === 0) {
+            rows.push([first])
+            break
+        }
+
+        const firstWeight = estimateCatalogCardWeight(first)
+        let closestIndex = 0
+        let smallestGap = Number.POSITIVE_INFINITY
+
+        for (let index = 0; index < remaining.length; index += 1) {
+            const candidate = remaining[index]
+            const gap = Math.abs(firstWeight - estimateCatalogCardWeight(candidate))
+            if (gap < smallestGap) {
+                smallestGap = gap
+                closestIndex = index
+            }
+        }
+
+        const second = remaining.splice(closestIndex, 1)[0]
+        rows.push(second ? [first, second] : [first])
+    }
+
+    return rows
+}
+
 function findVariantForState(entityId: string, variants: StoryVariant[], state: string): StoryVariant | undefined {
     const stateKey = normalizeKey(state)
     const mappedVariantKey = componentStateVariantMap[entityId]?.[stateKey]
@@ -795,6 +853,7 @@ function DesignSystemPage() {
             }
             return a.title.localeCompare(b.title)
         })
+    const catalogComponentRows = React.useMemo(() => buildBalancedRows(catalogComponents), [catalogComponents])
     const iconColumns: Array<Array<{ name: WallapopIconName; action: string }>> = [
         iconCatalog.slice(0, Math.ceil(iconCatalog.length / 2)),
         iconCatalog.slice(Math.ceil(iconCatalog.length / 2)),
@@ -1116,12 +1175,15 @@ function DesignSystemPage() {
                         <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
                             Explora estados y propiedades de cada componente desde previews vivas.
                         </p>
-                        <div className="mt-5 space-y-6">
-                            <div className="grid gap-4 md:grid-cols-2">
-                                {catalogComponents.map((entity) => (
-                                    <CatalogStoryCard key={entity.id} entity={entity} />
-                                ))}
-                            </div>
+                        <div className="mt-5 space-y-4">
+                            {catalogComponentRows.map((row, rowIndex) => (
+                                <div key={`component-row-${rowIndex}`} className="grid gap-4 md:grid-cols-2">
+                                    {row.map((entity) => (
+                                        <CatalogStoryCard key={entity.id} entity={entity} />
+                                    ))}
+                                    {row.length === 1 ? <div className="hidden md:block" aria-hidden="true" /> : null}
+                                </div>
+                            ))}
                         </div>
                     </section>
 

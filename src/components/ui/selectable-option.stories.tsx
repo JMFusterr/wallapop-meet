@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { SelectableOption } from "@/components/ui/selectable-option"
+import { WallapopIcon } from "@/components/ui/wallapop-icon"
 
 const meta = {
     title: "Design System/Selectable Option",
@@ -14,25 +15,32 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
     args: {
         selected: false,
-        children: "Punto de encuentro personalizado",
+        title: "Punto de encuentro personalizado",
+        subtitle: "Calle Gran Via, 15 · Madrid",
+        leftIcon: <WallapopIcon name="deal" size={16} />,
     },
 }
 
 export const Selected: Story = {
     args: {
         selected: true,
-        children: "Punto seguro seleccionado",
+        title: "Punto seguro seleccionado",
+        subtitle: "Centro Comercial Sol · 124 ventas",
+        leftIcon: <WallapopIcon name="shield" size={16} />,
+        children: (
+            <span className="rounded-full bg-[color:var(--bg-accent-subtle)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--action-primary-pressed)]">
+                Punto seguro
+            </span>
+        ),
     },
 }
 
 export const Disabled: Story = {
     args: {
-        selected: true,
-        children: "Opcion deshabilitada",
+        selected: false,
+        disabled: true,
+        title: "Bizum",
+        subtitle: "Temporalmente no disponible para esta operacion",
+        leftIcon: <WallapopIcon name="mail" size={16} />,
     },
-    render: (args) => (
-        <SelectableOption {...args} selected className="opacity-60">
-            Opcion deshabilitada
-        </SelectableOption>
-    ),
 }

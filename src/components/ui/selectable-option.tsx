@@ -4,26 +4,91 @@ import { cn } from "@/lib/utils"
 import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type SelectableOptionProps = {
     selected: boolean
+    title?: string
+    subtitle?: string
+    leftIcon?: React.ReactNode
+    rightAdornment?: React.ReactNode
+    disabled?: boolean
     className?: string
     onClick?: () => void
-    children: React.ReactNode
+    children?: React.ReactNode
 }
 
-function SelectableOption({ selected, className, onClick, children }: SelectableOptionProps) {
+function SelectionCircle({ selected }: { selected: boolean }) {
+    return (
+        <span
+            aria-hidden="true"
+            className={cn(
+                "mt-0.5 inline-flex h-[var(--wm-size-20)] w-[var(--wm-size-20)] items-center justify-center rounded-full border transition-colors",
+                selected
+                    ? "border-[color:var(--action-primary)] bg-[color:var(--action-primary)]"
+                    : "border-[color:var(--border-strong)] bg-[color:var(--bg-base)]"
+            )}
+        >
+            <span
+                className={cn(
+                    "h-[var(--wm-size-8)] w-[var(--wm-size-8)] rounded-full transition-colors",
+                    selected ? "bg-[color:var(--text-on-action)]" : "bg-transparent"
+                )}
+            />
+        </span>
+    )
+}
+
+function SelectableOption({
+    selected,
+    title,
+    subtitle,
+    leftIcon,
+    rightAdornment,
+    disabled = false,
+    className,
+    onClick,
+    children,
+}: SelectableOptionProps) {
+    const hasStructuredContent = Boolean(title || subtitle || leftIcon || rightAdornment)
+
     return (
         <button
             type="button"
             onClick={onClick}
+            disabled={disabled}
             aria-pressed={selected}
+            aria-disabled={disabled}
             className={cn(
                 "w-full rounded-[var(--wm-size-18)] border px-4 py-4 text-left transition-shadow",
                 selected
-                    ? "border-[color:var(--text-primary)] shadow-[inset_0_0_0_1px_var(--text-primary)]"
+                    ? "border-[color:var(--action-primary)] shadow-[inset_0_0_0_1px_var(--action-primary)]"
                     : "border-[color:var(--border-strong)]",
+                disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
                 className
             )}
         >
-            {children}
+            {hasStructuredContent ? (
+                <div className="flex items-start gap-3">
+                    {leftIcon ? (
+                        <span className="mt-0.5 inline-flex h-[var(--wm-size-28)] w-[var(--wm-size-28)] items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
+                            {leftIcon}
+                        </span>
+                    ) : null}
+                    <div className="min-w-0 flex-1">
+                        {title ? (
+                            <p className="font-wallie-chunky text-[length:var(--wm-size-16)] leading-tight text-[color:var(--text-primary)]">
+                                {title}
+                            </p>
+                        ) : null}
+                        {subtitle ? (
+                            <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-13)] leading-[1.3] text-[color:var(--text-tertiary)]">
+                                {subtitle}
+                            </p>
+                        ) : null}
+                        {children ? <div className="mt-2">{children}</div> : null}
+                    </div>
+                    {rightAdornment ?? <SelectionCircle selected={selected} />}
+                </div>
+            ) : (
+                children
+            )}
         </button>
     )
 }

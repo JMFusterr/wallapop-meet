@@ -12,17 +12,17 @@ type LabelProps = React.ComponentProps<"span"> & {
 
 const toneClassMap: Record<LabelTone, string> = {
     pending:
-        "border-[color:var(--meetup-status-pending-border)] bg-[color:var(--meetup-status-pending-bg)] text-[color:var(--meetup-status-pending-text)]",
+        "border-[color:var(--border-strong)] bg-[color:var(--bg-surface)] text-[color:var(--text-secondary)]",
     confirmed:
-        "border-[color:var(--meetup-status-confirmed-border)] bg-[color:var(--meetup-status-confirmed-bg)] text-[color:var(--meetup-status-confirmed-text)]",
+        "border-[color:var(--border-focus)] bg-[color:var(--bg-accent-subtle)] text-[color:var(--action-primary-pressed)]",
     arrived:
-        "border-[color:var(--meetup-status-arrived-border)] bg-[color:var(--meetup-status-arrived-bg)] text-[color:var(--meetup-status-arrived-text)]",
+        "border-[color:var(--border-warning-subtle)] bg-[color:var(--bg-warning-subtle)] text-[color:var(--feedback-warning-strong)]",
     completed:
-        "border-[color:var(--meetup-status-completed-border)] bg-[color:var(--meetup-status-completed-bg)] text-[color:var(--meetup-status-completed-text)]",
+        "border-[color:var(--status-sold-hover)] bg-[color:var(--bg-soft)] text-[color:var(--status-sold)]",
     expired:
-        "border-[color:var(--meetup-status-expired-border)] bg-[color:var(--meetup-status-expired-bg)] text-[color:var(--meetup-status-expired-text)]",
+        "border-[color:var(--border-divider)] bg-[color:var(--bg-soft)] text-[color:var(--text-tertiary)]",
     cancelled:
-        "border-[color:var(--meetup-status-cancelled-border)] bg-[color:var(--meetup-status-cancelled-bg)] text-[color:var(--meetup-status-cancelled-text)]",
+        "border-[color:var(--border-error)] bg-[color:var(--bg-error-subtle)] text-[color:var(--feedback-error)]",
 }
 
 function Label({ tone = "pending", className, children, ...props }: LabelProps) {
@@ -50,10 +50,16 @@ const designSystemMeta = {
     status: "ready",
     states: ["pending", "confirmed", "arrived", "completed", "expired", "cancelled"],
     storybookTitle: "Design System/Label",
-    tokensUsed: ["tokens.color.semantic.action.primary", "tokens.color.semantic.text.primary", "tokens.color.semantic.border.divider"],
+    tokensUsed: [
+        "tokens.color.meetup_status.pending.background",
+        "tokens.color.meetup_status.pending.border",
+        "tokens.color.meetup_status.confirmed.background",
+        "tokens.color.meetup_status.arrived.background",
+        "tokens.color.meetup_status.completed.text",
+        "tokens.color.meetup_status.cancelled.text",
+    ],
 } satisfies DesignSystemEntityMeta
 
 // eslint-disable-next-line react-refresh/only-export-components
 export { Label, designSystemMeta }
 export type { LabelProps, LabelTone }
-

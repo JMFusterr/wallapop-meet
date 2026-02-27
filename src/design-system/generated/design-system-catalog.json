@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-02-27T12:39:27.386Z",
+    "generatedAt": "2026-02-27T12:52:57.162Z",
     "entryFile": "src/App.tsx",
     "entities": [
         {
@@ -441,9 +441,12 @@
             ],
             "storybookTitle": "Design System/Label",
             "tokensUsed": [
-                "tokens.color.semantic.action.primary",
-                "tokens.color.semantic.text.primary",
-                "tokens.color.semantic.border.divider"
+                "tokens.color.meetup_status.pending.background",
+                "tokens.color.meetup_status.pending.border",
+                "tokens.color.meetup_status.confirmed.background",
+                "tokens.color.meetup_status.arrived.background",
+                "tokens.color.meetup_status.completed.text",
+                "tokens.color.meetup_status.cancelled.text"
             ],
             "stateCoverage": [
                 {
