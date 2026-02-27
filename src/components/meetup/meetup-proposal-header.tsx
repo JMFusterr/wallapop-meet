@@ -1,5 +1,6 @@
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type MeetupProposalHeaderStep = {
   id: number
   label: string
@@ -66,7 +67,20 @@ function MeetupProposalHeader({
   )
 }
 
-export { MeetupProposalHeader }
+
+const designSystemMeta = {
+    id: "meetup-proposal-header",
+    entityType: "component",
+    title: "Meetup Proposal Header",
+    description: "Meetup Proposal Header del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","disabled"],
+    storybookTitle: "Design System/Meetup Proposal Header",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { MeetupProposalHeader, designSystemMeta }
 export type { MeetupProposalHeaderProps, MeetupProposalHeaderStep }
 
 

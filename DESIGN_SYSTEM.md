@@ -130,10 +130,12 @@ Excepciones:
 ### 4.5 Guardrails automáticos (obligatorio)
 
 - Script de auditoria: `scripts/audit-design-system.mjs`.
+- Sincronizacion DS (inventario + metadata + stories + tokens): `scripts/sync-design-system.mjs`.
 - Configuracion de excepciones: `.design-system-audit.config.json`.
 - Baseline versionado: `.design-system-audit-baseline.json`.
 - Integracion obligatoria en lint: `npm run lint` ejecuta auditoria DS antes de ESLint.
 - Regla operativa: no se aceptan nuevas incidencias fuera del baseline.
+- Regla operativa adicional: no se acepta componente/pattern alcanzable desde `App` sin `designSystemMeta` y story `Design System/*` sincronizada.
 
 ## 5. Patrones de componentes (resumen operacional)
 

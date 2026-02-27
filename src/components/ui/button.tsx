@@ -4,6 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 const buttonVariants = cva(
   "relative inline-flex min-w-0 items-center justify-center whitespace-nowrap font-normal transition-[color,background-color,box-shadow,opacity] duration-150 ease-out outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--border-focus)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
@@ -118,7 +119,20 @@ function Button({
   )
 }
 
-export { Button }
+
+const designSystemMeta = {
+    id: "button",
+    entityType: "component",
+    title: "Button",
+    description: "Button del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","disabled","loading"],
+    storybookTitle: "Design System/Button",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { Button, designSystemMeta }
 export type { ButtonProps }
 
 

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { WallapopIcon, type WallapopIconName } from "@/components/ui/wallapop-icon"
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type InboxBottomNavIconName = Extract<
   WallapopIconName,
   "home" | "heart" | "plus" | "mail" | "user"
@@ -93,6 +94,17 @@ function InboxBottomNav({
   )
 }
 
-export { InboxBottomNav, type InboxBottomNavItem }
 
+const designSystemMeta = {
+    id: "inbox-bottom-nav",
+    entityType: "component",
+    title: "Inbox Bottom Nav",
+    description: "Inbox Bottom Nav del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","active"],
+    storybookTitle: "Design System/Inbox Bottom Nav",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
 
+// eslint-disable-next-line react-refresh/only-export-components
+export { InboxBottomNav, type InboxBottomNavItem, designSystemMeta }

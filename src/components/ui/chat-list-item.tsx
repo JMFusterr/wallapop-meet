@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type ChatListItemLeadingIndicator = "bookmark" | "deal"
 type ChatListItemDeliveryState = "sent" | "read"
 
@@ -105,7 +106,17 @@ function ChatListItem({
   )
 }
 
-export { ChatListItem }
 
+const designSystemMeta = {
+    id: "chat-list-item",
+    entityType: "component",
+    title: "Chat List Item",
+    description: "Chat List Item del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","selected","disabled"],
+    storybookTitle: "Design System/Chat List Item",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
 
-
+// eslint-disable-next-line react-refresh/only-export-components
+export { ChatListItem, designSystemMeta }

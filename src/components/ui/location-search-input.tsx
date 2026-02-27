@@ -2,6 +2,7 @@ import { Search } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type LocationSearchInputProps = {
     value: string
     onValueChange: (nextValue: string) => void
@@ -34,5 +35,18 @@ function LocationSearchInput({
     )
 }
 
-export { LocationSearchInput }
+
+const designSystemMeta = {
+    id: "location-search-input",
+    entityType: "component",
+    title: "Location Search Input",
+    description: "Location Search Input del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","error"],
+    storybookTitle: "Design System/Location Search Input",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { LocationSearchInput, designSystemMeta }
 export type { LocationSearchInputProps }

@@ -3,6 +3,7 @@ import { ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type SelectState = "default" | "error"
 type SelectSize = "md" | "lg"
 
@@ -268,6 +269,17 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
 
 Select.displayName = "Select"
 
-export { Select, type SelectOption }
 
+const designSystemMeta = {
+    id: "select",
+    entityType: "component",
+    title: "Select",
+    description: "Select del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","error","disabled"],
+    storybookTitle: "Design System/Select",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
 
+// eslint-disable-next-line react-refresh/only-export-components
+export { Select, type SelectOption, designSystemMeta }

@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type BadgeVariant = "unread" | "success" | "error"
 
 type BadgeProps = React.ComponentProps<"span"> & {
@@ -49,6 +50,17 @@ function Badge({
   )
 }
 
-export { Badge }
 
+const designSystemMeta = {
+    id: "badge",
+    entityType: "component",
+    title: "Badge",
+    description: "Badge del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","error","success"],
+    storybookTitle: "Design System/Badge",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
 
+// eslint-disable-next-line react-refresh/only-export-components
+export { Badge, designSystemMeta }

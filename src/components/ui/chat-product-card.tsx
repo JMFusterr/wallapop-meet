@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type ChatProductCardViewerRole = "seller" | "buyer"
 
 type ChatProductCardProps = React.ComponentProps<"article"> & {
@@ -166,6 +167,17 @@ function ChatProductCard({
     )
 }
 
-export { ChatProductCard, type ChatProductCardViewerRole }
 
+const designSystemMeta = {
+    id: "chat-product-card",
+    entityType: "component",
+    title: "Chat Product Card",
+    description: "Chat Product Card del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","reserved","sold"],
+    storybookTitle: "Design System/Chat Product Card",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
 
+// eslint-disable-next-line react-refresh/only-export-components
+export { ChatProductCard, type ChatProductCardViewerRole, designSystemMeta }

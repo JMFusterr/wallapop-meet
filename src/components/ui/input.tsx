@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type InputState = "default" | "error" | "success"
 
 type InputProps = Omit<React.ComponentProps<"input">, "size"> & {
@@ -199,6 +200,17 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
 Input.displayName = "Input"
 
-export { Input }
 
+const designSystemMeta = {
+    id: "input",
+    entityType: "component",
+    title: "Input",
+    description: "Input del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","error","success","disabled"],
+    storybookTitle: "Design System/Input",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
 
+// eslint-disable-next-line react-refresh/only-export-components
+export { Input, designSystemMeta }

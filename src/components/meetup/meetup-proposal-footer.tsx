@@ -1,3 +1,4 @@
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type MeetupProposalFooterProps = {
   listingImageSrc?: string
   itemTitle: string
@@ -90,7 +91,20 @@ function MeetupProposalFooter({
   )
 }
 
-export { MeetupProposalFooter }
+
+const designSystemMeta = {
+    id: "meetup-proposal-footer",
+    entityType: "component",
+    title: "Meetup Proposal Footer",
+    description: "Meetup Proposal Footer del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","disabled"],
+    storybookTitle: "Design System/Meetup Proposal Footer",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { MeetupProposalFooter, designSystemMeta }
 export type { MeetupProposalFooterProps }
 
 

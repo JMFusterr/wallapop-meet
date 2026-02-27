@@ -1,4 +1,5 @@
-﻿import * as React from "react"
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
+import * as React from "react"
 import L from "leaflet"
 import { Banknote, MapPin, QrCode, Smartphone } from "lucide-react"
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet"
@@ -3083,8 +3084,17 @@ function WallapopChatWorkspace() {
     )
 }
 
-export { WallapopChatWorkspace }
 
+const designSystemMeta = {
+    id: "wallapop-chat-workspace",
+    entityType: "pattern",
+    title: "Wallapop Chat Workspace",
+    description: "Wallapop Chat Workspace del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","error"],
+    storybookTitle: "Design System/Wallapop Chat Workspace",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
 
-
-
+// eslint-disable-next-line react-refresh/only-export-components
+export { WallapopChatWorkspace, designSystemMeta }

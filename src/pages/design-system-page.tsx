@@ -1,27 +1,8 @@
+import * as React from "react"
 import styles from "../../styles.json"
-import { Banknote, MapPin, QrCode, Smartphone } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { ChatProductCard } from "@/components/ui/chat-product-card"
-import { ChatCounterpartCard } from "@/components/ui/chat-counterpart-card"
-import { ChatListItem } from "@/components/ui/chat-list-item"
-import { ChatConversationHeader } from "@/components/ui/chat-conversation-header"
-import { MeetupCard } from "@/components/meetup/meetup-card"
-import { MeetupProposalHeader } from "@/components/meetup/meetup-proposal-header"
-import { MeetupWizardStepHeading } from "@/components/meetup/meetup-wizard-step-heading"
-import { MeetupProposalFooter } from "@/components/meetup/meetup-proposal-footer"
-import { MeetupLocationMap } from "@/components/meetup/meetup-location-map"
-import { ChatComposer } from "@/components/ui/chat-composer"
-import { ChatMessageBubble } from "@/components/ui/chat-message-bubble"
-import { ChatSecurityBanner } from "@/components/ui/chat-security-banner"
-import { Toast } from "@/components/ui/toast"
-import { CalendarPicker } from "@/components/ui/calendar-picker"
-import { WallapopIcon, type WallapopIconName } from "@/components/ui/wallapop-icon"
 import { navigateTo } from "@/lib/navigation"
-import { createMeetupMachine, transitionMeetup } from "@/meetup"
-import type { MeetupMachine } from "@/meetup/types"
+import designSystemCatalog from "@/design-system/generated/design-system-catalog.json"
 
 type Primitive = string | number | boolean | null | undefined
 type TokenLeaf = {
@@ -66,50 +47,14 @@ type RadiusItem = {
     pixels: number
 }
 
-type StatusLabelItem = {
-    name: string
-    label: string
-    background: string
-    border: string
-    text: string
+type CatalogEntity = {
+    id: string
+    entityType: "component" | "pattern"
+    title: string
+    description: string
+    storybookTitle: string
+    states: string[]
 }
-
-type IconShowcaseItem = {
-    name: WallapopIconName
-    mainAction: string
-}
-
-type ButtonShowcaseVariant = "primary" | "secondary" | "ghost" | "critical" | "tab" | "link"
-
-const buttonShowcaseVariants: Array<{ variant: ButtonShowcaseVariant; label: string }> = [
-    { variant: "primary", label: "Primary" },
-    { variant: "secondary", label: "Secondary" },
-    { variant: "ghost", label: "Ghost" },
-    { variant: "critical", label: "Critical" },
-    { variant: "tab", label: "Tab" },
-    { variant: "link", label: "Link" },
-]
-
-const iconShowcaseItems: IconShowcaseItem[] = [
-    { name: "arrow_left", mainAction: "Volver a la pantalla anterior" },
-    { name: "burguer_menu", mainAction: "Abrir menu principal en cabecera" },
-    { name: "chevron_right", mainAction: "Navegar entre pasos o meses" },
-    { name: "cross", mainAction: "Cerrar modal o drawer" },
-    { name: "edit", mainAction: "Editar anuncio o propuesta" },
-    { name: "eye", mainAction: "Mostrar metricas de visualizaciones" },
-    { name: "home", mainAction: "Ir a inicio desde navegacion inferior" },
-    { name: "mail", mainAction: "Entrar en buzon de conversaciones" },
-    { name: "user", mainAction: "Abrir perfil del usuario" },
-    { name: "plus", mainAction: "Iniciar publicacion o accion de alta" },
-    { name: "calendar", mainAction: "Iniciar propuesta de quedada" },
-    { name: "paper_plane", mainAction: "Enviar mensaje en chat" },
-    { name: "deal", mainAction: "Marcar trato o punto personalizado" },
-    { name: "shield", mainAction: "Resaltar zona o punto seguro" },
-    { name: "double_check", mainAction: "Indicar estado de entrega" },
-    { name: "ellipsis_horizontal", mainAction: "Abrir acciones contextuales" },
-    { name: "heart", mainAction: "Gestionar favoritos" },
-    { name: "bookmark", mainAction: "Marcar reservado" },
-]
 
 const wallapopLogoUrl = "https://es.wallapop.com/favicon.ico"
 
@@ -123,6 +68,68 @@ const sectionEntries = [
     { id: "components-playground", label: "Components" },
     { id: "patterns", label: "Patterns" },
 ] as const
+
+const storyModules = Object.values(
+    import.meta.glob("../components/**/*.stories.tsx", {
+        eager: true,
+    })
+) as Array<Record<string, unknown>>
+
+function resolveStoryModuleByTitle(title: string): Record<string, unknown> | null {
+    const module = storyModules.find((item) => {
+        const meta = item.default as { title?: string } | undefined
+        return meta?.title === title
+    })
+    return module ?? null
+}
+
+function renderStoryPreviewByTitle(title: string): React.ReactNode {
+    const module = resolveStoryModuleByTitle(title)
+    if (!module) {
+        return (
+            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--feedback-error)]">
+                Story no encontrada para {title}.
+            </p>
+        )
+    }
+
+    const meta = (module.default ?? {}) as {
+        component?: React.ComponentType<Record<string, unknown>>
+        args?: Record<string, unknown>
+    }
+
+    const storyCandidates = Object.entries(module)
+        .filter(([key]) => key !== "default")
+        .map(([, value]) => value)
+        .filter((value) => typeof value === "object" && value !== null) as Array<{
+        render?: (args: Record<string, unknown>) => React.ReactNode
+        args?: Record<string, unknown>
+    }>
+
+    const preferred =
+        (module.Playground as { render?: (args: Record<string, unknown>) => React.ReactNode; args?: Record<string, unknown> } | undefined) ??
+        (module.Default as { render?: (args: Record<string, unknown>) => React.ReactNode; args?: Record<string, unknown> } | undefined) ??
+        storyCandidates[0]
+
+    const combinedArgs = {
+        ...(meta.args ?? {}),
+        ...(preferred?.args ?? {}),
+    }
+
+    if (preferred?.render) {
+        return preferred.render(combinedArgs)
+    }
+
+    if (meta.component) {
+        return React.createElement(meta.component, combinedArgs)
+    }
+
+    return (
+        <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--feedback-error)]">
+            Story sin preview renderizable.
+        </p>
+    )
+}
 
 const semanticColorDefinitions = [
     {
@@ -238,91 +245,6 @@ const semanticColorDefinitions = [
         aliasTailwindRoot: "feedback-info",
     },
 ] as const
-
-const proposalHeaderSteps = [
-    { id: 1, label: "Punto de encuentro" },
-    { id: 2, label: "Dia y hora" },
-    { id: 3, label: "Preferencia de pago", disabled: true },
-]
-
-const patternSafePoints = [
-    { id: "station", name: "Estacion de Sants", lat: 41.37906, lng: 2.14006 },
-    { id: "mall", name: "Centro comercial Arenas", lat: 41.37617, lng: 2.14918 },
-    { id: "police", name: "Comisaria Mossos - Les Corts", lat: 41.38762, lng: 2.13441 },
-]
-
-function createPatternMeetupMachine(status: "PROPOSED" | "CONFIRMED"): MeetupMachine {
-    const base = createMeetupMachine({
-        scheduledAt: new Date(Date.now() + 45 * 60 * 1000),
-        chatContext: {
-            conversationId: "conv-design-system",
-            listingId: "listing-switch-001",
-            sellerUserId: "user-seller-001",
-            buyerUserId: "user-buyer-001",
-        },
-    })
-
-    const enrichedBase: MeetupMachine = {
-        ...base,
-        proposedLocation: "Estacion de Sants, acceso principal",
-        proposedLocationLat: 41.37906,
-        proposedLocationLng: 2.14006,
-        finalPrice: 240,
-        proposedPaymentMethod: "BIZUM",
-    }
-
-    const proposedResult = transitionMeetup(enrichedBase, {
-        type: "PROPOSE",
-        actorRole: "SELLER",
-        occurredAt: new Date(),
-    })
-
-    if (!proposedResult.ok) {
-        return enrichedBase
-    }
-
-    if (status === "PROPOSED") {
-        return proposedResult.meetup
-    }
-
-    const confirmedResult = transitionMeetup(proposedResult.meetup, {
-        type: "ACCEPT",
-        actorRole: "BUYER",
-        occurredAt: new Date(),
-    })
-
-    return confirmedResult.ok ? confirmedResult.meetup : proposedResult.meetup
-}
-
-function SafeShieldGlyph({ className = "" }: { className?: string }) {
-    return (
-        <svg
-            viewBox="0 0 24 24"
-            width="16"
-            height="16"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={className}
-            aria-hidden
-        >
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
-        </svg>
-    )
-}
-
-function ProposalSelectionIndicator({ selected }: { selected: boolean }) {
-    return (
-        <span
-            className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white ${
-                selected ? "border-[var(--wm-size-8)] border-[color:var(--text-primary)]" : "border-2 border-[color:var(--text-secondary)]"
-            }`}
-            aria-hidden
-        />
-    )
-}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null
@@ -558,25 +480,6 @@ function normalizeRadiusTokens(input: unknown): RadiusItem[] {
         .sort((a, b) => a.pixels - b.pixels)
 }
 
-function buildStatusLabelItems(): StatusLabelItem[] {
-    const statuses = [
-        { name: "pending", label: "pendiente" },
-        { name: "confirmed", label: "confirmada" },
-        { name: "arrived", label: "llegada" },
-        { name: "completed", label: "completada" },
-        { name: "expired", label: "expirada" },
-        { name: "cancelled", label: "cancelada" },
-    ] as const
-
-    return statuses.map((status) => ({
-        name: status.name,
-        label: status.label,
-        background: String(resolveReference(`{tokens.color.meetup_status.${status.name}.background}`, styles)),
-        border: String(resolveReference(`{tokens.color.meetup_status.${status.name}.border}`, styles)),
-        text: String(resolveReference(`{tokens.color.meetup_status.${status.name}.text}`, styles)),
-    }))
-}
-
 function DesignSystemPage() {
     const colorTokens = (styles as Record<string, unknown>)["tokens"]
     const foundations = isRecord(colorTokens) ? colorTokens : {}
@@ -589,11 +492,15 @@ function DesignSystemPage() {
     const warningScale = normalizeColorTokenGroup("tokens.color.palette.warning", paletteRoot.warning)
     const errorScale = normalizeColorTokenGroup("tokens.color.palette.error", paletteRoot.error)
     const semanticColorItems = normalizeSemanticColorItems()
+    const catalogEntities = (
+        (designSystemCatalog as { entities?: CatalogEntity[] }).entities ?? []
+    ).sort((a, b) => a.title.localeCompare(b.title))
+    const catalogComponents = catalogEntities.filter((entity) => entity.entityType === "component")
+    const catalogPatterns = catalogEntities.filter((entity) => entity.entityType === "pattern")
     const typographyTokens = normalizeTypographyTokens(foundations.typography)
     const spacingTokens = normalizeSpacingTokens(foundations.spacing)
     const radiusTokens = normalizeRadiusTokens(foundations.radius)
     const shadowTokens = normalizeShadowTokens(foundations.shadow)
-    const statusLabelItems = buildStatusLabelItems()
 
     const fontPrimary = typographyTokens.find((item) => item.tokenPath.includes("family.primary"))?.value ?? "Wallie"
     const fontFallback =
@@ -606,10 +513,6 @@ function DesignSystemPage() {
     const weightRegular = typographyTokens.find((item) => item.tokenPath.endsWith("weight.regular"))?.value ?? "400"
     const weightMedium = typographyTokens.find((item) => item.tokenPath.endsWith("weight.medium"))?.value ?? "500"
     const weightBold = typographyTokens.find((item) => item.tokenPath.endsWith("weight.bold"))?.value ?? "700"
-    const proposedPatternMeetup = createPatternMeetupMachine("PROPOSED")
-    const confirmedPatternMeetup = createPatternMeetupMachine("CONFIRMED")
-    const now = new Date()
-
     return (
         <main className="min-h-dvh bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
             <div className="mx-auto flex w-full max-w-[var(--wm-size-1400)] gap-8 px-6 py-8">
@@ -892,198 +795,33 @@ function DesignSystemPage() {
                         </p>
                         <div className="mt-5 space-y-6">
                             <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Button</p>
+                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Catalogo visual sincronizado</p>
                                 <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Estados visuales simulados: default, hover, active, disabled.
-                                </p>
-                                <div className="overflow-auto rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)]">
-                                    <div className="grid min-w-[var(--wm-size-860)] grid-cols-[160px_repeat(4,minmax(150px,1fr))]">
-                                        <div className="border-b border-r border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                            Variante
-                                        </div>
-                                        <div className="border-b border-r border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-3 py-2 text-center font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Default</div>
-                                        <div className="border-b border-r border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-3 py-2 text-center font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Hover</div>
-                                        <div className="border-b border-r border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-3 py-2 text-center font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Pressed</div>
-                                        <div className="border-b border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-3 py-2 text-center font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Disabled</div>
-                                        {buttonShowcaseVariants.map((entry) => {
-                                            const hoverClass =
-                                                entry.variant === "secondary"
-                                                    ? "bg-[color:var(--bg-accent-subtle)]"
-                                                    : entry.variant === "ghost"
-                                                      ? "text-[color:var(--text-secondary)]"
-                                                      : entry.variant === "link"
-                                                        ? "text-[color:var(--action-primary-hover)]"
-                                                        : entry.variant === "tab"
-                                                          ? "bg-[color:var(--wm-surface-overlay-hover)]"
-                                                          : "brightness-[0.98]"
-                                            const activeClass =
-                                                entry.variant === "secondary"
-                                                    ? "bg-[color:var(--bg-accent-subtle)]"
-                                                    : entry.variant === "ghost"
-                                                      ? "text-[color:var(--text-primary)]"
-                                                      : entry.variant === "link"
-                                                        ? "text-[color:var(--action-primary-pressed)]"
-                                                        : entry.variant === "tab"
-                                                          ? "bg-[color:var(--wm-surface-overlay-pressed)]"
-                                                          : "brightness-95"
-                                            const disabledLabel =
-                                                entry.variant === "link" ? "Link" : entry.label
-
-                                            return (
-                                                <div key={entry.variant} className="contents">
-                                                    <div className="border-r border-b border-[color:var(--border-divider)] px-3 py-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-primary)]">
-                                                        {entry.label}
-                                                    </div>
-                                                    <div className="border-r border-b border-[color:var(--border-divider)] px-3 py-3 text-center">
-                                                        <Button variant={entry.variant} size="sm">
-                                                            {entry.label}
-                                                        </Button>
-                                                    </div>
-                                                    <div className="border-r border-b border-[color:var(--border-divider)] px-3 py-3 text-center">
-                                                        <Button variant={entry.variant} size="sm" className={hoverClass}>
-                                                            {entry.label}
-                                                        </Button>
-                                                    </div>
-                                                    <div className="border-r border-b border-[color:var(--border-divider)] px-3 py-3 text-center">
-                                                        <Button variant={entry.variant} size="sm" className={activeClass}>
-                                                            {entry.label}
-                                                        </Button>
-                                                    </div>
-                                                    <div className="border-b border-[color:var(--border-divider)] px-3 py-3 text-center">
-                                                        <Button variant={entry.variant} size="sm" disabled>
-                                                            {disabledLabel}
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
-                                </div>
-                            </article>
-
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Input</p>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Campo de texto con estados de validacion y ayuda contextual.
+                                    Este bloque se genera automaticamente desde el catalogo y renderiza previews reales de stories.
                                 </p>
                                 <div className="grid gap-4 md:grid-cols-2">
-                                    <Input label="Default" placeholder="Escribe algo" hint="Helper text" maxLength={80} defaultValue="" />
-                                    <Input label="Error" defaultValue="Valor invalido" error="Error de validacion" />
-                                    <Input label="Success" defaultValue="Valor correcto" state="success" hint="Campo validado" />
-                                    <Input label="Disabled" defaultValue="Solo lectura" disabled />
-                                </div>
-                            </article>
-
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Labels</p>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Labels de estado usados en cards de meetup (fuente: tokens `tokens.color.meetup_status.*`).
-                                </p>
-                                <div className="grid gap-3 md:grid-cols-2">
-                                    {statusLabelItems.map((item) => (
-                                        <article key={item.name} className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
-                                            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{item.name}</p>
-                                            <span
-                                                className="mt-2 inline-flex rounded-full border px-2.5 py-1 font-wallie-fit text-[length:var(--wm-size-11)] leading-[1]"
-                                                style={{
-                                                    backgroundColor: item.background,
-                                                    borderColor: item.border,
-                                                    color: item.text,
-                                                }}
-                                            >
-                                                {item.label}
-                                            </span>
-                                            <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{`bg ${item.background}`}</p>
-                                            <p className="font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{`border ${item.border}`}</p>
-                                            <p className="font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-secondary)]">{`text ${item.text}`}</p>
-                                        </article>
-                                    ))}
-                                </div>
-                            </article>
-
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Select</p>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Selector desplegable para decisiones de una opcion con soporte de error.
-                                </p>
-                                <div className="grid gap-4 md:grid-cols-2">
-                                    <Select
-                                        label="Categoria"
-                                        defaultValue="electronics"
-                                        options={[
-                                            { value: "electronics", label: "Electronica" },
-                                            { value: "home", label: "Hogar" },
-                                            { value: "other", label: "Otros" },
-                                        ]}
-                                    />
-                                    <Select
-                                        label="Validacion"
-                                        state="error"
-                                        error="Seleccion requerida"
-                                        options={[
-                                            { value: "", label: "Selecciona una opcion" },
-                                            { value: "one", label: "Opcion uno" },
-                                        ]}
-                                    />
-                                </div>
-                            </article>
-
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Badge</p>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Indicadores compactos para conteo y alertas de estado puntual.
-                                </p>
-                                <div className="mt-4 flex items-center gap-2">
-                                    <Badge variant="unread" value={8} />
-                                    <Badge variant="error" value="!" />
-                                </div>
-                            </article>
-
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
-                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Toast / Snackbar</p>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Alertas efimeras con variantes <code>success</code>, <code>error</code> e <code>info</code>, consumiendo tokens semanticos.
-                                </p>
-                                <div className="grid gap-3 md:grid-cols-3">
-                                    <Toast
-                                        variant="success"
-                                        title="Has llegado al punto de encuentro"
-                                        description="La otra persona ya puede verlo en el chat."
-                                    />
-                                    <Toast
-                                        variant="error"
-                                        title="No se pudo confirmar la llegada"
-                                        description="Comprueba la conexion e intentalo de nuevo."
-                                    />
-                                    <Toast
-                                        variant="info"
-                                        title="Quedada confirmada para hoy"
-                                        description="Te avisaremos 15 minutos antes."
-                                    />
-                                </div>
-                            </article>
-
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
-                                <p className="mb-1 font-wallie-chunky text-[length:var(--wm-size-18)]">Iconografia</p>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Inventario base de iconos con su nombre tecnico y accion principal en producto.
-                                </p>
-                                <div className="grid gap-3 md:grid-cols-2">
-                                    {iconShowcaseItems.map((item) => (
-                                        <article key={item.name} className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
-                                            <div className="flex items-center gap-3">
-                                                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
-                                                    <WallapopIcon name={item.name} size="small" />
-                                                </span>
-                                                <div className="min-w-0">
-                                                    <p className="font-mono text-[length:var(--wm-size-12)] text-[color:var(--text-primary)]">{item.name}</p>
-                                                    <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{item.mainAction}</p>
-                                                </div>
+                                    {catalogComponents.map((entity) => (
+                                        <article key={entity.id} className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
+                                            <p className="font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-primary)]">{entity.title}</p>
+                                            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{entity.storybookTitle}</p>
+                                            <div className="mt-2 flex flex-wrap gap-1.5">
+                                                {entity.states.map((state) => (
+                                                    <span
+                                                        key={`${entity.id}-${state}`}
+                                                        className="rounded-full border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-primary)]"
+                                                    >
+                                                        {state}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                            <div className="mt-3 rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)] bg-white p-3">
+                                                {renderStoryPreviewByTitle(entity.storybookTitle)}
                                             </div>
                                         </article>
                                     ))}
                                 </div>
                             </article>
+
                         </div>
                     </section>
 
@@ -1093,470 +831,31 @@ function DesignSystemPage() {
                             Ensamblado de componentes complejos para casos de negocio reales.
                         </p>
                         <div className="mt-5 space-y-4">
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Chat Product Card Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Versiones clave por rol: vendedor (acciones comerciales) y comprador (estado del anuncio).
-                                </p>
-                                <div className="overflow-x-auto">
-                                    <div className="flex min-w-max gap-4">
-                                        <div className="w-[var(--wm-size-360)] shrink-0">
-                                            <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Seller / available</p>
-                                            <ChatProductCard
-                                                imageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=640&h=460"
-                                                imageAlt="Consola de ejemplo"
-                                                title="Nintendo Switch OLED + dock"
-                                                price="240 €"
-                                                stats="Publicado hace 2 horas"
-                                                viewsCount={28}
-                                                likesCount={7}
-                                                onReserve={() => {}}
-                                                onSold={() => {}}
-                                                onEdit={() => {}}
-                                            />
-                                        </div>
-                                        <div className="w-[var(--wm-size-360)] shrink-0">
-                                            <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">Buyer / reserved</p>
-                                            <ChatProductCard
-                                                imageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=640&h=460"
-                                                imageAlt="Consola de ejemplo"
-                                                title="Nintendo Switch OLED + dock"
-                                                price="240 €"
-                                                viewerRole="buyer"
-                                                statusLabel="Reservado"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Meetup Card Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Tarjeta transaccional con variantes por estado para validar jerarquia y acciones.
-                                </p>
-                                <div className="overflow-x-auto">
-                                    <div className="flex min-w-max gap-4">
-                                        <div className="w-[var(--wm-size-460)] shrink-0">
-                                            <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">PROPOSED / buyer</p>
-                                            <MeetupCard
-                                                meetup={proposedPatternMeetup}
-                                                actorRole="BUYER"
-                                                currentTime={now}
-                                                onMeetupChange={() => {}}
-                                                onError={() => {}}
-                                                counterpartName="Laura M."
-                                                onEditProposal={() => {}}
-                                                onOpenMapPreview={() => {}}
-                                                onRedZoneCancelConfirmed={() => {}}
-                                            />
-                                        </div>
-                                        <div className="w-[var(--wm-size-460)] shrink-0">
-                                            <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">CONFIRMED / seller</p>
-                                            <MeetupCard
-                                                meetup={confirmedPatternMeetup}
-                                                actorRole="SELLER"
-                                                currentTime={now}
-                                                onMeetupChange={() => {}}
-                                                onError={() => {}}
-                                                counterpartName="Laura M."
-                                                onEditProposal={() => {}}
-                                                onOpenMapPreview={() => {}}
-                                                onRedZoneCancelConfirmed={() => {}}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Conversation Block Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Bloque base de conversacion del proyecto: burbujas, banner de seguridad y composer con CTA secundaria por rol.
-                                </p>
-                                <div className="space-y-2">
-                                    <ChatMessageBubble variant="received" time="18:02">
-                                        Te va bien quedar hoy en Sants?
-                                    </ChatMessageBubble>
-                                    <div className="text-right">
-                                        <ChatMessageBubble variant="sent" time="18:04" deliveryState="read">
-                                            Si, perfecto. Te envio la propuesta.
-                                        </ChatMessageBubble>
-                                    </div>
-                                </div>
-                                <div className="mt-3 border-y border-[color:var(--border-divider)] px-1 py-1">
-                                    <ChatSecurityBanner
-                                        message="Quedate en Wallapop. Mas facil, mas seguro."
-                                        linkText="Mas informacion"
-                                    />
-                                </div>
-                                <div className="mt-3">
-                                    <ChatComposer
-                                        defaultValue=""
-                                        onSubmit={() => {}}
-                                        onSecondaryAction={() => {}}
-                                        secondaryActionLabel="Proponer quedar"
-                                        secondaryActionAriaLabel="Proponer quedar"
-                                        secondaryActionIconName="calendar"
-                                    />
-                                </div>
-                            </article>
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Conversation Header Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Header de conversacion con densidad tactil equilibrada en movil y estado comercial visible del articulo.
-                                </p>
-                                <div className="overflow-x-auto">
-                                    <div className="flex min-w-max gap-4">
-                                        <div className="w-[var(--wm-size-360)] shrink-0 overflow-hidden rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white">
-                                            <p className="border-b border-[color:var(--border-divider)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                                Compacto movil (flecha + menu)
-                                            </p>
-                                            <ChatConversationHeader
-                                                itemImageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400"
-                                                itemImageAlt="Nintendo Switch OLED + dock"
-                                                itemPrice="240 EUR"
-                                                itemTitle="Nintendo Switch OLED + dock"
-                                                profileImageSrc="https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320"
-                                                profileImageAlt="Laura M."
-                                                userName="Laura M."
-                                                productStatusIcon="deal"
-                                                rating={4.5}
-                                                distanceLabel="3,4km de ti"
-                                                attendanceRate={96}
-                                                attendanceMeetups={28}
-                                                expanded={false}
-                                                onBack={() => {}}
-                                                onMenuClick={() => {}}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Counterpart Context Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Card de contexto del interlocutor para sidebar de conversacion (rating, distancia y asistencia).
-                                </p>
-                                <div className="w-full max-w-[var(--wm-size-380)] rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-3">
-                                    <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">ChatCounterpartCard</p>
-                                    <ChatCounterpartCard
-                                        name="Lorena"
-                                        rating={4.5}
-                                        ratingCount={110}
-                                        distanceLabel="42km de ti"
-                                        attendanceRate={94}
-                                        attendanceMeetups={26}
-                                        profileImageSrc="https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320"
-                                    />
-                                </div>
-                            </article>
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Inbox Conversation Preview Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Vista previa de conversacion en buzon con miniatura de articulo y estado comercial.
-                                </p>
-                                <div className="overflow-x-auto">
-                                    <div className="flex min-w-max gap-4">
-                                        <div className="w-[var(--wm-size-360)] shrink-0 overflow-hidden rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white">
-                                            <p className="border-b border-[color:var(--border-divider)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                                ChatListItem - reservado
-                                            </p>
-                                            <ChatListItem
-                                                userName="Marta"
-                                                messageDate="Ayer"
-                                                itemTitle="iPhone 13 128GB"
-                                                messagePreview="Perfecto, me va bien en el metro."
-                                                unreadCount={2}
-                                                leadingIndicator="bookmark"
-                                                lastMessageDeliveryState="read"
-                                                avatarSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400"
-                                            />
-                                        </div>
-                                        <div className="w-[var(--wm-size-360)] shrink-0 overflow-hidden rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white">
-                                            <p className="border-b border-[color:var(--border-divider)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                                ChatListItem - vendido
-                                            </p>
-                                            <ChatListItem
-                                                userName="Pau"
-                                                messageDate="Hoy"
-                                                itemTitle="MacBook Air M2"
-                                                messagePreview="Gracias! Queda vendido."
-                                                leadingIndicator="deal"
-                                                lastMessageDeliveryState="sent"
-                                                avatarSrc="https://images.pexels.com/photos/18105/pexels-photo.jpg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400"
-                                            />
-                                        </div>
-                                        <div className="w-[var(--wm-size-360)] shrink-0 overflow-hidden rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white">
-                                            <p className="border-b border-[color:var(--border-divider)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                                ChatListItem - preview largo con elipsis
-                                            </p>
-                                            <ChatListItem
-                                                userName="Alex"
-                                                messageDate="Hoy"
-                                                itemTitle="Nintendo Switch OLED + dock"
-                                                messagePreview="Te confirmo que llego en 12 minutos al punto de encuentro y llevo tambien la funda, el cargador y la caja original para cerrar la venta ahi mismo."
-                                                lastMessageDeliveryState="read"
-                                                avatarSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Proposal Overlay Building Blocks</h3>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Componentes base del overlay al configurar una quedada (header, step heading y footer).
-                                </p>
-                                <div className="space-y-3 overflow-hidden rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-3">
-                                    <MeetupProposalHeader
-                                        currentStep={2}
-                                        totalSteps={3}
-                                        steps={proposalHeaderSteps}
-                                        onClose={() => {}}
-                                        onStepChange={() => {}}
-                                    />
-                                    <div className="px-2">
-                                        <MeetupWizardStepHeading
-                                            caption="Paso anterior"
-                                            title="Seleccionar dia y hora"
-                                            onBack={() => {}}
-                                        />
-                                    </div>
-                                    <MeetupProposalFooter
-                                        listingImageSrc="https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400"
-                                        itemTitle="Nintendo Switch OLED + dock"
-                                        userName="Laura M."
-                                        attendanceRate={94}
-                                        attendanceMeetups={26}
-                                        actionLabel="Siguiente"
-                                        onAction={() => {}}
-                                    />
-                                </div>
-                            </article>
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Proposal Step 1 Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Seleccion de punto de encuentro con mapa y cards de opciones visibles.
-                                </p>
-                                <div className="space-y-4">
-                                    <div className="overflow-x-auto rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
-                                        <div className="flex min-w-max gap-4">
-                                            <div className="w-[var(--wm-size-360)] shrink-0 rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
-                                                <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                                    Seleccionar punto de encuentro - mapa
-                                                </p>
-                                                <MeetupLocationMap
-                                                    center={{ lat: patternSafePoints[0].lat, lng: patternSafePoints[0].lng }}
-                                                    safePoints={patternSafePoints}
-                                                    selectedPointId="station"
-                                                    selectedCustomPoint={null}
-                                                    onMapClick={() => {}}
-                                                    onSafePointClick={() => {}}
-                                                />
+                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-4">
+                                <p className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Patterns sincronizados</p>
+                                <div className="grid gap-4">
+                                    {catalogPatterns.map((entity) => (
+                                        <article key={entity.id} className="rounded-[var(--wm-size-10)] border border-[color:var(--border-divider)] p-3">
+                                            <p className="font-wallie-chunky text-[length:var(--wm-size-16)] text-[color:var(--text-primary)]">{entity.title}</p>
+                                            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">{entity.storybookTitle}</p>
+                                            <div className="mt-2 flex flex-wrap gap-1.5">
+                                                {entity.states.map((state) => (
+                                                    <span
+                                                        key={`${entity.id}-${state}`}
+                                                        className="rounded-full border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-11)] text-[color:var(--text-primary)]"
+                                                    >
+                                                        {state}
+                                                    </span>
+                                                ))}
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
-                                        <p className="mb-2 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                            Seleccionar punto de encuentro - opciones
-                                        </p>
-                                        <div className="overflow-x-auto">
-                                            <div className="flex min-w-max gap-3">
-                                                <button
-                                                    type="button"
-                                                    className="w-[var(--wm-size-300)] rounded-[var(--wm-size-18)] border border-[color:var(--text-primary)] px-4 py-4 text-left shadow-[inset_0_0_0_1px_var(--text-primary)]"
-                                                >
-                                                    <div className="flex items-start gap-3">
-                                                        <span className="mt-0.5 inline-flex text-[color:var(--text-primary)]">
-                                                            <SafeShieldGlyph />
-                                                        </span>
-                                                        <div className="min-w-0 flex-1">
-                                                            <p className="font-wallie-chunky text-[length:var(--wm-size-18)] leading-tight text-[color:var(--text-primary)]">
-                                                                Estacion de Sants
-                                                            </p>
-                                                            <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)]">
-                                                                Barcelona, acceso principal
-                                                            </p>
-                                                            <div className="mt-1 flex items-center gap-2">
-                                                                <span className="rounded-full bg-[color:var(--bg-accent-subtle)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--action-primary-pressed)]">
-                                                                    Punto seguro
-                                                                </span>
-                                                                <span className="rounded-full bg-[color:var(--bg-surface)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                                                    824 ventas
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        <span className="mt-0.5">
-                                                            <ProposalSelectionIndicator selected={true} />
-                                                        </span>
-                                                    </div>
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className="w-[var(--wm-size-300)] rounded-[var(--wm-size-18)] border border-[color:var(--border-strong)] px-4 py-4 text-left"
-                                                >
-                                                    <div className="flex items-start gap-3">
-                                                        <span className="mt-0.5 inline-flex text-[color:var(--text-primary)]">
-                                                            <MapPin size={16} />
-                                                        </span>
-                                                        <div className="min-w-0 flex-1">
-                                                            <p className="font-wallie-chunky text-[length:var(--wm-size-18)] leading-tight text-[color:var(--text-primary)]">
-                                                                Carrer de Tarragona, 95
-                                                            </p>
-                                                            <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)]">
-                                                                Punto personalizado
-                                                            </p>
-                                                        </div>
-                                                        <span className="mt-0.5">
-                                                            <ProposalSelectionIndicator selected={false} />
-                                                        </span>
-                                                    </div>
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className="w-[var(--wm-size-300)] rounded-[var(--wm-size-18)] border border-[color:var(--border-strong)] px-4 py-4 text-left"
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
-                                                            <WallapopIcon name="plus" size={16} />
-                                                        </span>
-                                                        <div className="min-w-0 flex-1">
-                                                            <p className="font-wallie-chunky text-[length:var(--wm-size-18)] text-[color:var(--text-primary)]">
-                                                                Elige un punto
-                                                            </p>
-                                                            <p className="font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)]">
-                                                                Puede ser un punto personalizado u otro punto seguro.
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </button>
+                                            <div className="mt-3 rounded-[var(--wm-size-8)] border border-[color:var(--border-divider)] bg-white p-3">
+                                                {renderStoryPreviewByTitle(entity.storybookTitle)}
                                             </div>
-                                        </div>
-                                    </div>
+                                        </article>
+                                    ))}
                                 </div>
                             </article>
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Proposal Step 2 Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Seleccion de dia y hora con estados de validacion para cada campo.
-                                </p>
-                                <div className="overflow-x-auto rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
-                                    <div className="flex min-w-max gap-4">
-                                        <div className="w-[var(--wm-size-360)] shrink-0 space-y-3 rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
-                                            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                                Seleccionar dia y hora - estado default
-                                            </p>
-                                            <CalendarPicker
-                                                label="Dia"
-                                                monthDate={new Date()}
-                                                selectedDateValue={new Date().toISOString().slice(0, 10)}
-                                                minDateValue={new Date().toISOString().slice(0, 10)}
-                                                onMonthChange={() => {}}
-                                                onSelectDate={() => {}}
-                                            />
-                                            <Select
-                                                label="Hora"
-                                                defaultValue="18:30"
-                                                options={[
-                                                    { value: "17:30", label: "17:30" },
-                                                    { value: "18:00", label: "18:00" },
-                                                    { value: "18:30", label: "18:30" },
-                                                    { value: "19:00", label: "19:00" },
-                                                ]}
-                                                dropdownDirection="up"
-                                            />
-                                        </div>
-                                        <div className="w-[var(--wm-size-360)] shrink-0 space-y-3 rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
-                                            <p className="font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                                Seleccionar dia y hora - estado error
-                                            </p>
-                                            <CalendarPicker
-                                                label="Dia"
-                                                monthDate={new Date()}
-                                                selectedDateValue=""
-                                                minDateValue={new Date().toISOString().slice(0, 10)}
-                                                onMonthChange={() => {}}
-                                                onSelectDate={() => {}}
-                                                state="error"
-                                                error="Selecciona un dia para continuar."
-                                            />
-                                            <Select
-                                                label="Hora"
-                                                placeholder="Selecciona hora"
-                                                state="error"
-                                                error="Selecciona una hora para continuar."
-                                                options={[
-                                                    { value: "", label: "Selecciona hora", disabled: true },
-                                                    { value: "17:30", label: "17:30" },
-                                                    { value: "18:00", label: "18:00" },
-                                                    { value: "18:30", label: "18:30" },
-                                                ]}
-                                                dropdownDirection="up"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article className="rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-white p-4">
-                                <h3 className="mb-3 font-wallie-chunky text-[length:var(--wm-size-18)]">Proposal Step 3 Pattern</h3>
-                                <p className="mb-3 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
-                                    Importe final y preferencia de pago con tres metodos como en el flujo real.
-                                </p>
-                                <div className="space-y-3 rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] p-3">
-                                    <Input
-                                        label="Importe final acordado (€)"
-                                        value="220"
-                                        onChange={() => {}}
-                                        placeholder="Ej: 220"
-                                    />
-                                    <p className="font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-primary)]">Preferencia de pago</p>
-                                    <div className="overflow-x-auto">
-                                        <div className="flex min-w-max gap-3">
-                                            <button
-                                                type="button"
-                                                className="w-[var(--wm-size-180)] rounded-[var(--wm-size-18)] border border-[color:var(--border-strong)] px-4 py-3 text-left"
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
-                                                        <Banknote size={16} />
-                                                    </span>
-                                                    <div className="min-w-0 flex-1">
-                                                        <p className="font-wallie-fit text-[length:var(--wm-size-14)] leading-[1.2] text-[color:var(--text-primary)]">Efectivo</p>
-                                                    </div>
-                                                    <ProposalSelectionIndicator selected={false} />
-                                                </div>
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="w-[var(--wm-size-180)] rounded-[var(--wm-size-18)] border border-[color:var(--text-primary)] px-4 py-3 text-left shadow-[inset_0_0_0_1px_var(--text-primary)]"
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
-                                                        <Smartphone size={16} />
-                                                    </span>
-                                                    <div className="min-w-0 flex-1">
-                                                        <p className="font-wallie-fit text-[length:var(--wm-size-14)] leading-[1.2] text-[color:var(--text-primary)]">Bizum</p>
-                                                    </div>
-                                                    <ProposalSelectionIndicator selected={true} />
-                                                </div>
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="w-[var(--wm-size-180)] rounded-[var(--wm-size-18)] border border-[color:var(--border-strong)] px-4 py-3 text-left"
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
-                                                        <QrCode size={16} />
-                                                    </span>
-                                                    <div className="min-w-0 flex-1">
-                                                        <p className="font-wallie-fit text-[length:var(--wm-size-14)] leading-[1.2] text-[color:var(--text-primary)]">Wallapop Wallet</p>
-                                                    </div>
-                                                    <ProposalSelectionIndicator selected={false} />
-                                                </div>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
+
                         </div>
                     </section>
                 </div>

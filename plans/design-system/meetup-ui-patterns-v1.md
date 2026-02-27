@@ -3,6 +3,9 @@
 ## Objetivo
 Definir pantallas y patrones de interacción para cubrir el ciclo completo de un meetup desde propuesta hasta seguimiento.
 
+Regla de sincronizacion DS:
+- Todo pattern alcanzable desde `src/App.tsx` debe declarar `designSystemMeta`, tener story `Design System/*` y validarse con `npm run ds:check`.
+
 ## 0. Punto de entrada en producto
 - Wallapop Meet se lanza desde el chat de Wallapop, dentro de una conversación activa entre vendedor y comprador.
 - No se contempla acceso standalone a la creación del meetup fuera del contexto del chat.

@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "ds:sync": "node scripts/sync-design-system.mjs",
+    "ds:check": "node scripts/sync-design-system.mjs --check",
     "audit:design-system": "node scripts/audit-design-system.mjs",
     "audit:design-system:baseline": "node scripts/audit-design-system.mjs --update-baseline",
-    "lint": "npm run audit:design-system && eslint .",
+    "lint": "npm run audit:design-system && npm run ds:check && eslint .",
     "preview": "vite preview",
     "test": "vitest --passWithNoTests",
     "storybook": "storybook dev -p 6006",

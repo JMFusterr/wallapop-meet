@@ -1,5 +1,6 @@
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type MeetupWizardStepHeadingProps = {
   caption: string
   title?: string
@@ -33,7 +34,20 @@ function MeetupWizardStepHeading({
   )
 }
 
-export { MeetupWizardStepHeading }
+
+const designSystemMeta = {
+    id: "meetup-wizard-step-heading",
+    entityType: "component",
+    title: "Meetup Wizard Step Heading",
+    description: "Meetup Wizard Step Heading del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","disabled"],
+    storybookTitle: "Design System/Meetup Wizard Step Heading",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { MeetupWizardStepHeading, designSystemMeta }
 export type { MeetupWizardStepHeadingProps }
 
 

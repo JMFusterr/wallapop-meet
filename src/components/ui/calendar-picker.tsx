@@ -1,4 +1,5 @@
 import * as React from "react"
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 
 import {
   buildCalendarDayCells,
@@ -138,7 +139,20 @@ function CalendarPicker({
   )
 }
 
-export { CalendarPicker }
+
+const designSystemMeta = {
+    id: "calendar-picker",
+    entityType: "component",
+    title: "Calendar Picker",
+    description: "Calendar Picker del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","error"],
+    storybookTitle: "Design System/CalendarPicker",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { CalendarPicker, designSystemMeta }
 export type { CalendarPickerProps, CalendarDayCell }
 
 

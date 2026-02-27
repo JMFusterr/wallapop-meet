@@ -11,6 +11,7 @@ import { getArrivalWindow } from "@/meetup/arrival-window"
 import { transitionMeetup } from "@/meetup/state-machine"
 import type { ActorRole, MeetupMachine, MeetupPaymentMethod } from "@/meetup/types"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type MeetupCardProps = {
     meetup: MeetupMachine
     actorRole: ActorRole
@@ -686,9 +687,17 @@ function MeetupCard({
     )
 }
 
-export { MeetupCard }
 
+const designSystemMeta = {
+    id: "meetup-card",
+    entityType: "component",
+    title: "Meetup Card",
+    description: "Meetup Card del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","disabled","error"],
+    storybookTitle: "Design System/Meetup Card",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
 
-
-
-
+// eslint-disable-next-line react-refresh/only-export-components
+export { MeetupCard, designSystemMeta }

@@ -8,6 +8,7 @@ Definir la API visual mínima de componentes para implementar los flujos de Wall
 - Storybook y componentes en `src/components/*` deben consumir tokens semánticos/aliases (`styles.json` + `src/index.css`) como fuente de verdad.
 - En código nuevo de componentes documentados en Storybook (`Design System/*`), no se permite color hardcodeado en hex.
 - Para color semántico usar copia directa: `var(--alias-corto)` y/o raíz Tailwind `text-/bg-/border-<raiz>`.
+- Todo componente alcanzable desde `src/App.tsx` debe exportar `designSystemMeta` y tener story sincronizada en `Design System/*`.
 ## 1. Botón (`Button`)
 Propiedades visuales:
 - `variant`: `primary | secondary | ghost | link | nav_expandable | tab | inline_action | icon | menu_close`

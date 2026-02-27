@@ -1,0 +1,746 @@
+{
+    "generatedAt": "2026-02-27T11:14:03.711Z",
+    "entryFile": "src/App.tsx",
+    "entities": [
+        {
+            "file": "src/components/ui/badge.tsx",
+            "storyFile": "src/components/ui/badge.stories.tsx",
+            "storyTitle": "Design System/Badge",
+            "id": "badge",
+            "entityType": "component",
+            "title": "Badge",
+            "description": "Badge del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "error",
+                "success"
+            ],
+            "storybookTitle": "Design System/Badge",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "error",
+                    "covered": true
+                },
+                {
+                    "state": "success",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/button.tsx",
+            "storyFile": "src/components/ui/button.stories.tsx",
+            "storyTitle": "Design System/Button",
+            "id": "button",
+            "entityType": "component",
+            "title": "Button",
+            "description": "Button del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "disabled",
+                "loading"
+            ],
+            "storybookTitle": "Design System/Button",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "disabled",
+                    "covered": true
+                },
+                {
+                    "state": "loading",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/calendar-picker.tsx",
+            "storyFile": "src/components/ui/calendar-picker.stories.tsx",
+            "storyTitle": "Design System/CalendarPicker",
+            "id": "calendar-picker",
+            "entityType": "component",
+            "title": "Calendar Picker",
+            "description": "Calendar Picker del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "error"
+            ],
+            "storybookTitle": "Design System/CalendarPicker",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "error",
+                    "covered": false
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/chat-composer.tsx",
+            "storyFile": "src/components/ui/chat-composer.stories.tsx",
+            "storyTitle": "Design System/Chat Composer",
+            "id": "chat-composer",
+            "entityType": "component",
+            "title": "Chat Composer",
+            "description": "Chat Composer del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "disabled"
+            ],
+            "storybookTitle": "Design System/Chat Composer",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "disabled",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/chat-conversation-header.tsx",
+            "storyFile": "src/components/ui/chat-conversation-header.stories.tsx",
+            "storyTitle": "Design System/Chat Conversation Header",
+            "id": "chat-conversation-header",
+            "entityType": "component",
+            "title": "Chat Conversation Header",
+            "description": "Chat Conversation Header del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "expanded"
+            ],
+            "storybookTitle": "Design System/Chat Conversation Header",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "expanded",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/chat-counterpart-card.tsx",
+            "storyFile": "src/components/ui/chat-counterpart-card.stories.tsx",
+            "storyTitle": "Design System/Chat Counterpart Card",
+            "id": "chat-counterpart-card",
+            "entityType": "component",
+            "title": "Chat Counterpart Card",
+            "description": "Chat Counterpart Card del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "error",
+                "success"
+            ],
+            "storybookTitle": "Design System/Chat Counterpart Card",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "error",
+                    "covered": false
+                },
+                {
+                    "state": "success",
+                    "covered": false
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/chat-list-item.tsx",
+            "storyFile": "src/components/ui/chat-list-item.stories.tsx",
+            "storyTitle": "Design System/Chat List Item",
+            "id": "chat-list-item",
+            "entityType": "component",
+            "title": "Chat List Item",
+            "description": "Chat List Item del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "selected",
+                "disabled"
+            ],
+            "storybookTitle": "Design System/Chat List Item",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "selected",
+                    "covered": true
+                },
+                {
+                    "state": "disabled",
+                    "covered": false
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/chat-message-bubble.tsx",
+            "storyFile": "src/components/ui/chat-message-bubble.stories.tsx",
+            "storyTitle": "Design System/Chat Message Bubble",
+            "id": "chat-message-bubble",
+            "entityType": "component",
+            "title": "Chat Message Bubble",
+            "description": "Chat Message Bubble del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "sent",
+                "read"
+            ],
+            "storybookTitle": "Design System/Chat Message Bubble",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "sent",
+                    "covered": true
+                },
+                {
+                    "state": "read",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/chat-product-card.tsx",
+            "storyFile": "src/components/ui/chat-product-card.stories.tsx",
+            "storyTitle": "Design System/Chat Product Card",
+            "id": "chat-product-card",
+            "entityType": "component",
+            "title": "Chat Product Card",
+            "description": "Chat Product Card del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "reserved",
+                "sold"
+            ],
+            "storybookTitle": "Design System/Chat Product Card",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "reserved",
+                    "covered": false
+                },
+                {
+                    "state": "sold",
+                    "covered": false
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/chat-security-banner.tsx",
+            "storyFile": "src/components/ui/chat-security-banner.stories.tsx",
+            "storyTitle": "Design System/Chat Security Banner",
+            "id": "chat-security-banner",
+            "entityType": "component",
+            "title": "Chat Security Banner",
+            "description": "Chat Security Banner del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default"
+            ],
+            "storybookTitle": "Design System/Chat Security Banner",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/icon-button.tsx",
+            "storyFile": "src/components/ui/icon-button.stories.tsx",
+            "storyTitle": "Design System/Icon Button",
+            "id": "icon-button",
+            "entityType": "component",
+            "title": "Icon Button",
+            "description": "Icon Button del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "disabled"
+            ],
+            "storybookTitle": "Design System/Icon Button",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "disabled",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/inbox-bottom-nav.tsx",
+            "storyFile": "src/components/ui/inbox-bottom-nav.stories.tsx",
+            "storyTitle": "Design System/Inbox Bottom Nav",
+            "id": "inbox-bottom-nav",
+            "entityType": "component",
+            "title": "Inbox Bottom Nav",
+            "description": "Inbox Bottom Nav del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "active"
+            ],
+            "storybookTitle": "Design System/Inbox Bottom Nav",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "active",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/input.tsx",
+            "storyFile": "src/components/ui/input.stories.tsx",
+            "storyTitle": "Design System/Input",
+            "id": "input",
+            "entityType": "component",
+            "title": "Input",
+            "description": "Input del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "error",
+                "success",
+                "disabled"
+            ],
+            "storybookTitle": "Design System/Input",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "error",
+                    "covered": true
+                },
+                {
+                    "state": "success",
+                    "covered": true
+                },
+                {
+                    "state": "disabled",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/location-search-input.tsx",
+            "storyFile": "src/components/ui/location-search-input.stories.tsx",
+            "storyTitle": "Design System/Location Search Input",
+            "id": "location-search-input",
+            "entityType": "component",
+            "title": "Location Search Input",
+            "description": "Location Search Input del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "error"
+            ],
+            "storybookTitle": "Design System/Location Search Input",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "error",
+                    "covered": false
+                }
+            ]
+        },
+        {
+            "file": "src/components/meetup/meetup-card.tsx",
+            "storyFile": "src/components/meetup/meetup-card.stories.tsx",
+            "storyTitle": "Design System/Meetup Card",
+            "id": "meetup-card",
+            "entityType": "component",
+            "title": "Meetup Card",
+            "description": "Meetup Card del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "disabled",
+                "error"
+            ],
+            "storybookTitle": "Design System/Meetup Card",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "disabled",
+                    "covered": false
+                },
+                {
+                    "state": "error",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/meetup/meetup-proposal-footer.tsx",
+            "storyFile": "src/components/meetup/meetup-proposal-footer.stories.tsx",
+            "storyTitle": "Design System/Meetup Proposal Footer",
+            "id": "meetup-proposal-footer",
+            "entityType": "component",
+            "title": "Meetup Proposal Footer",
+            "description": "Meetup Proposal Footer del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "disabled"
+            ],
+            "storybookTitle": "Design System/Meetup Proposal Footer",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "disabled",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/meetup/meetup-proposal-header.tsx",
+            "storyFile": "src/components/meetup/meetup-proposal-header.stories.tsx",
+            "storyTitle": "Design System/Meetup Proposal Header",
+            "id": "meetup-proposal-header",
+            "entityType": "component",
+            "title": "Meetup Proposal Header",
+            "description": "Meetup Proposal Header del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "disabled"
+            ],
+            "storybookTitle": "Design System/Meetup Proposal Header",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "disabled",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/meetup/meetup-wizard-step-heading.tsx",
+            "storyFile": "src/components/meetup/meetup-wizard-step-heading.stories.tsx",
+            "storyTitle": "Design System/Meetup Wizard Step Heading",
+            "id": "meetup-wizard-step-heading",
+            "entityType": "component",
+            "title": "Meetup Wizard Step Heading",
+            "description": "Meetup Wizard Step Heading del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "disabled"
+            ],
+            "storybookTitle": "Design System/Meetup Wizard Step Heading",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "disabled",
+                    "covered": false
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/notice-banner.tsx",
+            "storyFile": "src/components/ui/notice-banner.stories.tsx",
+            "storyTitle": "Design System/Notice Banner",
+            "id": "notice-banner",
+            "entityType": "component",
+            "title": "Notice Banner",
+            "description": "Notice Banner del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "warning",
+                "success"
+            ],
+            "storybookTitle": "Design System/Notice Banner",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "warning",
+                    "covered": true
+                },
+                {
+                    "state": "success",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/select.tsx",
+            "storyFile": "src/components/ui/select.stories.tsx",
+            "storyTitle": "Design System/Select",
+            "id": "select",
+            "entityType": "component",
+            "title": "Select",
+            "description": "Select del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "error",
+                "disabled"
+            ],
+            "storybookTitle": "Design System/Select",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "error",
+                    "covered": true
+                },
+                {
+                    "state": "disabled",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/selectable-option.tsx",
+            "storyFile": "src/components/ui/selectable-option.stories.tsx",
+            "storyTitle": "Design System/Selectable Option",
+            "id": "selectable-option",
+            "entityType": "component",
+            "title": "Selectable Option",
+            "description": "Selectable Option del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "selected",
+                "disabled"
+            ],
+            "storybookTitle": "Design System/Selectable Option",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "selected",
+                    "covered": true
+                },
+                {
+                    "state": "disabled",
+                    "covered": true
+                }
+            ]
+        },
+        {
+            "file": "src/components/meetup/wallapop-chat-workspace.tsx",
+            "storyFile": "src/components/meetup/wallapop-chat-workspace.stories.tsx",
+            "storyTitle": "Design System/Wallapop Chat Workspace",
+            "id": "wallapop-chat-workspace",
+            "entityType": "pattern",
+            "title": "Wallapop Chat Workspace",
+            "description": "Wallapop Chat Workspace del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default",
+                "error"
+            ],
+            "storybookTitle": "Design System/Wallapop Chat Workspace",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "error",
+                    "covered": false
+                }
+            ]
+        },
+        {
+            "file": "src/components/ui/wallapop-icon.tsx",
+            "storyFile": "src/components/ui/wallapop-icon.stories.tsx",
+            "storyTitle": "Design System/Wallapop Icon",
+            "id": "wallapop-icon",
+            "entityType": "component",
+            "title": "Wallapop Icon",
+            "description": "Wallapop Icon del design system de Wallapop Meet.",
+            "status": "ready",
+            "states": [
+                "default"
+            ],
+            "storybookTitle": "Design System/Wallapop Icon",
+            "tokensUsed": [
+                "tokens.color.semantic.action.primary",
+                "tokens.color.semantic.text.primary",
+                "tokens.color.semantic.border.divider"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                }
+            ]
+        }
+    ],
+    "sync": {
+        "ok": true,
+        "errorCount": 0,
+        "errors": []
+    }
+}

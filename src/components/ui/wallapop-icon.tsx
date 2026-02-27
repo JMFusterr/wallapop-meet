@@ -1,3 +1,4 @@
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 import {
   ArrowLeft,
   Bookmark,
@@ -94,4 +95,17 @@ function WallapopIcon({
   )
 }
 
-export { WallapopIcon, type WallapopIconName, type WallapopIconSize }
+
+const designSystemMeta = {
+    id: "wallapop-icon",
+    entityType: "component",
+    title: "Wallapop Icon",
+    description: "Wallapop Icon del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default"],
+    storybookTitle: "Design System/Wallapop Icon",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { WallapopIcon, type WallapopIconName, type WallapopIconSize, designSystemMeta }

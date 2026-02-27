@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type NoticeBannerTone = "warning" | "success"
 
 type NoticeBannerProps = React.ComponentProps<"p"> & {
@@ -28,5 +29,18 @@ function NoticeBanner({ className, tone = "warning", ...props }: NoticeBannerPro
     )
 }
 
-export { NoticeBanner }
+
+const designSystemMeta = {
+    id: "notice-banner",
+    entityType: "component",
+    title: "Notice Banner",
+    description: "Notice Banner del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["warning","success"],
+    storybookTitle: "Design System/Notice Banner",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { NoticeBanner, designSystemMeta }
 export type { NoticeBannerProps, NoticeBannerTone }

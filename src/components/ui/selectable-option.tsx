@@ -1,6 +1,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type SelectableOptionProps = {
     selected: boolean
     className?: string
@@ -27,5 +28,17 @@ function SelectableOption({ selected, className, onClick, children }: Selectable
     )
 }
 
-export { SelectableOption }
 
+const designSystemMeta = {
+    id: "selectable-option",
+    entityType: "component",
+    title: "Selectable Option",
+    description: "Selectable Option del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","selected","disabled"],
+    storybookTitle: "Design System/Selectable Option",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { SelectableOption, designSystemMeta }

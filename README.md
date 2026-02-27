@@ -27,6 +27,8 @@ Wallapop Meet formaliza acuerdos de chat en encuentros presenciales con estados 
 - `npm run test`: pruebas con Vitest.
 - `npm run storybook`: Storybook local.
 - `npm run build-storybook`: build estatico de Storybook.
+- `npm run ds:sync`: genera catalogo sincronizado del Design System.
+- `npm run ds:check`: valida sincronizacion entre componentes, stories y tokens.
 - `npm run audit:design-system`: valida que no entren nuevos hardcodes visuales en `src`.
 - `npm run audit:design-system:baseline`: actualiza baseline del auditor DS.
 - `npm run lint`: ejecuta auditoria DS + ESLint.

@@ -5,6 +5,7 @@ import { IconButton } from "@/components/ui/icon-button"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type ChatConversationHeaderProps = React.ComponentProps<"header"> & {
     backButtonLabel?: string
     onBack?: () => void
@@ -339,4 +340,17 @@ function ChatConversationHeader({
     )
 }
 
-export { ChatConversationHeader, type ChatConversationHeaderProps }
+
+const designSystemMeta = {
+    id: "chat-conversation-header",
+    entityType: "component",
+    title: "Chat Conversation Header",
+    description: "Chat Conversation Header del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","expanded"],
+    storybookTitle: "Design System/Chat Conversation Header",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { ChatConversationHeader, type ChatConversationHeaderProps, designSystemMeta }

@@ -4,6 +4,7 @@ import type { WallapopIconName } from "@/components/ui/wallapop-icon"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type ChatComposerProps = Omit<React.ComponentProps<"textarea">, "onSubmit"> & {
   onSubmit?: (value: string) => void
   submitLabel?: string
@@ -143,6 +144,17 @@ function ChatComposer({
   )
 }
 
-export { ChatComposer }
 
+const designSystemMeta = {
+    id: "chat-composer",
+    entityType: "component",
+    title: "Chat Composer",
+    description: "Chat Composer del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","disabled"],
+    storybookTitle: "Design System/Chat Composer",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
 
+// eslint-disable-next-line react-refresh/only-export-components
+export { ChatComposer, designSystemMeta }

@@ -3,6 +3,7 @@ import { Star } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type ChatCounterpartCardProps = React.ComponentProps<"article"> & {
     name: string
     rating: number
@@ -130,5 +131,17 @@ function ChatCounterpartCard({
     )
 }
 
-export { ChatCounterpartCard }
 
+const designSystemMeta = {
+    id: "chat-counterpart-card",
+    entityType: "component",
+    title: "Chat Counterpart Card",
+    description: "Chat Counterpart Card del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","error","success"],
+    storybookTitle: "Design System/Chat Counterpart Card",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { ChatCounterpartCard, designSystemMeta }

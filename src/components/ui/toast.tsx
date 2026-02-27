@@ -3,6 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 const toastVariants = cva(
     "w-full rounded-[var(--wm-size-10)] border px-3 py-2.5 shadow-[var(--wm-shadow-200)]",
     {
@@ -52,6 +53,17 @@ function Toast({
     )
 }
 
-export { Toast, type ToastProps }
 
+const designSystemMeta = {
+    id: "toast",
+    entityType: "component",
+    title: "Toast",
+    description: "Toast del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["success","error","info"],
+    storybookTitle: "Design System/Toast",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
 
+// eslint-disable-next-line react-refresh/only-export-components
+export { Toast, type ToastProps, designSystemMeta }

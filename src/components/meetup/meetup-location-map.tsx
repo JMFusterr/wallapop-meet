@@ -1,5 +1,6 @@
 import * as React from "react"
 import L from "leaflet"
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 import {
     CircleMarker,
     MapContainer,
@@ -160,6 +161,19 @@ function MeetupLocationMap({
     )
 }
 
-export { MeetupLocationMap }
+
+const designSystemMeta = {
+    id: "meetup-location-map",
+    entityType: "component",
+    title: "Meetup Location Map",
+    description: "Meetup Location Map del design system de Wallapop Meet.",
+    status: "ready",
+    states: ["default","selected"],
+    storybookTitle: "Design System/Meetup Location Map",
+    tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
+} satisfies DesignSystemEntityMeta
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { MeetupLocationMap, designSystemMeta }
 export type { LatLng, SafePoint }
 
