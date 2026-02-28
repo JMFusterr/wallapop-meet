@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type ChatListItemLeadingIndicator = "bookmark" | "deal"
 type ChatListItemDeliveryState = "sent" | "read"
+type ChatListItemPersistentAlertIcon = "deal"
 
 type ChatListItemProps = React.ComponentProps<"button"> & {
   userName: string
@@ -20,6 +21,7 @@ type ChatListItemProps = React.ComponentProps<"button"> & {
   showDivider?: boolean
   leadingIndicator?: ChatListItemLeadingIndicator
   lastMessageDeliveryState?: ChatListItemDeliveryState
+  persistentAlertIcon?: ChatListItemPersistentAlertIcon
 }
 
 function ChatListItem({
@@ -35,10 +37,12 @@ function ChatListItem({
   showDivider = true,
   leadingIndicator,
   lastMessageDeliveryState,
+  persistentAlertIcon,
   ...props
 }: ChatListItemProps) {
   const indicatorIconName = leadingIndicator === "deal" ? "deal" : "bookmark"
   const leadingIndicatorColor = leadingIndicator === "deal" ? "var(--status-sold)" : "var(--status-reserved)"
+  const shouldShowPersistentAlert = persistentAlertIcon === "deal"
 
   return (
     <button
@@ -99,7 +103,17 @@ function ChatListItem({
             ) : null}
             <span className="min-w-0 truncate">{messagePreview}</span>
           </p>
-          <Badge value={unreadCount} variant="unread" />
+          {shouldShowPersistentAlert ? (
+            <span
+              className="inline-flex min-h-6 min-w-6 items-center justify-center rounded-full bg-[color:var(--action-primary)] px-1.5 text-[color:var(--text-inverse)]"
+              aria-label="Venta pendiente en menos de 30 minutos"
+              title="Venta pendiente en menos de 30 minutos"
+            >
+              <WallapopIcon name="deal" size={13} strokeWidth={2} />
+            </span>
+          ) : (
+            <Badge value={unreadCount} variant="unread" />
+          )}
         </div>
       </div>
     </button>

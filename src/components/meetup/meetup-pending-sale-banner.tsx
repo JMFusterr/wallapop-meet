@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Button } from "@/components/ui/button"
+import { WallapopIcon } from "@/components/ui/wallapop-icon"
 
 import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 
@@ -33,8 +34,14 @@ function MeetupPendingSaleBanner({ scheduledAt, onJumpToMeetup }: MeetupPendingS
     }, [])
 
     return (
-        <div className="border-b border-[color:var(--action-primary-pressed)] bg-[color:var(--action-primary)] px-3 py-2 sm:px-4">
+        <div className="bg-[color:var(--action-primary)] px-3 py-2 sm:px-4">
             <div className="flex items-center gap-2">
+                <WallapopIcon
+                    name="deal"
+                    size={18}
+                    strokeWidth={2}
+                    className="shrink-0 text-[color:var(--text-on-action)]"
+                />
                 <p className="min-w-0 flex-1 truncate font-wallie-chunky text-[length:var(--wm-size-13)] text-[color:var(--text-on-action)]">
                     Hay una venta pendiente en {formatCountdown(scheduledAt, now)}.
                 </p>

@@ -101,6 +101,7 @@ type Conversation = {
     listingViews?: number
     listingLikes?: number
     listingStatusLabel?: string
+    pendingSaleAlert?: boolean
 }
 
 type SafeMeetingPoint = {
@@ -158,6 +159,7 @@ type ProposalEntryActionState = {
 const DAC7_ALERT_THRESHOLD_EUR = 2000
 const MAX_FINAL_PRICE_EUR = 99999
 const DAY_MS = 24 * 60 * 60 * 1000
+const PENDING_SALE_ALERT_WINDOW_MS = 30 * 60 * 1000
 
 function resolveProposalEntryActionState(
     meetup: MeetupMachine,
@@ -213,7 +215,7 @@ const initialConversations: Conversation[] = [
         itemPrice: "240 €",
         messageDate: "Hoy",
         itemTitle: "Nintendo Switch OLED + dock",
-        messagePreview: "Estoy llegando al punto, en 10 min estoy alli.",
+        messagePreview: "Perfecto, alli nos vemos. Gracias!",
         listingImageSrc:
             "https://images.pexels.com/photos/6993182/pexels-photo-6993182.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
@@ -353,11 +355,41 @@ const initialMessagesByConversation: Record<string, Message[]> = {
         },
         {
             id: "m-a-2",
-            text: "Genial, quedamos hoy. Llevo la Switch con caja y funda.",
+            text: "Perfecto, te acabo de enviar propuesta de quedada por Wallapop Meet.",
             variant: "sent",
-            time: formatTime(new Date(tsMinutesAgo(12))),
-            createdAt: tsMinutesAgo(12),
+            time: formatTime(new Date(tsMinutesAgo(32))),
+            createdAt: tsMinutesAgo(32),
             deliveryState: "read",
+        },
+        {
+            id: "m-a-3",
+            text: "Una duda: por esa zona es facil aparcar o el parking es de pago?",
+            variant: "received",
+            time: formatTime(new Date(tsMinutesAgo(28))),
+            createdAt: tsMinutesAgo(28),
+        },
+        {
+            id: "m-a-4",
+            text: "No suele ser facil aparcar en la calle por ahi.",
+            variant: "sent",
+            time: formatTime(new Date(tsMinutesAgo(24))),
+            createdAt: tsMinutesAgo(24),
+            deliveryState: "read",
+        },
+        {
+            id: "m-a-5",
+            text: "Mejor entrar al parking o venir en transporte publico; si metes el coche menos de 30 minutos no te cobran.",
+            variant: "sent",
+            time: formatTime(new Date(tsMinutesAgo(22))),
+            createdAt: tsMinutesAgo(22),
+            deliveryState: "read",
+        },
+        {
+            id: "m-a-6",
+            text: "Perfecto, alli nos vemos. Gracias!",
+            variant: "received",
+            time: formatTime(new Date(tsMinutesAgo(18))),
+            createdAt: tsMinutesAgo(18),
         },
     ],
     "conv-b-seller-propose": [
@@ -851,6 +883,17 @@ function resolveConversationCommercialStatus(
         leadingIndicator: conversation.leadingIndicator,
         listingStatusLabel: conversation.listingStatusLabel,
     }
+}
+
+function shouldShowPendingSaleInboxAlert(meetup: MeetupMachine | undefined, now: Date): boolean {
+    if (!meetup) {
+        return false
+    }
+    if (meetup.status !== "CONFIRMED" && meetup.status !== "ARRIVED") {
+        return false
+    }
+    const remainingMs = meetup.scheduledAt.getTime() - now.getTime()
+    return remainingMs >= 0 && remainingMs <= PENDING_SALE_ALERT_WINDOW_MS
 }
 
 function buildInitialMeetupState(): Record<string, MeetupMachine[]> {
@@ -1851,6 +1894,7 @@ function InboxPane({
                         avatarAlt={conversation.itemTitle}
                         leadingIndicator={conversation.leadingIndicator}
                         unreadCount={conversation.unreadCount}
+                        persistentAlertIcon={conversation.pendingSaleAlert ? "deal" : undefined}
                         selected={
                             highlightSelectedConversation &&
                             conversation.id === selectedConversationId
@@ -2238,6 +2282,7 @@ function WallapopChatWorkspace() {
     const proposalCustomPointRef = React.useRef<MapPoint | null>(null)
     const reverseGeocodeRequestIdRef = React.useRef(0)
     const convexHydrationRequestIdRef = React.useRef(0)
+    const [clockNowMs, setClockNowMs] = React.useState(() => Date.now())
 
     const selectedConversation = React.useMemo(
         () =>
@@ -2263,6 +2308,14 @@ function WallapopChatWorkspace() {
         selectedConversation?.listingViewerRole === "buyer" ? "BUYER" : "SELLER"
 
     React.useEffect(() => {
+        const intervalId = window.setInterval(() => {
+            setClockNowMs(Date.now())
+        }, 30 * 1000)
+        return () => window.clearInterval(intervalId)
+    }, [])
+
+    React.useEffect(() => {
+        const now = new Date(clockNowMs)
         setConversationsState((previous) =>
             previous.map((conversation) => {
                 const conversationMessages = messagesByConversation[conversation.id] ?? []
@@ -2286,10 +2339,11 @@ function WallapopChatWorkspace() {
                     ...summary,
                     unreadCount,
                     ...commercialStatus,
+                    pendingSaleAlert: shouldShowPendingSaleInboxAlert(conversationMeetup, now),
                 }
             })
         )
-    }, [messagesByConversation, meetupByConversation])
+    }, [clockNowMs, messagesByConversation, meetupByConversation])
 
     const applyProposalDraftState = React.useCallback((draft: ProposalDraftState) => {
         setProposalStep(draft.step)
