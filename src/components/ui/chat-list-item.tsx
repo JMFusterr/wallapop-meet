@@ -5,9 +5,8 @@ import { WallapopIcon } from "@/components/ui/wallapop-icon"
 import { cn } from "@/lib/utils"
 
 import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
-type ChatListItemLeadingIndicator = "bookmark" | "deal"
+type ChatListItemLeadingIndicator = "bookmark" | "deal" | "pending_sale"
 type ChatListItemDeliveryState = "sent" | "read"
-type ChatListItemPersistentAlertIcon = "deal"
 
 type ChatListItemProps = React.ComponentProps<"button"> & {
   userName: string
@@ -21,7 +20,6 @@ type ChatListItemProps = React.ComponentProps<"button"> & {
   showDivider?: boolean
   leadingIndicator?: ChatListItemLeadingIndicator
   lastMessageDeliveryState?: ChatListItemDeliveryState
-  persistentAlertIcon?: ChatListItemPersistentAlertIcon
 }
 
 function ChatListItem({
@@ -37,12 +35,16 @@ function ChatListItem({
   showDivider = true,
   leadingIndicator,
   lastMessageDeliveryState,
-  persistentAlertIcon,
   ...props
 }: ChatListItemProps) {
-  const indicatorIconName = leadingIndicator === "deal" ? "deal" : "bookmark"
-  const leadingIndicatorColor = leadingIndicator === "deal" ? "var(--status-sold)" : "var(--status-reserved)"
-  const shouldShowPersistentAlert = persistentAlertIcon === "deal"
+  const isPendingSaleIndicator = leadingIndicator === "pending_sale"
+  const indicatorIconName = leadingIndicator === "bookmark" ? "bookmark" : "deal"
+  const leadingIndicatorColorClass =
+    leadingIndicator === "bookmark"
+      ? "text-[color:var(--status-reserved)]"
+      : leadingIndicator === "deal"
+        ? "text-[color:var(--status-sold)]"
+        : "text-[color:var(--text-inverse)]"
 
   return (
     <button
@@ -68,8 +70,13 @@ function ChatListItem({
         ) : null}
         {leadingIndicator ? (
           <span
-            className="absolute -top-2 -left-2 z-10 inline-flex size-8 items-center justify-center rounded-full border border-[color:var(--border-divider)] bg-white"
-            style={{ color: leadingIndicatorColor }}
+            className={cn(
+              "absolute -top-2 -left-2 z-10 inline-flex size-8 items-center justify-center rounded-full",
+              isPendingSaleIndicator
+                ? "bg-[color:var(--action-primary)]"
+                : "border border-[color:var(--border-divider)] bg-white",
+              leadingIndicatorColorClass
+            )}
             aria-hidden="true"
           >
             <WallapopIcon name={indicatorIconName} size={15} strokeWidth={2} />
@@ -103,17 +110,7 @@ function ChatListItem({
             ) : null}
             <span className="min-w-0 truncate">{messagePreview}</span>
           </p>
-          {shouldShowPersistentAlert ? (
-            <span
-              className="inline-flex min-h-6 min-w-6 items-center justify-center rounded-full bg-[color:var(--action-primary)] px-1.5 text-[color:var(--text-inverse)]"
-              aria-label="Venta pendiente en menos de 30 minutos"
-              title="Venta pendiente en menos de 30 minutos"
-            >
-              <WallapopIcon name="deal" size={13} strokeWidth={2} />
-            </span>
-          ) : (
-            <Badge value={unreadCount} variant="unread" />
-          )}
+          <Badge value={unreadCount} variant="unread" />
         </div>
       </div>
     </button>

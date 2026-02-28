@@ -20,7 +20,7 @@ type ChatConversationHeaderProps = React.ComponentProps<"header"> & {
     distanceLabel?: string
     attendanceRate?: number
     attendanceMeetups?: number
-    productStatusIcon?: "bookmark" | "deal"
+    productStatusIcon?: "bookmark" | "deal" | "pending_sale"
     menuLabel?: string
     onMenuClick?: () => void
     expanded?: boolean
@@ -92,11 +92,16 @@ function ProductImage({
     src?: string
     alt: string
     className: string
-    statusIcon?: "bookmark" | "deal"
+    statusIcon?: "bookmark" | "deal" | "pending_sale"
     statusIconPosition?: "top-left" | "center"
 }) {
+    const isPendingSaleStatusIcon = statusIcon === "pending_sale"
     const statusIconColor =
-        statusIcon === "deal" ? "text-[color:var(--status-sold)]" : "text-[color:var(--status-reserved)]"
+        statusIcon === "bookmark"
+            ? "text-[color:var(--status-reserved)]"
+            : statusIcon === "deal"
+                ? "text-[color:var(--status-sold)]"
+                : "text-[color:var(--text-inverse)]"
 
     return (
         <div className={cn("relative overflow-hidden rounded-[var(--wm-size-8)]", className)}>
@@ -108,12 +113,15 @@ function ProductImage({
             {statusIcon ? (
                 <span
                     className={cn(
-                        "absolute inline-flex h-8 w-8 items-center justify-center rounded-full border border-[color:var(--border-divider)] bg-[color:var(--bg-base)]",
+                        "absolute inline-flex h-8 w-8 items-center justify-center rounded-full",
+                        isPendingSaleStatusIcon
+                            ? "bg-[color:var(--action-primary)]"
+                            : "border border-[color:var(--border-divider)] bg-[color:var(--bg-base)]",
                         statusIconColor,
                         statusIconPosition === "center" ? "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" : "left-2 top-2"
                     )}
                 >
-                    <WallapopIcon name={statusIcon} size={14} />
+                    <WallapopIcon name={statusIcon === "pending_sale" ? "deal" : statusIcon} size={14} />
                 </span>
             ) : null}
         </div>

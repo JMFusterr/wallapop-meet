@@ -869,6 +869,8 @@ function resolveConversationCommercialStatus(
 
     if (shouldForceReserved) {
         return {
+            leadingIndicator: "bookmark",
+            listingStatusLabel: "Reservado",
         }
     }
 
@@ -1892,9 +1894,10 @@ function InboxPane({
                         messagePreview={conversation.messagePreview}
                         avatarSrc={conversation.listingImageSrc}
                         avatarAlt={conversation.itemTitle}
-                        leadingIndicator={conversation.leadingIndicator}
+                        leadingIndicator={
+                            conversation.pendingSaleAlert ? "pending_sale" : conversation.leadingIndicator
+                        }
                         unreadCount={conversation.unreadCount}
-                        persistentAlertIcon={conversation.pendingSaleAlert ? "deal" : undefined}
                         selected={
                             highlightSelectedConversation &&
                             conversation.id === selectedConversationId
@@ -1952,11 +1955,13 @@ function ConversationPane({
     const canShowProposalAction = proposalActionState?.visible === true
     const listingStatusLabelNormalized = conversation.listingStatusLabel?.trim().toLowerCase() ?? ""
     const headerProductStatusIcon =
-        listingStatusLabelNormalized.includes("reservad")
-            ? "bookmark"
-            : listingStatusLabelNormalized.includes("vendid")
-                ? "deal"
-                : conversation.leadingIndicator
+        listingStatusLabelNormalized.includes("vendid")
+            ? "deal"
+            : conversation.pendingSaleAlert
+                ? "pending_sale"
+                : listingStatusLabelNormalized.includes("reservad")
+                    ? "bookmark"
+                    : conversation.leadingIndicator
     const timelineContainerRef = React.useRef<HTMLDivElement | null>(null)
     const shouldShowPendingSaleBanner =
         meetup?.status === "CONFIRMED" || meetup?.status === "ARRIVED"
