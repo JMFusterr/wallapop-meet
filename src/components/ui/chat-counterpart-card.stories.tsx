@@ -44,3 +44,21 @@ export const AttendanceLow: Story = {
         attendanceMeetups: 9,
     },
 }
+
+export const AttendanceEmptyHistory: Story = {
+    args: {
+        attendanceRate: 0,
+        attendanceMeetups: 0,
+    },
+}
+
+export const ZeroRatingsProfile: Story = {
+    args: {
+        name: "Perfil sin valoraciones",
+        rating: 0,
+        ratingCount: 0,
+        distanceLabel: "5,1km de ti",
+        attendanceRate: 0,
+        attendanceMeetups: 0,
+    },
+}

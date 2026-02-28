@@ -1,7 +1,7 @@
 import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 import * as React from "react"
 import L from "leaflet"
-import { Banknote, MapPin, QrCode, Smartphone } from "lucide-react"
+import { Banknote, MapPin, QrCode } from "lucide-react"
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet"
 
 import { MeetupCard } from "@/components/meetup/meetup-card"
@@ -1330,8 +1330,8 @@ function MeetupProposalOverlay({
     onSubmit,
 }: MeetupProposalOverlayProps) {
     const stepLabels: Array<{ id: ProposalStep; label: string }> = [
-        { id: 1, label: "Punto de encuentro" },
-        { id: 2, label: "Dia y hora" },
+        { id: 1, label: "Dia y hora" },
+        { id: 2, label: "Punto de encuentro" },
         { id: 3, label: "Preferencia de pago" },
     ]
     const mapSelectedPoint = allSafePoints.find((point) => point.id === mapPickerPointId)
@@ -1401,8 +1401,8 @@ function MeetupProposalOverlay({
         updateDateTimeValue(selectedDateValue, nextTimeValue)
     }
     const hasMissingFieldsError = errorMessage === "Faltan campos por rellenar"
-    const isStepTwoDateMissing = step === 2 && hasMissingFieldsError && !selectedDateValue
-    const isStepTwoTimeMissing = step === 2 && hasMissingFieldsError && !selectedTimeValue
+    const isStepOneDateMissing = step === 1 && hasMissingFieldsError && !selectedDateValue
+    const isStepOneTimeMissing = step === 1 && hasMissingFieldsError && !selectedTimeValue
     const hasFinalPriceValue = finalPriceValue.trim().length > 0
     const parsedFinalPriceValue = parseFinalPrice(finalPriceValue)
     const isFinalPriceAboveMaximum =
@@ -1533,11 +1533,7 @@ function MeetupProposalOverlay({
                                             </span>
                                             <span className="ml-1">en este punto seguro.</span>
                                         </NoticeBanner>
-                                    ) : (
-                                        <NoticeBanner className="mt-2 inline-flex w-fit">
-                                            Este punto no es un punto seguro verificado.
-                                        </NoticeBanner>
-                                    )}
+                                    ) : null}
                                     <Button
                                         type="button"
                                         variant="primary"
@@ -1575,8 +1571,57 @@ function MeetupProposalOverlay({
                             {step === 1 ? (
                                 <div className="mt-4 space-y-4">
                                     <h3 className="font-wallie-chunky text-[length:var(--wm-size-20)] leading-[1.12] text-[color:var(--text-primary)] md:text-[length:var(--wm-size-22)]">
-                                        Seleccionar punto de encuentro
+                                        Seleccionar dia y hora
                                     </h3>
+                                    <CalendarPicker
+                                        label="Dia"
+                                        monthDate={visibleCalendarMonth}
+                                        selectedDateValue={selectedDateValue}
+                                        minDateValue={minDateValue}
+                                        onMonthChange={setVisibleCalendarMonth}
+                                        onSelectDate={handleDateSelection}
+                                        state={isStepOneDateMissing ? "error" : "default"}
+                                        error={
+                                            isStepOneDateMissing
+                                                ? "Selecciona un dia para continuar."
+                                                : undefined
+                                        }
+                                    />
+                                    <Select
+                                        label="Hora"
+                                        value={selectedTimeValue}
+                                        placeholder="Selecciona hora"
+                                        onValueChange={handleTimeSelection}
+                                        error={
+                                            isStepOneTimeMissing
+                                                ? "Selecciona una hora para continuar."
+                                                : undefined
+                                        }
+                                        state={isStepOneTimeMissing ? "error" : "default"}
+                                        maxVisibleOptions={6}
+                                        dropdownDirection="up"
+                                        options={[
+                                            { value: "", label: "Selecciona hora", disabled: true },
+                                            ...timeOptions.map((timeOption) => ({
+                                                value: timeOption,
+                                                label: timeOption,
+                                                disabled:
+                                                    selectedDateValue === minDateValue &&
+                                                    timeOption < minTimeValue,
+                                            })),
+                                        ]}
+                                        className="rounded-[var(--wm-size-10)] bg-white px-3 py-2 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-primary)] focus:border-[color:var(--action-primary)]"
+                                    />
+                                </div>
+                            ) : null}
+
+                            {step === 2 ? (
+                                <div className="mt-4 space-y-4">
+                                    <MeetupWizardStepHeading
+                                        caption="Paso anterior"
+                                        title="Seleccionar punto de encuentro"
+                                        onBack={onBack}
+                                    />
                                     {visibleOptions.map((option) => {
                                         const isSelected = selectedOptionId === option.id
                                         return (
@@ -1604,14 +1649,9 @@ function MeetupProposalOverlay({
                                                         </p>
                                                         <div className="mt-1 flex items-center gap-2">
                                                             {option.kind === "safe" ? (
-                                                                <>
-                                                                    <span className="rounded-full bg-[color:var(--bg-accent-subtle)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--action-primary-pressed)]">
-                                                                        Punto seguro
-                                                                    </span>
-                                                                    <span className="rounded-full bg-[color:var(--bg-surface)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-tertiary)]">
-                                                                        {option.completedSales ?? 0} ventas
-                                                                    </span>
-                                                                </>
+                                                                <span className="rounded-full bg-[color:var(--bg-accent-subtle)] px-2 py-0.5 font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--action-primary-pressed)]">
+                                                                    Punto seguro · {option.completedSales ?? 0} ventas completadas
+                                                                </span>
                                                             ) : null}
                                                         </div>
                                                     </div>
@@ -1641,55 +1681,6 @@ function MeetupProposalOverlay({
                                             </div>
                                         </div>
                                     </SelectableOption>
-                                </div>
-                            ) : null}
-
-                            {step === 2 ? (
-                                <div className="mt-4 space-y-4">
-                                    <MeetupWizardStepHeading
-                                        caption="Paso anterior"
-                                        title="Seleccionar dia y hora"
-                                        onBack={onBack}
-                                    />
-                                    <CalendarPicker
-                                        label="Dia"
-                                        monthDate={visibleCalendarMonth}
-                                        selectedDateValue={selectedDateValue}
-                                        minDateValue={minDateValue}
-                                        onMonthChange={setVisibleCalendarMonth}
-                                        onSelectDate={handleDateSelection}
-                                        state={isStepTwoDateMissing ? "error" : "default"}
-                                        error={
-                                            isStepTwoDateMissing
-                                                ? "Selecciona un dia para continuar."
-                                                : undefined
-                                        }
-                                    />
-                                    <Select
-                                        label="Hora"
-                                        value={selectedTimeValue}
-                                        placeholder="Selecciona hora"
-                                        onValueChange={handleTimeSelection}
-                                        error={
-                                            isStepTwoTimeMissing
-                                                ? "Selecciona una hora para continuar."
-                                                : undefined
-                                        }
-                                        state={isStepTwoTimeMissing ? "error" : "default"}
-                                        maxVisibleOptions={6}
-                                        dropdownDirection="up"
-                                        options={[
-                                            { value: "", label: "Selecciona hora", disabled: true },
-                                            ...timeOptions.map((timeOption) => ({
-                                                value: timeOption,
-                                                label: timeOption,
-                                                disabled:
-                                                    selectedDateValue === minDateValue &&
-                                                    timeOption < minTimeValue,
-                                            })),
-                                        ]}
-                                        className="rounded-[var(--wm-size-10)] bg-white px-3 py-2 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-primary)] focus:border-[color:var(--action-primary)]"
-                                    />
                                 </div>
                             ) : null}
 
@@ -1736,10 +1727,6 @@ function MeetupProposalOverlay({
                                             {(
                                                 [
                                                     { method: "CASH", icon: () => <Banknote size={16} /> },
-                                                    {
-                                                        method: "BIZUM",
-                                                        icon: () => <Smartphone size={16} />,
-                                                    },
                                                     { method: "WALLET", icon: () => <QrCode size={16} /> },
                                                 ] as Array<{
                                                     method: MeetupPaymentMethod
@@ -1759,7 +1746,7 @@ function MeetupProposalOverlay({
                                                                 : undefined}
                                                     >
                                                         <div className="flex items-center gap-3">
-                                                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--bg-surface)] text-[color:var(--text-primary)]">
+                                                            <span className="inline-flex text-[color:var(--text-primary)]">
                                                                 {icon()}
                                                             </span>
                                                             <div className="min-w-0 flex-1">
@@ -2822,19 +2809,6 @@ function WallapopChatWorkspace() {
     }
 
     const validateProposalStepOne = () => {
-        if (proposalSelectedOptionId.trim().length === 0) {
-            setProposalError("Selecciona un punto de encuentro en el mapa.")
-            return false
-        }
-        setProposalError("")
-        return true
-    }
-
-    const validateProposalStepTwo = () => {
-        if (!validateProposalStepOne()) {
-            return false
-        }
-
         const [selectedDateValue = "", selectedTimeValue = ""] = proposalScheduledAt.split("T")
         if (!selectedDateValue) {
             setProposalError("Faltan campos por rellenar")
@@ -2847,6 +2821,18 @@ function WallapopChatWorkspace() {
         const scheduledAt = parseLocalDateTimeValue(proposalScheduledAt)
         if (!scheduledAt) {
             setProposalError("Faltan campos por rellenar")
+            return false
+        }
+        setProposalError("")
+        return true
+    }
+
+    const validateProposalStepTwo = () => {
+        if (!validateProposalStepOne()) {
+            return false
+        }
+        if (proposalSelectedOptionId.trim().length === 0) {
+            setProposalError("Selecciona un punto de encuentro en el mapa.")
             return false
         }
         setProposalError("")
@@ -2886,9 +2872,9 @@ function WallapopChatWorkspace() {
         setProposalStep(nextStep)
     }
 
-    const canAccessProposalStepTwo = proposalSelectedOptionId.trim().length > 0
+    const canAccessProposalStepTwo = parseLocalDateTimeValue(proposalScheduledAt) !== null
     const canAccessProposalStepThree =
-        canAccessProposalStepTwo && parseLocalDateTimeValue(proposalScheduledAt) !== null
+        canAccessProposalStepTwo && proposalSelectedOptionId.trim().length > 0
 
     const confirmMeetupProposal = () => {
         if (!selectedMeetup) {

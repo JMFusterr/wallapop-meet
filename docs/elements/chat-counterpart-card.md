@@ -57,11 +57,13 @@ Si hay conflicto con la descripcion original, prevalece v2.
 - `>90`: color success.
 - `70-89`: color warning (`semantic.warning.base`, implementado como `#F4A000`).
 - `<70`: color error y sin mostrar porcentaje.
+- `0 meetups`: estado neutral en gris con `0% de asistencia (0)`.
 
 ### 3) Rating con volumen
 - Junto a las estrellas se muestra el total de valoraciones:
   - `(<numero valoraciones>)`
 - Ejemplo: `(110)`.
+- Si `ratingCount` es `0`, no se renderiza el contador y el perfil se considera sin historial de valoraciones.
 
 ### 4) Jerarquia tipografica actual
 - Nombre: `16px` destacado.
@@ -83,3 +85,4 @@ Si hay conflicto con la descripcion original, prevalece v2.
 - Componente: `src/components/ui/chat-counterpart-card.tsx`
 - Storybook: `src/components/ui/chat-counterpart-card.stories.tsx`
 - Integracion desktop: `src/components/meetup/wallapop-chat-workspace.tsx`
+- Design System vivo: `src/pages/design-system-page.tsx` (renderizado desde stories `Design System/*`).

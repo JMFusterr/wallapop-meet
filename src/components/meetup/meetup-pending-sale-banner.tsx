@@ -33,15 +33,15 @@ function MeetupPendingSaleBanner({ scheduledAt, onJumpToMeetup }: MeetupPendingS
     }, [])
 
     return (
-        <div className="border-b border-[color:var(--border-divider)] bg-[color:var(--bg-pending-sale-banner)] px-3 py-2 sm:px-4">
+        <div className="border-b border-[color:var(--action-primary-pressed)] bg-[color:var(--action-primary)] px-3 py-2 sm:px-4">
             <div className="flex items-center gap-2">
-                <p className="min-w-0 flex-1 truncate font-wallie-chunky text-[length:var(--wm-size-13)] text-[color:var(--text-pending-sale-banner)]">
+                <p className="min-w-0 flex-1 truncate font-wallie-chunky text-[length:var(--wm-size-13)] text-[color:var(--text-on-action)]">
                     Hay una venta pendiente en {formatCountdown(scheduledAt, now)}.
                 </p>
                 <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 rounded-[var(--wm-size-999)] border-[color:var(--text-pending-sale-banner)] bg-transparent px-3 font-wallie-chunky text-[length:var(--wm-size-13)] text-[color:var(--text-pending-sale-banner)] hover:bg-[color:var(--bg-pending-sale-banner-hover)]"
+                    className="h-8 rounded-[var(--wm-size-999)] border-[color:var(--text-on-action)] bg-transparent px-3 font-wallie-chunky text-[length:var(--wm-size-13)] text-[color:var(--text-on-action)] hover:border-[color:var(--text-on-action)] hover:bg-[color:var(--action-primary-hover)] hover:text-[color:var(--text-on-action)]"
                     onClick={onJumpToMeetup}
                 >
                     Ir al mensaje
@@ -60,8 +60,9 @@ const designSystemMeta = {
     states: ["default"],
     storybookTitle: "Design System/Meetup Pending Sale Banner",
     tokensUsed: [
-        "tokens.color.semantic.background.pending_sale_banner",
-        "tokens.color.semantic.text.pending_sale_banner",
+        "tokens.color.semantic.action.primary",
+        "tokens.color.semantic.action.primary_pressed",
+        "tokens.color.semantic.text.on_action",
     ],
 } satisfies DesignSystemEntityMeta
 

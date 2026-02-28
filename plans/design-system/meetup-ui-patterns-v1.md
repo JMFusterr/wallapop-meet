@@ -27,10 +27,10 @@ Contenido:
   - Desktop/tablet horizontal: centrado.
   - Movil: aparece desde abajo.
 - Wizard en 3 pasos:
-  - Paso 1: seleccion de punto de encuentro en lista (2 opciones visibles) con entrada a mapa para elegir punto seguro o personalizado.
-  - Paso 2: fecha y hora.
+  - Paso 1: fecha y hora.
+  - Paso 2: seleccion de punto de encuentro en lista (2 opciones visibles) con entrada a mapa para elegir punto seguro o personalizado.
   - Paso 3: importe final y preferencia de pago.
-  - En paso 2, usar componentes de DS reutilizables:
+  - En paso 1, usar componentes de DS reutilizables:
     - `CalendarPicker` para día.
     - `Select` para hora con `dropdownDirection="up"` dentro de overlay móvil.
     - `MeetupProposalHeader` para cabecera superior del wizard (paso actual + progreso + cierre).
@@ -42,8 +42,8 @@ Contenido:
   - El mensaje global de validacion es: `Faltan campos por rellenar`.
   - Cada campo/seccion incompleta muestra mensaje inferior especifico.
   - Los CTA de paso (`Siguiente` / `Enviar propuesta`) no se deshabilitan por falta de campos; validan al pulsar.
-  - En paso 1 siempre hay 2 opciones seleccionables visibles.
-  - La lista de paso 1 funciona como cola de las 2 ultimas selecciones.
+  - En paso 2 siempre hay 2 opciones seleccionables visibles.
+  - La lista de paso 2 funciona como cola de las 2 ultimas selecciones.
   - Al seleccionar un punto nuevo desde mapa, se inserta arriba y desplaza el anterior a segunda posicion.
   - Al pulsar la opcion inferior no desaparece la superior; solo cambia el estado seleccionado.
 - CTA final de confirmacion: `Enviar propuesta`.
@@ -168,9 +168,9 @@ Patrones mínimos:
   - `Inbox Conversation Preview Pattern` con `ChatListItem` (vista previa de conversacion en buzon).
   - `Conversation Block Pattern` alineado con `ChatMessageBubble`, `ChatSecurityBanner` y `ChatComposer`.
   - Bloques de overlay de propuesta: `MeetupProposalHeader`, `MeetupWizardStepHeading`, `MeetupProposalFooter`.
-  - `Proposal Step 1 Pattern`: `MeetupLocationMap` + cards de selector de punto (seguro/personalizado/elige un punto).
-  - `Proposal Step 2 Pattern`: `CalendarPicker` + `Select` de hora (default y error).
-  - `Proposal Step 3 Pattern`: `Input` de importe + preferencia de pago (`Efectivo`, `Bizum`, `Wallapop Wallet`).
+  - `Proposal Step 1 Pattern`: `CalendarPicker` + `Select` de hora (default y error).
+  - `Proposal Step 2 Pattern`: `MeetupLocationMap` + cards de selector de punto (seguro/personalizado/elige un punto).
+  - `Proposal Step 3 Pattern`: `Input` de importe + preferencia de pago (`Efectivo`, `Wallapop Wallet`).
 
 Notas de UI del workspace (2026-02-21):
 - Header de `InboxPane`: sin boton `burguer_menu`.
@@ -348,10 +348,11 @@ Reglas:
   - Punto seguro: pin capsula turquesa + `shield` + mini triangulo unido.
   - Punto seguro seleccionado: misma forma en tono verde mas oscuro.
   - Punto personalizado: pin capsula en verde con icono `deal` (manos) + mini triangulo unido.
+  - Label de punto seguro en cards/lista: `Punto seguro · <N> ventas completadas`.
   - Bloque `N ventas completadas` en punto seguro con mismo patron visual del aviso de no verificado, en variante verde Wallapop.
 - Mini mapa de `MeetupCard`:
   - Reutiliza pin tipo capsula con mini triangulo unido.
-
-
+- CTA `Confirmar venta` en `ARRIVED` usa color `sold` (rosa), no `reserve` (morado).
+- Banner superior de venta pendiente usa fondo y accion en color de marca (`action.primary`).
 
 

@@ -22,7 +22,7 @@ CF --> BN
 A1{"Dentro de -30m/+2h?"}
 AR["CTA Estoy aqui"]
 RV["Vendedor marca llegada (ARRIVED)"]
-CS["Boton morado: Confirmar venta"]
+CS["Boton rosa: Confirmar venta"]
 OK["Venta completada (COMPLETED) + score positivo ambos"]
 
 CF --> A1

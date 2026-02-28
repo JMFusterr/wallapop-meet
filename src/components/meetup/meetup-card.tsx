@@ -483,7 +483,7 @@ function MeetupCard({
                         actorRole,
                         occurredAt: currentTime,
                     }),
-                className: `${PRIMARY_ACTION_CLASS} bg-[color:var(--action-sale-confirm)] hover:bg-[color:var(--action-sale-confirm-hover)]`,
+                className: `${PRIMARY_ACTION_CLASS} bg-[color:var(--status-sold)] hover:bg-[color:var(--status-sold-hover)] active:bg-[color:var(--status-sold-pressed)]`,
                 fullWidth: true,
             })
             actions.push({

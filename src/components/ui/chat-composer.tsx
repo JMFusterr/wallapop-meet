@@ -77,7 +77,6 @@ function ChatComposer({
         data-slot="chat-composer"
         className={cn(
           "flex items-center gap-1.5",
-          disabled ? "opacity-60" : "",
           className
         )}
       >
@@ -114,7 +113,7 @@ function ChatComposer({
               className={cn(
                 "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-[0.8px] transition-colors sm:h-10 sm:w-10",
                 disabled || secondaryActionDisabled
-                  ? "border-[color:var(--border-soft)] bg-[color:var(--action-disabled-strong-bg)] text-[color:var(--action-disabled-text)]"
+                  ? "border-[color:var(--action-disabled-bg)] bg-[color:var(--action-disabled-bg)] text-[color:var(--action-disabled-text)]"
                   : "border-[color:var(--action-primary)] bg-[color:var(--action-primary)] text-[color:var(--text-inverse)]"
               )}
             >
@@ -136,7 +135,7 @@ function ChatComposer({
           className={cn(
             "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-[0.8px] transition-colors sm:h-10 sm:w-10",
             disabled || isEmpty
-              ? "border-[color:var(--border-soft)] bg-[color:var(--action-disabled-strong-bg)] text-[color:var(--action-disabled-text)]"
+              ? "border-[color:var(--action-disabled-bg)] bg-[color:var(--action-disabled-bg)] text-[color:var(--action-disabled-text)]"
               : "border-[color:var(--action-primary)] bg-[color:var(--action-primary)] text-[color:var(--text-inverse)]"
           )}
         >

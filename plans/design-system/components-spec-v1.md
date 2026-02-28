@@ -9,6 +9,7 @@ Definir la API visual mínima de componentes para implementar los flujos de Walla
 - En código nuevo de componentes documentados en Storybook (`Design System/*`), no se permite color hardcodeado en hex.
 - Para color semántico usar copia directa: `var(--alias-corto)` y/o raíz Tailwind `text-/bg-/border-<raiz>`.
 - Todo componente alcanzable desde `src/App.tsx` debe exportar `designSystemMeta` y tener story sincronizada en `Design System/*`.
+- Siempre que cambie un componente, actualizar tambien el Design System vivo (`src/pages/design-system-page.tsx`) para reflejar el nuevo estado/caso (de forma directa o consumiendo su story).
 ## 1. Botón (`Button`)
 Propiedades visuales:
 - `variant`: `primary | secondary | ghost | link | nav_expandable | tab | inline_action | icon | menu_close`
@@ -378,20 +379,20 @@ Propiedades visuales:
 - `errorMessage`: validacion contextual del wizard.
 
 Reglas:
-- Wizard en 3 pasos: punto, fecha/hora, preferencia de pago.
-- Paso 1 siempre muestra exactamente 2 opciones seleccionables.
-- El modelo de paso 1 es una cola de las 2 ultimas selecciones:
+- Wizard en 3 pasos: fecha/hora, punto, preferencia de pago.
+- Paso 2 siempre muestra exactamente 2 opciones seleccionables.
+- El modelo de paso 2 es una cola de las 2 ultimas selecciones:
   - Una seleccion nueva entra en primera posicion.
   - La anterior pasa a segunda posicion.
   - Si habia una tercera, se descarta.
 - Las cards de punto seguro muestran:
   - Nombre
   - Direccion
-  - Labels `Punto seguro` y `<N> ventas`.
+  - Label unico `Punto seguro · <N> ventas completadas`.
 - Las cards de punto personalizado muestran:
   - Icono `deal` (manos) en el pin del mapa
   - Direccion seleccionada
-  - Label `Personalizado`.
+  - Sin label `Personalizado`.
 - No existe boton `Cancelar` en el footer del wizard; cierre mediante boton `X` de cabecera.
 - Footer del wizard en movil:
   - Bloque contextual de articulo/comprador alineado a la izquierda.
@@ -404,9 +405,10 @@ Reglas:
   - El estado de error debe usar mismo color y grosor que `Input` (`tokens.color.input.ring.error`, `2px`).
   - En paso 3, el importe admite hasta `99999 €` con maximo `2` decimales.
   - En paso 3, si el importe supera `2000 €`, mostrar alerta destacada de normativa DAC7 con enlace de ayuda (`Más información`).
+- En paso 3, los iconos de metodos de pago se muestran sin capsula/circunferencia de fondo.
 - En vista de mapa:
   - Permitir seleccion de punto seguro y punto personalizado (tap libre sobre mapa).
-  - Al seleccionar personalizado, mostrar aviso de punto no verificado.
+  - Al seleccionar personalizado, no mostrar aviso de punto no verificado en el panel inferior.
   - Al seleccionar punto seguro, mostrar bloque de ventas con el mismo patron visual del aviso de no verificado, usando variante verde Wallapop.
   - Mostrar distancia `m/km` en chip de una sola linea (`no-wrap`).
   - Bottom sheet de seleccion debe renderizarse por encima del mapa (`z-index` superior).

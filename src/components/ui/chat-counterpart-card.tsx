@@ -69,6 +69,7 @@ function ChatCounterpartCard({
     profileImageAlt,
     ...props
 }: ChatCounterpartCardProps) {
+    const hasNoAttendanceHistory = attendanceMeetups === 0
     const hasAttendanceData =
         typeof attendanceRate === "number" &&
         Number.isFinite(attendanceRate) &&
@@ -79,8 +80,13 @@ function ChatCounterpartCard({
         : null
 
     const attendanceMessage =
-        resolvedAttendanceRate === null
-            ? null
+        hasNoAttendanceHistory
+            ? {
+                  text: "0% de asistencia (0)",
+                  className: "text-[color:var(--wm-color-text-secondary)]",
+              }
+            : resolvedAttendanceRate === null
+              ? null
             : resolvedAttendanceRate > 90
               ? {
                     text: `${resolvedAttendanceRate}% de asistencia (${attendanceMeetups})`,
@@ -138,7 +144,7 @@ const designSystemMeta = {
     title: "Chat Counterpart Card",
     description: "Chat Counterpart Card del design system de Wallapop Meet.",
     status: "ready",
-    states: ["high","medium","low"],
+    states: ["high", "medium", "low", "empty_history", "zero_ratings"],
     storybookTitle: "Design System/Chat Counterpart Card",
     tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
 } satisfies DesignSystemEntityMeta

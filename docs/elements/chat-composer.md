@@ -57,7 +57,7 @@ Estados observados:
 ### 4) Boton de envio
 - Implementacion observada en referencia: control icon-only (avion de papel) en extremo derecho.
 - Comportamiento esperado:
-  - `disabled`: fondo gris claro, borde neutro, no interactivo.
+  - `disabled`: fondo `action-disabled-bg`, borde del mismo tono y sin oscurecido adicional por opacidad global.
   - `enabled` (cuando hay texto): fondo y borde en color marca (`#3DD2BA`).
 - Accesibilidad: incluir `aria-label` descriptivo del envio.
 
@@ -69,7 +69,7 @@ Estados observados:
 - `tokens.color.composer.placeholder = #90A4AE`
 - `tokens.radius.composer = 24px`
 - `tokens.color.composer.submit.enabled = #3DD2BA`
-- `tokens.color.composer.submit.disabled = #C9D3D8`
+- `tokens.color.composer.submit.disabled = action-disabled-bg`
 
 ## Notas de normalizacion DS
 - El estado visual relevante esta en el contenedor (`textarea-component`), no en el `textarea`.
