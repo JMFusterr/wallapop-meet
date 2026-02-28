@@ -194,6 +194,21 @@
   --wm-color-semantic-feedback-warning-strong: #8a5a00;
   --wm-color-semantic-feedback-error: #d94b50;
   --wm-color-semantic-feedback-info: #4a5a63;
+  --wm-color-semantic-label-pending-bg: #f8fafb;
+  --wm-color-semantic-label-pending-border: #d3dee2;
+  --wm-color-semantic-label-pending-text: #4a5a63;
+  --wm-color-semantic-label-confirmed-bg: #e9faf7;
+  --wm-color-semantic-label-confirmed-border: #59d4c1;
+  --wm-color-semantic-label-confirmed-text: #0d907f;
+  --wm-color-semantic-label-arrived-bg: #fff6e8;
+  --wm-color-semantic-label-arrived-border: #f4a92f;
+  --wm-color-semantic-label-arrived-text: #aa6f00;
+  --wm-color-semantic-label-completed-bg: #fdeaf2;
+  --wm-color-semantic-label-completed-border: #e15092;
+  --wm-color-semantic-label-completed-text: #911448;
+  --wm-color-semantic-label-cancelled-bg: #fdebec;
+  --wm-color-semantic-label-cancelled-border: #ea5760;
+  --wm-color-semantic-label-cancelled-text: #b23d41;
   --wm-color-delivery-sent: #c2cdd3;
   --wm-color-domain-status-reserved: #86418a;
   --wm-color-domain-status-reserved-hover: #703474;
@@ -243,6 +258,21 @@
   --feedback-warning-strong: var(--wm-color-semantic-feedback-warning-strong);
   --feedback-error: var(--wm-color-semantic-feedback-error);
   --feedback-info: var(--wm-color-semantic-feedback-info);
+  --label-pending-bg: var(--wm-color-semantic-label-pending-bg);
+  --label-pending-border: var(--wm-color-semantic-label-pending-border);
+  --label-pending-text: var(--wm-color-semantic-label-pending-text);
+  --label-confirmed-bg: var(--wm-color-semantic-label-confirmed-bg);
+  --label-confirmed-border: var(--wm-color-semantic-label-confirmed-border);
+  --label-confirmed-text: var(--wm-color-semantic-label-confirmed-text);
+  --label-arrived-bg: var(--wm-color-semantic-label-arrived-bg);
+  --label-arrived-border: var(--wm-color-semantic-label-arrived-border);
+  --label-arrived-text: var(--wm-color-semantic-label-arrived-text);
+  --label-completed-bg: var(--wm-color-semantic-label-completed-bg);
+  --label-completed-border: var(--wm-color-semantic-label-completed-border);
+  --label-completed-text: var(--wm-color-semantic-label-completed-text);
+  --label-cancelled-bg: var(--wm-color-semantic-label-cancelled-bg);
+  --label-cancelled-border: var(--wm-color-semantic-label-cancelled-border);
+  --label-cancelled-text: var(--wm-color-semantic-label-cancelled-text);
   --delivery-sent: var(--wm-color-delivery-sent);
   --status-reserved: var(--wm-color-domain-status-reserved);
   --status-reserved-hover: var(--wm-color-domain-status-reserved-hover);
@@ -411,4 +441,17 @@
 .wm-mini-map .leaflet-bottom,
 .wm-mini-map .leaflet-control-container {
   z-index: 1 !important;
+}
+
+/* Reduce artefactos de composicion en scroll dentro del timeline del chat. */
+.wm-mini-map,
+.wm-mini-map .leaflet-container {
+  contain: paint;
+  will-change: auto;
+}
+
+.wm-mini-map .leaflet-tile,
+.wm-mini-map .leaflet-marker-icon,
+.wm-mini-map .leaflet-marker-shadow {
+  backface-visibility: hidden;
 }

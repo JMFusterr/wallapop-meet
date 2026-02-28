@@ -236,6 +236,7 @@ const initialConversations: Conversation[] = [
     {
         id: "conv-b-seller-propose",
         userName: "Javi R.",
+        unreadCount: 1,
         itemPrice: "520 €",
         messageDate: "Hoy",
         itemTitle: "Bicicleta fixie Fuji",
@@ -256,8 +257,6 @@ const initialConversations: Conversation[] = [
         counterpartAttendanceRate: 92,
         counterpartAttendanceMeetups: 41,
         listingViewerRole: "seller",
-        leadingIndicator: "bookmark",
-        listingStatusLabel: "Reservado",
     },
     {
         id: "conv-c-buyer-incoming",
@@ -383,6 +382,13 @@ const initialMessagesByConversation: Record<string, Message[]> = {
             variant: "received",
             time: formatTime(new Date(tsMinutesAgo(14))),
             createdAt: tsMinutesAgo(14),
+        },
+        {
+            id: "m-b-4",
+            text: "Alerta: salgo tarde del trabajo, revisa mi ultimo mensaje antes de proponer quedada.",
+            variant: "received",
+            time: formatTime(new Date(tsMinutesAgo(2))),
+            createdAt: tsMinutesAgo(2),
         },
     ],
     "conv-c-buyer-incoming": [
@@ -831,8 +837,6 @@ function resolveConversationCommercialStatus(
 
     if (shouldForceReserved) {
         return {
-            leadingIndicator: "bookmark",
-            listingStatusLabel: "Reservado",
         }
     }
 
@@ -1914,12 +1918,18 @@ function ConversationPane({
         meetup?.status === "CONFIRMED" || meetup?.status === "ARRIVED"
     const resolveMeetupRowAlignment = (meetupEntry: MeetupMachine): string => {
         if (meetupEntry.status === "COUNTER_PROPOSED") {
-            return actorRole === "SELLER" ? "flex justify-start" : "flex justify-end"
+            return actorRole === "SELLER"
+                ? "flex justify-start [contain:paint]"
+                : "flex justify-end [contain:paint]"
         }
         if (meetupEntry.status === "PROPOSED") {
-            return actorRole === "SELLER" ? "flex justify-end" : "flex justify-start"
+            return actorRole === "SELLER"
+                ? "flex justify-end [contain:paint]"
+                : "flex justify-start [contain:paint]"
         }
-        return actorRole === "SELLER" ? "flex justify-end" : "flex justify-start"
+        return actorRole === "SELLER"
+            ? "flex justify-end [contain:paint]"
+            : "flex justify-start [contain:paint]"
     }
 
     React.useEffect(() => {
@@ -2005,8 +2015,8 @@ function ConversationPane({
                                     <div
                                         className={
                                             message.variant === "sent"
-                                                ? "flex justify-end"
-                                                : "flex justify-start"
+                                                ? "flex justify-end [contain:paint]"
+                                                : "flex justify-start [contain:paint]"
                                         }
                                     >
                                         <ChatMessageBubble
@@ -2602,8 +2612,6 @@ function WallapopChatWorkspace() {
                     }
                     return {
                         ...conversation,
-                        leadingIndicator: "bookmark",
-                        listingStatusLabel: "Reservado",
                     }
                 })
             )
@@ -2650,8 +2658,6 @@ function WallapopChatWorkspace() {
 
                 return {
                     ...conversation,
-                    leadingIndicator: "bookmark",
-                    listingStatusLabel: "Reservado",
                 }
             })
         )
@@ -3168,3 +3174,4 @@ const designSystemMeta = {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export { WallapopChatWorkspace, designSystemMeta }
+

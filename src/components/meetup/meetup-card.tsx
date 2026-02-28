@@ -23,6 +23,7 @@ type MeetupCardProps = {
     onEditProposal?: () => void
     onOpenMapPreview?: () => void
     onRedZoneCancelConfirmed?: () => void
+    useLiveMapThumbnail?: boolean
 }
 
 type CardAction = {
@@ -210,6 +211,7 @@ function MeetupCard({
     onEditProposal,
     onOpenMapPreview,
     onRedZoneCancelConfirmed,
+    useLiveMapThumbnail = true,
 }: MeetupCardProps) {
     const arrivalAction = resolveArrivalActionState(meetup, currentTime, actorRole)
     const minutesToMeetup = Math.floor(
@@ -548,15 +550,17 @@ function MeetupCard({
     const mapThumbnailPosition = mapThumbnailCenter
         ? (mapThumbnailCenter.split(",").map(Number) as [number, number])
         : null
+    const shouldRenderLiveMapThumbnail =
+        useLiveMapThumbnail && hasMapCoordinates && mapThumbnailPosition !== null
     return (
         <>
             <section className="relative w-full max-w-[var(--wm-size-360)] rounded-[var(--wm-size-20)] border border-[color:var(--border-divider)] bg-[color:var(--bg-base)] px-4 pb-3 pt-3">
             <button
                 type="button"
-                className="wm-mini-map relative mb-3 h-[var(--wm-size-88)] w-full overflow-hidden rounded-[var(--wm-size-14)] border border-[color:var(--border-strong)] bg-[color:var(--bg-accent-subtle)] text-left"
+                className="wm-mini-map relative mb-3 h-[var(--wm-size-88)] w-full overflow-hidden rounded-[var(--wm-size-14)] border border-[color:var(--border-strong)] bg-[color:var(--bg-accent-subtle)] text-left [contain:paint]"
                 onClick={onOpenMapPreview}
             >
-                {hasMapCoordinates && mapThumbnailPosition ? (
+                {shouldRenderLiveMapThumbnail ? (
                     <div className="h-full w-full [pointer-events:none]">
                         <MapContainer
                             center={mapThumbnailPosition}
@@ -574,7 +578,16 @@ function MeetupCard({
                             <Marker position={mapThumbnailPosition} icon={miniMapMarkerIcon} />
                         </MapContainer>
                     </div>
-                ) : null}
+                ) : (
+                    <div className="flex h-full w-full items-center justify-center gap-2 px-3 text-[color:var(--text-primary)]">
+                        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--bg-base)]">
+                            <MapPin size={14} />
+                        </span>
+                        <span className="truncate font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
+                            {meetup.proposedLocation || "Ver ubicacion del punto de encuentro"}
+                        </span>
+                    </div>
+                )}
             </button>
 
             <div className="flex items-center gap-2.5">

@@ -82,7 +82,7 @@ function ChatCounterpartCard({
     const attendanceMessage =
         hasNoAttendanceHistory
             ? {
-                  text: "0% de asistencia (0)",
+                  text: "Sin nivel de fiabilidad aun (0 quedadas)",
                   className: "text-[color:var(--wm-color-text-secondary)]",
               }
             : resolvedAttendanceRate === null
@@ -144,7 +144,7 @@ const designSystemMeta = {
     title: "Chat Counterpart Card",
     description: "Chat Counterpart Card del design system de Wallapop Meet.",
     status: "ready",
-    states: ["high", "medium", "low", "empty_history", "zero_ratings"],
+    states: ["high", "medium", "low", "sin_nivel", "zero_ratings"],
     storybookTitle: "Design System/Chat Counterpart Card",
     tokensUsed: ["tokens.color.semantic.action.primary","tokens.color.semantic.text.primary","tokens.color.semantic.border.divider"],
 } satisfies DesignSystemEntityMeta

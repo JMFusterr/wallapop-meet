@@ -251,6 +251,78 @@
                         "value": "{tokens.color.palette.error.500}",
                         "type": "color"
                     }
+                },
+                "label": {
+                    "pending": {
+                        "background": {
+                            "value": "{tokens.color.meetup_status.pending.background}",
+                            "type": "color"
+                        },
+                        "border": {
+                            "value": "{tokens.color.meetup_status.pending.border}",
+                            "type": "color"
+                        },
+                        "text": {
+                            "value": "{tokens.color.meetup_status.pending.text}",
+                            "type": "color"
+                        }
+                    },
+                    "confirmed": {
+                        "background": {
+                            "value": "{tokens.color.meetup_status.confirmed.background}",
+                            "type": "color"
+                        },
+                        "border": {
+                            "value": "{tokens.color.meetup_status.confirmed.border}",
+                            "type": "color"
+                        },
+                        "text": {
+                            "value": "{tokens.color.meetup_status.confirmed.text}",
+                            "type": "color"
+                        }
+                    },
+                    "arrived": {
+                        "background": {
+                            "value": "{tokens.color.meetup_status.arrived.background}",
+                            "type": "color"
+                        },
+                        "border": {
+                            "value": "{tokens.color.meetup_status.arrived.border}",
+                            "type": "color"
+                        },
+                        "text": {
+                            "value": "{tokens.color.meetup_status.arrived.text}",
+                            "type": "color"
+                        }
+                    },
+                    "completed": {
+                        "background": {
+                            "value": "{tokens.color.meetup_status.completed.background}",
+                            "type": "color"
+                        },
+                        "border": {
+                            "value": "{tokens.color.meetup_status.completed.border}",
+                            "type": "color"
+                        },
+                        "text": {
+                            "value": "{tokens.color.meetup_status.completed.text}",
+                            "type": "color"
+                        }
+                    },
+                    "cancelled": {
+                        "background": {
+                            "value": "{tokens.color.meetup_status.cancelled.background}",
+                            "type": "color"
+                        },
+                        "border": {
+                            "value": "{tokens.color.meetup_status.cancelled.border}",
+                            "type": "color"
+                        },
+                        "text": {
+                            "value": "{tokens.color.meetup_status.cancelled.text}",
+                            "type": "color"
+                        }
+                    }
                 }
             },
             "text": {
@@ -394,7 +466,7 @@
             "meetup_status": {
                 "pending": {
                     "background": {
-                        "value": "{tokens.color.palette.neutral.100}",
+                        "value": "{tokens.color.palette.neutral.50}",
                         "type": "color"
                     },
                     "border": {
@@ -408,7 +480,7 @@
                 },
                 "confirmed": {
                     "background": {
-                        "value": "{tokens.color.palette.brand.100}",
+                        "value": "{tokens.color.palette.brand.50}",
                         "type": "color"
                     },
                     "border": {
@@ -422,7 +494,7 @@
                 },
                 "arrived": {
                     "background": {
-                        "value": "{tokens.color.palette.warning.100}",
+                        "value": "{tokens.color.palette.warning.50}",
                         "type": "color"
                     },
                     "border": {
@@ -436,7 +508,7 @@
                 },
                 "completed": {
                     "background": {
-                        "value": "{tokens.color.palette.sold.100}",
+                        "value": "{tokens.color.palette.sold.50}",
                         "type": "color"
                     },
                     "border": {
@@ -450,7 +522,7 @@
                 },
                 "cancelled": {
                     "background": {
-                        "value": "{tokens.color.palette.error.100}",
+                        "value": "{tokens.color.palette.error.50}",
                         "type": "color"
                     },
                     "border": {

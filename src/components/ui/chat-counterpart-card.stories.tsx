@@ -45,7 +45,8 @@ export const AttendanceLow: Story = {
     },
 }
 
-export const AttendanceEmptyHistory: Story = {
+export const SinNivel: Story = {
+    name: "sin_nivel",
     args: {
         attendanceRate: 0,
         attendanceMeetups: 0,
