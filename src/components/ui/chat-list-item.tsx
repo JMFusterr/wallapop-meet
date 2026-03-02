@@ -95,7 +95,7 @@ function ChatListItem({
         <p className="truncate font-wallie-chunky text-[length:var(--wm-size-16)] leading-[var(--wm-size-16)] text-[color:var(--wm-color-text-primary)]">
           {itemTitle}
         </p>
-        <div className="mt-1 flex items-center justify-between gap-2">
+        <div className="mt-1 flex min-h-6 items-center justify-between gap-2">
           <p className="flex min-w-0 items-center gap-1 font-wallie text-[length:var(--wm-size-14)] leading-[var(--wm-size-14)] text-[color:var(--text-meta)]">
             {lastMessageDeliveryState ? (
               <span

@@ -208,6 +208,27 @@ function tsMinutesAgo(minutes: number): number {
     return seedNow - minutes * 60 * 1000
 }
 
+function roundToQuarterHour(value: Date): Date {
+    const rounded = new Date(value)
+    rounded.setSeconds(0, 0)
+    const minutes = rounded.getMinutes()
+    const roundedMinutes = Math.round(minutes / 15) * 15
+    if (roundedMinutes === 60) {
+        rounded.setHours(rounded.getHours() + 1, 0, 0, 0)
+        return rounded
+    }
+    rounded.setMinutes(roundedMinutes, 0, 0)
+    return rounded
+}
+
+function createQuarterHourDateWithOffset(base: Date, offsetMinutes: number): Date {
+    return roundToQuarterHour(new Date(base.getTime() + offsetMinutes * 60 * 1000))
+}
+
+function isQuarterHourTimeValue(value: string): boolean {
+    return /^([01]\d|2[0-3]):(00|15|30|45)$/.test(value)
+}
+
 const initialConversations: Conversation[] = [
     {
         id: "conv-a-arrival",
@@ -238,7 +259,7 @@ const initialConversations: Conversation[] = [
     {
         id: "conv-b-seller-propose",
         userName: "Javi R.",
-        unreadCount: 1,
+        unreadCount: 2,
         itemPrice: "520 €",
         messageDate: "Hoy",
         itemTitle: "Bicicleta fixie Fuji",
@@ -271,7 +292,7 @@ const initialConversations: Conversation[] = [
             "https://images.pexels.com/photos/51383/photo-camera-subject-photographer-51383.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=400&h=400",
         profileImageSrc:
             "https://images.pexels.com/photos/370799/pexels-photo-370799.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=320&h=320",
-        unreadCount: 1,
+        unreadCount: 2,
         meetupContext: {
             conversationId: "conv-c-buyer-incoming",
             listingId: "listing-camera-003",
@@ -378,7 +399,7 @@ const initialMessagesByConversation: Record<string, Message[]> = {
         },
         {
             id: "m-a-5",
-            text: "Mejor entrar al parking o venir en transporte publico; si metes el coche menos de 30 minutos no te cobran.",
+            text: "Mejor entrar al parking o venir en transporte publico.",
             variant: "sent",
             time: formatTime(new Date(tsMinutesAgo(22))),
             createdAt: tsMinutesAgo(22),
@@ -386,6 +407,14 @@ const initialMessagesByConversation: Record<string, Message[]> = {
         },
         {
             id: "m-a-6",
+            text: "Si metes el coche en el parking menos de 30 minutos no te cobran.",
+            variant: "sent",
+            time: formatTime(new Date(tsMinutesAgo(21))),
+            createdAt: tsMinutesAgo(21),
+            deliveryState: "read",
+        },
+        {
+            id: "m-a-7",
             text: "Perfecto, alli nos vemos. Gracias!",
             variant: "received",
             time: formatTime(new Date(tsMinutesAgo(18))),
@@ -436,8 +465,15 @@ const initialMessagesByConversation: Record<string, Message[]> = {
             id: "m-c-2",
             text: "Te acabo de enviar la solicitud de quedada con todos los datos.",
             variant: "received",
-            time: formatTime(new Date(tsMinutesAgo(4))),
-            createdAt: tsMinutesAgo(4),
+            time: formatTime(new Date(tsMinutesAgo(3))),
+            createdAt: tsMinutesAgo(3),
+        },
+        {
+            id: "m-c-3",
+            text: "Cuando puedas revisala y me dices si te cuadra.",
+            variant: "received",
+            time: formatTime(new Date(tsMinutesAgo(2))),
+            createdAt: tsMinutesAgo(2),
         },
     ],
     "conv-d-sold-closed": [
@@ -908,14 +944,14 @@ function buildInitialMeetupState(): Record<string, MeetupMachine[]> {
         }
 
         const baseMeetup = createMeetupMachine({
-            scheduledAt: new Date(now.getTime() + 30 * 60 * 1000),
+            scheduledAt: createQuarterHourDateWithOffset(now, 30),
             chatContext: conversation.meetupContext,
         })
 
         if (conversation.id === "conv-a-arrival") {
             const proposedDraft: MeetupMachine = {
                 ...baseMeetup,
-                scheduledAt: new Date(now.getTime() + 20 * 60 * 1000),
+                scheduledAt: createQuarterHourDateWithOffset(now, 20),
                 proposedLocation: "Estacion de Sants - Acceso principal",
                 proposedLocationLat: 41.37906,
                 proposedLocationLng: 2.14006,
@@ -943,7 +979,7 @@ function buildInitialMeetupState(): Record<string, MeetupMachine[]> {
         if (conversation.id === "conv-c-buyer-incoming") {
             const incomingProposal: MeetupMachine = {
                 ...baseMeetup,
-                scheduledAt: new Date(now.getTime() + 90 * 60 * 1000),
+                scheduledAt: createQuarterHourDateWithOffset(now, 90),
                 proposedLocation: "Estacion de Sants - Acceso principal",
                 proposedLocationLat: 41.37906,
                 proposedLocationLng: 2.14006,
@@ -962,7 +998,7 @@ function buildInitialMeetupState(): Record<string, MeetupMachine[]> {
         if (conversation.id === "conv-d-sold-closed") {
             const closedDraft: MeetupMachine = {
                 ...baseMeetup,
-                scheduledAt: new Date(now.getTime() - 9 * 60 * 60 * 1000),
+                scheduledAt: createQuarterHourDateWithOffset(now, -9 * 60),
                 proposedLocation: "Centro comercial Arenas",
                 proposedLocationLat: 41.37617,
                 proposedLocationLng: 2.14918,
@@ -1965,6 +2001,22 @@ function ConversationPane({
     const timelineContainerRef = React.useRef<HTMLDivElement | null>(null)
     const shouldShowPendingSaleBanner =
         meetup?.status === "CONFIRMED" || meetup?.status === "ARRIVED"
+    const jumpToMeetupInActiveTimeline = React.useCallback(() => {
+        if (!meetup) {
+            return
+        }
+        const meetupCardId = `meetup-card-${meetup.id}`
+        const targetInCurrentPane = timelineContainerRef.current?.querySelector<HTMLElement>(
+            `#${meetupCardId}`
+        )
+        const fallbackTarget = document.getElementById(meetupCardId)
+        const target = targetInCurrentPane ?? fallbackTarget
+        if (!target) {
+            onJumpToActiveMeetup()
+            return
+        }
+        target.scrollIntoView({ behavior: "smooth", block: "center" })
+    }, [meetup, onJumpToActiveMeetup])
     const resolveMeetupRowAlignment = (meetupEntry: MeetupMachine): string => {
         if (meetupEntry.status === "COUNTER_PROPOSED") {
             return actorRole === "SELLER"
@@ -2038,7 +2090,7 @@ function ConversationPane({
             {shouldShowPendingSaleBanner && meetup ? (
                 <MeetupPendingSaleBanner
                     scheduledAt={meetup.scheduledAt}
-                    onJumpToMeetup={onJumpToActiveMeetup}
+                    onJumpToMeetup={jumpToMeetupInActiveTimeline}
                 />
             ) : null}
 
@@ -2883,6 +2935,10 @@ function WallapopChatWorkspace() {
             setProposalError("Faltan campos por rellenar")
             return false
         }
+        if (!isQuarterHourTimeValue(selectedTimeValue.slice(0, 5))) {
+            setProposalError("Selecciona una hora valida en intervalos de 15 minutos.")
+            return false
+        }
         const scheduledAt = parseLocalDateTimeValue(proposalScheduledAt)
         if (!scheduledAt) {
             setProposalError("Faltan campos por rellenar")
@@ -2937,7 +2993,16 @@ function WallapopChatWorkspace() {
         setProposalStep(nextStep)
     }
 
-    const canAccessProposalStepTwo = parseLocalDateTimeValue(proposalScheduledAt) !== null
+    const canAccessProposalStepTwo = (() => {
+        const [selectedDateValue = "", selectedTimeValue = ""] = proposalScheduledAt.split("T")
+        if (!selectedDateValue || !selectedTimeValue) {
+            return false
+        }
+        if (!isQuarterHourTimeValue(selectedTimeValue.slice(0, 5))) {
+            return false
+        }
+        return parseLocalDateTimeValue(proposalScheduledAt) !== null
+    })()
     const canAccessProposalStepThree =
         canAccessProposalStepTwo && proposalSelectedOptionId.trim().length > 0
 

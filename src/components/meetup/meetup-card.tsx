@@ -1,4 +1,5 @@
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { Button } from "@/components/ui/button"
 import { Label, type LabelTone } from "@/components/ui/label"
 import { NoticeBanner } from "@/components/ui/notice-banner"
@@ -681,71 +682,77 @@ function MeetupCard({
                 </p>
             ) : null}
             </section>
-            {isCancelModalOpen ? (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[color:var(--overlay-scrim)] px-4">
-                    <div className="w-full max-w-[var(--wm-size-420)] rounded-[var(--wm-size-16)] bg-[color:var(--bg-base)] p-4 shadow-[var(--wm-shadow-300)]">
-                        <h3 className="font-wallie-chunky text-[length:var(--wm-size-18)] text-[color:var(--text-primary)]">
-                            Seguro que quieres cancelar o rechazar la quedada?
-                        </h3>
-                        <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
-                            Esta accion no se puede deshacer.
-                        </p>
-                        {isRedZoneCancellation ? (
-                            <NoticeBanner className="mt-2 py-2">
-                                Estas en los ultimos 30 min y esto afectara a tu fiabilidad.
-                            </NoticeBanner>
-                        ) : null}
-                        <div className="mt-4 space-y-2">
-                            <Button
-                                variant="primary"
-                                size="sm"
-                                className={PRIMARY_ACTION_CLASS}
-                                onClick={confirmCancellation}
-                            >
-                                Si
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className={OUTLINE_ACTION_CLASS}
-                                onClick={() => setIsCancelModalOpen(false)}
-                            >
-                                No
-                            </Button>
+            {isCancelModalOpen && typeof document !== "undefined"
+                ? createPortal(
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[color:var(--overlay-scrim)] px-4">
+                        <div className="w-full max-w-[var(--wm-size-420)] rounded-[var(--wm-size-16)] bg-[color:var(--bg-base)] p-4 shadow-[var(--wm-shadow-300)]">
+                            <h3 className="font-wallie-chunky text-[length:var(--wm-size-18)] text-[color:var(--text-primary)]">
+                                Seguro que quieres cancelar o rechazar la quedada?
+                            </h3>
+                            <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
+                                Esta accion no se puede deshacer.
+                            </p>
+                            {isRedZoneCancellation ? (
+                                <NoticeBanner className="mt-2 py-2">
+                                    Estas en los ultimos 30 min y esto afectara a tu fiabilidad.
+                                </NoticeBanner>
+                            ) : null}
+                            <div className="mt-4 space-y-2">
+                                <Button
+                                    variant="primary"
+                                    size="sm"
+                                    className={PRIMARY_ACTION_CLASS}
+                                    onClick={confirmCancellation}
+                                >
+                                    Si
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={OUTLINE_ACTION_CLASS}
+                                    onClick={() => setIsCancelModalOpen(false)}
+                                >
+                                    No
+                                </Button>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            ) : null}
-            {isNoShowSheetOpen ? (
-                <div className="fixed inset-0 z-50 flex items-end justify-center bg-[color:var(--overlay-scrim)]">
-                    <div className="w-full max-w-[var(--wm-size-560)] rounded-t-[var(--wm-size-20)] bg-[color:var(--bg-base)] p-4 shadow-[var(--wm-shadow-300)]">
-                        <h3 className="font-wallie-chunky text-[length:var(--wm-size-18)] text-[color:var(--text-primary)]">
-                            Confirmar no-show del comprador?
-                        </h3>
-                        <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
-                            Esta accion cancela la quedada y libera el articulo.
-                        </p>
-                        <div className="mt-4 space-y-2">
-                            <Button
-                                variant="critical"
-                                size="sm"
-                                className={PRIMARY_ACTION_CLASS}
-                                onClick={confirmNoShowFlow}
-                            >
-                                {hasContradictionAlert ? "Definitivamente no esta" : "Confirmar no-show"}
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className={OUTLINE_ACTION_CLASS}
-                                onClick={() => setIsNoShowSheetOpen(false)}
-                            >
-                                Volver
-                            </Button>
+                    </div>,
+                    document.body
+                )
+                : null}
+            {isNoShowSheetOpen && typeof document !== "undefined"
+                ? createPortal(
+                    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[color:var(--overlay-scrim)]">
+                        <div className="w-full max-w-[var(--wm-size-560)] rounded-t-[var(--wm-size-20)] bg-[color:var(--bg-base)] p-4 shadow-[var(--wm-shadow-300)]">
+                            <h3 className="font-wallie-chunky text-[length:var(--wm-size-18)] text-[color:var(--text-primary)]">
+                                Confirmar no-show del comprador?
+                            </h3>
+                            <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-14)] text-[color:var(--text-secondary)]">
+                                Esta accion cancela la quedada y libera el articulo.
+                            </p>
+                            <div className="mt-4 space-y-2">
+                                <Button
+                                    variant="critical"
+                                    size="sm"
+                                    className={PRIMARY_ACTION_CLASS}
+                                    onClick={confirmNoShowFlow}
+                                >
+                                    {hasContradictionAlert ? "Definitivamente no esta" : "Confirmar no-show"}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={OUTLINE_ACTION_CLASS}
+                                    onClick={() => setIsNoShowSheetOpen(false)}
+                                >
+                                    Volver
+                                </Button>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            ) : null}
+                    </div>,
+                    document.body
+                )
+                : null}
         </>
     )
 }
