@@ -37,6 +37,9 @@ function roundDateToNearestQuarterHour(value: Date): Date {
 }
 
 export function resolveInitialProposalDateTimeValue(meetup: MeetupMachine): string {
+    if (meetup.status === null) {
+        return ""
+    }
     const roundedMeetup: MeetupMachine = {
         ...meetup,
         scheduledAt: roundDateToNearestQuarterHour(meetup.scheduledAt),

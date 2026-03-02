@@ -27,14 +27,14 @@ describe("wallapop chat workspace utils", () => {
         expect(new Date(value).getTime()).toBe(meetup.scheduledAt.getTime())
     })
 
-    it("start proposal with preloaded datetime when meetup has no proposal yet", () => {
+    it("start proposal with empty datetime when meetup has no proposal yet", () => {
         const scheduledAt = new Date("2026-02-20T18:45:00.000Z")
         const meetup = createMeetupMachine({ scheduledAt, chatContext })
 
         const initialValue = resolveInitialProposalDateTimeValue(meetup)
 
         expect(meetup.status).toBe(null)
-        expect(initialValue).toBe(resolveProposalScheduledAtValue(meetup))
+        expect(initialValue).toBe("")
     })
 
     it("reuse datetime when meetup already has a proposal", () => {
@@ -55,11 +55,19 @@ describe("wallapop chat workspace utils", () => {
         expect(initialValue).toBe(resolveProposalScheduledAtValue(proposed.meetup))
     })
 
-    it("round initial proposal datetime to nearest quarter when legacy value is not selectable", () => {
+    it("round initial proposal datetime to nearest quarter when editing legacy value", () => {
         const scheduledAt = new Date("2026-02-20T19:25:00.000Z")
         const meetup = createMeetupMachine({ scheduledAt, chatContext })
+        const proposed = transitionMeetup(meetup, {
+            type: "PROPOSE",
+            actorRole: "SELLER",
+            occurredAt: new Date("2026-02-20T18:30:00.000Z"),
+        })
+        if (!proposed.ok) {
+            throw new Error("Se esperaba propuesta valida en la prueba.")
+        }
 
-        const initialValue = resolveInitialProposalDateTimeValue(meetup)
+        const initialValue = resolveInitialProposalDateTimeValue(proposed.meetup)
         const roundedDate = new Date(initialValue)
 
         expect(Number.isNaN(roundedDate.getTime())).toBe(false)
