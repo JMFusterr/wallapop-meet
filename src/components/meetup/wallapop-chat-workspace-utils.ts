@@ -23,11 +23,25 @@ export function resolveProposalScheduledAtValue(meetup: MeetupMachine): string {
     return `${year}-${month}-${day}T${hours}:${minutes}`
 }
 
-export function resolveInitialProposalDateTimeValue(meetup: MeetupMachine): string {
-    if (meetup.status === null) {
-        return ""
+function roundDateToNearestQuarterHour(value: Date): Date {
+    const rounded = new Date(value)
+    rounded.setSeconds(0, 0)
+    const minutes = rounded.getMinutes()
+    const roundedMinutes = Math.round(minutes / 15) * 15
+    if (roundedMinutes === 60) {
+        rounded.setHours(rounded.getHours() + 1, 0, 0, 0)
+        return rounded
     }
-    return resolveProposalScheduledAtValue(meetup)
+    rounded.setMinutes(roundedMinutes, 0, 0)
+    return rounded
+}
+
+export function resolveInitialProposalDateTimeValue(meetup: MeetupMachine): string {
+    const roundedMeetup: MeetupMachine = {
+        ...meetup,
+        scheduledAt: roundDateToNearestQuarterHour(meetup.scheduledAt),
+    }
+    return resolveProposalScheduledAtValue(roundedMeetup)
 }
 
 export function buildReverseGeocodeUrl(point: MapPoint): string {

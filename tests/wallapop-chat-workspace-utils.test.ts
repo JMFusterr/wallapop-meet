@@ -27,14 +27,14 @@ describe("wallapop chat workspace utils", () => {
         expect(new Date(value).getTime()).toBe(meetup.scheduledAt.getTime())
     })
 
-    it("start proposal with empty datetime when meetup has no proposal yet", () => {
+    it("start proposal with preloaded datetime when meetup has no proposal yet", () => {
         const scheduledAt = new Date("2026-02-20T18:45:00.000Z")
         const meetup = createMeetupMachine({ scheduledAt, chatContext })
 
         const initialValue = resolveInitialProposalDateTimeValue(meetup)
 
         expect(meetup.status).toBe(null)
-        expect(initialValue).toBe("")
+        expect(initialValue).toBe(resolveProposalScheduledAtValue(meetup))
     })
 
     it("reuse datetime when meetup already has a proposal", () => {
@@ -53,6 +53,17 @@ describe("wallapop chat workspace utils", () => {
 
         expect(proposed.meetup.status).toBe("PROPOSED")
         expect(initialValue).toBe(resolveProposalScheduledAtValue(proposed.meetup))
+    })
+
+    it("round initial proposal datetime to nearest quarter when legacy value is not selectable", () => {
+        const scheduledAt = new Date("2026-02-20T19:25:00.000Z")
+        const meetup = createMeetupMachine({ scheduledAt, chatContext })
+
+        const initialValue = resolveInitialProposalDateTimeValue(meetup)
+        const roundedDate = new Date(initialValue)
+
+        expect(Number.isNaN(roundedDate.getTime())).toBe(false)
+        expect(roundedDate.getMinutes()).toBe(30)
     })
 
     it("build reverse geocode URL with encoded coordinates", () => {
