@@ -281,7 +281,7 @@ Reglas:
   - `CANCELLED` -> `cancelada`
 - Colores de label por estado:
   - `pendiente`: blanco/neutro
-  - `contraoferta`: warning (legacy; en UI actual se muestra como `pendiente`)
+  - `COUNTER_PROPOSED`: reutiliza `pendiente` (sin variante visual adicional)
   - `confirmada`: success
   - `llegada`: info
   - `completada`: acento de vendido (`#D32069`)
