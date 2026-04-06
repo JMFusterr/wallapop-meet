@@ -9,6 +9,7 @@ import {
     resolveMeetupCardCtaIds,
     type MeetupCardCtaId,
 } from "@/components/meetup/meetup-ui-rules"
+import { WalletTopUpSheet } from "@/components/meetup/wallet-top-up-sheet"
 import L from "leaflet"
 import type { LucideIcon } from "lucide-react"
 import {
@@ -26,7 +27,7 @@ import { buildWalletInPersonPayPayload } from "@/meetup/wallet-payment-qr"
 import { MapContainer, Marker, TileLayer } from "react-leaflet"
 import { getArrivalWindow } from "@/meetup/arrival-window"
 import { transitionMeetup } from "@/meetup/state-machine"
-import type { ActorRole, MeetupMachine, MeetupPaymentMethod } from "@/meetup/types"
+import type { ActorRole, MeetupMachine, MeetupEvent, MeetupPaymentMethod } from "@/meetup/types"
 
 import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 type MeetupCardProps = {
@@ -42,6 +43,9 @@ type MeetupCardProps = {
     useLiveMapThumbnail?: boolean
     /** Distancia estimada al punto de encuentro; si es mayor a 100 m, se bloquea "Estoy aqui" y se muestra el aviso de proximidad. */
     distanceToMeetupMeters?: number | null
+    /** Saldo disponible en Wallapop Wallet del comprador (para aceptar quedada con pago Wallet). */
+    buyerWalletAvailableEur?: number
+    onWalletTopUp?: (amountEur: number) => void
 }
 
 type CardAction = {
@@ -284,6 +288,8 @@ function MeetupCard({
     onRedZoneCancelConfirmed,
     useLiveMapThumbnail = true,
     distanceToMeetupMeters,
+    buyerWalletAvailableEur,
+    onWalletTopUp,
 }: MeetupCardProps) {
     const arrivalAction = resolveArrivalActionState(
         meetup,
@@ -302,26 +308,22 @@ function MeetupCard({
         currentTime.getTime() <= arrivalWindow.closesAt.getTime()
     const [isCancelModalOpen, setIsCancelModalOpen] = React.useState(false)
     const [isNoShowSheetOpen, setIsNoShowSheetOpen] = React.useState(false)
+    const [isWalletTopUpOpen, setIsWalletTopUpOpen] = React.useState(false)
     const [noShowGraceError, setNoShowGraceError] = React.useState("")
     const miniMapMarkerIcon = React.useMemo(() => createMiniMapMarkerIcon(), [])
 
-    const applyEvent = (
-        event:
-            | { type: "PROPOSE"; actorRole: ActorRole; occurredAt: Date }
-            | { type: "COUNTER_PROPOSE"; actorRole: ActorRole; occurredAt: Date }
-            | { type: "ACCEPT"; actorRole: ActorRole; occurredAt: Date }
-            | { type: "MARK_ARRIVED"; actorRole: ActorRole; occurredAt: Date }
-            | { type: "COMPLETE"; actorRole: ActorRole; occurredAt: Date }
-            | {
-                  type: "CANCEL"
-                  actorRole: ActorRole
-                  occurredAt: Date
-                  reason?: "MANUAL_CANCEL" | "COUNTER_REPLACED" | "NO_SHOW_BUYER" | "NO_SHOW_FINAL_CONTRADICTION"
-              }
-            | { type: "REPORT_NO_SHOW"; actorRole: ActorRole; occurredAt: Date }
-            | { type: "CONFIRM_NO_SHOW_FINAL"; actorRole: ActorRole; occurredAt: Date }
-    ) => {
-        const result = transitionMeetup(meetup, event)
+    const applyEvent = (event: MeetupEvent) => {
+        const normalized: MeetupEvent =
+            event.type === "ACCEPT"
+                ? {
+                      ...event,
+                      buyerWalletAvailableEur:
+                          typeof buyerWalletAvailableEur === "number"
+                              ? buyerWalletAvailableEur
+                              : (event.buyerWalletAvailableEur ?? 0),
+                  }
+                : event
+        const result = transitionMeetup(meetup, normalized)
         if (!result.ok) {
             onError(result.reason)
             return
@@ -329,6 +331,32 @@ function MeetupCard({
         onError("")
         onMeetupChange(result.meetup)
     }
+
+    const finalPriceEur = meetup.finalPrice
+    const walletAcceptPending =
+        meetup.proposedPaymentMethod === "WALLET" &&
+        typeof finalPriceEur === "number" &&
+        finalPriceEur > 0 &&
+        (meetup.status === "PROPOSED" || meetup.status === "COUNTER_PROPOSED")
+
+    const buyerIsAcceptingWallet =
+        walletAcceptPending &&
+        ((meetup.status === "PROPOSED" && actorRole === "BUYER") ||
+            (meetup.status === "COUNTER_PROPOSED" && actorRole === "SELLER"))
+
+    const walletShortfallEur =
+        buyerIsAcceptingWallet && typeof finalPriceEur === "number"
+            ? Math.max(
+                  0,
+                  finalPriceEur -
+                      (typeof buyerWalletAvailableEur === "number" ? buyerWalletAvailableEur : 0)
+              )
+            : 0
+
+    const walletAcceptBlocked =
+        buyerIsAcceptingWallet &&
+        typeof finalPriceEur === "number" &&
+        (typeof buyerWalletAvailableEur !== "number" || buyerWalletAvailableEur < finalPriceEur)
 
     const actions: CardAction[] = []
     const PRIMARY_ACTION_CLASS =
@@ -456,6 +484,7 @@ function MeetupCard({
                             actorRole,
                             occurredAt: currentTime,
                         }),
+                    disabled: walletAcceptBlocked,
                     className: `${PRIMARY_ACTION_CLASS} rounded-[var(--wm-size-999)] bg-[color:var(--action-primary)] text-[color:var(--text-on-action)] shadow-[var(--wm-shadow-inset-cta)]`,
                     fullWidth: true,
                 }
@@ -495,6 +524,7 @@ function MeetupCard({
                             actorRole,
                             occurredAt: currentTime,
                         }),
+                    disabled: walletAcceptBlocked,
                     className: PRIMARY_ACTION_CLASS,
                     fullWidth: true,
                 }
@@ -708,6 +738,24 @@ function MeetupCard({
                 </div>
             </dl>
 
+            {actorRole === "BUYER" && meetup.proposedPaymentMethod === "WALLET" ? (
+                <p className="mt-3 font-wallie-fit text-[length:var(--wm-size-12)] leading-[1.45] text-[color:var(--text-secondary)]">
+                    Wallapop Wallet es el monedero dentro de la app: sirve para pagar compras presenciales con un codigo QR. Si
+                    aceptas esta quedada con Wallet, reservamos el importe acordado hasta que el vendedor cobre o se cancele la
+                    quedada.
+                </p>
+            ) : null}
+
+            {actorRole === "BUYER" &&
+            typeof meetup.walletHoldAmountEur === "number" &&
+            meetup.walletHoldAmountEur > 0 &&
+            (meetup.status === "CONFIRMED" || meetup.status === "ARRIVED") ? (
+                <NoticeBanner className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)]">
+                    Tienes {meetup.walletHoldAmountEur.toFixed(2)} € reservados en Wallapop Wallet para esta quedada hasta que se
+                    cobre o se cancele.
+                </NoticeBanner>
+            ) : null}
+
             <WalletInPersonPaymentCallout meetup={meetup} actorRole={actorRole} />
 
             {meetup.status === "CONFIRMED" &&
@@ -720,6 +768,19 @@ function MeetupCard({
             {hasContradictionAlert ? (
                 <NoticeBanner className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)] text-[color:var(--feedback-error)]">
                     El radar indica que {counterpartName ?? "el comprador"} esta muy cerca. Escribidle o llamadle para encontraros.
+                </NoticeBanner>
+            ) : null}
+
+            {walletAcceptBlocked && actorRole === "BUYER" ? (
+                <NoticeBanner className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)]">
+                    Necesitas saldo suficiente en Wallapop Wallet para aceptar ({finalPriceEur?.toFixed(2)} €). Recarga el
+                    monedero para continuar.
+                </NoticeBanner>
+            ) : null}
+            {walletAcceptBlocked && actorRole === "SELLER" && meetup.status === "COUNTER_PROPOSED" ? (
+                <NoticeBanner className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)]">
+                    El comprador necesita saldo suficiente en Wallapop Wallet ({finalPriceEur?.toFixed(2)} €) para poder
+                    confirmar esta quedada.
                 </NoticeBanner>
             ) : null}
 
@@ -738,6 +799,20 @@ function MeetupCard({
                             {action.label}
                         </Button>
                     ))}
+                </div>
+            ) : null}
+
+            {walletAcceptBlocked && onWalletTopUp && actorRole === "BUYER" ? (
+                <div className="mt-2">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-10 w-full rounded-[var(--wm-size-999)] font-wallie-chunky text-[length:var(--wm-size-16)]"
+                        onClick={() => setIsWalletTopUpOpen(true)}
+                    >
+                        Recargar monedero
+                    </Button>
                 </div>
             ) : null}
 
@@ -836,6 +911,16 @@ function MeetupCard({
                     document.body
                 )
                 : null}
+            {onWalletTopUp ? (
+                <WalletTopUpSheet
+                    open={isWalletTopUpOpen}
+                    onClose={() => setIsWalletTopUpOpen(false)}
+                    minSuggestedAmountEur={Math.max(walletShortfallEur, 5)}
+                    onConfirmTopUp={(amountEur) => {
+                        onWalletTopUp(amountEur)
+                    }}
+                />
+            ) : null}
         </>
     )
 }

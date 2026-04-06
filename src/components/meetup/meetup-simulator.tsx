@@ -29,6 +29,28 @@ function MeetupSimulator() {
     const [actorRole, setActorRole] = React.useState<ActorRole>("SELLER")
     const [currentTime, setCurrentTime] = React.useState<Date>(() => new Date())
     const [lastError, setLastError] = React.useState<string>("")
+    const [buyerWalletAvailableEur, setBuyerWalletAvailableEur] = React.useState(10_000)
+
+    const handleMeetupChange = (next: MeetupMachine) => {
+        setMachine((prev) => {
+            if (
+                prev.status !== "CONFIRMED" &&
+                next.status === "CONFIRMED" &&
+                next.proposedPaymentMethod === "WALLET" &&
+                typeof next.finalPrice === "number"
+            ) {
+                setBuyerWalletAvailableEur((balance) => Math.max(0, balance - next.finalPrice!))
+            }
+            if (
+                prev.status !== "CANCELLED" &&
+                next.status === "CANCELLED" &&
+                typeof prev.walletHoldAmountEur === "number"
+            ) {
+                setBuyerWalletAvailableEur((balance) => balance + prev.walletHoldAmountEur!)
+            }
+            return next
+        })
+    }
 
     return (
         <section className="w-full rounded-[var(--wm-size-16)] border border-[color:var(--wm-color-border-default)] bg-white p-5 shadow-[var(--wm-shadow-100)]">
@@ -96,6 +118,7 @@ function MeetupSimulator() {
                         setMachine(createMeetupMachine({ scheduledAt, chatContext }))
                         setCurrentTime(new Date())
                         setLastError("")
+                        setBuyerWalletAvailableEur(10_000)
                     }}
                 >
                     Reiniciar
@@ -111,8 +134,12 @@ function MeetupSimulator() {
                     meetup={machine}
                     actorRole={actorRole}
                     currentTime={currentTime}
-                    onMeetupChange={setMachine}
+                    onMeetupChange={handleMeetupChange}
                     onError={setLastError}
+                    buyerWalletAvailableEur={buyerWalletAvailableEur}
+                    onWalletTopUp={(amountEur) =>
+                        setBuyerWalletAvailableEur((balance) => balance + amountEur)
+                    }
                 />
             </div>
 

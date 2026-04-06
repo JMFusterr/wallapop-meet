@@ -117,6 +117,7 @@ export function transitionMeetup(
                 confirmedAt: isReproposalAfterCancellation ? undefined : meetup.confirmedAt,
                 arrivedAt: isReproposalAfterCancellation ? undefined : meetup.arrivedAt,
                 completedAt: isReproposalAfterCancellation ? undefined : meetup.completedAt,
+                walletHoldAmountEur: undefined,
                 arrivalCheckins: isReproposalAfterCancellation
                     ? undefined
                     : meetup.arrivalCheckins,
@@ -145,6 +146,7 @@ export function transitionMeetup(
                 completedAt: undefined,
                 cancelledAt: undefined,
                 cancelReason: undefined,
+                walletHoldAmountEur: undefined,
                 arrivalCheckins: undefined,
                 noShowReport: undefined,
                 supersedesMeetupId: meetup.id,
@@ -164,10 +166,34 @@ export function transitionMeetup(
                 return fail("ACCEPT solo es valido desde PROPOSED o COUNTER_PROPOSED.")
             }
 
+            const price = meetup.finalPrice
+            const paymentMethod = meetup.proposedPaymentMethod
+            if (
+                paymentMethod === "WALLET" &&
+                typeof price === "number" &&
+                price > 0
+            ) {
+                if (
+                    typeof event.buyerWalletAvailableEur !== "number" ||
+                    event.buyerWalletAvailableEur < price
+                ) {
+                    return fail(
+                        "Saldo insuficiente en Wallapop Wallet para aceptar esta quedada. Recarga el monedero para continuar."
+                    )
+                }
+                return success({
+                    ...meetup,
+                    status: "CONFIRMED",
+                    confirmedAt: nowFallback(event.occurredAt),
+                    walletHoldAmountEur: price,
+                })
+            }
+
             return success({
                 ...meetup,
                 status: "CONFIRMED",
                 confirmedAt: nowFallback(event.occurredAt),
+                walletHoldAmountEur: undefined,
             })
         }
 
@@ -235,6 +261,7 @@ export function transitionMeetup(
                 ...meetup,
                 status: "COMPLETED",
                 completedAt: nowFallback(event.occurredAt),
+                walletHoldAmountEur: undefined,
             })
         }
 
@@ -256,6 +283,7 @@ export function transitionMeetup(
                 status: "CANCELLED",
                 cancelledAt,
                 cancelReason: event.reason ?? "MANUAL_CANCEL",
+                walletHoldAmountEur: undefined,
                 reliabilityImpacts: inRedZone
                     ? [
                           ...(meetup.reliabilityImpacts ?? []),
@@ -307,6 +335,7 @@ export function transitionMeetup(
                 status: "CANCELLED",
                 cancelledAt: event.occurredAt,
                 cancelReason: "NO_SHOW_BUYER",
+                walletHoldAmountEur: undefined,
                 noShowReport: {
                     reportedBy: "SELLER",
                     reportedAt: event.occurredAt,
@@ -335,6 +364,7 @@ export function transitionMeetup(
                 status: "CANCELLED",
                 cancelledAt: event.occurredAt,
                 cancelReason: "NO_SHOW_FINAL_CONTRADICTION",
+                walletHoldAmountEur: undefined,
                 noShowReport: {
                     ...meetup.noShowReport,
                     reportedAt: meetup.noShowReport.reportedAt,

@@ -978,6 +978,7 @@ function buildInitialMeetupState(): Record<string, MeetupMachine[]> {
                 type: "ACCEPT",
                 actorRole: "BUYER",
                 occurredAt: new Date(now.getTime() - 45 * 60 * 1000),
+                buyerWalletAvailableEur: 10_000,
             })
             state[conversation.id] = [confirmed.ok ? confirmed.meetup : proposed.meetup]
             continue
@@ -1003,6 +1004,7 @@ function buildInitialMeetupState(): Record<string, MeetupMachine[]> {
                 type: "ACCEPT",
                 actorRole: "BUYER",
                 occurredAt: new Date(now.getTime() - 3 * 60 * 1000),
+                buyerWalletAvailableEur: 10_000,
             })
             state[conversation.id] = [confirmedResult.ok ? confirmedResult.meetup : proposedMeetup]
             continue
@@ -1979,6 +1981,8 @@ type ConversationPaneProps = {
     onError: (message: string) => void
     errorMessage: string
     onRatingPublished?: (ratingPromptMessageId: string) => void
+    buyerWalletAvailableEur: number
+    onWalletTopUp: (amountEur: number) => void
 }
 
 function ConversationPane({
@@ -1996,6 +2000,8 @@ function ConversationPane({
     onError,
     errorMessage,
     onRatingPublished,
+    buyerWalletAvailableEur,
+    onWalletTopUp,
 }: ConversationPaneProps) {
     const [isTransactionRatingOpen, setIsTransactionRatingOpen] = React.useState(false)
     const [ratingPromptMessageId, setRatingPromptMessageId] = React.useState<string | null>(null)
@@ -2181,6 +2187,8 @@ function ConversationPane({
                                         onError={onError}
                                         onEditProposal={onOpenMeetupProposal}
                                         onOpenMapPreview={() => onOpenMeetupMapPreview(entry.meetup)}
+                                        buyerWalletAvailableEur={buyerWalletAvailableEur}
+                                        onWalletTopUp={onWalletTopUp}
                                     />
                                 </div>
                             </div>
@@ -2200,6 +2208,8 @@ function ConversationPane({
                                 onError={onError}
                                 onEditProposal={onOpenMeetupProposal}
                                 onOpenMapPreview={() => onOpenMeetupMapPreview(meetup)}
+                                buyerWalletAvailableEur={buyerWalletAvailableEur}
+                                onWalletTopUp={onWalletTopUp}
                             />
                         </div>
                     </div>
@@ -2344,9 +2354,24 @@ function WallapopChatWorkspace() {
             ])
         )
     )
-    const [meetupByConversation, setMeetupByConversation] = React.useState<
-        Record<string, MeetupMachine[]>
-    >(buildInitialMeetupState)
+    const initialMeetupState = React.useMemo(() => buildInitialMeetupState(), [])
+    const [meetupByConversation, setMeetupByConversation] =
+        React.useState<Record<string, MeetupMachine[]>>(initialMeetupState)
+    const [buyerWalletAvailableEur, setBuyerWalletAvailableEur] = React.useState(() => {
+        let heldEur = 0
+        for (const history of Object.values(initialMeetupState)) {
+            const meetup = resolveCurrentMeetup(history)
+            if (
+                meetup &&
+                (meetup.status === "CONFIRMED" || meetup.status === "ARRIVED") &&
+                meetup.proposedPaymentMethod === "WALLET" &&
+                typeof meetup.walletHoldAmountEur === "number"
+            ) {
+                heldEur += meetup.walletHoldAmountEur
+            }
+        }
+        return 5000 - heldEur
+    })
     const [lastError, setLastError] = React.useState("")
     const [isProposalOverlayOpen, setIsProposalOverlayOpen] = React.useState(false)
     const [proposalStep, setProposalStep] = React.useState<ProposalStep>(1)
@@ -2381,6 +2406,8 @@ function WallapopChatWorkspace() {
     const reverseGeocodeRequestIdRef = React.useRef(0)
     const convexHydrationRequestIdRef = React.useRef(0)
     const [clockNowMs, setClockNowMs] = React.useState(() => Date.now())
+    const meetupByConversationRef = React.useRef(meetupByConversation)
+    meetupByConversationRef.current = meetupByConversation
 
     const selectedConversation = React.useMemo(
         () =>
@@ -2752,6 +2779,10 @@ function WallapopChatWorkspace() {
     }
 
     const updateSelectedMeetup = (next: MeetupMachine) => {
+        const prevMeetup = resolveCurrentMeetup(
+            meetupByConversationRef.current[selectedConversation.id] ?? []
+        )
+
         setMeetupByConversation((previous) => {
             const currentHistory = previous[selectedConversation.id] ?? []
             let nextHistory = currentHistory
@@ -2782,6 +2813,25 @@ function WallapopChatWorkspace() {
                 [selectedConversation.id]: nextHistory,
             }
         })
+
+        if (
+            prevMeetup &&
+            prevMeetup.status !== "CONFIRMED" &&
+            next.status === "CONFIRMED" &&
+            next.proposedPaymentMethod === "WALLET" &&
+            typeof next.finalPrice === "number"
+        ) {
+            setBuyerWalletAvailableEur((balance) => Math.max(0, balance - next.finalPrice!))
+        }
+
+        if (
+            prevMeetup &&
+            prevMeetup.status !== "CANCELLED" &&
+            next.status === "CANCELLED" &&
+            typeof prevMeetup.walletHoldAmountEur === "number"
+        ) {
+            setBuyerWalletAvailableEur((balance) => balance + prevMeetup.walletHoldAmountEur!)
+        }
 
         if (next.status === "COMPLETED") {
             appendRatingPromptMessage()
@@ -3219,6 +3269,10 @@ function WallapopChatWorkspace() {
                         onError={setLastError}
                         errorMessage={lastError}
                         onRatingPublished={markRatingPromptCompleted}
+                        buyerWalletAvailableEur={buyerWalletAvailableEur}
+                        onWalletTopUp={(amountEur) =>
+                            setBuyerWalletAvailableEur((balance) => balance + amountEur)
+                        }
                     />
                 </div>
                 <DesktopConversationSidebar
@@ -3252,6 +3306,10 @@ function WallapopChatWorkspace() {
                         onError={setLastError}
                         errorMessage={lastError}
                         onRatingPublished={markRatingPromptCompleted}
+                        buyerWalletAvailableEur={buyerWalletAvailableEur}
+                        onWalletTopUp={(amountEur) =>
+                            setBuyerWalletAvailableEur((balance) => balance + amountEur)
+                        }
                     />
                 )}
             </section>

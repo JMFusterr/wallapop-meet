@@ -374,4 +374,52 @@ describe("meetup state machine", () => {
             expect(finalNoShow.meetup.cancelReason).toBe("NO_SHOW_FINAL_CONTRADICTION")
         }
     })
+
+    it("rechaza ACCEPT con Wallet si el saldo es insuficiente", () => {
+        const initial = createMeetupMachine({ scheduledAt, chatContext })
+        const proposed = transitionMeetup(initial, {
+            type: "PROPOSE",
+            actorRole: "SELLER",
+        })
+        if (!proposed.ok) {
+            throw new Error("Se esperaba PROPOSE valido.")
+        }
+        const walletProposal = {
+            ...proposed.meetup,
+            proposedPaymentMethod: "WALLET" as const,
+            finalPrice: 100,
+        }
+        const result = transitionMeetup(walletProposal, {
+            type: "ACCEPT",
+            actorRole: "BUYER",
+            buyerWalletAvailableEur: 40,
+        })
+        expect(result.ok).toBe(false)
+    })
+
+    it("acepta con Wallet y reserva el importe en el meetup", () => {
+        const initial = createMeetupMachine({ scheduledAt, chatContext })
+        const proposed = transitionMeetup(initial, {
+            type: "PROPOSE",
+            actorRole: "SELLER",
+        })
+        if (!proposed.ok) {
+            throw new Error("Se esperaba PROPOSE valido.")
+        }
+        const walletProposal = {
+            ...proposed.meetup,
+            proposedPaymentMethod: "WALLET" as const,
+            finalPrice: 100,
+        }
+        const result = transitionMeetup(walletProposal, {
+            type: "ACCEPT",
+            actorRole: "BUYER",
+            buyerWalletAvailableEur: 400,
+        })
+        expect(result.ok).toBe(true)
+        if (result.ok) {
+            expect(result.meetup.status).toBe("CONFIRMED")
+            expect(result.meetup.walletHoldAmountEur).toBe(100)
+        }
+    })
 })

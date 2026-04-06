@@ -73,6 +73,8 @@ export type MeetupMachine = {
     proposedLocationLng?: number
     finalPrice?: number
     proposedPaymentMethod?: MeetupPaymentMethod
+    /** Importe reservado en Wallapop Wallet al confirmar la quedada con pago Wallet (hasta completar, cancelar o no-show). */
+    walletHoldAmountEur?: number
     chatContext: MeetupChatContext
     proposedAt?: Date
     confirmedAt?: Date
@@ -91,7 +93,13 @@ export type MeetupMachine = {
 export type MeetupEvent =
     | { type: "PROPOSE"; actorRole: ActorRole; occurredAt?: Date }
     | { type: "COUNTER_PROPOSE"; actorRole: ActorRole; occurredAt?: Date }
-    | { type: "ACCEPT"; actorRole: ActorRole; occurredAt?: Date }
+    | {
+          type: "ACCEPT"
+          actorRole: ActorRole
+          occurredAt?: Date
+          /** Saldo disponible en Wallet del comprador; obligatorio en transiciones ACCEPT con pago WALLET. */
+          buyerWalletAvailableEur?: number
+      }
     | {
           type: "MARK_ARRIVED"
           actorRole: ActorRole
