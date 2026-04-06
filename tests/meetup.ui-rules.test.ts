@@ -126,6 +126,25 @@ describe("meetup ui rules", () => {
         expect(ctas).toEqual(["accept", "counter", "reject"])
     })
 
+    it("resuelve CTA inicial solo para SELLER cuando no hay meetup activo", () => {
+        const draft = createMeetupMachine({ scheduledAt, chatContext })
+        const sellerCtas = resolveMeetupCardCtaIds({
+            meetup: draft,
+            currentTime: new Date("2026-02-20T15:00:00.000Z"),
+            actorRole: "SELLER",
+            hasEditProposalAction: false,
+        })
+        const buyerCtas = resolveMeetupCardCtaIds({
+            meetup: draft,
+            currentTime: new Date("2026-02-20T15:00:00.000Z"),
+            actorRole: "BUYER",
+            hasEditProposalAction: false,
+        })
+
+        expect(sellerCtas).toEqual(["propose"])
+        expect(buyerCtas).toEqual([])
+    })
+
     it("resuelve CTAs de SELLER en COUNTER_PROPOSED", () => {
         const proposed = buildProposedMeetup()
         const counter = transitionMeetup(proposed, {
@@ -198,5 +217,37 @@ describe("meetup ui rules", () => {
 
         expect(sellerCtas).toEqual(["complete", "no-show"])
         expect(buyerCtas).toEqual(["arrived", "cancel"])
+    })
+
+    it("oculta CTA de llegada para BUYER en ARRIVED cuando ya marco llegada", () => {
+        const confirmed = buildConfirmedMeetup()
+        const sellerArrived = transitionMeetup(confirmed, {
+            type: "MARK_ARRIVED",
+            actorRole: "SELLER",
+            occurredAt: new Date("2026-02-20T17:45:00.000Z"),
+            withinSafeRadius: true,
+        })
+        if (!sellerArrived.ok) {
+            throw new Error("Se esperaba meetup ARRIVED para la prueba.")
+        }
+
+        const buyerArrived = transitionMeetup(sellerArrived.meetup, {
+            type: "MARK_ARRIVED",
+            actorRole: "BUYER",
+            occurredAt: new Date("2026-02-20T17:46:00.000Z"),
+            withinSafeRadius: true,
+        })
+        if (!buyerArrived.ok) {
+            throw new Error("Se esperaba check-in del comprador para la prueba.")
+        }
+
+        const buyerCtas = resolveMeetupCardCtaIds({
+            meetup: buyerArrived.meetup,
+            currentTime: new Date("2026-02-20T17:50:00.000Z"),
+            actorRole: "BUYER",
+            hasEditProposalAction: false,
+        })
+
+        expect(buyerCtas).toEqual(["cancel"])
     })
 })
