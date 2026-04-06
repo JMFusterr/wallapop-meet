@@ -267,6 +267,9 @@ Propiedades visuales:
 - `onError`: callback de error de transicion.
 - `onEditProposal`: callback para reabrir el wizard en modo edicion.
 - `onOpenMapPreview`: callback para abrir previsualizacion de mapa en grande.
+- `buyerWalletAvailableEur?: number`: saldo disponible del comprador para validar pago en Wallapop Wallet (workspace de demo).
+- `onWalletTopUp?: (amountEur: number) => void`: callback al confirmar recarga desde `WalletTopUpSheet` cuando falta saldo al aceptar.
+- `distanceToMeetupMeters?: number | null`: distancia al punto acordado (metros); determina aviso de proximidad y desbloqueo de `Estoy aqui` en conjunto con la ventana temporal.
 
 Reglas:
 - Debe renderizar acciones contextuales por estado de negocio y por rol visible en chat.
@@ -327,6 +330,10 @@ Reglas:
   - Se muestra en esquina inferior derecha.
   - Debe quedar alineada verticalmente con el ultimo elemento visible de la card.
   - No debe crear un bloque extra de espacio en blanco al final del componente.
+- Metodos de pago en overlay de propuesta: `EFECTIVO` (Cash) y `WALLAPOP WALLET` (Wallet); no `Bizum`.
+- Con `proposedPaymentMethod === WALLET` y rol `BUYER`, la card puede mostrar bloque educativo sobre el uso del Wallet; el boton `Aceptar` no se deshabilita por falta de saldo: al pulsar, si el saldo es insuficiente, se invoca `onWalletTopUp` para abrir la hoja de recarga (`src/components/meetup/wallet-top-up-sheet.tsx`).
+- En `CONFIRMED`, dentro de ventana y con distancia aun mayor a la minima de proximidad, puede mostrarse un aviso para acercarse; si `Estoy aqui` ya esta habilitado por proximidad, no se muestra ese aviso redundante.
+- En `ARRIVED` con Wallet, el vendedor ve CTA principal de escaneo de QR del comprador (`Escanear codigo QR de <nombre>`); con Efectivo se mantiene `Confirmar venta`.
 
 ## 16. Composer de chat (`ChatComposer`)
 Propiedades visuales:
@@ -708,6 +715,39 @@ Casos que deben seguir cubiertos en story/test visual:
 8. `ChatConversationHeader` en viewport movil con controles de cabecera compactos (flecha/menu) y espaciado lateral consistente.
 9. `ChatConversationHeader` con `productStatusIcon="deal"` en color de vendido (`--status-sold`), nunca color de reservado.
 10. `ChatListItem` con preview larga y `lastMessageDeliveryState`, truncando con elipsis sin desplazar badge ni icono de entrega.
+
+---
+
+## Addendum v4 (2026-04-06) - Wallapop Wallet, proximidad y mock del workspace
+
+Si hay conflicto entre addendum v3 y este documento, prevalece v4.
+
+### A. `MeetupCard` y dominio Wallet
+
+- `walletHoldAmountEur` en entidad de meetup: importe reservado al confirmar con Wallet (`ACCEPT`); se libera al completar o cancelar segun reglas de `src/meetup/state-machine.ts`.
+- `buyerWalletAvailableEur` opcional en evento `ACCEPT` para validar saldo suficiente en transicion.
+- Componente `WalletTopUpSheet`: pantalla de recarga alineada a referencia app Wallapop; se abre desde `MeetupCard` cuando el comprador acepta sin saldo suficiente (si existe `onWalletTopUp`).
+- Comprador en propuesta con Wallet: bloque QR en card (solo lectura) + instrucciones para el vendedor en rol de escaneo en presencia.
+- Vendedor en `ARRIVED` con Wallet: CTA principal tipo pildora en color vendido (`sold`) para escanear QR del comprador; sustituye `Confirmar venta` en ese flujo.
+
+### B. Proximidad y `Estoy aqui`
+
+- Umbral de proximidad para desbloquear check-in (demo): `100 m` (constante `MEETUP_ARRIVAL_NEAR_METERS` en `src/meetup/meetup-ui-rules.ts`).
+- Mensaje de acercarse solo cuando el boton `Estoy aqui` sigue bloqueado por distancia; cuando ya esta habilitado por proximidad, no se muestra el aviso redundante.
+
+### C. Matriz de CTAs (ajuste `ARRIVED` con Wallet)
+
+| Estado | SELLER (Efectivo) | SELLER (Wallet) | BUYER |
+| --- | --- | --- | --- |
+| `ARRIVED` | `Confirmar venta` (principal) | `Escanear codigo QR de <comprador>` (principal) | `Estoy aqui` si aplica no-show parcial; `Cancelar quedada` (texto) |
+
+El resto de filas de la matriz del addendum v2 se mantiene sin cambio salvo donde se contradiga este cuadro.
+
+### D. Referencia de implementacion
+
+- `src/components/meetup/meetup-card.tsx`
+- `src/components/meetup/wallet-top-up-sheet.tsx`
+- `src/components/meetup/wallapop-chat-workspace.tsx` (saldo demo, conversacion seed por defecto)
 
 ## Inventarios de referencia (captura oficial)
 - `docs/elements/buttons.md`

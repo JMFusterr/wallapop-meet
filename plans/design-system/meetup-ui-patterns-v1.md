@@ -360,4 +360,42 @@ Reglas:
 - CTA `Confirmar venta` en `ARRIVED` usa color `sold` (rosa), no `reserve` (morado).
 - Banner superior de venta pendiente usa fondo y accion en color de marca (`action.primary`).
 
+---
+
+## Anexo v4 (2026-04-06) - Wallapop Wallet, proximidad y mock del workspace
+
+Si hay conflicto con anexos v2 o v3, prevalece v4.
+
+### A. Metodos de pago en propuesta
+
+- Paso 3 del wizard: `Efectivo` y `Wallapop Wallet` como unicas opciones seleccionables (no Bizum).
+- Iconografia y copy alineados a `components-spec-v1.md` seccion 15 y addendum v4.
+
+### B. Revision de propuesta (comprador) con Wallet
+
+- Resumen en `MeetupCard` con `pendiente` en chip.
+- `Aceptar` siempre habilitado; si el saldo del monedero es inferior al precio acordado, al pulsar se abre `WalletTopUpSheet` para recarga (no bloqueo agresivo del boton principal).
+- Texto educativo en card para el comprador sobre el flujo de pago y QR en el encuentro.
+- En `SELLER`, bloque complementario con CTA de escaneo del QR del comprador (rol vendedor en el encuentro).
+
+### C. Confirmacion y venta (`CONFIRMED` / `ARRIVED`)
+
+- Hold de importe en dominio al aceptar con Wallet (`walletHoldAmountEur`); liberacion al completar o cancelar segun maquina de estados.
+- Ventana de `Estoy aqui`: `-30 min` a `+2 h` respecto a `scheduledAt`.
+- Proximidad `~100 m` al punto: aviso para acercarse solo mientras el boton de llegada sigue bloqueado por distancia; si ya esta habilitado por proximidad, no se muestra el aviso redundante.
+- En `ARRIVED` con Wallet, vendedor: CTA principal `Escanear codigo QR de <nombre>` (rosa vendido); con Efectivo: `Confirmar venta`.
+
+### D. Mock de demo `WallapopChatWorkspace`
+
+- Conversacion por defecto al cargar: `conv-c-buyer-incoming` (Marta P.), con meetup en estado `PROPOSED` y metodo `WALLAPOP`, para mostrar la solicitud de quedada pendiente sin confirmar.
+- Vista movil inicial: `conversation` (no `inbox`) para abrir directamente el hilo con la tarjeta visible.
+- Saldo demo del comprador en workspace: `5000` EUR menos holds derivados de otros chats sembrados en `buildInitialMeetupState` (ver `wallapop-chat-workspace.tsx`).
+
+### E. Referencias
+
+- Patrones de UI: este documento (anexo v4).
+- Contrato de componente: `plans/design-system/components-spec-v1.md` (seccion 15, addendum v4).
+- `src/components/meetup/wallapop-chat-workspace.tsx`, `src/components/meetup/meetup-card.tsx`, `src/components/meetup/wallet-top-up-sheet.tsx`
+- Reglas de proximidad: `src/meetup/meetup-ui-rules.ts`
+
 

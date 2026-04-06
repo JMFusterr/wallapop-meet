@@ -999,14 +999,7 @@ function buildInitialMeetupState(): Record<string, MeetupMachine[]> {
                 actorRole: "SELLER",
                 occurredAt: new Date(now.getTime() - 4 * 60 * 1000),
             })
-            const proposedMeetup = proposedResult.ok ? proposedResult.meetup : incomingProposal
-            const confirmedResult = transitionMeetup(proposedMeetup, {
-                type: "ACCEPT",
-                actorRole: "BUYER",
-                occurredAt: new Date(now.getTime() - 3 * 60 * 1000),
-                buyerWalletAvailableEur: 10_000,
-            })
-            state[conversation.id] = [confirmedResult.ok ? confirmedResult.meetup : proposedMeetup]
+            state[conversation.id] = [proposedResult.ok ? proposedResult.meetup : incomingProposal]
             continue
         }
 
@@ -2337,9 +2330,9 @@ function WallapopChatWorkspace() {
         initialConversations
     )
     const [selectedConversationId, setSelectedConversationId] = React.useState<string>(
-        "conv-a-arrival"
+        "conv-c-buyer-incoming"
     )
-    const [mobileView, setMobileView] = React.useState<"inbox" | "conversation">("inbox")
+    const [mobileView, setMobileView] = React.useState<"inbox" | "conversation">("conversation")
     const [messagesByConversation, setMessagesByConversation] = React.useState<
         Record<string, Message[]>
     >(() =>
