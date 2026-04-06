@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { IconButton } from "@/components/ui/icon-button"
+import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 
 type WalletTopUpSheetProps = {
     open: boolean
@@ -127,4 +128,21 @@ function WalletTopUpSheet({ open, onClose, minSuggestedAmountEur, onConfirmTopUp
     )
 }
 
-export { WalletTopUpSheet }
+const designSystemMeta = {
+    id: "wallet-top-up-sheet",
+    entityType: "component",
+    title: "Wallet Top Up Sheet",
+    description:
+        "Pantalla completa (portal) para recargar Wallapop Wallet cuando el comprador acepta una quedada con pago Wallet y falta saldo. Cabecera con volver, titulo y enlace de ayuda; importe editable; CTA Recargar; bloque metodo de pago de referencia.",
+    status: "ready",
+    states: ["default", "invalid_amount"],
+    storybookTitle: "Design System/Wallet Top Up Sheet",
+    tokensUsed: [
+        "tokens.color.semantic.action.primary",
+        "tokens.color.semantic.text.primary",
+        "tokens.color.semantic.border.divider",
+    ],
+} satisfies DesignSystemEntityMeta
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { WalletTopUpSheet, designSystemMeta }

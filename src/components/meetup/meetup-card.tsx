@@ -960,13 +960,14 @@ const designSystemMeta = {
     entityType: "component",
     title: "Meetup Card",
     description:
-        "Tarjeta de quedada en hilo de chat: titulo fijo, chip de estado (`Label` + icono Lucide segun `statusPill`), tres filas de datos (calendario, ubicacion, pago), mini mapa y CTAs por estado/rol. Iconos del chip: Clock pendiente, CheckCircle2 confirmada, MapPin has llegado, Handshake completada (alineado con `WallapopIcon` deal), XCircle cancelada, CircleDashed sin propuesta.",
+        "Tarjeta de quedada en hilo de chat: titulo fijo, chip de estado (`Label` + icono Lucide segun `statusPill`), tres filas de datos (calendario, ubicacion, pago), mini mapa y CTAs por estado/rol. Wallapop Wallet: banner educativo verde solo en propuesta pendiente (`PROPOSED`/`COUNTER_PROPOSED`); sin banner de saldo apartado en card; comprador en `ARRIVED` con llegada marcada y pago Wallet: CTA `Mostrar codigo QR` que abre dialog con QR (`WalletInPersonQr`) y codigo de 6 digitos; vendedor en `ARRIVED` con Wallet: CTA escaneo tipo vendido. Recarga monedero via `WalletTopUpSheet` si falta saldo al aceptar. Iconos del chip: Clock pendiente, CheckCircle2 confirmada, MapPin has llegado, Handshake completada (alineado con `WallapopIcon` deal), XCircle cancelada, CircleDashed sin propuesta.",
     status: "ready",
     states: [
         "pending",
         "confirmed",
         "thirty_minutes_before",
         "arrival",
+        "wallet_qr_dialog",
         "cancelled",
         "completed",
     ],

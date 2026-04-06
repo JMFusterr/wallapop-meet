@@ -375,15 +375,16 @@ Si hay conflicto con anexos v2 o v3, prevalece v4.
 
 - Resumen en `MeetupCard` con `pendiente` en chip.
 - `Aceptar` siempre habilitado; si el saldo del monedero es inferior al precio acordado, al pulsar se abre `WalletTopUpSheet` para recarga (no bloqueo agresivo del boton principal).
-- Texto educativo en card para el comprador sobre el flujo de pago y QR en el encuentro.
-- En `SELLER`, bloque complementario con CTA de escaneo del QR del comprador (rol vendedor en el encuentro).
+- Texto educativo (`NoticeBanner` verde / `tone=success`) solo en `PROPOSED` o `COUNTER_PROPOSED`; no se muestra tras confirmar la quedada.
+- No hay banner en card por importe apartado en monedero (el hold sigue en dominio).
 
 ### C. Confirmacion y venta (`CONFIRMED` / `ARRIVED`)
 
-- Hold de importe en dominio al aceptar con Wallet (`walletHoldAmountEur`); liberacion al completar o cancelar segun maquina de estados.
+- Hold de importe en dominio al aceptar con Wallet (`walletHoldAmountEur`); liberacion al completar o cancelar segun maquina de estados (sin mensaje dedicado en la tarjeta).
 - Ventana de `Estoy aqui`: `-30 min` a `+2 h` respecto a `scheduledAt`.
 - Proximidad `~100 m` al punto: aviso para acercarse solo mientras el boton de llegada sigue bloqueado por distancia; si ya esta habilitado por proximidad, no se muestra el aviso redundante.
 - En `ARRIVED` con Wallet, vendedor: CTA principal `Escanear codigo QR de <nombre>` (rosa vendido); con Efectivo: `Confirmar venta`.
+- En `ARRIVED` con Wallet, comprador que ya marco llegada: CTA `Mostrar codigo QR` abre dialog con QR de pago y codigo de 6 digitos de verificacion (ver anexo v5).
 
 ### D. Mock de demo `WallapopChatWorkspace`
 
@@ -394,8 +395,38 @@ Si hay conflicto con anexos v2 o v3, prevalece v4.
 ### E. Referencias
 
 - Patrones de UI: este documento (anexo v4).
-- Contrato de componente: `plans/design-system/components-spec-v1.md` (seccion 15, addendum v4).
-- `src/components/meetup/wallapop-chat-workspace.tsx`, `src/components/meetup/meetup-card.tsx`, `src/components/meetup/wallet-top-up-sheet.tsx`
+- Contrato de componente: `plans/design-system/components-spec-v1.md` (seccion 15, addendum v4 y v5).
+- `src/components/meetup/wallapop-chat-workspace.tsx`, `src/components/meetup/meetup-card.tsx`, `src/components/meetup/wallet-top-up-sheet.tsx`, `src/meetup/wallet-payment-qr.ts`
 - Reglas de proximidad: `src/meetup/meetup-ui-rules.ts`
+
+---
+
+## Anexo v5 (2026-04-06) - Dialog QR Wallet (comprador)
+
+Si hay conflicto con el anexo v4, prevalece v5.
+
+### A. Objetivo
+
+- El comprador no muestra el QR de pago en la card una vez confirmada la quedada; tras indicar que ha llegado (`ARRIVED` con `arrivalCheckins.BUYER`), accede al QR mediante un boton dedicado.
+
+### B. Boton `Mostrar codigo QR`
+
+- Misma familia visual que la CTA del vendedor de escaneo: `Button` con `variant` de estado vendido (`status_sold_solid`), icono `QrCode`, texto `Mostrar codigo QR`, ancho completo, pildora.
+- `aria-label` alineado al texto visible.
+
+### C. Dialog
+
+- Modal centrado sobre scrim (`overlay-scrim`), panel con sombra, `role=dialog`, `aria-modal=true`, titulo accesible.
+- Contenido: titulo `Pago con Wallapop Wallet`, texto de ayuda, `WalletInPersonQr` (payload deep link `wallapop://wallet-inperson-pay?...`), numero de 6 digitos bajo el QR (`deriveWalletDisplayCode`), etiqueta `Código de verificación`, boton `Cerrar`; tap en scrim cierra.
+- Implementacion: `src/components/meetup/meetup-card.tsx` (portal a `document.body`).
+
+### D. Stories
+
+- `Design System/Meetup Card` -> `Wallet Payment Buyer Show Qr Dialog` (comprador con llegada marcada).
+- `Wallet Payment Seller Scan` (vendedor escaneo) sigue documentando el lado cobro.
+
+### E. Contrato
+
+- Detalle normativo: `plans/design-system/components-spec-v1.md` addendum v5.
 
 
