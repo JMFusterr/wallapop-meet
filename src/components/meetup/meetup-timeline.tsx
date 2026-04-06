@@ -9,8 +9,6 @@ const ORDERED_STATUSES: MeetupStatus[] = [
     "CANCELLED",
 ]
 
-const FINAL_STATUSES: MeetupStatus[] = ["COMPLETED", "CANCELLED"]
-
 type MeetupTimelineProps = {
     currentStatus: MeetupStatus | null
 }
@@ -18,13 +16,19 @@ type MeetupTimelineProps = {
 function getStepAppearance(
     step: MeetupStatus,
     currentStatus: MeetupStatus | null
-): "pending" | "active" | "done" | "terminal" {
+): "pending" | "active" | "done" | "terminal" | "terminalSuccess" {
     if (!currentStatus) {
         return "pending"
     }
 
     if (step === currentStatus) {
-        return FINAL_STATUSES.includes(step) ? "terminal" : "active"
+        if (step === "COMPLETED") {
+            return "terminalSuccess"
+        }
+        if (step === "CANCELLED") {
+            return "terminal"
+        }
+        return "active"
     }
 
     const stepIndex = ORDERED_STATUSES.indexOf(step)
@@ -55,6 +59,10 @@ const stepClassName: Record<
     },
     terminal: {
         dot: "bg-[color:var(--feedback-error)]",
+        text: "text-[color:var(--text-primary)]",
+    },
+    terminalSuccess: {
+        dot: "bg-[color:var(--feedback-success)]",
         text: "text-[color:var(--text-primary)]",
     },
 }

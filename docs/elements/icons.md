@@ -51,6 +51,7 @@
 - `bookmark`, `deal` (indicadores de estado en listado y card de producto)
 - `calendar` (accion de propuesta de quedada)
 - `double_check` (estado de entrega en listado y mensajes)
+- `bot` (asistente / mensajes de sistema; `ChatMeetRatingPromptBubble` tras venta completada)
 
 ## Matriz de accion principal (Design System)
 
@@ -74,6 +75,7 @@
 | `deal` | Señalar trato/punto personalizado | `ChatListItem`, mapas |
 | `bookmark` | Señalar estado reservado | `ChatListItem`, `ChatProductCard` |
 | `double_check` | Mostrar estado de entrega | `ChatMessageBubble`, `ChatListItem` |
+| `bot` | Identificar mensaje de asistente o sistema | `ChatMeetRatingPromptBubble` |
 
 Notas de uso en workspace (2026-02-20):
 - `burguer_menu` no se usa en el header del buzon de la implementacion actual.

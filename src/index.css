@@ -209,6 +209,13 @@
   --wm-color-semantic-label-cancelled-bg: #fdebec;
   --wm-color-semantic-label-cancelled-border: #ea5760;
   --wm-color-semantic-label-cancelled-text: #b23d41;
+  --wm-color-semantic-meet-rating-prompt-background: #d5f2f7;
+  --wm-color-semantic-meet-rating-prompt-text: #3a9db0;
+  --wm-color-semantic-meet-rating-prompt-cta: #46abb9;
+  --wm-color-semantic-meet-rating-prompt-cta-hover: #3a9db0;
+  --wm-color-semantic-meet-rating-prompt-cta-text: #ffffff;
+  --wm-color-semantic-meet-rating-prompt-meta: #8ec5d1;
+  --wm-color-semantic-meet-rating-prompt-icon-bg: #ffffff;
   --wm-color-delivery-sent: #c2cdd3;
   --wm-color-domain-status-reserved: #86418a;
   --wm-color-domain-status-reserved-hover: #703474;
@@ -273,6 +280,13 @@
   --label-cancelled-bg: var(--wm-color-semantic-label-cancelled-bg);
   --label-cancelled-border: var(--wm-color-semantic-label-cancelled-border);
   --label-cancelled-text: var(--wm-color-semantic-label-cancelled-text);
+  --meet-rating-prompt-bg: var(--wm-color-semantic-meet-rating-prompt-background);
+  --meet-rating-prompt-text: var(--wm-color-semantic-meet-rating-prompt-text);
+  --meet-rating-prompt-cta: var(--wm-color-semantic-meet-rating-prompt-cta);
+  --meet-rating-prompt-cta-hover: var(--wm-color-semantic-meet-rating-prompt-cta-hover);
+  --meet-rating-prompt-cta-text: var(--wm-color-semantic-meet-rating-prompt-cta-text);
+  --meet-rating-prompt-meta: var(--wm-color-semantic-meet-rating-prompt-meta);
+  --meet-rating-prompt-icon-bg: var(--wm-color-semantic-meet-rating-prompt-icon-bg);
   --delivery-sent: var(--wm-color-delivery-sent);
   --status-reserved: var(--wm-color-domain-status-reserved);
   --status-reserved-hover: var(--wm-color-domain-status-reserved-hover);
@@ -329,6 +343,7 @@
   --wm-size-24: 24px;
   --wm-size-25: 25px;
   --wm-size-34: 34px;
+  --wm-size-40: 40px;
   --wm-size-42: 42px;
   --wm-size-44: 44px;
   --wm-size-47: 47px;

@@ -4,6 +4,10 @@ import L from "leaflet"
 import { Banknote, MapPin, QrCode } from "lucide-react"
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet"
 
+import {
+    ChatMeetRatingPromptBubble,
+    MEET_RATING_PROMPT_COPY,
+} from "@/components/meetup/chat-meet-rating-prompt-bubble"
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { MeetupProposalFooter } from "@/components/meetup/meetup-proposal-footer"
 import { MeetupProposalHeader } from "@/components/meetup/meetup-proposal-header"
@@ -52,6 +56,7 @@ type Message = {
     time: string
     createdAt: number
     deliveryState?: "sent" | "read"
+    messageKind?: "rating_prompt"
 }
 
 type ConvexChatMessage = {
@@ -2120,13 +2125,17 @@ function ConversationPane({
                                                 : "flex justify-start [contain:paint]"
                                         }
                                     >
-                                        <ChatMessageBubble
-                                            variant={message.variant}
-                                            time={message.time}
-                                            deliveryState={message.deliveryState}
-                                        >
-                                            {message.text}
-                                        </ChatMessageBubble>
+                                        {message.messageKind === "rating_prompt" ? (
+                                            <ChatMeetRatingPromptBubble time={message.time} />
+                                        ) : (
+                                            <ChatMessageBubble
+                                                variant={message.variant}
+                                                time={message.time}
+                                                deliveryState={message.deliveryState}
+                                            >
+                                                {message.text}
+                                            </ChatMessageBubble>
+                                        )}
                                     </div>
                                 </div>
                             )
@@ -2555,6 +2564,17 @@ function WallapopChatWorkspace() {
         markConversationAsRead(selectedConversationId)
     }, [markConversationAsRead, selectedConversationId])
 
+    const jumpToActiveMeetup = React.useCallback(() => {
+        if (!selectedMeetup) {
+            return
+        }
+        const target = document.getElementById(`meetup-card-${selectedMeetup.id}`)
+        if (!target) {
+            return
+        }
+        target.scrollIntoView({ behavior: "smooth", block: "center" })
+    }, [selectedMeetup])
+
     if (!selectedConversation) {
         return null
     }
@@ -2637,6 +2657,24 @@ function WallapopChatWorkspace() {
         }))
     }
 
+    const appendRatingPromptMessage = () => {
+        const nowMs = Date.now()
+        const nextMessage: Message = {
+            id: `rating-${nowMs}`,
+            senderUserId: "wally",
+            text: MEET_RATING_PROMPT_COPY,
+            messageKind: "rating_prompt",
+            variant: "received",
+            time: formatTime(new Date(nowMs)),
+            createdAt: nowMs,
+        }
+
+        setMessagesByConversation((previous) => ({
+            ...previous,
+            [selectedConversation.id]: [...(previous[selectedConversation.id] ?? []), nextMessage],
+        }))
+    }
+
     const appendCounterpartMessage = (text: string) => {
         const nowMs = Date.now()
         const nextMessage: Message = {
@@ -2696,6 +2734,7 @@ function WallapopChatWorkspace() {
         })
 
         if (next.status === "COMPLETED") {
+            appendRatingPromptMessage()
             setConversationsState((previous) =>
                 previous.map((conversation) =>
                     conversation.id === selectedConversation.id
@@ -2706,25 +2745,6 @@ function WallapopChatWorkspace() {
                         }
                         : conversation
                 )
-            )
-        }
-
-        if (next.status === "CONFIRMED") {
-            setConversationsState((previous) =>
-                previous.map((conversation) => {
-                    if (conversation.id !== selectedConversation.id) {
-                        return conversation
-                    }
-                    const isSold =
-                        conversation.leadingIndicator === "deal" ||
-                        isSoldStatusLabel(conversation.listingStatusLabel)
-                    if (isSold) {
-                        return conversation
-                    }
-                    return {
-                        ...conversation,
-                    }
-                })
             )
         }
 
@@ -2782,17 +2802,6 @@ function WallapopChatWorkspace() {
         applyProposalDraftState(buildProposalDraftState(selectedMeetup))
         setIsProposalOverlayOpen(true)
     }
-
-    const jumpToActiveMeetup = React.useCallback(() => {
-        if (!selectedMeetup) {
-            return
-        }
-        const target = document.getElementById(`meetup-card-${selectedMeetup.id}`)
-        if (!target) {
-            return
-        }
-        target.scrollIntoView({ behavior: "smooth", block: "center" })
-    }, [selectedMeetup])
 
     const openMeetupMapPreview = (meetup: MeetupMachine) => {
         const hasPoint =

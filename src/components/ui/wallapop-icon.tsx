@@ -2,6 +2,7 @@ import type { DesignSystemEntityMeta } from "@/design-system/catalog/types"
 import {
   ArrowLeft,
   Bookmark,
+  Bot,
   CalendarDays,
   CheckCheck,
   ChevronRight,
@@ -37,6 +38,7 @@ type WallapopIconName =
   | "mail"
   | "user"
   | "bookmark"
+  | "bot"
   | "deal"
   | "calendar"
   | "double_check"
@@ -64,6 +66,7 @@ const wallapopIconMap: Record<WallapopIconName, LucideIcon> = {
   mail: Mail,
   user: UserRound,
   bookmark: Bookmark,
+  bot: Bot,
   deal: Handshake,
   calendar: CalendarDays,
   double_check: CheckCheck,

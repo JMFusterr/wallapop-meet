@@ -112,15 +112,20 @@ Reglas:
 - La acción en pantalla bloqueada debe reflejarse en estado interno sin reabrir flujo completo.
 - Fallback: abrir app en vista de meetup si no hay acción directa disponible.
 
-## 6. Seguimiento 24-48h
-Contenido:
+## 6. Seguimiento post-venta y valoracion
+Contenido inmediato en chat (tras `COMPLETED`):
+- Componente `ChatMeetRatingPromptBubble`: mensaje alineado como recibido (asistente), copy de invitacion a valorar, icono `Bot` (Lucide) en capsula clara, CTA `Valorar`, hora en esquina inferior.
+- Tokens: `tokens.color.meet_rating_prompt.*` (ver `design-tokens-v1.md`).
+
+Seguimiento 24-48h (producto):
 - Pregunta: "¿Se completó la venta?"
 - Respuestas: `Sí, completada` / `No, cancelada`.
 
 Estados:
 - `COMPLETED` si se confirma la venta.
 - `CANCELLED` si no se realizó.
-- `CANCELLED` con motivo de no-show cuando no hay respuesta tras la ventana definida por producto.`r`n
+- `CANCELLED` con motivo de no-show cuando no hay respuesta tras la ventana definida por producto.
+
 ## 7. Estados empty, loading y error
 Patrones mínimos:
 - Empty: no hay meetup activo.

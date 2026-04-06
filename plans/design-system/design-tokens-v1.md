@@ -160,6 +160,8 @@ components
   - `tokens.color.meetup_status.arrived.{background,border,text}`
   - `tokens.color.meetup_status.completed.{background,border,text}`
   - `tokens.color.meetup_status.cancelled.{background,border,text}`
+- Mensaje de valoracion post-venta (`ChatMeetRatingPromptBubble`):
+  - `tokens.color.meet_rating_prompt.{background,text,cta_background,cta_hover,cta_text,meta,icon_background}`
 - Campos de formulario de meetup:
   - Input base: `components.input`
   - Estado error: `components.input.ring_color_error`

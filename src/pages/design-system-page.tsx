@@ -84,6 +84,7 @@ const iconActionMap: Record<WallapopIconName, string> = {
     mail: "Entrar en inbox o conversaciones.",
     user: "Acceso a perfil y area personal.",
     bookmark: "Representar el estado como reservado.",
+    bot: "Asistente automatizado y mensajes de sistema (por ejemplo, invitacion a valorar tras venta completada).",
     deal: "Representar el estado como vendido.",
     calendar: "Abrir selector de fecha y planificacion de quedada.",
     double_check: "Confirmar envío o lectura de mensaje.",
@@ -530,7 +531,10 @@ function CatalogStoryCard({ entity }: { entity: CatalogEntity }) {
         })
         .slice(0, 3)
 
-    const forceComponentRender = entity.id === "calendar-picker" || entity.id === "meetup-card"
+    const forceComponentRender =
+        entity.id === "calendar-picker" ||
+        entity.id === "meetup-card" ||
+        entity.id === "chat-meet-rating-prompt-bubble"
     const preview = forceComponentRender && meta.component
         ? React.createElement(meta.component, mergedArgs)
         : selectedRenderableVariant?.render
@@ -894,7 +898,8 @@ function DesignSystemPage() {
                         </h1>
                         <p className="mt-3 max-w-[65ch] font-wallie-fit text-[length:var(--wm-size-15)] leading-6 text-[color:var(--text-secondary)]">
                             Esta pagina consume tokens de <code>styles.json</code> para documentar foundations,
-                            componentes base en un unico portal operativo.
+                            componentes base en un unico portal operativo. Desde la app, el acceso rapido al viewer
+                            esta siempre disponible con el control flotante inferior derecho «Design System».
                         </p>
                     </header>
 

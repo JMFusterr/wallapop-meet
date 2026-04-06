@@ -1,4 +1,4 @@
-﻿{
+{
     "brand": {
         "name": "Wallapop",
         "system": "Wally",
@@ -533,6 +533,36 @@
                         "value": "{tokens.color.palette.error.700}",
                         "type": "color"
                     }
+                }
+            },
+            "meet_rating_prompt": {
+                "background": {
+                    "value": "#D5F2F7",
+                    "type": "color"
+                },
+                "text": {
+                    "value": "#3A9DB0",
+                    "type": "color"
+                },
+                "cta_background": {
+                    "value": "#46ABB9",
+                    "type": "color"
+                },
+                "cta_hover": {
+                    "value": "#3A9DB0",
+                    "type": "color"
+                },
+                "cta_text": {
+                    "value": "{tokens.color.neutral.0}",
+                    "type": "color"
+                },
+                "meta": {
+                    "value": "#8EC5D1",
+                    "type": "color"
+                },
+                "icon_background": {
+                    "value": "{tokens.color.neutral.0}",
+                    "type": "color"
                 }
             },
             "overlay": {
