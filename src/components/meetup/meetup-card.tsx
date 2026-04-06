@@ -4,7 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Label, type LabelTone } from "@/components/ui/label"
 import { NoticeBanner } from "@/components/ui/notice-banner"
 import { WallapopIcon } from "@/components/ui/wallapop-icon"
-import { resolveArrivalActionState } from "@/components/meetup/meetup-ui-rules"
+import {
+    resolveArrivalActionState,
+    resolveMeetupCardCtaIds,
+    type MeetupCardCtaId,
+} from "@/components/meetup/meetup-ui-rules"
 import L from "leaflet"
 import { Banknote, MapPin } from "lucide-react"
 import { MapContainer, Marker, TileLayer } from "react-leaflet"
@@ -309,184 +313,173 @@ function MeetupCard({
         URL.revokeObjectURL(url)
     }
 
-    if (meetup.status === null) {
-        actions.push({
-            id: "propose",
-            label: "Enviar propuesta",
-            variant: "primary",
-            run: () =>
-                applyEvent({
-                    type: "PROPOSE",
-                    actorRole,
-                    occurredAt: currentTime,
-                }),
-            disabled: actorRole !== "SELLER",
-            className: PRIMARY_ACTION_CLASS,
-            fullWidth: true,
-        })
-    }
+    const ctaIds = resolveMeetupCardCtaIds({
+        meetup,
+        currentTime,
+        actorRole,
+        hasEditProposalAction: Boolean(onEditProposal),
+    })
 
-    if (meetup.status === "PROPOSED" && actorRole === "BUYER") {
-        actions.push({
-            id: "accept",
-            label: "Aceptar",
-            variant: "primary",
-            run: () =>
-                applyEvent({
-                    type: "ACCEPT",
-                    actorRole,
-                    occurredAt: currentTime,
-                }),
-            disabled: actorRole !== "BUYER",
-            className:
-                `${PRIMARY_ACTION_CLASS} rounded-[var(--wm-size-999)] bg-[color:var(--action-primary)] text-[color:var(--text-on-action)] shadow-[var(--wm-shadow-inset-cta)]`,
-            fullWidth: true,
-        })
-        actions.push({
-            id: "counter",
-            label: "Proponer cambios",
-            variant: "outline",
-            run: onEditProposal
-                ? onEditProposal
-                : () =>
-                    applyEvent({
-                        type: "COUNTER_PROPOSE",
-                        actorRole,
-                        occurredAt: currentTime,
-                    }),
-            disabled: actorRole !== "BUYER",
-            className:
-                OUTLINE_ACTION_CLASS,
-            fullWidth: true,
-        })
-        actions.push({
-            id: "reject",
-            label: "Rechazar quedada",
-            variant: "ghost",
-            run: runCancel,
-            disabled: actorRole !== "BUYER",
-            className: TEXT_ACTION_CLASS,
-            fullWidth: true,
-        })
-    }
-
-    if (meetup.status === "COUNTER_PROPOSED" && actorRole === "SELLER") {
-        actions.push({
-            id: "accept-counter",
-            label: "Aceptar contraoferta",
-            variant: "primary",
-            run: () =>
-                applyEvent({
-                    type: "ACCEPT",
-                    actorRole,
-                    occurredAt: currentTime,
-                }),
-            disabled: actorRole !== "SELLER",
-            className: PRIMARY_ACTION_CLASS,
-            fullWidth: true,
-        })
-        actions.push({
-            id: "repropose",
-            label: "Reenviar propuesta",
-            variant: "outline",
-            run: () =>
-                applyEvent({
-                    type: "PROPOSE",
-                    actorRole,
-                    occurredAt: currentTime,
-            }),
-            disabled: actorRole !== "SELLER",
-            className: OUTLINE_ACTION_CLASS,
-            fullWidth: true,
-        })
-    }
-
-    if (meetup.status === "CONFIRMED") {
-        if (isCalendarFallbackWindow) {
-            actions.push({
-                id: "arrived",
-                label: "Estoy aqui",
-                variant: "primary",
-                run: () =>
-                    applyEvent({
-                        type: "MARK_ARRIVED",
-                        actorRole,
-                        occurredAt: currentTime,
-                    }),
-                disabled: !arrivalAction.enabled,
-                className: PRIMARY_ACTION_CLASS,
-                fullWidth: true,
-            })
-        } else {
-            actions.push({
-                id: "calendar",
-                label: "Anadir a Calendar",
-                variant: "outline",
-                run: addToCalendar,
-                className: OUTLINE_ACTION_CLASS,
-                fullWidth: true,
-            })
+    const actionFromCtaId = (ctaId: MeetupCardCtaId): CardAction | null => {
+        switch (ctaId) {
+            case "propose":
+                return {
+                    id: "propose",
+                    label: "Enviar propuesta",
+                    variant: "primary",
+                    run: () =>
+                        applyEvent({
+                            type: "PROPOSE",
+                            actorRole,
+                            occurredAt: currentTime,
+                        }),
+                    className: PRIMARY_ACTION_CLASS,
+                    fullWidth: true,
+                }
+            case "edit":
+                return onEditProposal
+                    ? {
+                          id: "edit",
+                          label: "Editar",
+                          variant: "outline",
+                          run: onEditProposal,
+                          className: OUTLINE_ACTION_CLASS,
+                          fullWidth: true,
+                      }
+                    : null
+            case "accept":
+                return {
+                    id: "accept",
+                    label: "Aceptar",
+                    variant: "primary",
+                    run: () =>
+                        applyEvent({
+                            type: "ACCEPT",
+                            actorRole,
+                            occurredAt: currentTime,
+                        }),
+                    className: `${PRIMARY_ACTION_CLASS} rounded-[var(--wm-size-999)] bg-[color:var(--action-primary)] text-[color:var(--text-on-action)] shadow-[var(--wm-shadow-inset-cta)]`,
+                    fullWidth: true,
+                }
+            case "counter":
+                return {
+                    id: "counter",
+                    label: "Proponer cambios",
+                    variant: "outline",
+                    run: onEditProposal
+                        ? onEditProposal
+                        : () =>
+                              applyEvent({
+                                  type: "COUNTER_PROPOSE",
+                                  actorRole,
+                                  occurredAt: currentTime,
+                              }),
+                    className: OUTLINE_ACTION_CLASS,
+                    fullWidth: true,
+                }
+            case "reject":
+                return {
+                    id: "reject",
+                    label: "Rechazar quedada",
+                    variant: "ghost",
+                    run: runCancel,
+                    className: TEXT_ACTION_CLASS,
+                    fullWidth: true,
+                }
+            case "accept-counter":
+                return {
+                    id: "accept-counter",
+                    label: "Aceptar contraoferta",
+                    variant: "primary",
+                    run: () =>
+                        applyEvent({
+                            type: "ACCEPT",
+                            actorRole,
+                            occurredAt: currentTime,
+                        }),
+                    className: PRIMARY_ACTION_CLASS,
+                    fullWidth: true,
+                }
+            case "repropose":
+                return {
+                    id: "repropose",
+                    label: "Reenviar propuesta",
+                    variant: "outline",
+                    run: () =>
+                        applyEvent({
+                            type: "PROPOSE",
+                            actorRole,
+                            occurredAt: currentTime,
+                        }),
+                    className: OUTLINE_ACTION_CLASS,
+                    fullWidth: true,
+                }
+            case "arrived":
+                return {
+                    id: "arrived",
+                    label: "Estoy aqui",
+                    variant: "primary",
+                    run: () =>
+                        applyEvent({
+                            type: "MARK_ARRIVED",
+                            actorRole,
+                            occurredAt: currentTime,
+                        }),
+                    disabled: !arrivalAction.enabled,
+                    className: PRIMARY_ACTION_CLASS,
+                    fullWidth: true,
+                }
+            case "calendar":
+                return {
+                    id: "calendar",
+                    label: "Anadir a Calendar",
+                    variant: "outline",
+                    run: addToCalendar,
+                    className: OUTLINE_ACTION_CLASS,
+                    fullWidth: true,
+                }
+            case "complete":
+                return {
+                    id: "complete",
+                    label: "Confirmar venta",
+                    variant: "primary",
+                    run: () =>
+                        applyEvent({
+                            type: "COMPLETE",
+                            actorRole,
+                            occurredAt: currentTime,
+                        }),
+                    className: `${PRIMARY_ACTION_CLASS} bg-[color:var(--status-sold)] hover:bg-[color:var(--status-sold-hover)] active:bg-[color:var(--status-sold-pressed)]`,
+                    fullWidth: true,
+                }
+            case "no-show":
+                return {
+                    id: "no-show",
+                    label: hasContradictionAlert ? "Definitivamente no esta" : "El comprador no ha aparecido",
+                    variant: "ghost",
+                    run: openNoShowFlow,
+                    className: TEXT_ACTION_CLASS,
+                    fullWidth: true,
+                }
+            case "cancel":
+                return {
+                    id: "cancel",
+                    label: "Cancelar quedada",
+                    variant: "ghost",
+                    run: runCancel,
+                    className: TEXT_ACTION_CLASS,
+                    fullWidth: true,
+                }
+            default:
+                return null
         }
     }
 
-    if (meetup.status === "ARRIVED") {
-        if (arrivalAction.enabled) {
-            actions.push({
-                id: "arrived",
-                label: "Estoy aqui",
-                variant: "primary",
-                run: () =>
-                    applyEvent({
-                        type: "MARK_ARRIVED",
-                        actorRole,
-                        occurredAt: currentTime,
-                    }),
-                disabled: !arrivalAction.enabled,
-                className: PRIMARY_ACTION_CLASS,
-                fullWidth: true,
-            })
+    for (const ctaId of ctaIds) {
+        const action = actionFromCtaId(ctaId)
+        if (action) {
+            actions.push(action)
         }
-
-        if (actorRole === "SELLER") {
-            actions.push({
-                id: "complete",
-                label: "Confirmar venta",
-                variant: "primary",
-                run: () =>
-                    applyEvent({
-                        type: "COMPLETE",
-                        actorRole,
-                        occurredAt: currentTime,
-                    }),
-                className: `${PRIMARY_ACTION_CLASS} bg-[color:var(--status-sold)] hover:bg-[color:var(--status-sold-hover)] active:bg-[color:var(--status-sold-pressed)]`,
-                fullWidth: true,
-            })
-            actions.push({
-                id: "no-show",
-                label: hasContradictionAlert ? "Definitivamente no esta" : "El comprador no ha aparecido",
-                variant: "ghost",
-                run: openNoShowFlow,
-                className: TEXT_ACTION_CLASS,
-                fullWidth: true,
-            })
-        }
-    }
-
-    if (
-        meetup.status !== "COMPLETED" &&
-        meetup.status !== "CANCELLED" &&
-        meetup.status !== null &&
-        !(meetup.status === "ARRIVED" && actorRole === "SELLER") &&
-        !(meetup.status === "PROPOSED" && actorRole === "BUYER")
-    ) {
-        actions.push({
-            id: "cancel",
-            label: "Cancelar quedada",
-            variant: "ghost",
-            run: runCancel,
-            className: TEXT_ACTION_CLASS,
-            fullWidth: true,
-        })
     }
 
     const paymentMethodValue = meetup.proposedPaymentMethod
@@ -496,21 +489,8 @@ function MeetupCard({
         meetup.finalPrice !== undefined ? `${meetup.finalPrice.toFixed(2)} \u20AC` : "sin precio"
     const currentStatusPill = statusPill(meetup)
     const title = `Quedada con ${counterpartName ?? "usuario"}`
-    const canEditProposal =
-        actorRole === "SELLER" &&
-        (meetup.status === "PROPOSED" || meetup.status === "COUNTER_PROPOSED")
     const isPendingActionStatus = meetup.status === "PROPOSED" || meetup.status === "COUNTER_PROPOSED"
     const sentAt = meetup.proposedAt ?? meetup.confirmedAt ?? meetup.cancelledAt ?? null
-    if (canEditProposal && onEditProposal) {
-        actions.unshift({
-            id: "edit",
-            label: "Editar",
-            variant: "outline",
-            run: onEditProposal,
-            className: OUTLINE_ACTION_CLASS,
-            fullWidth: true,
-        })
-    }
     const primaryActions = actions.filter((action) => action.variant !== "ghost")
     const footerAction = actions.find((action) => action.variant === "ghost")
     const hasMapCoordinates =
