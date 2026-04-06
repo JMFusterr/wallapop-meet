@@ -755,11 +755,11 @@ function MeetupCard({
             </dl>
 
             {actorRole === "BUYER" && meetup.proposedPaymentMethod === "WALLET" ? (
-                <p className="mt-3 font-wallie-fit text-[length:var(--wm-size-12)] leading-[1.45] text-[color:var(--text-secondary)]">
-                    Wallapop Wallet es el monedero de la app: pagas la quedada en persona con un codigo QR, sin efectivo. Es la
-                    misma forma de pago que puedes usar en otras compras; solo hace falta tener saldo disponible en el monedero,
-                    como cuando vas a comprar cualquier cosa por Wallapop.
-                </p>
+                <NoticeBanner className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)] leading-[1.45]">
+                    Tu dinero, 100% a salvo con Wallapop Wallet. Es la forma más segura de pagar y cobrar en persona. El dinero se
+                    guarda de forma segura en la app y solo se transfiere cuando escaneáis el código QR durante la quedada. Olvídate
+                    de llevar efectivo y haz el trato con total tranquilidad.
+                </NoticeBanner>
             ) : null}
 
             {actorRole === "BUYER" &&
