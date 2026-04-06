@@ -963,7 +963,7 @@ function buildInitialMeetupState(): Record<string, MeetupMachine[]> {
                 proposedLocationLat: 41.37906,
                 proposedLocationLng: 2.14006,
                 finalPrice: 240,
-                proposedPaymentMethod: "BIZUM",
+                proposedPaymentMethod: "WALLET",
             }
             const proposed = transitionMeetup(proposedDraft, {
                 type: "PROPOSE",
@@ -991,14 +991,20 @@ function buildInitialMeetupState(): Record<string, MeetupMachine[]> {
                 proposedLocationLat: 41.37906,
                 proposedLocationLng: 2.14006,
                 finalPrice: 640,
-                proposedPaymentMethod: "BIZUM",
+                proposedPaymentMethod: "WALLET",
             }
             const proposedResult = transitionMeetup(incomingProposal, {
                 type: "PROPOSE",
                 actorRole: "SELLER",
                 occurredAt: new Date(now.getTime() - 4 * 60 * 1000),
             })
-            state[conversation.id] = [proposedResult.ok ? proposedResult.meetup : incomingProposal]
+            const proposedMeetup = proposedResult.ok ? proposedResult.meetup : incomingProposal
+            const confirmedResult = transitionMeetup(proposedMeetup, {
+                type: "ACCEPT",
+                actorRole: "BUYER",
+                occurredAt: new Date(now.getTime() - 3 * 60 * 1000),
+            })
+            state[conversation.id] = [confirmedResult.ok ? confirmedResult.meetup : proposedMeetup]
             continue
         }
 
@@ -1169,8 +1175,6 @@ function paymentMethodLabel(method: MeetupPaymentMethod): string {
     switch (method) {
         case "CASH":
             return "Efectivo"
-        case "BIZUM":
-            return "Bizum"
         case "WALLET":
             return "Wallapop Wallet"
         default:
@@ -1815,7 +1819,7 @@ function MeetupProposalOverlay({
                                         <legend className="mb-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-primary)]">
                                             Preferencia de pago
                                         </legend>
-                                        <div className="grid gap-3 sm:grid-cols-3">
+                                        <div className="grid gap-3 sm:grid-cols-2">
                                             {(
                                                 [
                                                     { method: "CASH", icon: () => <Banknote size={16} /> },

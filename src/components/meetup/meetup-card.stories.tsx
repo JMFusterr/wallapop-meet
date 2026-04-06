@@ -20,7 +20,7 @@ function buildProposedSellerMachine(): MeetupMachine {
         proposedLocationLat: 41.37906,
         proposedLocationLng: 2.14006,
         finalPrice: 500,
-        proposedPaymentMethod: "BIZUM",
+        proposedPaymentMethod: "CASH",
     }
     const proposed = transitionMeetup(draft, {
         type: "PROPOSE",
@@ -38,6 +38,31 @@ function buildConfirmedMachine(): MeetupMachine {
         occurredAt: new Date("2026-02-20T17:00:00.000Z"),
     })
     return confirmed.ok ? confirmed.meetup : proposed
+}
+
+function buildConfirmedWalletMachine(): MeetupMachine {
+    const draft: MeetupMachine = {
+        ...createMeetupMachine({ scheduledAt, chatContext }),
+        proposedLocation: "Estacion de Sants - Acceso principal",
+        proposedLocationLat: 41.37906,
+        proposedLocationLng: 2.14006,
+        finalPrice: 500,
+        proposedPaymentMethod: "WALLET",
+    }
+    const proposed = transitionMeetup(draft, {
+        type: "PROPOSE",
+        actorRole: "SELLER",
+        occurredAt: new Date("2026-02-20T16:00:00.000Z"),
+    })
+    if (!proposed.ok) {
+        return draft
+    }
+    const confirmed = transitionMeetup(proposed.meetup, {
+        type: "ACCEPT",
+        actorRole: "BUYER",
+        occurredAt: new Date("2026-02-20T17:00:00.000Z"),
+    })
+    return confirmed.ok ? confirmed.meetup : proposed.meetup
 }
 
 function buildCounterProposedMachine(): MeetupMachine {
@@ -272,4 +297,38 @@ export const WithCounterpartName: Story = {
         onMeetupChange: () => undefined,
         onError: () => undefined,
     },
+}
+
+export const WalletPaymentBuyerQr: Story = {
+    args: {
+        meetup: buildConfirmedWalletMachine(),
+        actorRole: "BUYER",
+        currentTime: new Date("2026-02-20T15:00:00.000Z"),
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
+    render: () => (
+        <CardHarness
+            initialMeetup={buildConfirmedWalletMachine()}
+            actorRole="BUYER"
+            currentTime={new Date("2026-02-20T15:00:00.000Z")}
+        />
+    ),
+}
+
+export const WalletPaymentSellerScan: Story = {
+    args: {
+        meetup: buildConfirmedWalletMachine(),
+        actorRole: "SELLER",
+        currentTime: new Date("2026-02-20T15:00:00.000Z"),
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
+    render: () => (
+        <CardHarness
+            initialMeetup={buildConfirmedWalletMachine()}
+            actorRole="SELLER"
+            currentTime={new Date("2026-02-20T15:00:00.000Z")}
+        />
+    ),
 }

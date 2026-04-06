@@ -39,7 +39,7 @@ export const Disabled: Story = {
     args: {
         selected: false,
         disabled: true,
-        title: "Bizum",
+        title: "Metodo alternativo",
         subtitle: "Temporalmente no disponible para esta operacion",
         leftIcon: <WallapopIcon name="mail" size={16} />,
     },

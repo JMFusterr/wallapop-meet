@@ -10,7 +10,7 @@ export const MEETUP_STATUSES = [
 export type MeetupStatus = (typeof MEETUP_STATUSES)[number]
 
 export type ActorRole = "SELLER" | "BUYER"
-export type MeetupPaymentMethod = "CASH" | "BIZUM" | "WALLET"
+export type MeetupPaymentMethod = "CASH" | "WALLET"
 export type MeetupLateNoticeEtaMinutes = 10 | 20
 export type MeetupCancelReason =
     | "MANUAL_CANCEL"

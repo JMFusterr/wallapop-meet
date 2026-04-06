@@ -18,8 +18,12 @@ import {
     Clock,
     Handshake,
     MapPin,
+    QrCode,
+    ScanLine,
     XCircle,
 } from "lucide-react"
+import QRCode from "react-qr-code"
+import { buildWalletInPersonPayPayload } from "@/meetup/wallet-payment-qr"
 import { MapContainer, Marker, TileLayer } from "react-leaflet"
 import { getArrivalWindow } from "@/meetup/arrival-window"
 import { transitionMeetup } from "@/meetup/state-machine"
@@ -184,8 +188,6 @@ function paymentMethodLabel(method: MeetupPaymentMethod): string {
     switch (method) {
         case "CASH":
             return "Efectivo"
-        case "BIZUM":
-            return "Bizum"
         case "WALLET":
             return "Wallapop Wallet"
         default:
@@ -194,8 +196,98 @@ function paymentMethodLabel(method: MeetupPaymentMethod): string {
 }
 
 function PaymentMethodIcon({ method }: { method: MeetupPaymentMethod | undefined }) {
-    void method
-    return <Banknote size={16} className="text-[color:var(--text-primary)]" />
+    if (method === "WALLET") {
+        return <QrCode size={16} className="text-[color:var(--text-primary)]" aria-hidden />
+    }
+    return <Banknote size={16} className="text-[color:var(--text-primary)]" aria-hidden />
+}
+
+function shouldShowWalletInPersonPaymentUi(meetup: MeetupMachine): boolean {
+    return (
+        meetup.proposedPaymentMethod === "WALLET" &&
+        (meetup.status === "CONFIRMED" || meetup.status === "ARRIVED")
+    )
+}
+
+function WalletInPersonQr({ value }: { value: string }) {
+    const containerRef = React.useRef<HTMLDivElement>(null)
+    const [dimension, setDimension] = React.useState(0)
+
+    React.useLayoutEffect(() => {
+        const el = containerRef.current
+        if (!el) {
+            return
+        }
+        const measure = () => {
+            const next = el.getBoundingClientRect().width
+            if (next > 0) {
+                setDimension(Math.floor(next))
+            }
+        }
+        measure()
+        const ro = new ResizeObserver(measure)
+        ro.observe(el)
+        return () => ro.disconnect()
+    }, [])
+
+    return (
+        <div
+            ref={containerRef}
+            className="mx-auto aspect-square w-full max-w-[var(--wm-size-180)]"
+        >
+            {dimension > 0 ? (
+                <QRCode
+                    value={value}
+                    size={dimension}
+                    level="M"
+                    title="Codigo QR de pago con Wallapop Wallet"
+                    className="h-full w-full"
+                />
+            ) : null}
+        </div>
+    )
+}
+
+function WalletInPersonPaymentCallout({ meetup, actorRole }: { meetup: MeetupMachine; actorRole: ActorRole }) {
+    if (!shouldShowWalletInPersonPaymentUi(meetup)) {
+        return null
+    }
+
+    const payload = buildWalletInPersonPayPayload(meetup)
+
+    if (actorRole === "BUYER") {
+        return (
+            <div className="mt-3 rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] p-3">
+                <p className="font-wallie-chunky text-[length:var(--wm-size-14)] text-[color:var(--text-primary)]">
+                    Pago con Wallet
+                </p>
+                <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-13)] leading-[1.4] text-[color:var(--text-secondary)]">
+                    Muestra este codigo QR al vendedor: lo escaneara desde la app de Wallapop para cobrar el importe acordado.
+                </p>
+                <div className="mt-3 flex justify-center rounded-[var(--wm-size-8)] bg-[color:var(--bg-base)] p-3">
+                    <WalletInPersonQr value={payload} />
+                </div>
+            </div>
+        )
+    }
+
+    return (
+        <div className="mt-3 rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] p-3">
+            <div className="flex items-start gap-2">
+                <span className="inline-flex shrink-0 text-[color:var(--text-primary)]">
+                    <ScanLine size={18} aria-hidden />
+                </span>
+                <div>
+                    <p className="font-wallie-chunky text-[length:var(--wm-size-14)] text-[color:var(--text-primary)]">
+                        Cobro con Wallet
+                    </p>
+                    <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-13)] leading-[1.4] text-[color:var(--text-secondary)]">
+                        Pide al comprador que muestre su codigo QR en esta conversacion y escanealo con la app de Wallapop para recibir el pago en Wallet.
+                    </p>
+                </div>
+            </div>
+        </div>
+    )
 }
 
 function MeetupCard({
@@ -603,6 +695,8 @@ function MeetupCard({
                     </dd>
                 </div>
             </dl>
+
+            <WalletInPersonPaymentCallout meetup={meetup} actorRole={actorRole} />
 
             {meetup.status === "CONFIRMED" && isCalendarFallbackWindow ? (
                 <NoticeBanner tone="success" className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)]">

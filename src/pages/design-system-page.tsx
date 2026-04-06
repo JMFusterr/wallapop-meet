@@ -1060,7 +1060,7 @@ function DesignSystemPage() {
                                                 fontWeight: Number(weightRegular),
                                             }}
                                         >
-                                            Nos vemos a las 18:30 en la entrada principal. Lleva efectivo o Bizum.
+                                            Nos vemos a las 18:30 en la entrada principal. Lleva efectivo o paga con Wallet.
                                         </p>
                                         <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--text-secondary)]">
                                             Tamaño base para contenido de conversación, mensajes y descripción funcional.
