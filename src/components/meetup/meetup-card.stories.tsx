@@ -76,6 +76,18 @@ function buildArrivedWalletMachine(): MeetupMachine {
     return arrived.ok ? arrived.meetup : confirmed
 }
 
+/** Comprador y vendedor han marcado llegada: el comprador puede abrir el dialog del QR. */
+function buildArrivedWalletBuyerCheckedInMachine(): MeetupMachine {
+    const arrivedSeller = buildArrivedWalletMachine()
+    const buyerArrived = transitionMeetup(arrivedSeller, {
+        type: "MARK_ARRIVED",
+        actorRole: "BUYER",
+        occurredAt: new Date("2026-02-20T18:02:00.000Z"),
+        withinSafeRadius: true,
+    })
+    return buyerArrived.ok ? buyerArrived.meetup : arrivedSeller
+}
+
 function buildCounterProposedMachine(): MeetupMachine {
     const proposed = buildProposedSellerMachine()
     const counter = transitionMeetup(proposed, {
@@ -330,6 +342,23 @@ export const WalletPaymentBuyerQr: Story = {
             initialMeetup={buildConfirmedWalletMachine()}
             actorRole="BUYER"
             currentTime={new Date("2026-02-20T15:00:00.000Z")}
+        />
+    ),
+}
+
+export const WalletPaymentBuyerShowQrDialog: Story = {
+    args: {
+        meetup: buildArrivedWalletBuyerCheckedInMachine(),
+        actorRole: "BUYER",
+        currentTime: new Date("2026-02-20T18:03:00.000Z"),
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
+    render: () => (
+        <CardHarness
+            initialMeetup={buildArrivedWalletBuyerCheckedInMachine()}
+            actorRole="BUYER"
+            currentTime={new Date("2026-02-20T18:03:00.000Z")}
         />
     ),
 }

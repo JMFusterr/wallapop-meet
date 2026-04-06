@@ -15,3 +15,13 @@ export function buildWalletInPersonPayPayload(meetup: MeetupMachine): string {
     })
     return `wallapop://wallet-inperson-pay?${params.toString()}`
 }
+
+/** Codigo numerico de 6 digitos para mostrar junto al QR (demo estable por meetup). */
+export function deriveWalletDisplayCode(meetup: MeetupMachine): string {
+    const seed = `${meetup.id}:${meetup.chatContext.listingId}:${meetup.chatContext.buyerUserId}`
+    let h = 0
+    for (let i = 0; i < seed.length; i++) {
+        h = (Math.imul(31, h) + seed.charCodeAt(i)) | 0
+    }
+    return String(Math.abs(h) % 1_000_000).padStart(6, "0")
+}

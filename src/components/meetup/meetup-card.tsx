@@ -23,7 +23,7 @@ import {
     XCircle,
 } from "lucide-react"
 import QRCode from "react-qr-code"
-import { buildWalletInPersonPayPayload } from "@/meetup/wallet-payment-qr"
+import { buildWalletInPersonPayPayload, deriveWalletDisplayCode } from "@/meetup/wallet-payment-qr"
 import { MapContainer, Marker, TileLayer } from "react-leaflet"
 import { getArrivalWindow } from "@/meetup/arrival-window"
 import { transitionMeetup } from "@/meetup/state-machine"
@@ -208,13 +208,6 @@ function PaymentMethodIcon({ method }: { method: MeetupPaymentMethod | undefined
     return <Banknote size={16} className="text-[color:var(--text-primary)]" aria-hidden />
 }
 
-function shouldShowWalletInPersonPaymentUi(meetup: MeetupMachine): boolean {
-    return (
-        meetup.proposedPaymentMethod === "WALLET" &&
-        (meetup.status === "CONFIRMED" || meetup.status === "ARRIVED")
-    )
-}
-
 function WalletInPersonQr({ value }: { value: string }) {
     const containerRef = React.useRef<HTMLDivElement>(null)
     const [dimension, setDimension] = React.useState(0)
@@ -254,28 +247,6 @@ function WalletInPersonQr({ value }: { value: string }) {
     )
 }
 
-function WalletInPersonPaymentCallout({ meetup, actorRole }: { meetup: MeetupMachine; actorRole: ActorRole }) {
-    if (!shouldShowWalletInPersonPaymentUi(meetup) || actorRole !== "BUYER") {
-        return null
-    }
-
-    const payload = buildWalletInPersonPayPayload(meetup)
-
-    return (
-        <div className="mt-3 rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] p-3">
-            <p className="font-wallie-chunky text-[length:var(--wm-size-14)] text-[color:var(--text-primary)]">
-                Pago con Wallet
-            </p>
-            <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-13)] leading-[1.4] text-[color:var(--text-secondary)]">
-                Muestra este codigo QR al vendedor: lo escaneara desde la app de Wallapop para cobrar el importe acordado.
-            </p>
-            <div className="mt-3 flex justify-center rounded-[var(--wm-size-8)] bg-[color:var(--bg-base)] p-3">
-                <WalletInPersonQr value={payload} />
-            </div>
-        </div>
-    )
-}
-
 function MeetupCard({
     meetup,
     actorRole,
@@ -309,6 +280,7 @@ function MeetupCard({
     const [isCancelModalOpen, setIsCancelModalOpen] = React.useState(false)
     const [isNoShowSheetOpen, setIsNoShowSheetOpen] = React.useState(false)
     const [isWalletTopUpOpen, setIsWalletTopUpOpen] = React.useState(false)
+    const [isWalletQrDialogOpen, setIsWalletQrDialogOpen] = React.useState(false)
     const [noShowGraceError, setNoShowGraceError] = React.useState("")
     const miniMapMarkerIcon = React.useMemo(() => createMiniMapMarkerIcon(), [])
 
@@ -673,6 +645,17 @@ function MeetupCard({
         : null
     const shouldRenderLiveMapThumbnail =
         useLiveMapThumbnail && hasMapCoordinates && mapThumbnailPosition !== null
+    const showBuyerWalletQrButton =
+        actorRole === "BUYER" &&
+        meetup.proposedPaymentMethod === "WALLET" &&
+        meetup.status === "ARRIVED" &&
+        Boolean(meetup.arrivalCheckins?.BUYER)
+    const walletInPersonQrPayload = buildWalletInPersonPayPayload(meetup)
+    const walletDisplayCode = deriveWalletDisplayCode(meetup)
+    const showWalletEducationBanner =
+        actorRole === "BUYER" &&
+        meetup.proposedPaymentMethod === "WALLET" &&
+        (meetup.status === "PROPOSED" || meetup.status === "COUNTER_PROPOSED")
     return (
         <>
             <section className="relative w-full max-w-[var(--wm-size-360)] rounded-[var(--wm-size-20)] border border-[color:var(--border-divider)] bg-[color:var(--bg-base)] px-4 pb-3 pt-3">
@@ -754,7 +737,7 @@ function MeetupCard({
                 </div>
             </dl>
 
-            {actorRole === "BUYER" && meetup.proposedPaymentMethod === "WALLET" ? (
+            {showWalletEducationBanner ? (
                 <NoticeBanner
                     tone="success"
                     className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)] leading-[1.45]"
@@ -765,17 +748,23 @@ function MeetupCard({
                 </NoticeBanner>
             ) : null}
 
-            {actorRole === "BUYER" &&
-            typeof meetup.walletHoldAmountEur === "number" &&
-            meetup.walletHoldAmountEur > 0 &&
-            (meetup.status === "CONFIRMED" || meetup.status === "ARRIVED") ? (
-                <NoticeBanner className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)]">
-                    Para esta quedada hay {meetup.walletHoldAmountEur.toFixed(2)} € apartados en tu Wallapop Wallet hasta que el
-                    vendedor cobre o se cancele la cita.
-                </NoticeBanner>
+            {showBuyerWalletQrButton ? (
+                <div className="mt-4">
+                    <Button
+                        type="button"
+                        variant="status_sold_solid"
+                        size="md"
+                        onClick={() => setIsWalletQrDialogOpen(true)}
+                        className="h-auto min-h-10 w-full rounded-[var(--wm-size-999)] border-transparent px-4 py-2.5 font-wallie-chunky text-[length:var(--wm-size-16)] leading-snug"
+                        aria-label="Mostrar código QR"
+                    >
+                        <span className="inline-flex w-full items-center justify-center gap-2">
+                            <QrCode size={18} className="shrink-0" aria-hidden />
+                            <span className="text-center">Mostrar código QR</span>
+                        </span>
+                    </Button>
+                </div>
             ) : null}
-
-            <WalletInPersonPaymentCallout meetup={meetup} actorRole={actorRole} />
 
             {meetup.status === "CONFIRMED" &&
             isCalendarFallbackWindow &&
@@ -902,6 +891,54 @@ function MeetupCard({
                     </div>,
                     document.body
                 )
+                : null}
+            {isWalletQrDialogOpen && typeof document !== "undefined"
+                ? createPortal(
+                      <div
+                          className="fixed inset-0 z-50 flex items-center justify-center bg-[color:var(--overlay-scrim)] px-4"
+                          role="presentation"
+                          onClick={() => setIsWalletQrDialogOpen(false)}
+                      >
+                          <div
+                              role="dialog"
+                              aria-modal="true"
+                              aria-labelledby="wallet-qr-dialog-title"
+                              className="w-full max-w-[var(--wm-size-360)] rounded-[var(--wm-size-16)] bg-[color:var(--bg-base)] p-4 shadow-[var(--wm-shadow-300)]"
+                              onClick={(event) => event.stopPropagation()}
+                          >
+                              <h3
+                                  id="wallet-qr-dialog-title"
+                                  className="font-wallie-chunky text-[length:var(--wm-size-18)] text-[color:var(--text-primary)]"
+                              >
+                                  Pago con Wallapop Wallet
+                              </h3>
+                              <p className="mt-2 font-wallie-fit text-[length:var(--wm-size-13)] leading-[1.45] text-[color:var(--text-secondary)]">
+                                  Muestra este código al vendedor para que lo escanee y complete el cobro.
+                              </p>
+                              <div className="mt-4 flex justify-center rounded-[var(--wm-size-12)] bg-[color:var(--bg-surface)] p-4">
+                                  <WalletInPersonQr value={walletInPersonQrPayload} />
+                              </div>
+                              <p className="mt-4 text-center font-wallie-chunky text-[length:var(--wm-size-22)] tracking-[0.2em] text-[color:var(--text-primary)]">
+                                  {walletDisplayCode}
+                              </p>
+                              <p className="mt-1 text-center font-wallie-fit text-[length:var(--wm-size-12)] text-[color:var(--text-secondary)]">
+                                  Código de verificación
+                              </p>
+                              <div className="mt-4">
+                                  <Button
+                                      type="button"
+                                      variant="primary"
+                                      size="sm"
+                                      className={PRIMARY_ACTION_CLASS}
+                                      onClick={() => setIsWalletQrDialogOpen(false)}
+                                  >
+                                      Cerrar
+                                  </Button>
+                              </div>
+                          </div>
+                      </div>,
+                      document.body
+                  )
                 : null}
             {onWalletTopUp ? (
                 <WalletTopUpSheet
