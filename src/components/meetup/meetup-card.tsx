@@ -755,7 +755,10 @@ function MeetupCard({
             </dl>
 
             {actorRole === "BUYER" && meetup.proposedPaymentMethod === "WALLET" ? (
-                <NoticeBanner className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)] leading-[1.45]">
+                <NoticeBanner
+                    tone="success"
+                    className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)] leading-[1.45]"
+                >
                     Tu dinero, 100% a salvo con Wallapop Wallet. Es la forma más segura de pagar y cobrar en persona. El dinero se
                     guarda de forma segura en la app y solo se transfiere cuando escaneáis el código QR durante la quedada. Olvídate
                     de llevar efectivo y haz el trato con total tranquilidad.
