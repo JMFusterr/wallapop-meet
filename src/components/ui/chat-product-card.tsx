@@ -37,15 +37,24 @@ function resolveListingStatus(statusLabel?: string): ListingStatus {
     return "available"
 }
 
-function resolveStatusBadgeConfig(statusLabel?: string): { color: string; iconName: "bookmark" | "deal" } {
+function resolveStatusBadgeConfig(statusLabel?: string): { toneClassName: string; iconName: "bookmark" | "deal" } {
     const normalized = statusLabel?.trim().toLowerCase() ?? ""
     if (normalized.includes("reservad")) {
-        return { color: "var(--status-reserved)", iconName: "bookmark" }
+        return {
+            toneClassName: "text-[color:var(--status-reserved)]",
+            iconName: "bookmark",
+        }
     }
     if (normalized.includes("vendid")) {
-        return { color: "var(--status-sold)", iconName: "deal" }
+        return {
+            toneClassName: "text-[color:var(--status-sold)]",
+            iconName: "deal",
+        }
     }
-    return { color: "var(--status-sold)", iconName: "deal" }
+    return {
+        toneClassName: "text-[color:var(--status-sold)]",
+        iconName: "deal",
+    }
 }
 
 function ChatProductCard({
@@ -100,13 +109,15 @@ function ChatProductCard({
                 ) : null}
                 {statusLabel ? (
                     <span
-                        className="absolute right-4 bottom-4 inline-flex items-center gap-1 rounded-full bg-[color:var(--bg-base)] px-3 py-1 font-wallie-chunky text-[length:var(--wm-size-14)]"
-                        style={{ color: statusBadgeConfig.color }}
+                        className={cn(
+                            "absolute right-4 bottom-4 inline-flex items-center gap-1 rounded-full bg-[color:var(--bg-base)] px-3 py-1 font-wallie-chunky text-[length:var(--wm-size-14)]",
+                            statusBadgeConfig.toneClassName
+                        )}
                     >
                         <WallapopIcon
                             name={statusBadgeConfig.iconName}
                             size={15}
-                            style={{ color: statusBadgeConfig.color }}
+                            className={statusBadgeConfig.toneClassName}
                         />
                         {statusLabel}
                     </span>

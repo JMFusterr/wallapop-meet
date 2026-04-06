@@ -36,7 +36,7 @@ function StarRating({ rating, ratingCount }: { rating: number; ratingCount?: num
                                     size={16}
                                     className="absolute inset-0 text-[color:var(--wm-color-border-default)]"
                                 />
-                                <span className="absolute inset-0 overflow-hidden" style={{ width: "50%" }}>
+                                <span className="absolute inset-y-0 left-0 w-1/2 overflow-hidden">
                                     <Star size={16} className="fill-current text-[color:var(--wm-color-text-primary)]" />
                                 </span>
                             </span>

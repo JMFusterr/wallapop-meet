@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import {
     resolveArrivalActionState,
+    resolveMeetupCardCtaIds,
     resolveMeetupDayBannerVariant,
 } from "@/components/meetup/meetup-ui-rules"
 import { createMeetupMachine, transitionMeetup } from "@/meetup"
@@ -36,6 +37,19 @@ describe("meetup ui rules", () => {
         }
 
         return confirmed.meetup
+    }
+
+    function buildProposedMeetup() {
+        const proposed = transitionMeetup(createMeetupMachine({ scheduledAt, chatContext }), {
+            type: "PROPOSE",
+            actorRole: "SELLER",
+            occurredAt: new Date("2026-02-20T16:00:00.000Z"),
+        })
+        if (!proposed.ok) {
+            throw new Error("Se esperaba meetup PROPOSED para la prueba.")
+        }
+
+        return proposed.meetup
     }
 
     it("habilita accion de llegada en ventana valida", () => {
@@ -98,5 +112,91 @@ describe("meetup ui rules", () => {
         )
 
         expect(variant).toBe("upcoming")
+    })
+
+    it("resuelve CTAs de BUYER en PROPOSED", () => {
+        const meetup = buildProposedMeetup()
+        const ctas = resolveMeetupCardCtaIds({
+            meetup,
+            currentTime: new Date("2026-02-20T16:05:00.000Z"),
+            actorRole: "BUYER",
+            hasEditProposalAction: true,
+        })
+
+        expect(ctas).toEqual(["accept", "counter", "reject"])
+    })
+
+    it("resuelve CTAs de SELLER en COUNTER_PROPOSED", () => {
+        const proposed = buildProposedMeetup()
+        const counter = transitionMeetup(proposed, {
+            type: "COUNTER_PROPOSE",
+            actorRole: "BUYER",
+            occurredAt: new Date("2026-02-20T16:30:00.000Z"),
+        })
+        if (!counter.ok) {
+            throw new Error("Se esperaba meetup COUNTER_PROPOSED para la prueba.")
+        }
+
+        const ctas = resolveMeetupCardCtaIds({
+            meetup: counter.meetup,
+            currentTime: new Date("2026-02-20T16:35:00.000Z"),
+            actorRole: "SELLER",
+            hasEditProposalAction: true,
+        })
+
+        expect(ctas).toEqual(["edit", "accept-counter", "repropose", "cancel"])
+    })
+
+    it("resuelve CTAs de CONFIRMED dentro de ventana", () => {
+        const meetup = buildConfirmedMeetup()
+        const ctas = resolveMeetupCardCtaIds({
+            meetup,
+            currentTime: new Date("2026-02-20T17:45:00.000Z"),
+            actorRole: "BUYER",
+            hasEditProposalAction: false,
+        })
+
+        expect(ctas).toEqual(["arrived", "cancel"])
+    })
+
+    it("resuelve CTAs de CONFIRMED fuera de ventana", () => {
+        const meetup = buildConfirmedMeetup()
+        const ctas = resolveMeetupCardCtaIds({
+            meetup,
+            currentTime: new Date("2026-02-20T15:00:00.000Z"),
+            actorRole: "BUYER",
+            hasEditProposalAction: false,
+        })
+
+        expect(ctas).toEqual(["calendar", "cancel"])
+    })
+
+    it("resuelve CTAs de ARRIVED para SELLER y BUYER", () => {
+        const confirmed = buildConfirmedMeetup()
+        const sellerArrived = transitionMeetup(confirmed, {
+            type: "MARK_ARRIVED",
+            actorRole: "SELLER",
+            occurredAt: new Date("2026-02-20T17:45:00.000Z"),
+            withinSafeRadius: true,
+        })
+        if (!sellerArrived.ok) {
+            throw new Error("Se esperaba meetup ARRIVED para la prueba.")
+        }
+
+        const sellerCtas = resolveMeetupCardCtaIds({
+            meetup: sellerArrived.meetup,
+            currentTime: new Date("2026-02-20T17:50:00.000Z"),
+            actorRole: "SELLER",
+            hasEditProposalAction: false,
+        })
+        const buyerCtas = resolveMeetupCardCtaIds({
+            meetup: sellerArrived.meetup,
+            currentTime: new Date("2026-02-20T17:50:00.000Z"),
+            actorRole: "BUYER",
+            hasEditProposalAction: false,
+        })
+
+        expect(sellerCtas).toEqual(["complete", "no-show"])
+        expect(buyerCtas).toEqual(["arrived", "cancel"])
     })
 })

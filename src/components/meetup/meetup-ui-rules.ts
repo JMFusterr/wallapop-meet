@@ -7,6 +7,19 @@ type ArrivalActionState = {
 }
 
 type MeetupDayBannerVariant = "hidden" | "upcoming" | "in_window"
+type MeetupCardCtaId =
+    | "propose"
+    | "edit"
+    | "accept"
+    | "counter"
+    | "reject"
+    | "accept-counter"
+    | "repropose"
+    | "arrived"
+    | "calendar"
+    | "complete"
+    | "no-show"
+    | "cancel"
 
 export function resolveArrivalActionState(
     meetup: MeetupMachine,
@@ -54,3 +67,64 @@ export function resolveMeetupDayBannerVariant(
         ? "in_window"
         : "upcoming"
 }
+
+export function resolveMeetupCardCtaIds(params: {
+    meetup: MeetupMachine
+    currentTime: Date
+    actorRole: ActorRole
+    hasEditProposalAction: boolean
+}): MeetupCardCtaId[] {
+    const { meetup, currentTime, actorRole, hasEditProposalAction } = params
+    const actionIds: MeetupCardCtaId[] = []
+    const inArrivalWindow = isWithinArrivalWindow(meetup.scheduledAt, currentTime)
+    const arrivalAction = resolveArrivalActionState(meetup, currentTime, actorRole)
+
+    if (meetup.status === null && actorRole === "SELLER") {
+        actionIds.push("propose")
+    }
+
+    if (meetup.status === "PROPOSED" && actorRole === "BUYER") {
+        actionIds.push("accept", "counter", "reject")
+    }
+
+    if (meetup.status === "COUNTER_PROPOSED" && actorRole === "SELLER") {
+        actionIds.push("accept-counter", "repropose")
+    }
+
+    if (meetup.status === "CONFIRMED") {
+        actionIds.push(inArrivalWindow ? "arrived" : "calendar")
+    }
+
+    if (meetup.status === "ARRIVED") {
+        if (arrivalAction.enabled) {
+            actionIds.push("arrived")
+        }
+        if (actorRole === "SELLER") {
+            actionIds.push("complete", "no-show")
+        }
+    }
+
+    const canShowCancel =
+        meetup.status !== "COMPLETED" &&
+        meetup.status !== "CANCELLED" &&
+        meetup.status !== null &&
+        !(meetup.status === "ARRIVED" && actorRole === "SELLER") &&
+        !(meetup.status === "PROPOSED" && actorRole === "BUYER")
+
+    if (canShowCancel) {
+        actionIds.push("cancel")
+    }
+
+    const canEditProposal =
+        hasEditProposalAction &&
+        actorRole === "SELLER" &&
+        (meetup.status === "PROPOSED" || meetup.status === "COUNTER_PROPOSED")
+
+    if (canEditProposal) {
+        actionIds.unshift("edit")
+    }
+
+    return actionIds
+}
+
+export type { MeetupCardCtaId }

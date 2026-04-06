@@ -36,11 +36,13 @@ Regla operativa obligatoria:
 ## Estilo de código y nomenclatura
 
 - Usar indentación de 4 espacios en archivos JSON (alineado con `styles.json`).
+- Fuente de verdad funcional: en caso de conflicto documental, prevalece la versión vigente indicada en `docs/objectives.md` (contrato más reciente).
 - Mantener nombres de estado alineados con la máquina de estados:
   `PROPOSED`, `COUNTER_PROPOSED`, `CONFIRMED`, `ARRIVED`, `COMPLETED`, `CANCELLED`.
 - Mantener reglas de negocio explícitas y cercanas a la funcionalidad (ventana de llegada, inicio exclusivo del vendedor, etc.).
 - Prohibido hardcodear valores visuales en `src` (hex/rgb/hsl/oklch, `px`, radios, sombras, opacidades), salvo en la capa canónica de tokens (`styles.json` y variables raíz de `src/index.css`).
 - No añadir estilos inline para UI (`style={...}`) salvo casos técnicos justificados (ejemplo: posición dinámica de mapa) y documentados en PR.
+- Excepción técnica actual documentada: `src/components/ui/select.tsx` usa `style` para calcular `maxHeight` dinámico del dropdown según `maxVisibleOptions`.
 - Toda nueva UI debe componerse con componentes reutilizables del sistema de diseño; no crear variantes ad-hoc duplicadas en páginas de producto.
 - Si se requiere un patrón nuevo, primero crear/actualizar componente base en `src/components/ui` o `src/components/meetup` y después consumirlo.
 
