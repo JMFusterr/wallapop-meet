@@ -65,6 +65,17 @@ function buildConfirmedWalletMachine(): MeetupMachine {
     return confirmed.ok ? confirmed.meetup : proposed.meetup
 }
 
+function buildArrivedWalletMachine(): MeetupMachine {
+    const confirmed = buildConfirmedWalletMachine()
+    const arrived = transitionMeetup(confirmed, {
+        type: "MARK_ARRIVED",
+        actorRole: "SELLER",
+        occurredAt: new Date("2026-02-20T18:01:00.000Z"),
+        withinSafeRadius: true,
+    })
+    return arrived.ok ? arrived.meetup : confirmed
+}
+
 function buildCounterProposedMachine(): MeetupMachine {
     const proposed = buildProposedSellerMachine()
     const counter = transitionMeetup(proposed, {
@@ -142,10 +153,12 @@ function CardHarness({
     initialMeetup,
     actorRole,
     currentTime,
+    counterpartName,
 }: {
     initialMeetup: MeetupMachine
     actorRole: ActorRole
     currentTime: Date
+    counterpartName?: string
 }) {
     const [machine, setMachine] = React.useState(initialMeetup)
     const [error, setError] = React.useState("")
@@ -159,6 +172,7 @@ function CardHarness({
                 onMeetupChange={setMachine}
                 onError={setError}
                 onEditProposal={() => undefined}
+                counterpartName={counterpartName}
             />
             {error ? (
                 <p className="rounded-[var(--wm-size-8)] bg-[color:var(--bg-surface)] px-3 py-2 font-wallie-fit text-[length:var(--wm-size-13)] text-[color:var(--feedback-error)]">
@@ -318,17 +332,19 @@ export const WalletPaymentBuyerQr: Story = {
 
 export const WalletPaymentSellerScan: Story = {
     args: {
-        meetup: buildConfirmedWalletMachine(),
+        meetup: buildArrivedWalletMachine(),
         actorRole: "SELLER",
-        currentTime: new Date("2026-02-20T15:00:00.000Z"),
+        currentTime: new Date("2026-02-20T18:03:00.000Z"),
         onMeetupChange: () => undefined,
         onError: () => undefined,
+        counterpartName: "Laura M.",
     },
     render: () => (
         <CardHarness
-            initialMeetup={buildConfirmedWalletMachine()}
+            initialMeetup={buildArrivedWalletMachine()}
             actorRole="SELLER"
-            currentTime={new Date("2026-02-20T15:00:00.000Z")}
+            currentTime={new Date("2026-02-20T18:03:00.000Z")}
+            counterpartName="Laura M."
         />
     ),
 }

@@ -1,9 +1,15 @@
 import { isWithinArrivalWindow } from "@/meetup/arrival-window"
 import type { ActorRole, MeetupMachine } from "@/meetup/types"
 
-type ArrivalActionState = {
+/** Distancia maxima al punto de encuentro para habilitar "Estoy aqui" (mismo umbral que el mensaje de proximidad). */
+export const MEETUP_ARRIVAL_NEAR_METERS = 100
+
+export type ArrivalActionState = {
     enabled: boolean
+    /** Cuando el actor ya marco llegada y el CTA queda bloqueado por ese motivo. */
     message: string
+    /** Solo si aun no estas a menos de {@link MEETUP_ARRIVAL_NEAR_METERS} m (boton bloqueado). Vacio cuando el boton ya esta activo. */
+    proximityRequiredMessage: string
 }
 
 type MeetupDayBannerVariant = "hidden" | "upcoming" | "in_window"
@@ -18,18 +24,21 @@ type MeetupCardCtaId =
     | "arrived"
     | "calendar"
     | "complete"
+    | "wallet-scan-sale"
     | "no-show"
     | "cancel"
 
 export function resolveArrivalActionState(
     meetup: MeetupMachine,
     currentTime: Date,
-    actorRole?: ActorRole
+    actorRole?: ActorRole,
+    distanceToMeetupMeters?: number | null
 ): ArrivalActionState {
     if (meetup.status !== "CONFIRMED" && meetup.status !== "ARRIVED") {
         return {
             enabled: false,
             message: "La accion de llegada solo aplica a meetups confirmados o en curso.",
+            proximityRequiredMessage: "",
         }
     }
 
@@ -38,6 +47,7 @@ export function resolveArrivalActionState(
         return {
             enabled: false,
             message: "",
+            proximityRequiredMessage: "",
         }
     }
 
@@ -45,13 +55,27 @@ export function resolveArrivalActionState(
         return {
             enabled: false,
             message: "Ya has marcado que has llegado.",
+            proximityRequiredMessage: "",
+        }
+    }
+
+    const isFar =
+        typeof distanceToMeetupMeters === "number" &&
+        distanceToMeetupMeters > MEETUP_ARRIVAL_NEAR_METERS
+
+    if (isFar) {
+        return {
+            enabled: false,
+            message: "",
+            proximityRequiredMessage:
+                "Acercate a menos de 100 metros del punto de encuentro para indicar que has llegado.",
         }
     }
 
     return {
         enabled: true,
-        message:
-            "Acercate a menos de 100 metros del punto de encuentro para indicar que has llegado.",
+        message: "",
+        proximityRequiredMessage: "",
     }
 }
 
@@ -73,11 +97,18 @@ export function resolveMeetupCardCtaIds(params: {
     currentTime: Date
     actorRole: ActorRole
     hasEditProposalAction: boolean
+    distanceToMeetupMeters?: number | null
 }): MeetupCardCtaId[] {
-    const { meetup, currentTime, actorRole, hasEditProposalAction } = params
+    const { meetup, currentTime, actorRole, hasEditProposalAction, distanceToMeetupMeters } =
+        params
     const actionIds: MeetupCardCtaId[] = []
     const inArrivalWindow = isWithinArrivalWindow(meetup.scheduledAt, currentTime)
-    const arrivalAction = resolveArrivalActionState(meetup, currentTime, actorRole)
+    const arrivalAction = resolveArrivalActionState(
+        meetup,
+        currentTime,
+        actorRole,
+        distanceToMeetupMeters
+    )
 
     if (meetup.status === null && actorRole === "SELLER") {
         actionIds.push("propose")
@@ -100,7 +131,11 @@ export function resolveMeetupCardCtaIds(params: {
             actionIds.push("arrived")
         }
         if (actorRole === "SELLER") {
-            actionIds.push("complete", "no-show")
+            if (meetup.proposedPaymentMethod === "WALLET") {
+                actionIds.push("wallet-scan-sale", "no-show")
+            } else {
+                actionIds.push("complete", "no-show")
+            }
         }
     }
 

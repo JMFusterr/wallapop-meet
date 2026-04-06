@@ -60,6 +60,7 @@ describe("meetup ui rules", () => {
         )
 
         expect(state.enabled).toBe(true)
+        expect(state.proximityRequiredMessage).toBe("")
     })
 
     it("deshabilita accion de llegada fuera de ventana", () => {
@@ -70,6 +71,20 @@ describe("meetup ui rules", () => {
         )
 
         expect(state.enabled).toBe(false)
+        expect(state.proximityRequiredMessage).toBe("")
+    })
+
+    it("deshabilita llegada y muestra aviso de proximidad si la distancia es mayor a 100 m", () => {
+        const meetup = buildConfirmedMeetup()
+        const state = resolveArrivalActionState(
+            meetup,
+            new Date("2026-02-20T17:50:00.000Z"),
+            "BUYER",
+            180
+        )
+
+        expect(state.enabled).toBe(false)
+        expect(state.proximityRequiredMessage).toContain("100 metros")
     })
 
     it("resuelve variante de banner en ventana activa", () => {
@@ -102,6 +117,7 @@ describe("meetup ui rules", () => {
 
         expect(state.enabled).toBe(false)
         expect(state.message).toBe("Ya has marcado que has llegado.")
+        expect(state.proximityRequiredMessage).toBe("")
     })
 
     it("muestra banner upcoming fuera de ventana en meetup confirmado", () => {
@@ -217,6 +233,32 @@ describe("meetup ui rules", () => {
 
         expect(sellerCtas).toEqual(["complete", "no-show"])
         expect(buyerCtas).toEqual(["arrived", "cancel"])
+    })
+
+    it("sustituye confirmar venta por escaneo Wallet para vendedor en ARRIVED", () => {
+        const confirmed = buildConfirmedMeetup()
+        const withWallet: typeof confirmed = {
+            ...confirmed,
+            proposedPaymentMethod: "WALLET",
+        }
+        const sellerArrived = transitionMeetup(withWallet, {
+            type: "MARK_ARRIVED",
+            actorRole: "SELLER",
+            occurredAt: new Date("2026-02-20T17:45:00.000Z"),
+            withinSafeRadius: true,
+        })
+        if (!sellerArrived.ok) {
+            throw new Error("Se esperaba meetup ARRIVED para la prueba.")
+        }
+
+        const sellerCtas = resolveMeetupCardCtaIds({
+            meetup: sellerArrived.meetup,
+            currentTime: new Date("2026-02-20T17:50:00.000Z"),
+            actorRole: "SELLER",
+            hasEditProposalAction: false,
+        })
+
+        expect(sellerCtas).toEqual(["wallet-scan-sale", "no-show"])
     })
 
     it("oculta CTA de llegada para BUYER en ARRIVED cuando ya marco llegada", () => {

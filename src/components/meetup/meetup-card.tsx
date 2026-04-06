@@ -19,7 +19,6 @@ import {
     Handshake,
     MapPin,
     QrCode,
-    ScanLine,
     XCircle,
 } from "lucide-react"
 import QRCode from "react-qr-code"
@@ -41,16 +40,19 @@ type MeetupCardProps = {
     onOpenMapPreview?: () => void
     onRedZoneCancelConfirmed?: () => void
     useLiveMapThumbnail?: boolean
+    /** Distancia estimada al punto de encuentro; si es mayor a 100 m, se bloquea "Estoy aqui" y se muestra el aviso de proximidad. */
+    distanceToMeetupMeters?: number | null
 }
 
 type CardAction = {
     id: string
-    label: string
-    variant: "primary" | "inline_action" | "critical" | "outline" | "ghost"
+    label: React.ReactNode
+    variant: "primary" | "inline_action" | "critical" | "outline" | "ghost" | "status_sold_solid"
     run: () => void
     disabled?: boolean
     className?: string
     fullWidth?: boolean
+    ariaLabel?: string
 }
 
 const RED_ZONE_CANCELLATION_MINUTES = 30
@@ -249,42 +251,22 @@ function WalletInPersonQr({ value }: { value: string }) {
 }
 
 function WalletInPersonPaymentCallout({ meetup, actorRole }: { meetup: MeetupMachine; actorRole: ActorRole }) {
-    if (!shouldShowWalletInPersonPaymentUi(meetup)) {
+    if (!shouldShowWalletInPersonPaymentUi(meetup) || actorRole !== "BUYER") {
         return null
     }
 
     const payload = buildWalletInPersonPayPayload(meetup)
 
-    if (actorRole === "BUYER") {
-        return (
-            <div className="mt-3 rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] p-3">
-                <p className="font-wallie-chunky text-[length:var(--wm-size-14)] text-[color:var(--text-primary)]">
-                    Pago con Wallet
-                </p>
-                <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-13)] leading-[1.4] text-[color:var(--text-secondary)]">
-                    Muestra este codigo QR al vendedor: lo escaneara desde la app de Wallapop para cobrar el importe acordado.
-                </p>
-                <div className="mt-3 flex justify-center rounded-[var(--wm-size-8)] bg-[color:var(--bg-base)] p-3">
-                    <WalletInPersonQr value={payload} />
-                </div>
-            </div>
-        )
-    }
-
     return (
         <div className="mt-3 rounded-[var(--wm-size-12)] border border-[color:var(--border-divider)] bg-[color:var(--bg-surface)] p-3">
-            <div className="flex items-start gap-2">
-                <span className="inline-flex shrink-0 text-[color:var(--text-primary)]">
-                    <ScanLine size={18} aria-hidden />
-                </span>
-                <div>
-                    <p className="font-wallie-chunky text-[length:var(--wm-size-14)] text-[color:var(--text-primary)]">
-                        Cobro con Wallet
-                    </p>
-                    <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-13)] leading-[1.4] text-[color:var(--text-secondary)]">
-                        Pide al comprador que muestre su codigo QR en esta conversacion y escanealo con la app de Wallapop para recibir el pago en Wallet.
-                    </p>
-                </div>
+            <p className="font-wallie-chunky text-[length:var(--wm-size-14)] text-[color:var(--text-primary)]">
+                Pago con Wallet
+            </p>
+            <p className="mt-1 font-wallie-fit text-[length:var(--wm-size-13)] leading-[1.4] text-[color:var(--text-secondary)]">
+                Muestra este codigo QR al vendedor: lo escaneara desde la app de Wallapop para cobrar el importe acordado.
+            </p>
+            <div className="mt-3 flex justify-center rounded-[var(--wm-size-8)] bg-[color:var(--bg-base)] p-3">
+                <WalletInPersonQr value={payload} />
             </div>
         </div>
     )
@@ -301,8 +283,14 @@ function MeetupCard({
     onOpenMapPreview,
     onRedZoneCancelConfirmed,
     useLiveMapThumbnail = true,
+    distanceToMeetupMeters,
 }: MeetupCardProps) {
-    const arrivalAction = resolveArrivalActionState(meetup, currentTime, actorRole)
+    const arrivalAction = resolveArrivalActionState(
+        meetup,
+        currentTime,
+        actorRole,
+        distanceToMeetupMeters
+    )
     const minutesToMeetup = Math.floor(
         (meetup.scheduledAt.getTime() - currentTime.getTime()) / (60 * 1000)
     )
@@ -427,6 +415,7 @@ function MeetupCard({
         currentTime,
         actorRole,
         hasEditProposalAction: Boolean(onEditProposal),
+        distanceToMeetupMeters,
     })
 
     const actionFromCtaId = (ctaId: MeetupCardCtaId): CardAction | null => {
@@ -547,6 +536,29 @@ function MeetupCard({
                     className: OUTLINE_ACTION_CLASS,
                     fullWidth: true,
                 }
+            case "wallet-scan-sale": {
+                const scanLabel = `Escanear codigo QR de ${counterpartName ?? "el comprador"}`
+                return {
+                    id: "wallet-scan-sale",
+                    label: (
+                        <span className="inline-flex w-full items-center justify-center gap-2">
+                            <QrCode size={18} className="shrink-0" aria-hidden />
+                            <span className="text-center">{scanLabel}</span>
+                        </span>
+                    ),
+                    variant: "status_sold_solid",
+                    run: () =>
+                        applyEvent({
+                            type: "COMPLETE",
+                            actorRole,
+                            occurredAt: currentTime,
+                        }),
+                    className:
+                        "h-auto min-h-10 w-full rounded-[var(--wm-size-999)] border-transparent px-4 py-2.5 font-wallie-chunky text-[length:var(--wm-size-16)] leading-snug",
+                    fullWidth: true,
+                    ariaLabel: scanLabel,
+                }
+            }
             case "complete":
                 return {
                     id: "complete",
@@ -698,9 +710,11 @@ function MeetupCard({
 
             <WalletInPersonPaymentCallout meetup={meetup} actorRole={actorRole} />
 
-            {meetup.status === "CONFIRMED" && isCalendarFallbackWindow ? (
-                <NoticeBanner tone="success" className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)]">
-                    {arrivalAction.message}
+            {meetup.status === "CONFIRMED" &&
+            isCalendarFallbackWindow &&
+            arrivalAction.proximityRequiredMessage.length > 0 ? (
+                <NoticeBanner className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)]">
+                    {arrivalAction.proximityRequiredMessage}
                 </NoticeBanner>
             ) : null}
             {hasContradictionAlert ? (
@@ -715,9 +729,10 @@ function MeetupCard({
                         <Button
                             key={action.id}
                             variant={action.variant}
-                            size="sm"
+                            size={action.variant === "status_sold_solid" ? "md" : "sm"}
                             onClick={action.run}
                             disabled={action.disabled}
+                            aria-label={action.ariaLabel}
                             className={`${action.fullWidth ? "w-full" : ""} ${action.className ?? ""}`.trim()}
                         >
                             {action.label}
