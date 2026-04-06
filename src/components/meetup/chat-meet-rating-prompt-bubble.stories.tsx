@@ -26,3 +26,10 @@ export const Default: Story = {
         time: "7:07",
     },
 }
+
+export const Completed: Story = {
+    args: {
+        time: "11:03",
+        completed: true,
+    },
+}

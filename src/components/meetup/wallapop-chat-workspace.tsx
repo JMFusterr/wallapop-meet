@@ -8,6 +8,7 @@ import {
     ChatMeetRatingPromptBubble,
     MEET_RATING_PROMPT_COPY,
 } from "@/components/meetup/chat-meet-rating-prompt-bubble"
+import { MeetTransactionRatingModal } from "@/components/meetup/meet-transaction-rating-modal"
 import { MeetupCard } from "@/components/meetup/meetup-card"
 import { MeetupProposalFooter } from "@/components/meetup/meetup-proposal-footer"
 import { MeetupProposalHeader } from "@/components/meetup/meetup-proposal-header"
@@ -57,6 +58,7 @@ type Message = {
     createdAt: number
     deliveryState?: "sent" | "read"
     messageKind?: "rating_prompt"
+    ratingPromptCompleted?: boolean
 }
 
 type ConvexChatMessage = {
@@ -1972,6 +1974,7 @@ type ConversationPaneProps = {
     onJumpToActiveMeetup: () => void
     onError: (message: string) => void
     errorMessage: string
+    onRatingPublished?: (ratingPromptMessageId: string) => void
 }
 
 function ConversationPane({
@@ -1988,7 +1991,10 @@ function ConversationPane({
     onJumpToActiveMeetup,
     onError,
     errorMessage,
+    onRatingPublished,
 }: ConversationPaneProps) {
+    const [isTransactionRatingOpen, setIsTransactionRatingOpen] = React.useState(false)
+    const [ratingPromptMessageId, setRatingPromptMessageId] = React.useState<string | null>(null)
     const currentTime = new Date()
     const proposalActionState = meetup
         ? resolveProposalEntryActionState(meetup, actorRole)
@@ -2126,7 +2132,14 @@ function ConversationPane({
                                         }
                                     >
                                         {message.messageKind === "rating_prompt" ? (
-                                            <ChatMeetRatingPromptBubble time={message.time} />
+                                            <ChatMeetRatingPromptBubble
+                                                time={message.time}
+                                                completed={message.ratingPromptCompleted === true}
+                                                onValorar={() => {
+                                                    setRatingPromptMessageId(message.id)
+                                                    setIsTransactionRatingOpen(true)
+                                                }}
+                                            />
                                         ) : (
                                             <ChatMessageBubble
                                                 variant={message.variant}
@@ -2230,6 +2243,21 @@ function ConversationPane({
                     }
                 />
             </div>
+
+            <MeetTransactionRatingModal
+                open={isTransactionRatingOpen}
+                counterpartName={conversation.userName}
+                defaultSalePrice={conversation.itemPrice}
+                onClose={() => {
+                    setIsTransactionRatingOpen(false)
+                    setRatingPromptMessageId(null)
+                }}
+                onPublish={() => {
+                    if (ratingPromptMessageId) {
+                        onRatingPublished?.(ratingPromptMessageId)
+                    }
+                }}
+            />
         </section>
     )
 }
@@ -2674,6 +2702,24 @@ function WallapopChatWorkspace() {
             [selectedConversation.id]: [...(previous[selectedConversation.id] ?? []), nextMessage],
         }))
     }
+
+    const markRatingPromptCompleted = React.useCallback(
+        (messageId: string) => {
+            setMessagesByConversation((previous) => {
+                const conversationId = selectedConversation.id
+                const messages = previous[conversationId] ?? []
+                return {
+                    ...previous,
+                    [conversationId]: messages.map((m) =>
+                        m.id === messageId && m.messageKind === "rating_prompt"
+                            ? { ...m, ratingPromptCompleted: true }
+                            : m
+                    ),
+                }
+            })
+        },
+        [selectedConversation.id]
+    )
 
     const appendCounterpartMessage = (text: string) => {
         const nowMs = Date.now()
@@ -3168,6 +3214,7 @@ function WallapopChatWorkspace() {
                         onJumpToActiveMeetup={jumpToActiveMeetup}
                         onError={setLastError}
                         errorMessage={lastError}
+                        onRatingPublished={markRatingPromptCompleted}
                     />
                 </div>
                 <DesktopConversationSidebar
@@ -3200,6 +3247,7 @@ function WallapopChatWorkspace() {
                         onJumpToActiveMeetup={jumpToActiveMeetup}
                         onError={setLastError}
                         errorMessage={lastError}
+                        onRatingPublished={markRatingPromptCompleted}
                     />
                 )}
             </section>
