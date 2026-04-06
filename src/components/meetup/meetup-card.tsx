@@ -478,13 +478,23 @@ function MeetupCard({
                     id: "accept",
                     label: "Aceptar",
                     variant: "primary",
-                    run: () =>
+                    run: () => {
+                        if (
+                            walletAcceptBlocked &&
+                            actorRole === "BUYER" &&
+                            onWalletTopUp &&
+                            typeof finalPriceEur === "number"
+                        ) {
+                            onError("")
+                            setIsWalletTopUpOpen(true)
+                            return
+                        }
                         applyEvent({
                             type: "ACCEPT",
                             actorRole,
                             occurredAt: currentTime,
-                        }),
-                    disabled: walletAcceptBlocked,
+                        })
+                    },
                     className: `${PRIMARY_ACTION_CLASS} rounded-[var(--wm-size-999)] bg-[color:var(--action-primary)] text-[color:var(--text-on-action)] shadow-[var(--wm-shadow-inset-cta)]`,
                     fullWidth: true,
                 }
@@ -518,13 +528,19 @@ function MeetupCard({
                     id: "accept-counter",
                     label: "Aceptar contraoferta",
                     variant: "primary",
-                    run: () =>
+                    run: () => {
+                        if (walletAcceptBlocked && actorRole === "SELLER") {
+                            onError(
+                                "El comprador necesita saldo en Wallapop Wallet para confirmar. Podra recargar el monedero desde su cuenta."
+                            )
+                            return
+                        }
                         applyEvent({
                             type: "ACCEPT",
                             actorRole,
                             occurredAt: currentTime,
-                        }),
-                    disabled: walletAcceptBlocked,
+                        })
+                    },
                     className: PRIMARY_ACTION_CLASS,
                     fullWidth: true,
                 }
@@ -740,9 +756,9 @@ function MeetupCard({
 
             {actorRole === "BUYER" && meetup.proposedPaymentMethod === "WALLET" ? (
                 <p className="mt-3 font-wallie-fit text-[length:var(--wm-size-12)] leading-[1.45] text-[color:var(--text-secondary)]">
-                    Wallapop Wallet es el monedero dentro de la app: sirve para pagar compras presenciales con un codigo QR. Si
-                    aceptas esta quedada con Wallet, reservamos el importe acordado hasta que el vendedor cobre o se cancele la
-                    quedada.
+                    Wallapop Wallet es el monedero de la app: pagas la quedada en persona con un codigo QR, sin efectivo. Es la
+                    misma forma de pago que puedes usar en otras compras; solo hace falta tener saldo disponible en el monedero,
+                    como cuando vas a comprar cualquier cosa por Wallapop.
                 </p>
             ) : null}
 
@@ -751,8 +767,8 @@ function MeetupCard({
             meetup.walletHoldAmountEur > 0 &&
             (meetup.status === "CONFIRMED" || meetup.status === "ARRIVED") ? (
                 <NoticeBanner className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)]">
-                    Tienes {meetup.walletHoldAmountEur.toFixed(2)} € reservados en Wallapop Wallet para esta quedada hasta que se
-                    cobre o se cancele.
+                    Para esta quedada hay {meetup.walletHoldAmountEur.toFixed(2)} € apartados en tu Wallapop Wallet hasta que el
+                    vendedor cobre o se cancele la cita.
                 </NoticeBanner>
             ) : null}
 
@@ -771,19 +787,6 @@ function MeetupCard({
                 </NoticeBanner>
             ) : null}
 
-            {walletAcceptBlocked && actorRole === "BUYER" ? (
-                <NoticeBanner className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)]">
-                    Necesitas saldo suficiente en Wallapop Wallet para aceptar ({finalPriceEur?.toFixed(2)} €). Recarga el
-                    monedero para continuar.
-                </NoticeBanner>
-            ) : null}
-            {walletAcceptBlocked && actorRole === "SELLER" && meetup.status === "COUNTER_PROPOSED" ? (
-                <NoticeBanner className="mt-3 rounded-[var(--wm-size-12)] px-3 py-2 text-[length:var(--wm-size-12)]">
-                    El comprador necesita saldo suficiente en Wallapop Wallet ({finalPriceEur?.toFixed(2)} €) para poder
-                    confirmar esta quedada.
-                </NoticeBanner>
-            ) : null}
-
             {primaryActions.length > 0 ? (
                 <div className="mt-4 space-y-2">
                     {primaryActions.map((action) => (
@@ -799,20 +802,6 @@ function MeetupCard({
                             {action.label}
                         </Button>
                     ))}
-                </div>
-            ) : null}
-
-            {walletAcceptBlocked && onWalletTopUp && actorRole === "BUYER" ? (
-                <div className="mt-2">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="h-10 w-full rounded-[var(--wm-size-999)] font-wallie-chunky text-[length:var(--wm-size-16)]"
-                        onClick={() => setIsWalletTopUpOpen(true)}
-                    >
-                        Recargar monedero
-                    </Button>
                 </div>
             ) : null}
 
