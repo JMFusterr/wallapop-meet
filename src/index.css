@@ -455,3 +455,68 @@
 .wm-mini-map .leaflet-marker-shadow {
   backface-visibility: hidden;
 }
+
+/* Marcadores Leaflet: estilo tokenizado sin hardcodes inline en componentes. */
+.wm-map-marker-icon {
+  color: var(--text-inverse);
+}
+
+.wm-map-marker-shell {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wm-map-marker-bubble {
+  --wm-map-marker-bg: var(--action-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--wm-size-2) solid var(--text-inverse);
+  border-radius: var(--wm-size-999);
+  background: var(--wm-map-marker-bg);
+  box-shadow: var(--wm-shadow-marker);
+}
+
+.wm-map-marker-bubble-sm {
+  min-width: var(--wm-size-34);
+  height: var(--wm-size-26, 26px);
+  padding: 0 var(--wm-size-8);
+}
+
+.wm-map-marker-bubble-md {
+  min-width: var(--wm-size-40, 40px);
+  height: var(--wm-size-30, 30px);
+  padding: 0 var(--wm-size-10);
+}
+
+.wm-map-marker-primary {
+  --wm-map-marker-bg: var(--action-primary);
+}
+
+.wm-map-marker-pressed {
+  --wm-map-marker-bg: var(--action-primary-pressed);
+}
+
+.wm-map-marker-shadow-strong {
+  box-shadow: var(--wm-shadow-marker-strong);
+}
+
+.wm-map-marker-tail {
+  display: block;
+  margin-top: calc(var(--wm-size-2) * -1);
+}
+
+.wm-map-marker-tail-fill {
+  fill: var(--wm-map-marker-bg, var(--action-primary));
+}
+
+.wm-map-marker-user-position {
+  display: block;
+  width: var(--wm-size-16);
+  height: var(--wm-size-16);
+  border: var(--wm-size-2) solid var(--text-inverse);
+  border-radius: var(--wm-size-999);
+  background: var(--action-primary);
+  box-shadow: 0 0 0 var(--wm-size-4, 4px) var(--wm-surface-overlay-hover);
+}

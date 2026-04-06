@@ -40,13 +40,13 @@ function resolveCssColor(variableName: string, fallback: string): string {
     return value || fallback
 }
 
-function createCustomPointIcon(customPointColor: string): L.DivIcon {
+function createCustomPointIcon(): L.DivIcon {
     return L.divIcon({
-        className: "",
+        className: "wm-map-marker-icon",
         html: `
-        <span style="display:inline-flex;flex-direction:column;align-items:center;">
-            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:${customPointColor};border:2px solid var(--text-inverse);box-shadow:var(--wm-shadow-marker-strong);padding:0 10px;">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <span class="wm-map-marker-shell">
+            <span class="wm-map-marker-bubble wm-map-marker-bubble-md wm-map-marker-pressed wm-map-marker-shadow-strong">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="m11 17 2 2a1 1 0 1 0 3-3"></path>
                     <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path>
                     <path d="m21 3 1 11h-2"></path>
@@ -54,9 +54,9 @@ function createCustomPointIcon(customPointColor: string): L.DivIcon {
                     <path d="M3 4h8"></path>
                 </svg>
             </span>
-            <svg viewBox="0 0 14 8" width="14" height="8" style="display:block;margin-top:-2px;" aria-hidden="true">
-                <path d="M1 0H13L7 7Z" fill="${customPointColor}"></path>
-                <path d="M1 0L7 7L13 0" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <svg viewBox="0 0 14 8" width="14" height="8" class="wm-map-marker-tail" aria-hidden="true">
+                <path d="M1 0H13L7 7Z" class="wm-map-marker-tail-fill"></path>
+                <path d="M1 0L7 7L13 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
         </span>
     `,
@@ -102,8 +102,8 @@ function MeetupLocationMap({
         []
     )
     const customPointIcon = React.useMemo(
-        () => createCustomPointIcon(safePointSelectedColor),
-        [safePointSelectedColor]
+        () => createCustomPointIcon(),
+        []
     )
 
     return (

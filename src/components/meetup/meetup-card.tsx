@@ -8,7 +8,6 @@ import { resolveArrivalActionState } from "@/components/meetup/meetup-ui-rules"
 import L from "leaflet"
 import { Banknote, MapPin } from "lucide-react"
 import { MapContainer, Marker, TileLayer } from "react-leaflet"
-import styles from "../../../styles.json"
 import { getArrivalWindow } from "@/meetup/arrival-window"
 import { transitionMeetup } from "@/meetup/state-machine"
 import type { ActorRole, MeetupMachine, MeetupPaymentMethod } from "@/meetup/types"
@@ -43,30 +42,6 @@ const NO_SHOW_GRACE_MINUTES = 5
 type StatusPill = {
     label: string
     tone: LabelTone
-}
-
-type TokenLeaf = { value?: string | number }
-
-function resolveColorToken(path: string): string {
-    const keys = path.split(".")
-    let cursor: unknown = styles
-    for (const key of keys) {
-        if (!cursor || typeof cursor !== "object" || !(key in (cursor as Record<string, unknown>))) {
-            return "var(--text-primary)"
-        }
-        cursor = (cursor as Record<string, unknown>)[key]
-    }
-    if (cursor && typeof cursor === "object" && "value" in (cursor as TokenLeaf)) {
-        const raw = (cursor as TokenLeaf).value
-        if (typeof raw === "string" && raw.startsWith("{") && raw.endsWith("}")) {
-            return resolveColorToken(raw.slice(1, -1))
-        }
-        return String(raw ?? "var(--text-primary)")
-    }
-    if (typeof cursor === "string") {
-        return cursor
-    }
-    return "var(--text-primary)"
 }
 
 function statusPill(meetup: MeetupMachine): StatusPill {
@@ -159,13 +134,13 @@ function buildMeetupIcs(meetup: MeetupMachine): string {
     ].join("\r\n")
 }
 
-function createMiniMapMarkerIcon(markerColor: string): L.DivIcon {
+function createMiniMapMarkerIcon(): L.DivIcon {
     return L.divIcon({
-        className: "",
+        className: "wm-map-marker-icon",
         html: `
-        <span style="display:inline-flex;flex-direction:column;align-items:center;">
-            <span style="display:flex;min-width:34px;height:26px;align-items:center;justify-content:center;border-radius:999px;background:${markerColor};border:2px solid var(--text-inverse);box-shadow:var(--wm-shadow-marker);padding:0 8px;">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <span class="wm-map-marker-shell">
+            <span class="wm-map-marker-bubble wm-map-marker-bubble-sm wm-map-marker-primary">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="m11 17 2 2a1 1 0 1 0 3-3"></path>
                     <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path>
                     <path d="m21 3 1 11h-2"></path>
@@ -173,9 +148,9 @@ function createMiniMapMarkerIcon(markerColor: string): L.DivIcon {
                     <path d="M3 4h8"></path>
                 </svg>
             </span>
-            <svg viewBox="0 0 14 8" width="14" height="8" style="display:block;margin-top:-2px;" aria-hidden="true">
-                <path d="M1 0H13L7 7Z" fill="${markerColor}"></path>
-                <path d="M1 0L7 7L13 0" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <svg viewBox="0 0 14 8" width="14" height="8" class="wm-map-marker-tail" aria-hidden="true">
+                <path d="M1 0H13L7 7Z" class="wm-map-marker-tail-fill"></path>
+                <path d="M1 0L7 7L13 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
         </span>
     `,
@@ -227,10 +202,7 @@ function MeetupCard({
     const [isCancelModalOpen, setIsCancelModalOpen] = React.useState(false)
     const [isNoShowSheetOpen, setIsNoShowSheetOpen] = React.useState(false)
     const [noShowGraceError, setNoShowGraceError] = React.useState("")
-    const miniMapMarkerIcon = React.useMemo(
-        () => createMiniMapMarkerIcon(resolveColorToken("tokens.color.semantic.action.primary")),
-        []
-    )
+    const miniMapMarkerIcon = React.useMemo(() => createMiniMapMarkerIcon(), [])
 
     const applyEvent = (
         event:

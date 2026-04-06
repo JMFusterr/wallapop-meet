@@ -1,4 +1,4 @@
-﻿# Tokens de diseño v1 - Wallapop Meet
+# Tokens de diseño v1 - Wallapop Meet
 
 ## Objetivo
 Definir una base de tokens consistente, escalable y lista para implementación técnica de Wallapop Meet.
@@ -150,7 +150,7 @@ components
 - Línea de estados del meetup:
   - Estado activo: `color.brand.primary`
   - Estado completado: `color.brand.primary`
-  - Estado expirado/cancelado: `color.semantic.error.base`
+  - Estado cancelado: `color.semantic.error.base`
 - Acción "Estoy aqui":
   - Botón principal: `components.button.primary`
   - Estado deshabilitado fuera de ventana: `components.button.primary.disabled`
@@ -159,7 +159,6 @@ components
   - `tokens.color.meetup_status.confirmed.{background,border,text}`
   - `tokens.color.meetup_status.arrived.{background,border,text}`
   - `tokens.color.meetup_status.completed.{background,border,text}`
-  - `tokens.color.meetup_status.expired.{background,border,text}`
   - `tokens.color.meetup_status.cancelled.{background,border,text}`
 - Campos de formulario de meetup:
   - Input base: `components.input`

@@ -67,4 +67,36 @@ describe("meetup ui rules", () => {
 
         expect(variant).toBe("in_window")
     })
+
+    it("deshabilita llegada si el actor ya marco ARRIVED", () => {
+        const confirmed = buildConfirmedMeetup()
+        const arrivedResult = transitionMeetup(confirmed, {
+            type: "MARK_ARRIVED",
+            actorRole: "SELLER",
+            occurredAt: new Date("2026-02-20T17:45:00.000Z"),
+            withinSafeRadius: true,
+        })
+        if (!arrivedResult.ok) {
+            throw new Error("Se esperaba meetup ARRIVED para la prueba.")
+        }
+
+        const state = resolveArrivalActionState(
+            arrivedResult.meetup,
+            new Date("2026-02-20T17:50:00.000Z"),
+            "SELLER"
+        )
+
+        expect(state.enabled).toBe(false)
+        expect(state.message).toBe("Ya has marcado que has llegado.")
+    })
+
+    it("muestra banner upcoming fuera de ventana en meetup confirmado", () => {
+        const meetup = buildConfirmedMeetup()
+        const variant = resolveMeetupDayBannerVariant(
+            meetup,
+            new Date("2026-02-20T16:00:00.000Z")
+        )
+
+        expect(variant).toBe("upcoming")
+    })
 })

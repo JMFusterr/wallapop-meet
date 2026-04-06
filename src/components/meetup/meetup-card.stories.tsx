@@ -40,6 +40,16 @@ function buildConfirmedMachine(): MeetupMachine {
     return confirmed.ok ? confirmed.meetup : proposed
 }
 
+function buildCounterProposedMachine(): MeetupMachine {
+    const proposed = buildProposedSellerMachine()
+    const counter = transitionMeetup(proposed, {
+        type: "COUNTER_PROPOSE",
+        actorRole: "BUYER",
+        occurredAt: new Date("2026-02-20T16:40:00.000Z"),
+    })
+    return counter.ok ? counter.meetup : proposed
+}
+
 function buildArrivedMachine(options?: { buyerArrived?: boolean }): MeetupMachine {
     const confirmed = buildConfirmedMachine()
     const sellerArrived = transitionMeetup(confirmed, {
@@ -168,6 +178,23 @@ export const Confirmed: Story = {
     ),
 }
 
+export const CounterProposed: Story = {
+    args: {
+        meetup: buildCounterProposedMachine(),
+        actorRole: "SELLER",
+        currentTime: new Date("2026-02-20T16:45:00.000Z"),
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
+    render: () => (
+        <CardHarness
+            initialMeetup={buildCounterProposedMachine()}
+            actorRole="SELLER"
+            currentTime={new Date("2026-02-20T16:45:00.000Z")}
+        />
+    ),
+}
+
 export const ThirtyMinutesBefore: Story = {
     args: {
         meetup: buildConfirmedMachine(),
@@ -234,4 +261,15 @@ export const Completed: Story = {
             currentTime={new Date("2026-02-20T18:12:00.000Z")}
         />
     ),
+}
+
+export const WithCounterpartName: Story = {
+    args: {
+        meetup: buildConfirmedMachine(),
+        actorRole: "SELLER",
+        currentTime: new Date("2026-02-20T15:00:00.000Z"),
+        counterpartName: "Marta",
+        onMeetupChange: () => undefined,
+        onError: () => undefined,
+    },
 }

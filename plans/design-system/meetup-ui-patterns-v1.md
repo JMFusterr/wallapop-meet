@@ -82,11 +82,9 @@ Estados soportados:
 
 Etiquetas visibles en UI (español, minusculas):
 - `pendiente`
-- `contraoferta`
 - `confirmada`
 - `llegada`
 - `completada`
-- `expirada`
 - `cancelada`
 
 Reglas visuales:

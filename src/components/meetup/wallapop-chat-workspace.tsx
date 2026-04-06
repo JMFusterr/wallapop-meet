@@ -1189,17 +1189,17 @@ function ProposalSelectionIndicator({ selected }: { selected: boolean }) {
 }
 
 const safePointMarkerIcon = L.divIcon({
-    className: "",
+    className: "wm-map-marker-icon",
     html: `
-        <span style="display:inline-flex;flex-direction:column;align-items:center;">
-            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:var(--action-primary);border:2px solid var(--text-inverse);box-shadow:0 4px 10px var(--wm-shadow-marker);padding:0 10px;">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <span class="wm-map-marker-shell">
+            <span class="wm-map-marker-bubble wm-map-marker-bubble-md wm-map-marker-primary">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
                 </svg>
             </span>
-            <svg viewBox="0 0 14 8" width="14" height="8" style="display:block;margin-top:-2px;" aria-hidden="true">
-                <path d="M1 0H13L7 7Z" fill="var(--action-primary)"></path>
-                <path d="M1 0L7 7L13 0" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <svg viewBox="0 0 14 8" width="14" height="8" class="wm-map-marker-tail" aria-hidden="true">
+                <path d="M1 0H13L7 7Z" class="wm-map-marker-tail-fill"></path>
+                <path d="M1 0L7 7L13 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
         </span>
     `,
@@ -1208,17 +1208,17 @@ const safePointMarkerIcon = L.divIcon({
 })
 
 const selectedSafePointMarkerIcon = L.divIcon({
-    className: "",
+    className: "wm-map-marker-icon",
     html: `
-        <span style="display:inline-flex;flex-direction:column;align-items:center;">
-            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:var(--action-primary-pressed);border:2px solid var(--text-inverse);box-shadow:0 4px 10px var(--wm-shadow-marker);padding:0 10px;">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <span class="wm-map-marker-shell">
+            <span class="wm-map-marker-bubble wm-map-marker-bubble-md wm-map-marker-pressed">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
                 </svg>
             </span>
-            <svg viewBox="0 0 14 8" width="14" height="8" style="display:block;margin-top:-2px;" aria-hidden="true">
-                <path d="M1 0H13L7 7Z" fill="var(--action-primary-pressed)"></path>
-                <path d="M1 0L7 7L13 0" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <svg viewBox="0 0 14 8" width="14" height="8" class="wm-map-marker-tail" aria-hidden="true">
+                <path d="M1 0H13L7 7Z" class="wm-map-marker-tail-fill"></path>
+                <path d="M1 0L7 7L13 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
         </span>
     `,
@@ -1227,20 +1227,20 @@ const selectedSafePointMarkerIcon = L.divIcon({
 })
 
 const userPositionIcon = L.divIcon({
-    className: "",
+    className: "wm-map-marker-icon",
     html: `
-        <span style="display:block;height:16px;width:16px;border-radius:999px;background:var(--action-primary);border:2px solid var(--text-inverse);box-shadow:0 0 0 4px var(--wm-surface-overlay-hover);"></span>
+        <span class="wm-map-marker-user-position"></span>
     `,
     iconSize: [16, 16],
     iconAnchor: [8, 8],
 })
 
 const customPointIcon = L.divIcon({
-    className: "",
+    className: "wm-map-marker-icon",
     html: `
-        <span style="display:inline-flex;flex-direction:column;align-items:center;">
-            <span style="display:flex;min-width:40px;height:30px;align-items:center;justify-content:center;border-radius:999px;background:var(--action-primary-pressed);border:2px solid var(--text-inverse);box-shadow:0 4px 10px var(--wm-shadow-marker);padding:0 10px;">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <span class="wm-map-marker-shell">
+            <span class="wm-map-marker-bubble wm-map-marker-bubble-md wm-map-marker-pressed">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="m11 17 2 2a1 1 0 1 0 3-3"></path>
                     <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path>
                     <path d="m21 3 1 11h-2"></path>
@@ -1248,9 +1248,9 @@ const customPointIcon = L.divIcon({
                     <path d="M3 4h8"></path>
                 </svg>
             </span>
-            <svg viewBox="0 0 14 8" width="14" height="8" style="display:block;margin-top:-2px;" aria-hidden="true">
-                <path d="M1 0H13L7 7Z" fill="var(--action-primary-pressed)"></path>
-                <path d="M1 0L7 7L13 0" fill="none" stroke="var(--text-inverse)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <svg viewBox="0 0 14 8" width="14" height="8" class="wm-map-marker-tail" aria-hidden="true">
+                <path d="M1 0H13L7 7Z" class="wm-map-marker-tail-fill"></path>
+                <path d="M1 0L7 7L13 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
         </span>
     `,

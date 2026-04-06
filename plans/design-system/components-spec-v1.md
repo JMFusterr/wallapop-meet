@@ -281,11 +281,10 @@ Reglas:
   - `CANCELLED` -> `cancelada`
 - Colores de label por estado:
   - `pendiente`: blanco/neutro
-  - `contraoferta`: warning
+  - `contraoferta`: warning (legacy; en UI actual se muestra como `pendiente`)
   - `confirmada`: success
   - `llegada`: info
   - `completada`: acento de vendido (`#D32069`)
-  - `expirada`: neutral
   - `cancelada`: error
 - El bloque informativo de la propuesta debe renderizar exactamente 3 filas con icono a la izquierda:
   - Calendario: dia y hora.

@@ -1,4 +1,4 @@
-﻿# Guía del Repositorio
+# Guía del Repositorio
 
 Wallapop Meet formaliza encuentros presenciales de compraventa dentro de Wallapop. Convierte acuerdos de chat en un evento estructurado con estados claros, notificaciones interactivas y seguimiento posterior.
 
@@ -37,7 +37,7 @@ Regla operativa obligatoria:
 
 - Usar indentación de 4 espacios en archivos JSON (alineado con `styles.json`).
 - Mantener nombres de estado alineados con la máquina de estados:
-  `PROPOSED`, `COUNTER_PROPOSED`, `CONFIRMED`, `ARRIVED`, `COMPLETED`, `EXPIRED`, `CANCELLED`.
+  `PROPOSED`, `COUNTER_PROPOSED`, `CONFIRMED`, `ARRIVED`, `COMPLETED`, `CANCELLED`.
 - Mantener reglas de negocio explícitas y cercanas a la funcionalidad (ventana de llegada, inicio exclusivo del vendedor, etc.).
 - Prohibido hardcodear valores visuales en `src` (hex/rgb/hsl/oklch, `px`, radios, sombras, opacidades), salvo en la capa canónica de tokens (`styles.json` y variables raíz de `src/index.css`).
 - No añadir estilos inline para UI (`style={...}`) salvo casos técnicos justificados (ejemplo: posición dinámica de mapa) y documentados en PR.
@@ -63,7 +63,7 @@ Al modificar tokens o componentes:
 
 El proyecto usa Vitest. Cobertura mínima esperada:
 - Transiciones válidas e inválidas de estado.
-- Ventana de llegada (15 minutos antes a 2 horas después).
+- Ventana de llegada (30 minutos antes a 2 horas después).
 - Lógica de propuesta exclusiva del vendedor y contraoferta del comprador.
 
 Ubicar pruebas en `tests/` con nombres claros (ejemplo: `meetup.state.test.js`).

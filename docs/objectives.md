@@ -105,7 +105,7 @@ Objetivos:
   - Variante inversa en propuesta recibida (`BUYER` + `PROPOSED`):
     - Acciones visibles: `Aceptar` (principal), `Proponer cambios` (outline), `Rechazar quedada` (texto).
     - La card se renderiza en el lado izquierdo de la conversacion.
-  - Estado visible en label traducida y en minusculas (`pendiente`, `confirmada`, `llegada`, `completada`, `expirada`, `cancelada`).
+- Estado visible en label traducida y en minusculas (`pendiente`, `confirmada`, `llegada`, `completada`, `cancelada`).
   - `COMPLETED` usa semantica visual azul Wallapop.
   - `COUNTER_PROPOSED` se representa como `pendiente` (no `contraoferta`).
   - Fondo de card en blanco y sin sombra, tanto en envio propio como en recepcion.
