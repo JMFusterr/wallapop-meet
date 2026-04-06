@@ -1,4 +1,4 @@
-﻿# DESIGN SYSTEM - Wallapop Meet
+# DESIGN SYSTEM - Wallapop Meet
 
 ## 1. Proposito y alcance
 
@@ -160,7 +160,7 @@ Regla:
 ### 5.2 Card (incluye MeetupCard)
 
 Anatomia recomendada:
-- Header (titulo + estado)
+- Header (titulo + chip de estado: `Label` con texto en minusculas e icono a la izquierda segun mapeo de `components-spec-v1` seccion 15)
 - Bloque de contenido estructurado
 - Stack de acciones (primaria/secundaria/destructiva)
 - Metadata secundaria (ej. hora)

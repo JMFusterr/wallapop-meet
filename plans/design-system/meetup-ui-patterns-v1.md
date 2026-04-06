@@ -83,9 +83,11 @@ Estados soportados:
 Etiquetas visibles en UI (español, minusculas):
 - `pendiente`
 - `confirmada`
-- `llegada`
+- `has llegado` (estado `ARRIVED` en `MeetupCard`)
 - `completada`
 - `cancelada`
+
+Iconos en chip de estado de `MeetupCard` (izquierda del texto, alineados con el significado; ver `components-spec-v1` seccion 15).
 
 Reglas visuales:
 - Estado actual resaltado.

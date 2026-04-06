@@ -44,7 +44,8 @@ const designSystemMeta = {
     id: "label",
     entityType: "component",
     title: "Label",
-    description: "Label de estado para componentes de meetup.",
+    description:
+        "Chip de estado (pill) para meetup: tonos de `meetup_status` y texto en minusculas. En `MeetupCard` se compone con icono Lucide a la izquierda (`items-center gap-1`, icono `size-[var(--wm-size-12)]`, decorativo con `aria-hidden`); mapeo texto/icono en `components-spec-v1` seccion 15.",
     status: "ready",
     states: ["pending", "confirmed", "arrived", "completed", "cancelled"],
     storybookTitle: "Design System/Label",

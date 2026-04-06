@@ -105,7 +105,8 @@ Objetivos:
   - Variante inversa en propuesta recibida (`BUYER` + `PROPOSED`):
     - Acciones visibles: `Aceptar` (principal), `Proponer cambios` (outline), `Rechazar quedada` (texto).
     - La card se renderiza en el lado izquierdo de la conversacion.
-- Estado visible en label traducida y en minusculas (`pendiente`, `confirmada`, `llegada`, `completada`, `cancelada`).
+- Estado visible en chip de estado (`Label`) junto al titulo, texto en minusculas (`pendiente`, `confirmada`, `has llegado`, `completada`, `cancelada`).
+  - Cada chip lleva un icono a la izquierda (Lucide) alineado con el significado: `Clock` pendiente; `CheckCircle2` confirmada; `MapPin` `has llegado`; `Handshake` completada (misma semantica de venta cerrada que `WallapopIcon` `deal`); `XCircle` cancelada; `CircleDashed` si no hay propuesta.
   - `COMPLETED` usa semantica visual azul Wallapop.
   - `COUNTER_PROPOSED` se representa como `pendiente` (no `contraoferta`).
   - Fondo de card en blanco y sin sombra, tanto en envio propio como en recepcion.

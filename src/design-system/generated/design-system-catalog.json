@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-04-06T16:27:42.663Z",
+    "generatedAt": "2026-04-06T16:57:56.337Z",
     "entryFile": "src/App.tsx",
     "entities": [
         {
@@ -255,7 +255,8 @@
             "description": "Mensaje de Wally tras venta completada en Wallapop Meet: invitacion a valorar con WallapopIcon bot.",
             "status": "ready",
             "states": [
-                "default"
+                "default",
+                "completed"
             ],
             "storybookTitle": "Design System/Chat Meet Rating Prompt Bubble",
             "tokensUsed": [
@@ -270,6 +271,10 @@
             "stateCoverage": [
                 {
                     "state": "default",
+                    "covered": true
+                },
+                {
+                    "state": "completed",
                     "covered": true
                 }
             ]
@@ -471,7 +476,7 @@
             "id": "label",
             "entityType": "component",
             "title": "Label",
-            "description": "Label de estado para componentes de meetup.",
+            "description": "Chip de estado (pill) para meetup: tonos de `meetup_status` y texto en minusculas. En `MeetupCard` se compone con icono Lucide a la izquierda (`items-center gap-1`, icono `size-[var(--wm-size-12)]`, decorativo con `aria-hidden`); mapeo texto/icono en `components-spec-v1` seccion 15.",
             "status": "ready",
             "states": [
                 "pending",
@@ -547,13 +552,39 @@
             ]
         },
         {
+            "file": "src/components/meetup/meet-transaction-rating-modal.tsx",
+            "storyFile": "src/components/meetup/meet-transaction-rating-modal.stories.tsx",
+            "storyTitle": "Design System/Meet Transaction Rating Modal",
+            "id": "meet-transaction-rating-modal",
+            "entityType": "component",
+            "title": "Meet Transaction Rating Modal",
+            "description": "Modal para valorar la experiencia tras una venta completada: estrellas, precio de venta y comentario opcional.",
+            "status": "ready",
+            "states": [
+                "default"
+            ],
+            "storybookTitle": "Design System/Meet Transaction Rating Modal",
+            "tokensUsed": [
+                "tokens.color.meet_rating_prompt.cta_background",
+                "tokens.color.meet_rating_prompt.cta_hover",
+                "tokens.color.meet_rating_prompt.cta_text",
+                "tokens.color.overlay.scrim"
+            ],
+            "stateCoverage": [
+                {
+                    "state": "default",
+                    "covered": true
+                }
+            ]
+        },
+        {
             "file": "src/components/meetup/meetup-card.tsx",
             "storyFile": "src/components/meetup/meetup-card.stories.tsx",
             "storyTitle": "Design System/Meetup Card",
             "id": "meetup-card",
             "entityType": "component",
             "title": "Meetup Card",
-            "description": "Meetup Card del design system de Wallapop Meet.",
+            "description": "Tarjeta de quedada en hilo de chat: titulo fijo, chip de estado (`Label` + icono Lucide segun `statusPill`), tres filas de datos (calendario, ubicacion, pago), mini mapa y CTAs por estado/rol. Iconos del chip: Clock pendiente, CheckCircle2 confirmada, MapPin has llegado, Handshake completada (alineado con `WallapopIcon` deal), XCircle cancelada, CircleDashed sin propuesta.",
             "status": "ready",
             "states": [
                 "pending",

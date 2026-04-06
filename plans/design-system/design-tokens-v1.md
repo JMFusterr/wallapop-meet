@@ -160,6 +160,7 @@ components
   - `tokens.color.meetup_status.arrived.{background,border,text}`
   - `tokens.color.meetup_status.completed.{background,border,text}`
   - `tokens.color.meetup_status.cancelled.{background,border,text}`
+- El chip usa componente `Label` y, en `MeetupCard`, icono Lucide a la izquierda; tamaño de icono `var(--wm-size-12)` (ver `components-spec-v1.md` seccion 15).
 - Mensaje de valoracion post-venta (`ChatMeetRatingPromptBubble`):
   - `tokens.color.meet_rating_prompt.{background,text,cta_background,cta_hover,cta_text,meta,icon_background}`
 - Campos de formulario de meetup:

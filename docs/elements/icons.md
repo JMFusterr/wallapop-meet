@@ -85,6 +85,20 @@ Notas de uso en workspace (2026-02-20):
 Nota:
 - `paper_plane` se mantiene en la API del wrapper local aunque no se haya capturado explicitamente en el inventario runtime anterior.
 
+## Chip de estado en `MeetupCard` (Lucide directo)
+Los tags de estado junto al titulo de la card no usan `WallapopIcon`; se renderizan con iconos de `lucide-react` a la izquierda del texto (`Label`), tamaño `var(--wm-size-12)`, `aria-hidden` en el icono.
+
+| Texto visible | Icono Lucide | Notas |
+| --- | --- | --- |
+| `pendiente` | `Clock` | También para `COUNTER_PROPOSED` |
+| `confirmada` | `CheckCircle2` | |
+| `has llegado` | `MapPin` | Estado `ARRIVED` |
+| `completada` | `Handshake` | Misma semantica de venta cerrada que `WallapopIcon` `deal` |
+| `cancelada` | `XCircle` | |
+| `sin propuesta` | `CircleDashed` | Estado inicial sin meetup |
+
+Fuente de verdad: `plans/design-system/components-spec-v1.md` seccion 15 e implementacion en `src/components/meetup/meetup-card.tsx` (`statusPill`).
+
 ## Tamano observado
 - `small`: `16x16px` (iconos de categoria)
 - `medium`: `24x24px` (navegacion y acciones principales)

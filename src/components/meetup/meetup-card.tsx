@@ -10,7 +10,16 @@ import {
     type MeetupCardCtaId,
 } from "@/components/meetup/meetup-ui-rules"
 import L from "leaflet"
-import { Banknote, MapPin } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
+import {
+    Banknote,
+    CheckCircle2,
+    CircleDashed,
+    Clock,
+    Handshake,
+    MapPin,
+    XCircle,
+} from "lucide-react"
 import { MapContainer, Marker, TileLayer } from "react-leaflet"
 import { getArrivalWindow } from "@/meetup/arrival-window"
 import { transitionMeetup } from "@/meetup/state-machine"
@@ -46,6 +55,7 @@ const NO_SHOW_GRACE_MINUTES = 5
 type StatusPill = {
     label: string
     tone: LabelTone
+    Icon: LucideIcon
 }
 
 function statusPill(meetup: MeetupMachine): StatusPill {
@@ -55,36 +65,43 @@ function statusPill(meetup: MeetupMachine): StatusPill {
             return {
                 label: "pendiente",
                 tone: "pending",
+                Icon: Clock,
             }
         case "COUNTER_PROPOSED":
             return {
                 label: "pendiente",
                 tone: "pending",
+                Icon: Clock,
             }
         case "CONFIRMED":
             return {
                 label: "confirmada",
                 tone: "confirmed",
+                Icon: CheckCircle2,
             }
         case "ARRIVED":
             return {
-                label: "llegada",
+                label: "has llegado",
                 tone: "arrived",
+                Icon: MapPin,
             }
         case "COMPLETED":
             return {
                 label: "completada",
                 tone: "completed",
+                Icon: Handshake,
             }
         case "CANCELLED":
             return {
                 label: "cancelada",
                 tone: "cancelled",
+                Icon: XCircle,
             }
         default:
             return {
                 label: "sin propuesta",
                 tone: "pending",
+                Icon: CircleDashed,
             }
     }
 }
@@ -488,6 +505,7 @@ function MeetupCard({
     const formattedPrice =
         meetup.finalPrice !== undefined ? `${meetup.finalPrice.toFixed(2)} \u20AC` : "sin precio"
     const currentStatusPill = statusPill(meetup)
+    const StatusPillIcon = currentStatusPill.Icon
     const title = `Quedada con ${counterpartName ?? "usuario"}`
     const isPendingActionStatus = meetup.status === "PROPOSED" || meetup.status === "COUNTER_PROPOSED"
     const sentAt = meetup.proposedAt ?? meetup.confirmedAt ?? meetup.cancelledAt ?? null
@@ -547,7 +565,11 @@ function MeetupCard({
                 <p className="font-wallie-chunky text-[length:var(--wm-size-17)] leading-[1.1] text-[color:var(--text-primary)]">
                     {title}
                 </p>
-                <Label tone={isPendingActionStatus ? "pending" : currentStatusPill.tone}>
+                <Label
+                    tone={isPendingActionStatus ? "pending" : currentStatusPill.tone}
+                    className="items-center gap-1"
+                >
+                    <StatusPillIcon className="size-[var(--wm-size-12)] shrink-0" aria-hidden />
                     {currentStatusPill.label}
                 </Label>
             </div>
@@ -714,7 +736,8 @@ const designSystemMeta = {
     id: "meetup-card",
     entityType: "component",
     title: "Meetup Card",
-    description: "Meetup Card del design system de Wallapop Meet.",
+    description:
+        "Tarjeta de quedada en hilo de chat: titulo fijo, chip de estado (`Label` + icono Lucide segun `statusPill`), tres filas de datos (calendario, ubicacion, pago), mini mapa y CTAs por estado/rol. Iconos del chip: Clock pendiente, CheckCircle2 confirmada, MapPin has llegado, Handshake completada (alineado con `WallapopIcon` deal), XCircle cancelada, CircleDashed sin propuesta.",
     status: "ready",
     states: [
         "pending",
